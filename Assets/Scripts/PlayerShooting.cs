@@ -32,18 +32,20 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
+        float shootDelay = Mathf.Clamp(timeBetweenBullets - ScoreManager.score / 10000f, 0.05f, 0.15f);
+        Debug.Log(shootDelay);
         // Add the time since Update was last called to the timer.
         timer += Time.deltaTime;
 
         // If the Fire1 button is being press and it's time to fire...
-        if (Input.GetButton("Fire1") && timer >= timeBetweenBullets)
+        if (Input.GetButton("Fire1") && timer >= shootDelay)
         {
             // ... shoot the gun.
             Shoot();
         }
 
         // If the timer has exceeded the proportion of timeBetweenBullets that the effects should be displayed for...
-        if (timer >= timeBetweenBullets * effectsDisplayTime)
+        if (timer >= shootDelay * effectsDisplayTime)
         {
             // ... disable the effects.
             DisableEffects();

@@ -63,6 +63,8 @@ public class PlayerShooting : MonoBehaviour
         timer = 0f;
 
         // Play the gun shot audioclip.
+        gunAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
+        gunAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
         gunAudio.Play();
 
         // Enable the light.

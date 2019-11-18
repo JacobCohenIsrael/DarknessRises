@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8487712119539285542}
   - component: {fileID: 8487712119539285543}
   - component: {fileID: 8487712119539285540}
-  - component: {fileID: 8487712119539285539}
   - component: {fileID: 8861121933705689094}
   - component: {fileID: -8926315347740477470}
   - component: {fileID: -506459647363170603}
@@ -99,8 +98,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 1
-  m_Speed: 10
-  m_Acceleration: 8
+  m_Speed: 8
+  m_Acceleration: 7
   avoidancePriority: 50
   m_AngularSpeed: 500
   m_StoppingDistance: 1
@@ -111,18 +110,6 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8487712119539285539
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8487712119539285545}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3bdd4dbf5c769b4bb5e025f5b7b8f35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8861121933705689094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,7 +273,7 @@ Animator:
   m_GameObject: {fileID: 8487712119539285545}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6350314f8f3dea04b90847c11f571a3a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

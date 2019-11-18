@@ -36,7 +36,7 @@ public class EnemyHealth : MonoBehaviour
         if (isSinking)
         {
             // ... move the enemy down by the sinkSpeed per second.
-            transform.Translate(-Vector3.up * sinkSpeed * Time.deltaTime);
+            transform.Translate(-Vector3.up * sinkSpeed * Time.deltaTime, transform.parent);
         }
     }
 
@@ -48,6 +48,8 @@ public class EnemyHealth : MonoBehaviour
             return;
 
         // Play the hurt sound effect.
+        enemyAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
+        enemyAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
         enemyAudio.Play();
 
         // Reduce the current health by the amount of damage sustained.
@@ -81,6 +83,8 @@ public class EnemyHealth : MonoBehaviour
 
         // Change the audio clip of the audio source to the death clip and play it (this will stop the hurt clip playing).
         enemyAudio.clip = deathClip;
+        enemyAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
+        enemyAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
         enemyAudio.Play();
     }
 

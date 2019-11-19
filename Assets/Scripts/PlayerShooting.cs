@@ -33,7 +33,6 @@ public class PlayerShooting : MonoBehaviour
     void Update()
     {
         float shootDelay = Mathf.Clamp(timeBetweenBullets - ScoreManager.score / 10000f, 0.05f, 0.15f);
-        Debug.Log(shootDelay);
         // Add the time since Update was last called to the timer.
         timer += Time.deltaTime;
 

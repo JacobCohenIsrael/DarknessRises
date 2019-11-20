@@ -49,7 +49,7 @@ public class EnemyHealth : MonoBehaviour
 
         // Play the hurt sound effect.
         enemyAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
-        enemyAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
+        enemyAudio.pitch = UnityEngine.Random.Range(0.8f * AudioManager.globalPitch, 1.2f * AudioManager.globalPitch);
         enemyAudio.Play();
 
         // Reduce the current health by the amount of damage sustained.
@@ -84,7 +84,7 @@ public class EnemyHealth : MonoBehaviour
         // Change the audio clip of the audio source to the death clip and play it (this will stop the hurt clip playing).
         enemyAudio.clip = deathClip;
         enemyAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
-        enemyAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
+        enemyAudio.pitch = UnityEngine.Random.Range(0.8f * AudioManager.globalPitch, 1.2f * AudioManager.globalPitch);
         enemyAudio.Play();
     }
 

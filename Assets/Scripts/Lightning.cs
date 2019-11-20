@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Lightning : MonoBehaviour
 {
+    private AudioSource audioSource;
     private Animator animator;
     private Light light;
 
@@ -14,6 +15,7 @@ public class Lightning : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
         light = GetComponent<Light>();
         animator.SetBool("isStriking", false);
@@ -34,5 +36,6 @@ public class Lightning : MonoBehaviour
         {
             animator.SetBool("isStriking", false);
         }
+        audioSource.pitch = AudioManager.globalPitch;
     }
 }

@@ -5488,11 +5488,11 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6922567712521552756}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 0.9812431, g: 1, b: 0.2028302, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0
   m_Range: 30
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -5554,4 +5554,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalMaterial: {fileID: 2100000, guid: 1e5459a8c27e77e46875c1a763ad8bbc, type: 2}
-  glowMaterial: {fileID: 2100000, guid: 543c82d429a5f9f468150a8ffe145948, type: 2}
+  lightSkillEffectSpeed: 1.5
+  slowSkillEffectSpeed: 0.5

@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerShooting : MonoBehaviour
 {
@@ -37,7 +39,7 @@ public class PlayerShooting : MonoBehaviour
         timer += Time.deltaTime;
 
         // If the Fire1 button is being press and it's time to fire...
-        if (Input.GetButton("Fire1") && timer >= shootDelay)
+        if (Input.GetButton("Fire1") && timer >= shootDelay && !IsPointerOverUIObject())
         {
             // ... shoot the gun.
             Shoot();
@@ -58,14 +60,14 @@ public class PlayerShooting : MonoBehaviour
         gunLight.enabled = false;
     }
 
-    void Shoot()
+    private void Shoot()
     {
         // Reset the timer.
         timer = 0f;
 
         // Play the gun shot audioclip.
         gunAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
-        gunAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
+        gunAudio.pitch = UnityEngine.Random.Range(0.8f * AudioManager.globalPitch, 1.2f * AudioManager.globalPitch);
         gunAudio.Play();
 
         // Enable the light.
@@ -105,6 +107,16 @@ public class PlayerShooting : MonoBehaviour
             // ... set the second position of the line renderer to the fullest extent of the gun's range.
             gunLine.SetPosition(1, shootRay.origin + shootRay.direction * range);
         }
+    }
+
+
+    private bool IsPointerOverUIObject()
+    {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
     }
 }
 

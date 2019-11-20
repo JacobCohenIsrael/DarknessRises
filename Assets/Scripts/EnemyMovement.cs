@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
     Transform player;               // Reference to the player's position.
     PlayerHealth playerHealth;      // Reference to the player's health.
     EnemyHealth enemyHealth;        // Reference to this enemy's health.
-    UnityEngine.AI.NavMeshAgent nav;               // Reference to the nav mesh agent.
-
+    NavMeshAgent nav;               // Reference to the nav mesh agent.
+    private Rigidbody rb;
 
     void Awake()
     {
@@ -16,23 +17,22 @@ public class EnemyMovement : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         playerHealth = player.GetComponent<PlayerHealth>();
         enemyHealth = GetComponent<EnemyHealth>();
-        nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        nav = GetComponent<NavMeshAgent>();
+        rb = GetComponent<Rigidbody>();
     }
 
+    private void Start()
+    {
+        nav.SetDestination(player.position);
+    }
 
     void Update()
     {
-        // If the enemy and the player have health left...
-        if (enemyHealth.currentHealth > 0 && playerHealth.currentHealth > 0)
+        rb.velocity = Vector3.MoveTowards(rb.velocity, Vector3.zero, 0.25f);
+        if (enemyHealth.currentHealth <= Mathf.Epsilon || playerHealth.currentHealth <= Mathf.Epsilon)
         {
-            // ... set the destination of the nav mesh agent to the player.
-            nav.SetDestination(player.position);
-        }
-        // Otherwise...
-        else
-        {
-            // ... disable the nav mesh agent.
             nav.enabled = false;
+
         }
     }
 }

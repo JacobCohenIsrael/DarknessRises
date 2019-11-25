@@ -68,7 +68,7 @@ public class PlayerHealth : MonoBehaviour
 
         // Play the hurt sound effect.
         playerAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
-        playerAudio.pitch = UnityEngine.Random.Range(0.8f * AudioManager.globalPitch, 1.2f * AudioManager.globalPitch);
+        playerAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
         playerAudio.Play();
 
         // If the player has lost all it's health and the death flag hasn't been set yet...
@@ -93,7 +93,7 @@ public class PlayerHealth : MonoBehaviour
 
         // Set the audiosource to play the death clip and play it (this will stop the hurt sound from playing).
         playerAudio.volume = UnityEngine.Random.Range(0.5f, 1.0f);
-        playerAudio.pitch = UnityEngine.Random.Range(0.8f * AudioManager.globalPitch, 1.2f * AudioManager.globalPitch);
+        playerAudio.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
         playerAudio.clip = deathClip;
         playerAudio.Play();
 

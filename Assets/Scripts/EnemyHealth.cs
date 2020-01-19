@@ -76,7 +76,7 @@ public class EnemyHealth : MonoBehaviour
         StartSinking();
 
         // Turn the collider into a trigger so shots can pass through it.
-        capsuleCollider.isTrigger = true;
+        capsuleCollider.enabled = false;
 
         // Tell the animator that the enemy is dead.
         anim.SetTrigger("Dead");

@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
         float v = Input.GetAxisRaw("Vertical");
 
         // Move the player around the scene.
-        //Move(h, v);
+        Move(h, v);
 
         // Turn the player to face the mouse cursor.
         Turning();

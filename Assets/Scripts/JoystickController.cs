@@ -15,12 +15,12 @@ public class JoystickController : MonoBehaviour
     void Update()
     {
 
-        Vector3 dir = new Vector3(joystick.Horizontal, 0, joystick.Vertical);
-        playerMovement.gameObject.transform.rotation = Quaternion.LookRotation(dir);
+        //Vector3 dir = new Vector3(joystick.Horizontal, 0, joystick.Vertical);
+        //playerMovement.gameObject.transform.rotation = Quaternion.LookRotation(dir);
 
-        if (joybotton.Pressed)
-        {
-            playerShooting.AttemptShoot();
-        }
+        //if (joybotton.pressed)
+        //{
+        //    playershooting.attemptshoot();
+        //}
     }
 }

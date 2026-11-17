@@ -746,3 +746,7 @@ MonoBehaviour:
   - {fileID: 9138725531927131043}
   - {fileID: 925538019520659851}
   fadeMaterial: {fileID: 2100000, guid: 216403b1d1750f7448c36315cffc55e4, type: 2}
+  windUpRenderers:
+  - {fileID: 9138725531927131043}
+  - {fileID: 925538019520659851}
+  windUpMaterial: {fileID: 2100000, guid: c980f448963122042b891d048c5b5ffa, type: 2}

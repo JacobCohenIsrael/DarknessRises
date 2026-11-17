@@ -55,6 +55,9 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised once the character has walked out the far door and the Level is over.</summary>
         public event Action Finished;
 
+        /// <summary>Raised when any of the Level's Enemies dies.</summary>
+        public event Action<Enemy> EnemyDied;
+
         /// <summary>The Room the Level starts in.</summary>
         public Room FirstRoom => rooms.Length > 0 ? rooms[0] : null;
 
@@ -101,6 +104,7 @@ namespace DarknessRises.Game.Levels
             }
 
             pools = new EnemyPools(transform, enemyTime);
+            pools.EnemyDied += OnEnemyDied;
             Prewarm(stationWaves, roomStragglers);
             spawner = new LevelSpawner(
                 pools,
@@ -266,8 +270,14 @@ namespace DarknessRises.Game.Levels
             fights.ExitReached -= OnExitReached;
             sequence.RoomEntered -= OnRoomEntered;
             fights.Dispose();
+            pools.EnemyDied -= OnEnemyDied;
             pools.Dispose();
             fights = null;
+        }
+
+        private void OnEnemyDied(Enemy enemy)
+        {
+            EnemyDied?.Invoke(enemy);
         }
 
         // Enough of each Enemy type for the Station that needs the most of it, plus every Room's Stragglers,

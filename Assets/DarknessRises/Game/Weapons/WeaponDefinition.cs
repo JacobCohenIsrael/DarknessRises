@@ -32,6 +32,9 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Tooltip("The short, shadowless light at the Weapon each time it fires.")]
         private MuzzleFlashSettings muzzleFlash = new();
 
+        [SerializeField, Tooltip("The small spark and light where a Shot hits something.")]
+        private HitSparkSettings hitSpark = new();
+
         public float ShotsPerSecond => shotsPerSecond;
         public int MagazineSize => magazineSize;
         public float ReloadSeconds => reloadSeconds;
@@ -40,6 +43,7 @@ namespace DarknessRises.Game.Weapons
         public float Range => range;
         public ShotSettings Shot => shot;
         public MuzzleFlashSettings MuzzleFlash => muzzleFlash;
+        public HitSparkSettings HitSpark => hitSpark;
 
         /// <summary>A copy of the numbers the Primary weapon rule needs.</summary>
         public PrimaryWeaponStats PrimaryStats => new(shotsPerSecond, magazineSize, reloadSeconds);

@@ -54,6 +54,10 @@ The light made by the player's Weapon: always its Muzzle flash, and for some Wea
 **Muzzle flash**:
 The short burst of light at the Weapon each time it fires. It lights only the area close to the character.
 
+**Hit spark**:
+The small burst of sparks and light where a Shot hits something. It lights whatever was hit for a moment.
+_Avoid_: impact, hit effect
+
 **Aura**:
 The faint, always-on light around the character. It shows the character's own position and little else.
 _Avoid_: glow, personal light

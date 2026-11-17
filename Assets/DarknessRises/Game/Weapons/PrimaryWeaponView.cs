@@ -1,3 +1,4 @@
+using System;
 using DarknessRises.Game.Controls;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -7,7 +8,8 @@ namespace DarknessRises.Game.Weapons
     /// <summary>
     /// Holds the character's Primary weapon in the scene: forwards the player's Fire and Reload commands to the
     /// <see cref="PrimaryWeapon"/> rule, turns the weapon mount toward the aim point, and shows each shot
-    /// with a pooled Shot and a pooled Muzzle flash.
+    /// with a pooled Shot and a pooled Muzzle flash. A Shot that hits something throws a pooled hit spark
+    /// and damages it if it's an <see cref="IShotTarget"/>.
     /// </summary>
     /// <remarks>
     /// Runs after the default execution order so the character has already walked this frame,
@@ -34,6 +36,8 @@ namespace DarknessRises.Game.Weapons
         private WeaponDefinition definition;
         private ObjectPool<ShotView> shots;
         private ObjectPool<MuzzleFlashView> muzzleFlashes;
+        private ObjectPool<HitSparkView> hitSparks;
+        private Action<RaycastHit> onShotHit;
         private Material shotGlowMaterial;
         private Transform effectsRoot;
 
@@ -54,8 +58,10 @@ namespace DarknessRises.Game.Weapons
 
             shots = new ObjectPool<ShotView>(CreateShot, OnGetPooled, OnReleasePooled, OnDestroyPooled, defaultCapacity: MostShotsInFlight());
             muzzleFlashes = new ObjectPool<MuzzleFlashView>(CreateMuzzleFlash, OnGetPooled, OnReleasePooled, OnDestroyPooled, defaultCapacity: MostFlashesAlive());
+            hitSparks = new ObjectPool<HitSparkView>(CreateHitSpark, OnGetPooled, OnReleasePooled, OnDestroyPooled, defaultCapacity: MostSparksAlive());
             Prewarm(shots, MostShotsInFlight());
             Prewarm(muzzleFlashes, MostFlashesAlive());
+            Prewarm(hitSparks, MostSparksAlive());
 
             return Weapon;
         }
@@ -71,6 +77,7 @@ namespace DarknessRises.Game.Weapons
             Weapon = null;
             shots.Dispose();
             muzzleFlashes.Dispose();
+            hitSparks.Dispose();
 
             // On scene unload the effects may already be gone.
             if (effectsRoot != null)
@@ -124,6 +131,15 @@ namespace DarknessRises.Game.Weapons
             muzzleFlashes.Get().Flash(muzzle.position);
         }
 
+        private void OnShotHit(RaycastHit hit)
+        {
+            hitSparks.Get().Spark(hit.point, hit.normal);
+            if (hit.collider.TryGetComponent<IShotTarget>(out var target))
+            {
+                target.TakeShot(definition.Damage);
+            }
+        }
+
         // Enough pooled Shots for a held trigger with every Shot flying its full range.
         private int MostShotsInFlight()
         {
@@ -136,10 +152,18 @@ namespace DarknessRises.Game.Weapons
             return Mathf.CeilToInt(definition.ShotsPerSecond * definition.MuzzleFlash.Seconds) + 1;
         }
 
+        // Enough pooled hit sparks for a held trigger with every Shot hitting something.
+        private int MostSparksAlive()
+        {
+            var sparkSeconds = Mathf.Max(definition.HitSpark.Seconds, definition.HitSpark.Prefab.LifeSeconds);
+            return Mathf.CeilToInt(definition.ShotsPerSecond * sparkSeconds) + 1;
+        }
+
         private ShotView CreateShot()
         {
+            onShotHit ??= OnShotHit;
             var shot = Instantiate(definition.Shot.Prefab, effectsRoot);
-            shot.Prepare(shots, definition.Shot, shotGlowMaterial, shotHitLayers);
+            shot.Prepare(shots, definition.Shot, shotGlowMaterial, shotHitLayers, onShotHit);
             shot.gameObject.SetActive(false);
             return shot;
         }
@@ -152,6 +176,14 @@ namespace DarknessRises.Game.Weapons
             var flash = flashObject.GetComponent<MuzzleFlashView>();
             flash.Prepare(muzzleFlashes, definition.MuzzleFlash);
             return flash;
+        }
+
+        private HitSparkView CreateHitSpark()
+        {
+            var spark = Instantiate(definition.HitSpark.Prefab, effectsRoot);
+            spark.gameObject.SetActive(false);
+            spark.Prepare(hitSparks, definition.HitSpark);
+            return spark;
         }
 
         private static void OnGetPooled(Component pooled)

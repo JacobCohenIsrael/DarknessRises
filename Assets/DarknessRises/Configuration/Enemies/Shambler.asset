@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bf92052dfaea4f4ea84805deeacc5e8, type: 3}
+  m_Name: Shambler
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Enemies.EnemyDefinition
+  hitPoints: 4
+  speed: 1.4
+  acceleration: 8
+  turnSpeed: 240
+  pathRefreshSeconds: 0.25
+  prefab: {fileID: 8717080933844714037, guid: 420f6ad99c6d238489fbd1a76efe9fc8, type: 3}
+  audio:
+    spawnClip: {fileID: 0}
+    hurtClip: {fileID: 8300000, guid: 75adfe9a619833445a701305b983e548, type: 3}
+    deathClip: {fileID: 8300000, guid: a37f44cbf8c2a7443a3c361efa2f233a, type: 3}
+    volume: 0.8
+    hearingRange: 25
+  death:
+    lingerSeconds: 0.5
+    sinkSeconds: 1.6
+    sinkDepth: 1.2
+  attack:
+    range: 1.3
+    windUpSeconds: 0.8
+    damage: 1
+    cooldownSeconds: 1.5
+    staggerSeconds: 0.6

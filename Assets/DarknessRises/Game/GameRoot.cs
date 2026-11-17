@@ -3,6 +3,7 @@ using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
 
@@ -22,16 +23,17 @@ namespace DarknessRises.Game
         [SerializeField] private RouteWalker routeWalker;
         [SerializeField] private PrimaryWeaponView primaryWeapon;
         [SerializeField] private AmmoHudView ammoHud;
+        [SerializeField] private RouteWavesView routeWaves;
 
         private void Awake()
         {
             Apply();
             routeWalker.Walk(
                 configuration.Player,
-                configuration.Route,
                 configuration.FixedAngleCamera.LookAhead,
                 character,
                 cameraTarget);
+            routeWaves.Run(configuration.Route, routeWalker.Progress, character);
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
         }
 

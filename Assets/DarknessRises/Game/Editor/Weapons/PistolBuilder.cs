@@ -21,6 +21,7 @@ namespace DarknessRises.Game.Editor.Weapons
         public const string PistolDefinitionPath = WeaponsConfigurationFolder + "/Pistol.asset";
         public const string ControlsPath = Root + "/Input/Controls.inputactions";
         private const string ShotPrefabPath = WeaponsPrefabsFolder + "/Shot.prefab";
+        private const string HitSparkPrefabPath = WeaponsPrefabsFolder + "/HitSpark.prefab";
 
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
         private const string ParticlesUnlitShaderName = "Universal Render Pipeline/Particles/Unlit";
@@ -36,6 +37,18 @@ namespace DarknessRises.Game.Editor.Weapons
         private const float PlaceholderPistolForward = 0.5f;
         private const float MuzzleForward = 0.75f;
         private const float ShotTrailMinVertexDistance = 0.05f;
+
+        // Placeholder hit spark particles: seconds, metres per second and metres.
+        private const float SparkMinLifetime = 0.12f;
+        private const float SparkMaxLifetime = 0.3f;
+        private const float SparkMinSpeed = 2.5f;
+        private const float SparkMaxSpeed = 6f;
+        private const float SparkMinSize = 0.03f;
+        private const float SparkMaxSize = 0.06f;
+        private const float SparkConeAngle = 40f;
+        private const float SparkGravity = 1f;
+        private const float SparkStretch = 0.04f;
+        private const int SparkMaxParticles = 32;
 
         /// <summary>Loads the Pistol definition, creating it and its Shot prefab if they're missing.</summary>
         public static WeaponDefinition LoadOrCreatePistol()
@@ -54,9 +67,18 @@ namespace DarknessRises.Game.Editor.Weapons
             if (prefab.objectReferenceValue == null)
             {
                 prefab.objectReferenceValue = LoadOrCreateShotPrefab();
-                serialized.ApplyModifiedPropertiesWithoutUndo();
             }
 
+            var hitSpark = serialized.FindProperty("hitSpark.prefab");
+            if (hitSpark.objectReferenceValue == null)
+            {
+                hitSpark.objectReferenceValue = LoadOrCreateHitSparkPrefab();
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            // Re-save so fields added since the asset was created are written with their defaults.
+            EditorUtility.SetDirty(pistol);
             return pistol;
         }
 
@@ -136,6 +158,68 @@ namespace DarknessRises.Game.Editor.Weapons
             var prefab = PrefabUtility.SaveAsPrefabAsset(shot, ShotPrefabPath);
             Object.DestroyImmediate(shot);
             return prefab.GetComponent<ShotView>();
+        }
+
+        private static HitSparkView LoadOrCreateHitSparkPrefab()
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<HitSparkView>(HitSparkPrefabPath);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            EnsureFolder(WeaponsPrefabsFolder);
+
+            var spark = new GameObject("Hit Spark", typeof(ParticleSystem));
+            var particles = spark.GetComponent<ParticleSystem>();
+            particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+            var main = particles.main;
+            main.playOnAwake = false;
+            main.loop = false;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(SparkMinLifetime, SparkMaxLifetime);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(SparkMinSpeed, SparkMaxSpeed);
+            main.startSize = new ParticleSystem.MinMaxCurve(SparkMinSize, SparkMaxSize);
+            main.gravityModifier = SparkGravity;
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.maxParticles = SparkMaxParticles;
+
+            var emission = particles.emission;
+            emission.enabled = false;
+
+            var shape = particles.shape;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = SparkConeAngle;
+            shape.radius = 0.01f;
+
+            var sizeOverLifetime = particles.sizeOverLifetime;
+            sizeOverLifetime.enabled = true;
+            sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0f));
+
+            var renderer = spark.GetComponent<ParticleSystemRenderer>();
+            renderer.renderMode = ParticleSystemRenderMode.Stretch;
+            renderer.velocityScale = SparkStretch;
+            renderer.lengthScale = 1f;
+            renderer.sharedMaterial = LoadOrCreateMaterial("HitSpark", ParticlesUnlitShaderName, Color.white);
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+
+            var lightObject = new GameObject("Light", typeof(Light));
+            lightObject.transform.SetParent(spark.transform, false);
+            var light = lightObject.GetComponent<Light>();
+            light.type = LightType.Point;
+            light.shadows = LightShadows.None;
+            light.enabled = false;
+
+            var view = spark.AddComponent<HitSparkView>();
+            var serialized = new SerializedObject(view);
+            serialized.FindProperty("sparkLight").objectReferenceValue = light;
+            serialized.FindProperty("sparks").objectReferenceValue = particles;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(spark, HitSparkPrefabPath);
+            Object.DestroyImmediate(spark);
+            return prefab.GetComponent<HitSparkView>();
         }
 
         private static InputActionReference LoadActionReference(string actionPath)

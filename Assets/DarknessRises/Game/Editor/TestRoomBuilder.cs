@@ -1,6 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Editor.Hud;
+using DarknessRises.Game.Editor.Waves;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
@@ -84,13 +85,18 @@ namespace DarknessRises.Game.Editor
 
             MakeDark();
 
-            BuildRoom(floorMaterial, wallMaterial);
+            var room = BuildRoom(floorMaterial, wallMaterial);
+
+            // Baked before anything else is in the scene, so only the Room shapes where Enemies can walk.
+            WavesBuilder.BakeNavMesh(room);
+            var routeWaves = WavesBuilder.BuildWaves(room);
             var routeWalker = BuildRoute();
             var character = BuildCharacter(characterMaterial, out var aura);
             var cameraView = BuildCameras(out var cameraTarget);
             var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
             SetReference(gameRoot, "primaryWeapon", PistolBuilder.BuildPrimaryWeapon(character, Camera.main));
             SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
+            SetReference(gameRoot, "routeWaves", routeWaves);
 
             // Show the authored values in the Scene view too, not only in Play mode.
             gameRoot.Apply();
@@ -114,6 +120,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("route").objectReferenceValue = route;
             serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            WavesBuilder.AuthorPlaceholderWaves(route);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
             EditorUtility.SetDirty(player);
@@ -147,7 +154,7 @@ namespace DarknessRises.Game.Editor
             Lightmapping.lightingSettings = lighting;
         }
 
-        private static void BuildRoom(Material floorMaterial, Material wallMaterial)
+        private static Transform BuildRoom(Material floorMaterial, Material wallMaterial)
         {
             var room = new GameObject("Room");
 
@@ -183,6 +190,8 @@ namespace DarknessRises.Game.Editor
             {
                 GameObjectUtility.SetStaticEditorFlags(child.gameObject, StaticEditorFlags.BatchingStatic);
             }
+
+            return room.transform;
         }
 
         private static RouteWalker BuildRoute()

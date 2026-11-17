@@ -182,16 +182,18 @@ namespace DarknessRises.Game.EditModeTests.Routes
         public void Walking_does_not_allocate()
         {
             var progress = new RouteProgress(Straight(), new[] { new Station(0, 9f) }, WalkingSpeed);
-            progress.Tick(0.01f);
-            _ = progress.Position;
-            _ = progress.Direction;
-
-            Assert.That(() =>
+            TestDelegate walk = () =>
             {
                 progress.Tick(0.016f);
                 _ = progress.Position;
                 _ = progress.Direction;
-            }, Is.Not.AllocatingGCMemory());
+            };
+
+            // Run the exact measured step once first, so JIT compilation and first-call setup (of this lambda and
+            // everything it calls) happen outside the measurement whatever tests ran before. It stays far from the Station.
+            walk();
+
+            Assert.That(walk, Is.Not.AllocatingGCMemory());
         }
     }
 }

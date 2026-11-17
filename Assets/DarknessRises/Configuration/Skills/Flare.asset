@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f55f6485f2ba7549b4696430ec38efc, type: 3}
+  m_Name: Flare
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Skills.FlareDefinition
+  durationSeconds: 4
+  cooldownSeconds: 15
+  fadeInSeconds: 0.15
+  fadeOutSeconds: 0.8
+  color: {r: 1, g: 0.55, b: 0.35, a: 1}
+  intensity: 14
+  radius: 11
+  height: 2.2

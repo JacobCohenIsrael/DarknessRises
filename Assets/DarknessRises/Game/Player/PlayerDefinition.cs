@@ -1,3 +1,4 @@
+using DarknessRises.Game.Health;
 using UnityEngine;
 
 namespace DarknessRises.Game.Player
@@ -23,6 +24,10 @@ namespace DarknessRises.Game.Player
         [SerializeField, Tooltip("How the body turns and when the throw and death animations reach their gameplay moments.")]
         private CharacterAnimationSettings animation = new();
 
+        [SerializeField, Tooltip("How a landed hit shows: camera shake, hurt sound and blinking while invulnerable.")]
+        private HitReactionSettings hitReaction = new();
+
+        public HitReactionSettings HitReaction => hitReaction;
         public int HitPoints => hitPoints;
         public float InvulnerabilitySeconds => invulnerabilitySeconds;
         public float WalkingSpeed => walkingSpeed;

@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37fbb8ef96c6d0d44a25caca90b164f3, type: 3}
+  m_Name: Level1
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Levels.LevelDefinition
+  title: Level 1
+  clearedTitle: Level 1 cleared
+  rooms:
+  - name: Hall
+    stations:
+    - waves:
+      - delaySeconds: 1
+        spawnIntervalSeconds: 1.5
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 3
+    - waves:
+      - delaySeconds: 0.8
+        spawnIntervalSeconds: 1.4
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 3
+      - delaySeconds: 2
+        spawnIntervalSeconds: 1.2
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 4
+    stragglers:
+      enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+      minIntervalSeconds: 4
+      maxIntervalSeconds: 7
+      maxAlive: 1
+  - name: Vault
+    stations:
+    - waves:
+      - delaySeconds: 0.8
+        spawnIntervalSeconds: 1.2
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 4
+      - delaySeconds: 1.5
+        spawnIntervalSeconds: 1
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 5
+    - waves:
+      - delaySeconds: 0.8
+        spawnIntervalSeconds: 1
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 5
+      - delaySeconds: 1.5
+        spawnIntervalSeconds: 0.9
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 6
+    stragglers:
+      enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+      minIntervalSeconds: 4
+      maxIntervalSeconds: 6
+      maxAlive: 2
+  - name: Ward
+    stations:
+    - waves:
+      - delaySeconds: 0.8
+        spawnIntervalSeconds: 1
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 5
+      - delaySeconds: 1.5
+        spawnIntervalSeconds: 0.8
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 7
+    - waves:
+      - delaySeconds: 0.6
+        spawnIntervalSeconds: 0.9
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 6
+      - delaySeconds: 1.2
+        spawnIntervalSeconds: 0.8
+        groups:
+        - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+          count: 8
+    stragglers:
+      enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+      minIntervalSeconds: 3.5
+      maxIntervalSeconds: 6
+      maxAlive: 2
+  spawnPointLitIntensity: 0.05
+  stragglerMinMetresAhead: 2
+  start:
+    durationSeconds: 4
+    titleFadeInSeconds: 0.6
+    titleHoldSeconds: 2
+    titleFadeOutSeconds: 0.9
+    doorLightColor: {r: 1, g: 0.78, b: 0.5, a: 1}
+    doorLightIntensity: 6
+    doorLightRange: 12
+  end:
+    calmSeconds: 3
+    fadeOutSeconds: 1.5
+    calmLightColor: {r: 1, g: 0.82, b: 0.6, a: 1}
+    calmLightIntensity: 2
+    calmLightRange: 9
+    calmLightRiseSeconds: 1.5
+    cardFadeInSeconds: 0.6

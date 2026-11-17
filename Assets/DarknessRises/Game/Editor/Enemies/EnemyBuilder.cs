@@ -24,13 +24,12 @@ namespace DarknessRises.Game.Editor.Enemies
         // Approved Free Pack placeholders.
         private const string HurtClipPath = "Assets/Free Pack/Bullet Impact 14.wav";
         private const string DeathClipPath = "Assets/Free Pack/Bloody punch.wav";
-        private static readonly string[] TellClipPaths =
-        {
-            "Assets/Free Pack/Monster Bite.wav",
-            "Assets/Free Pack/Magic Spell_Short Reverse_1.wav",
-        };
+        private const string WindUpClipPath = "Assets/Free Pack/Magic Spell_Short Reverse_1.wav";
+        private const string AttackClipPath = "Assets/Free Pack/Magic Spell_Simple Swoosh_6.wav";
+        private static readonly string[] TellClipPaths = { "Assets/Free Pack/Monster Bite.wav" };
 
         private const string LitShaderName = "Universal Render Pipeline/Lit";
+        private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
 
         // Placeholder Shambler shape, in metres.
         private const float Height = 1.8f;
@@ -39,7 +38,10 @@ namespace DarknessRises.Game.Editor.Enemies
         private const float EyeSize = 0.11f;
         private static readonly Color EyeColor = new(0.05f, 0.03f, 0.02f);
         private const float EyeSmoothness = 0.9f;
+        private static readonly Color WindUpEyeColor = new(8f, 0.4f, 0.2f);
+        private static readonly string[] EyeNames = { "Left Eye", "Right Eye" };
         private const float TellVoiceHeight = 1.6f;
+        private const string EyeGlintMaterialName = "ShamblerEyeGlint";
 
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
@@ -65,6 +67,9 @@ namespace DarknessRises.Game.Editor.Enemies
                 prefab.objectReferenceValue = LoadOrCreateShamblerPrefab();
             }
 
+            SetClipIfEmpty(serialized.FindProperty("audio.windUpClip"), WindUpClipPath);
+            SetClipIfEmpty(serialized.FindProperty("audio.attackClip"), AttackClipPath);
+
             // Tell sounds were added after the Shambler; give an older asset the placeholders once.
             var tellClips = serialized.FindProperty("tells.sounds.clips");
             if (tellClips.arraySize == 0)
@@ -77,6 +82,8 @@ namespace DarknessRises.Game.Editor.Enemies
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            AddTells(ShamblerPrefabPath);
+            AddWindUpEyes(ShamblerPrefabPath);
 
             // Re-save so fields added since the asset was created are written with their defaults.
             EditorUtility.SetDirty(shambler);
@@ -93,7 +100,7 @@ namespace DarknessRises.Game.Editor.Enemies
 
             EnsureFolder(EnemiesPrefabsFolder);
             var bodyMaterial = LoadOrCreateMaterial("ShamblerBody", LitShaderName, BodyColor);
-            var eyeMaterial = LoadOrCreateGlintMaterial("ShamblerEyes", EyeColor);
+            var eyeMaterial = LoadOrCreateGlintMaterial(EyeGlintMaterialName, EyeColor);
             var fadeMaterial = LoadOrCreateFadeMaterial("ShamblerFade", BodyColor);
 
             var shambler = new GameObject("Shambler");
@@ -113,13 +120,6 @@ namespace DarknessRises.Game.Editor.Enemies
             voice.playOnAwake = false;
             voice.spatialBlend = 1f;
 
-            var tellVoiceObject = new GameObject("Tell Voice", typeof(AudioSource));
-            tellVoiceObject.transform.SetParent(shambler.transform, false);
-            tellVoiceObject.transform.localPosition = Vector3.up * TellVoiceHeight;
-            var tellVoice = tellVoiceObject.GetComponent<AudioSource>();
-            tellVoice.playOnAwake = false;
-            tellVoice.spatialBlend = 1f;
-
             var renderers = new[]
             {
                 AddPart("Body", PrimitiveType.Capsule, shambler.transform, new Vector3(0f, 0.85f, 0f), new Vector3(12f, 0f, 0f), new Vector3(0.72f, 0.85f, 0.55f), bodyMaterial),
@@ -136,21 +136,11 @@ namespace DarknessRises.Game.Editor.Enemies
                 eye.receiveShadows = false;
             }
 
-            var tells = shambler.AddComponent<EnemyTellView>();
-            var serializedTells = new SerializedObject(tells);
-            serializedTells.FindProperty("tellVoice").objectReferenceValue = tellVoice;
-            var eyes = serializedTells.FindProperty("eyes");
-            eyes.arraySize = 2;
-            eyes.GetArrayElementAtIndex(0).objectReferenceValue = renderers[4];
-            eyes.GetArrayElementAtIndex(1).objectReferenceValue = renderers[5];
-            serializedTells.ApplyModifiedPropertiesWithoutUndo();
-
             var view = shambler.AddComponent<EnemyView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("agent").objectReferenceValue = agent;
             serialized.FindProperty("hitbox").objectReferenceValue = hitbox;
             serialized.FindProperty("voice").objectReferenceValue = voice;
-            serialized.FindProperty("tells").objectReferenceValue = tells;
             serialized.FindProperty("fadeMaterial").objectReferenceValue = fadeMaterial;
             var list = serialized.FindProperty("renderers");
             list.arraySize = renderers.Length;
@@ -164,6 +154,97 @@ namespace DarknessRises.Game.Editor.Enemies
             var prefab = PrefabUtility.SaveAsPrefabAsset(shambler, ShamblerPrefabPath);
             Object.DestroyImmediate(shambler);
             return prefab.GetComponent<EnemyView>();
+        }
+
+        /// <summary>
+        /// Gives the Shambler its Tells, if it hasn't got them: glossy eyes whose emission glints near the character,
+        /// and a Tell voice at its head. Works on an existing prefab, so older prefabs are brought up to date in place.
+        /// </summary>
+        private static void AddTells(string prefabPath)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyView>(prefabPath);
+            if (existing == null || existing.GetComponent<EnemyTellView>() != null)
+            {
+                return;
+            }
+
+            var glintMaterial = LoadOrCreateGlintMaterial(EyeGlintMaterialName, EyeColor);
+            var contents = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                var tellVoiceObject = new GameObject("Tell Voice", typeof(AudioSource));
+                tellVoiceObject.transform.SetParent(contents.transform, false);
+                tellVoiceObject.transform.localPosition = Vector3.up * TellVoiceHeight;
+                var tellVoice = tellVoiceObject.GetComponent<AudioSource>();
+                tellVoice.playOnAwake = false;
+                tellVoice.spatialBlend = 1f;
+
+                var tells = contents.AddComponent<EnemyTellView>();
+                var serializedTells = new SerializedObject(tells);
+                serializedTells.FindProperty("tellVoice").objectReferenceValue = tellVoice;
+                var eyes = serializedTells.FindProperty("eyes");
+                eyes.arraySize = EyeNames.Length;
+                for (var i = 0; i < EyeNames.Length; i++)
+                {
+                    var eye = contents.transform.Find(EyeNames[i]).GetComponent<Renderer>();
+                    eye.sharedMaterial = glintMaterial;
+                    eyes.GetArrayElementAtIndex(i).objectReferenceValue = eye;
+                }
+
+                serializedTells.ApplyModifiedPropertiesWithoutUndo();
+
+                var view = new SerializedObject(contents.GetComponent<EnemyView>());
+                view.FindProperty("tells").objectReferenceValue = tells;
+                view.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(contents, prefabPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
+        }
+
+        /// <summary>
+        /// Wires the Shambler's eyes to flare during its Wind-up, if they aren't already. Works on an existing prefab,
+        /// so prefabs built before Wind-ups existed are brought up to date in place.
+        /// </summary>
+        private static void AddWindUpEyes(string prefabPath)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyView>(prefabPath);
+            if (existing == null || new SerializedObject(existing).FindProperty("windUpRenderers").arraySize > 0)
+            {
+                return;
+            }
+
+            var windUpMaterial = LoadOrCreateMaterial("ShamblerEyesWindUp", UnlitShaderName, WindUpEyeColor);
+            var contents = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                var view = contents.GetComponent<EnemyView>();
+                var serialized = new SerializedObject(view);
+                var renderers = serialized.FindProperty("windUpRenderers");
+                renderers.arraySize = EyeNames.Length;
+                for (var i = 0; i < EyeNames.Length; i++)
+                {
+                    renderers.GetArrayElementAtIndex(i).objectReferenceValue = contents.transform.Find(EyeNames[i]).GetComponent<Renderer>();
+                }
+
+                serialized.FindProperty("windUpMaterial").objectReferenceValue = windUpMaterial;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(contents, prefabPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
+        }
+
+        private static void SetClipIfEmpty(SerializedProperty clip, string path)
+        {
+            if (clip.objectReferenceValue == null)
+            {
+                clip.objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+            }
         }
 
         private static MeshRenderer AddPart(

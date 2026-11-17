@@ -1,9 +1,14 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Controls;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Audio;
+using DarknessRises.Game.Editor.Enemies;
+using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
+using DarknessRises.Game.Editor.Levels;
 using DarknessRises.Game.Editor.Player;
+using DarknessRises.Game.Editor.Skills;
 using DarknessRises.Game.Editor.Waves;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Lightning;
@@ -99,7 +104,6 @@ namespace DarknessRises.Game.Editor
             var configuration = LoadOrCreateConfiguration();
             var floorMaterial = LoadOrCreateMaterial("Floor", new Color(0.32f, 0.3f, 0.28f));
             var wallMaterial = LoadOrCreateMaterial("Wall", new Color(0.26f, 0.26f, 0.28f));
-            var characterMaterial = LoadOrCreateMaterial("Character", new Color(0.55f, 0.55f, 0.6f));
             var windowSkyMaterial = LoadOrCreateUnlitMaterial("WindowSky", Color.black);
 
             MakeDark();
@@ -110,8 +114,27 @@ namespace DarknessRises.Game.Editor
             WavesBuilder.BakeNavMesh(room.transform);
             var routeWaves = WavesBuilder.BuildWaves(room.transform);
             var routeWalker = BuildRoute();
-            var character = BuildCharacter(characterMaterial, out var aura);
-            var cameraView = BuildCameras(out var cameraTarget);
+            var gameRoot = BuildGameplay(configuration, room, routeWalker, RouteWaypoints[0]);
+            SetReference(gameRoot, "routeWaves", routeWaves);
+
+            // Show the authored values in the Scene view too, not only in Play mode.
+            gameRoot.Apply();
+
+            EditorSceneManager.SaveScene(scene, ScenePath);
+            BuildScenes.Include(ScenePath, first: false);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[TestRoomBuilder] Built {ScenePath}.");
+        }
+
+        /// <summary>
+        /// Everything a playable scene needs besides its Rooms and Route: the character and its Weapon, the cameras,
+        /// Lightning, the HUD and the Game Root that wires them. The character and camera start at <paramref name="start"/>.
+        /// </summary>
+        internal static GameRoot BuildGameplay(GameConfiguration configuration, Room room, RouteWalker routeWalker, Vector3 start)
+        {
+            var characterMaterial = LoadOrCreateMaterial("Character", new Color(0.55f, 0.55f, 0.6f));
+            var character = BuildCharacter(characterMaterial, start, out var aura);
+            var cameraView = BuildCameras(start, out var cameraTarget);
             var lightning = BuildLightning();
             var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
             var primaryWeapon = PistolBuilder.BuildPrimaryWeapon(character, Camera.main);
@@ -122,18 +145,12 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
-            SetReference(gameRoot, "routeWaves", routeWaves);
-
-            // Show the authored values in the Scene view too, not only in Play mode.
-            gameRoot.Apply();
-
-            EditorSceneManager.SaveScene(scene, ScenePath);
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
-            AssetDatabase.SaveAssets();
-            Debug.Log($"[TestRoomBuilder] Built {ScenePath}.");
+            SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
+            HealthBuilder.Build(gameRoot, character, cameraView);
+            return gameRoot;
         }
 
-        private static GameConfiguration LoadOrCreateConfiguration()
+        internal static GameConfiguration LoadOrCreateConfiguration()
         {
             var player = LoadOrCreate<PlayerDefinition>(PlayerDefinitionPath);
             var fixedAngleCamera = LoadOrCreate<CameraDefinition>(CameraDefinitionPath);
@@ -147,8 +164,13 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("route").objectReferenceValue = route;
             serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
+            serialized.FindProperty("flare").objectReferenceValue = SkillsBuilder.LoadOrCreateFlare();
+            serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();
+            var audio = AudioBuilder.LoadOrCreateAudio();
+            serialized.FindProperty("audio").objectReferenceValue = audio;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
+            AudioBuilder.RouteEnemyAudio(EnemyBuilder.LoadOrCreateShambler(), audio);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
             EditorUtility.SetDirty(player);
@@ -203,7 +225,7 @@ namespace DarknessRises.Game.Editor
             throw new System.InvalidOperationException($"No action reference for {LightningDebugToggle.ActionPath} in {controlsPath}.");
         }
 
-        private static void MakeDark()
+        internal static void MakeDark()
         {
             RenderSettings.skybox = null;
             RenderSettings.sun = null;
@@ -244,7 +266,13 @@ namespace DarknessRises.Game.Editor
             var span = RoomHalfSize * 2f + WallThickness * 2f;
             var edge = RoomHalfSize + WallThickness / 2f;
             AddBlock("North Wall", walls, new Vector3(0f, WallHeight / 2f, edge), new Vector3(span, WallHeight, WallThickness), wallMaterial);
-            AddBlock("South Wall", walls, new Vector3(0f, WallHeight / 2f, -edge), new Vector3(span, WallHeight, WallThickness), wallMaterial);
+            // The south wall faces the camera, so it's cut down low enough to see over (#12).
+            AddBlock(
+                "South Wall",
+                walls,
+                new Vector3(0f, RoomPieces.CameraSideWallHeight / 2f, -edge),
+                new Vector3(span, RoomPieces.CameraSideWallHeight, WallThickness),
+                wallMaterial);
             var windows = BuildEastWallWithWindows(walls, edge, span, wallMaterial, windowSkyMaterial);
             AddBlock("West Wall", walls, new Vector3(-edge, WallHeight / 2f, 0f), new Vector3(WallThickness, WallHeight, span), wallMaterial);
 
@@ -424,10 +452,10 @@ namespace DarknessRises.Game.Editor
             return walker;
         }
 
-        private static Transform BuildCharacter(Material material, out AuraView aura)
+        private static Transform BuildCharacter(Material material, Vector3 start, out AuraView aura)
         {
             var character = new GameObject("Character").transform;
-            character.position = RouteWaypoints[0];
+            character.position = start;
 
             CharacterBuilder.BuildPlaceholderModel(character, material);
 
@@ -439,11 +467,11 @@ namespace DarknessRises.Game.Editor
             return character;
         }
 
-        private static FixedAngleCameraView BuildCameras(out Transform cameraTarget)
+        private static FixedAngleCameraView BuildCameras(Vector3 start, out Transform cameraTarget)
         {
             // The camera follows this point a little ahead of the character along the Route.
             cameraTarget = new GameObject("Camera Target").transform;
-            cameraTarget.position = RouteWaypoints[0];
+            cameraTarget.position = start;
 
             var mainCamera = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener), typeof(CinemachineBrain));
             mainCamera.tag = "MainCamera";
@@ -499,14 +527,14 @@ namespace DarknessRises.Game.Editor
             renderer.sharedMaterial = material;
         }
 
-        private static void SetReference(Object owner, string propertyName, Object value)
+        internal static void SetReference(Object owner, string propertyName, Object value)
         {
             var serialized = new SerializedObject(owner);
             serialized.FindProperty(propertyName).objectReferenceValue = value;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static Material LoadOrCreateMaterial(string name, Color baseColor)
+        internal static Material LoadOrCreateMaterial(string name, Color baseColor)
         {
             var path = $"{MaterialsFolder}/{name}.mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -522,7 +550,7 @@ namespace DarknessRises.Game.Editor
             return material;
         }
 
-        private static Material LoadOrCreateUnlitMaterial(string name, Color baseColor)
+        internal static Material LoadOrCreateUnlitMaterial(string name, Color baseColor)
         {
             var path = $"{MaterialsFolder}/{name}.mat";
             var material = AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -537,7 +565,7 @@ namespace DarknessRises.Game.Editor
             return material;
         }
 
-        private static T LoadOrCreate<T>(string path) where T : ScriptableObject
+        internal static T LoadOrCreate<T>(string path) where T : ScriptableObject
         {
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
             if (asset != null)
@@ -550,7 +578,7 @@ namespace DarknessRises.Game.Editor
             return asset;
         }
 
-        private static void EnsureFolder(string path)
+        internal static void EnsureFolder(string path)
         {
             if (AssetDatabase.IsValidFolder(path))
             {

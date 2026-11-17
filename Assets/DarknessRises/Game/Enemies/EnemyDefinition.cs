@@ -1,9 +1,10 @@
+using DarknessRises.Game.Enemies.Tells;
 using UnityEngine;
 
 namespace DarknessRises.Game.Enemies
 {
     /// <summary>
-    /// Authored tuning for one Enemy type: how tough it is, how it moves, looks, sounds and attacks.
+    /// Authored tuning for one Enemy type: how tough it is, how it moves, looks, sounds and attacks, and its Tells.
     /// A new Enemy type is a new definition asset. Never changed at runtime.
     /// </summary>
     [CreateAssetMenu(menuName = "Darkness Rises/Enemy Definition", fileName = "EnemyDefinition", order = 40)]
@@ -33,6 +34,9 @@ namespace DarknessRises.Game.Enemies
 
         [SerializeField] private EnemyAttackSettings attack = new();
 
+        [SerializeField, Tooltip("What gives it away in Darkness without lighting it: glinting eyes and positional sounds.")]
+        private EnemyTellSettings tells = new();
+
         public int HitPoints => hitPoints;
         public float Speed => speed;
         public float Acceleration => acceleration;
@@ -42,5 +46,6 @@ namespace DarknessRises.Game.Enemies
         public EnemyAudioSettings Audio => audio;
         public EnemyDeathSettings Death => death;
         public EnemyAttackSettings Attack => attack;
+        public EnemyTellSettings Tells => tells;
     }
 }

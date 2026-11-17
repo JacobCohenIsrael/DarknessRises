@@ -1,6 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Player;
 using DarknessRises.Game.Editor.Waves;
@@ -115,6 +116,7 @@ namespace DarknessRises.Game.Editor
             var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
             var primaryWeapon = PistolBuilder.BuildPrimaryWeapon(character, Camera.main);
             SetReference(gameRoot, "primaryWeapon", primaryWeapon);
+            EarsBuilder.BuildEars(character, Camera.main);
             SetReference(gameRoot, "characterAnimation", CharacterBuilder.Animate(character, primaryWeapon));
             SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
             SetReference(gameRoot, "room", room);

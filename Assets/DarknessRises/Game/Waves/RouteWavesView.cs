@@ -22,14 +22,17 @@ namespace DarknessRises.Game.Waves
         private SceneSpawnPointLighting lighting;
         private Transform hunted;
 
-        /// <summary>Starts running each Station's authored Waves as the character reaches it.</summary>
-        public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character)
+        /// <summary>
+        /// Starts running each Station's authored Waves as the character reaches it. Spawned Enemies run on
+        /// <paramref name="enemyTime"/>.
+        /// </summary>
+        public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character, EnemyTime enemyTime)
         {
             Stop();
 
             progress = routeProgress;
             hunted = character;
-            pools = new EnemyPools(transform);
+            pools = new EnemyPools(transform, enemyTime);
             picker = new SpawnPointPicker(spawnPoints.Count, new System.Random());
             lighting = new SceneSpawnPointLighting(spawnPoints, route.SpawnPointLitIntensity);
 

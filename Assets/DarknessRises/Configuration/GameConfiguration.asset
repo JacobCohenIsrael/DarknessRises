@@ -17,3 +17,6 @@ MonoBehaviour:
   route: {fileID: 11400000, guid: 5b51c7bb8df5e96449395b992b6e0f37, type: 2}
   pistol: {fileID: 11400000, guid: 2b6aa77312d88324a8564c4e5bb817eb, type: 2}
   lightning: {fileID: 11400000, guid: 01048019a8ed09a4486281121f8102c7, type: 2}
+  flare: {fileID: 11400000, guid: 7f15892033eb63f4ebe3106b816a62ef, type: 2}
+  slowMo: {fileID: 11400000, guid: 051f5d95d70eda64aa5b937837a32384, type: 2}
+  audio: {fileID: 11400000, guid: ed90ce422743a74448cdad453d5dabb7, type: 2}

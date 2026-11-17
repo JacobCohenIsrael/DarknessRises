@@ -22,6 +22,7 @@ MonoBehaviour:
     spawnClip: {fileID: 0}
     hurtClip: {fileID: 8300000, guid: 75adfe9a619833445a701305b983e548, type: 3}
     deathClip: {fileID: 8300000, guid: a37f44cbf8c2a7443a3c361efa2f233a, type: 3}
+    outputGroup: {fileID: 1199663272804557088, guid: 0fc8da764e90fb94287f053470bdf171, type: 2}
     volume: 0.8
     hearingRange: 25
   death:

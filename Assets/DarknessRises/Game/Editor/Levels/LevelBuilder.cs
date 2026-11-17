@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Hud;
@@ -29,6 +30,9 @@ namespace DarknessRises.Game.Editor.Levels
     public static class LevelBuilder
     {
         public const string ScenePath = "Assets/DarknessRises/Scenes/Level.unity";
+
+        /// <summary>The Addressables group holding this Level's scene.</summary>
+        public const string GroupName = "Level 1";
         private const string NavMeshPath = "Assets/DarknessRises/Scenes/Level/NavMesh.asset";
         private const string LevelDefinitionPath = "Assets/DarknessRises/Configuration/Levels/Level1.asset";
 
@@ -239,7 +243,8 @@ namespace DarknessRises.Game.Editor.Levels
             gameRoot.Apply();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
-            BuildScenes.Include(ScenePath, first: true);
+            // Loaded additively through Addressables by the boot scene; only the boot scene is in Build Settings.
+            AddressableContent.Add(AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath), AddressableContent.LevelGroup(GroupName));
             AssetDatabase.SaveAssets();
             Debug.Log($"[LevelBuilder] Built {ScenePath}.");
         }

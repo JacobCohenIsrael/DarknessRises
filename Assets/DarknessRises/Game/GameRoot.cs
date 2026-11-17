@@ -1,6 +1,10 @@
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Grenades;
@@ -18,6 +22,7 @@ using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR || DEBUG
 using DarknessRises.Game.Debugging;
 #endif
@@ -26,7 +31,8 @@ namespace DarknessRises.Game
 {
     /// <summary>
     /// The scene's composition root: holds the root configuration asset and the scene references,
-    /// and hands each view the definition it shows.
+    /// and hands each view the definition it shows. It first loads the scene's content (Enemy prefabs, Shots, effects
+    /// and sounds) through Addressables into a <see cref="ContentScope"/> it owns, and releases it when the scene goes.
     /// </summary>
     public sealed class GameRoot : MonoBehaviour
     {
@@ -75,9 +81,54 @@ namespace DarknessRises.Game
         private RunRecord runRecord;
         private bool countsLevelKills;
 
+        // Owns the scene's lifetime: the content load, and everything loaded for it.
+        private CancellationTokenSource lifetime;
+        private ContentScope content;
+        private bool isStarted;
+        private bool isSubscribed;
+
+        /// <summary>Raised once the Level is over and the character has walked out the far door.</summary>
+        public event Action LevelFinished;
+
+        /// <summary>
+        /// Raised when the player asks for a new Run after dying. Whoever loaded this scene starts it; with no one
+        /// listening (the scene was played on its own in the Editor), the game goes back through the boot scene.
+        /// </summary>
+        public event Action NewRunRequested;
+
+        /// <summary>Whether the scene's content has loaded and its gameplay has started.</summary>
+        public bool IsStarted => isStarted;
+
+        private WeaponDefinition[] PrimaryWeapons => new[] { configuration.Pistol, configuration.MachineGun, configuration.Flamethrower };
+
         private void Awake()
         {
             Apply();
+            lifetime = new CancellationTokenSource();
+            content = new ContentScope(new AddressablesContentSource());
+            StartAsync(lifetime.Token).Forget();
+        }
+
+        // Loads the scene's content, then starts the gameplay. Views stay idle until they're handed what they show.
+        private async UniTaskVoid StartAsync(CancellationToken cancellationToken)
+        {
+            var primaryWeapons = PrimaryWeapons;
+            await GameContent.For(configuration, primaryWeapons, level != null).LoadAsync(content, cancellationToken);
+
+            // At least a frame after Awake: a mixer parameter set before the mixer's first update can be overwritten by its snapshot.
+            await UniTask.NextFrame(cancellationToken);
+
+            // Runtime objects (pools, effects) are created in the active scene, so they go when this scene does.
+            if (gameObject.scene.isLoaded && SceneManager.GetActiveScene() != gameObject.scene)
+            {
+                SceneManager.SetActiveScene(gameObject.scene);
+            }
+
+            Begin(primaryWeapons);
+        }
+
+        private void Begin(WeaponDefinition[] primaryWeapons)
+        {
             routeWalker.Walk(
                 configuration.Player,
                 configuration.FixedAngleCamera.LookAhead,
@@ -85,26 +136,50 @@ namespace DarknessRises.Game
                 cameraTarget);
             if (level != null)
             {
-                level.Run(configuration.Level, routeWalker.Progress, character, enemyTime);
+                level.Run(configuration.Level, routeWalker.Progress, character, enemyTime, content);
             }
             else
             {
-                routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime);
+                routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime, content);
             }
 
-            primaryWeapon.Arm(new[] { configuration.Pistol, configuration.MachineGun, configuration.Flamethrower });
+            primaryWeapon.Arm(primaryWeapons, content);
             ammoHud.Show(primaryWeapon.Weapon);
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
-            grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation));
+            grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation, content));
             ShowHealthAndDeath();
+            lightning.UseRumble(content.Clip(configuration.Lightning.Rumble.Clip));
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
             flareHud.Show(skills.Flare.Skill);
             slowMoHud.Show(skills.SlowMo.Skill);
+            isStarted = true;
+
+            if (isActiveAndEnabled)
+            {
+                Subscribe();
+            }
+
+            lightningScheduler.EnterRoom(room.LetsLightningIn);
+            enemyAudioPitch = new EnemyAudioPitch(configuration.Audio, enemyTime);
         }
 
         private void OnEnable()
         {
+            if (isStarted)
+            {
+                Subscribe();
+            }
+        }
+
+        private void Subscribe()
+        {
+            if (isSubscribed)
+            {
+                return;
+            }
+
+            isSubscribed = true;
             lightningScheduler.Rumbled += lightning.PlayRumble;
             lightningScheduler.Flashed += lightning.Flash;
             if (level != null)
@@ -119,32 +194,35 @@ namespace DarknessRises.Game
             primaryWeapon.Switched += OnPrimaryWeaponSwitched;
         }
 
-        private void Start()
-        {
-            lightningScheduler.EnterRoom(room.LetsLightningIn);
-
-            // In Start, not Awake: a mixer parameter set before the mixer's first update can be overwritten by its snapshot.
-            enemyAudioPitch = new EnemyAudioPitch(configuration.Audio, enemyTime);
-        }
-
         private void OnDestroy()
         {
+            lifetime.Cancel();
+            lifetime.Dispose();
             enemyAudioPitch?.Dispose();
 
             // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
             if (countsLevelKills)
             {
                 level.EnemyDied -= OnEnemyDied;
+                level.Finished -= OnLevelFinished;
             }
             else if (runRecord != null)
             {
                 routeWaves.EnemyDied -= OnEnemyDied;
             }
+
+            if (runRecord != null)
+            {
+                deathFlow.NewRunRequested -= OnNewRunRequested;
+            }
+
+            // Last: the scene's objects made from this content are gone or going with it.
+            content.Dispose();
         }
 
         private void ShowHealthAndDeath()
         {
-            var health = characterHealth.Show(configuration.Player);
+            var health = characterHealth.Show(configuration.Player, content);
             hitPointsHud.Show(health);
             runRecord = new RunRecord();
 
@@ -153,6 +231,7 @@ namespace DarknessRises.Game
             if (countsLevelKills)
             {
                 level.EnemyDied += OnEnemyDied;
+                level.Finished += OnLevelFinished;
             }
             else
             {
@@ -160,6 +239,7 @@ namespace DarknessRises.Game
             }
 
             deathFlow.Watch(health, runRecord, characterAnimation, routeWalker, primaryWeapon);
+            deathFlow.NewRunRequested += OnNewRunRequested;
         }
 
         private void OnEnemyDied(Enemy _)
@@ -167,8 +247,31 @@ namespace DarknessRises.Game
             runRecord.CountKill();
         }
 
+        private void OnLevelFinished()
+        {
+            LevelFinished?.Invoke();
+        }
+
+        private void OnNewRunRequested()
+        {
+            if (NewRunRequested != null)
+            {
+                NewRunRequested.Invoke();
+                return;
+            }
+
+            // Played on its own: the boot scene (the only one in Build Settings) loads the game afresh.
+            SceneManager.LoadScene(0);
+        }
+
         private void OnDisable()
         {
+            if (!isSubscribed)
+            {
+                return;
+            }
+
+            isSubscribed = false;
             lightningScheduler.Rumbled -= lightning.PlayRumble;
             lightningScheduler.Flashed -= lightning.Flash;
             if (level != null)
@@ -187,7 +290,7 @@ namespace DarknessRises.Game
 
         private void Update()
         {
-            lightningScheduler.Tick(Time.deltaTime);
+            lightningScheduler?.Tick(Time.deltaTime);
         }
 
         private void OnPrimaryWeaponSwitched(PrimaryWeapon equipped)

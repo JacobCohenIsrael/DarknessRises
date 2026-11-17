@@ -1,4 +1,5 @@
 using DarknessRises.Game.Controls;
+using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Weapons;
 using UnityEditor;
 using UnityEngine;
@@ -63,17 +64,15 @@ namespace DarknessRises.Game.Editor.Weapons
             }
 
             var serialized = new SerializedObject(pistol);
-            var prefab = serialized.FindProperty("shot.prefab");
-            if (prefab.objectReferenceValue == null)
-            {
-                prefab.objectReferenceValue = LoadOrCreateShotPrefab();
-            }
-
-            var hitSpark = serialized.FindProperty("hitSpark.prefab");
-            if (hitSpark.objectReferenceValue == null)
-            {
-                hitSpark.objectReferenceValue = LoadOrCreateHitSparkPrefab();
-            }
+            // Loaded through Addressables with the character's other content.
+            AddressableContent.ReferenceIfEmpty(
+                serialized.FindProperty("shot.prefab"),
+                () => LoadOrCreateShotPrefab().gameObject,
+                AddressableContent.SharedGroup);
+            AddressableContent.ReferenceIfEmpty(
+                serialized.FindProperty("hitSpark.prefab"),
+                () => LoadOrCreateHitSparkPrefab().gameObject,
+                AddressableContent.SharedGroup);
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
 

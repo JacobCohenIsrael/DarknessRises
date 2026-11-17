@@ -1,3 +1,4 @@
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Weapons;
@@ -50,24 +51,31 @@ namespace DarknessRises.Game.Grenades
         private System.Action<Vector3> onLanded;
         private Material glowMaterial;
         private Transform effectsRoot;
+        private GrenadeView grenadePrefab;
+        private GrenadeExplosionView explosionPrefab;
+        private AudioClip bangClip;
 
         public GrenadeCharges Charges { get; private set; }
 
         /// <summary>
         /// Gives the character a full set of Grenades built from <paramref name="grenadeDefinition"/>,
-        /// thrown with <paramref name="animation"/>'s throw.
+        /// thrown with <paramref name="animation"/>'s throw. Its prefabs and bang come from
+        /// <paramref name="content"/>, already loaded.
         /// </summary>
-        public GrenadeCharges Equip(GrenadeDefinition grenadeDefinition, CharacterAnimationView animation)
+        public GrenadeCharges Equip(GrenadeDefinition grenadeDefinition, CharacterAnimationView animation, ILoadedContent content)
         {
             Unequip();
 
             definition = grenadeDefinition;
             characterAnimation = animation;
+            grenadePrefab = content.Prefab<GrenadeView>(grenadeDefinition.Body.Prefab);
+            explosionPrefab = content.Prefab<GrenadeExplosionView>(grenadeDefinition.Explosion.Prefab);
+            bangClip = content.Clip(grenadeDefinition.Explosion.Clip);
             Charges = new GrenadeCharges(definition.ChargeStats);
             characterAnimation.GrenadeReleased += OnGrenadeReleased;
 
             effectsRoot = new GameObject($"{definition.name} Effects").transform;
-            glowMaterial = new Material(definition.Body.Prefab.BodyMaterial) { name = $"{definition.name} Glow" };
+            glowMaterial = new Material(grenadePrefab.BodyMaterial) { name = $"{definition.name} Glow" };
             glowMaterial.SetColor(BaseColorId, definition.Body.GlowColor);
 
             onLanded ??= Explode;
@@ -187,7 +195,7 @@ namespace DarknessRises.Game.Grenades
 
         private GrenadeView CreateGrenade()
         {
-            var grenade = Instantiate(definition.Body.Prefab, effectsRoot);
+            var grenade = Instantiate(grenadePrefab, effectsRoot);
             grenade.Prepare(grenades, definition.Body, glowMaterial, flightHitLayers, onLanded);
             grenade.gameObject.SetActive(false);
             return grenade;
@@ -195,9 +203,9 @@ namespace DarknessRises.Game.Grenades
 
         private GrenadeExplosionView CreateExplosion()
         {
-            var explosion = Instantiate(definition.Explosion.Prefab, effectsRoot);
+            var explosion = Instantiate(explosionPrefab, effectsRoot);
             explosion.gameObject.SetActive(false);
-            explosion.Prepare(explosions, definition.Explosion);
+            explosion.Prepare(explosions, definition.Explosion, bangClip);
             return explosion;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Grenades
 {
@@ -8,7 +9,7 @@ namespace DarknessRises.Game.Grenades
     public sealed class GrenadeBodySettings
     {
         [SerializeField, Tooltip("The pooled Grenade in flight.")]
-        private GrenadeView prefab;
+        private AssetReferenceGameObject prefab = new(string.Empty);
 
         [SerializeField, Tooltip("Colour of the body's glow and its trail. Unlit, so it shows in Darkness without lighting anything.")]
         private Color glowColor = new(1f, 0.45f, 0.15f);
@@ -22,7 +23,7 @@ namespace DarknessRises.Game.Grenades
         [SerializeField, Min(0f), Tooltip("Degrees per second the body tumbles in flight.")]
         private float tumbleSpeed = 540f;
 
-        public GrenadeView Prefab => prefab;
+        public AssetReferenceGameObject Prefab => prefab;
         public Color GlowColor => glowColor;
         public float Size => size;
         public float TrailSeconds => trailSeconds;

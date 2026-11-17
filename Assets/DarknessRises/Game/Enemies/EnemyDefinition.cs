@@ -1,5 +1,6 @@
 using DarknessRises.Game.Enemies.Tells;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Enemies
 {
@@ -26,7 +27,7 @@ namespace DarknessRises.Game.Enemies
         private float pathRefreshSeconds = 0.25f;
 
         [SerializeField, Tooltip("What it looks like: the pooled Enemy prefab, with its NavMesh agent, hitbox and renderers.")]
-        private EnemyView prefab;
+        private AssetReferenceGameObject prefab = new(string.Empty);
 
         [SerializeField] private EnemyAudioSettings audio = new();
 
@@ -42,7 +43,7 @@ namespace DarknessRises.Game.Enemies
         public float Acceleration => acceleration;
         public float TurnSpeed => turnSpeed;
         public float PathRefreshSeconds => pathRefreshSeconds;
-        public EnemyView Prefab => prefab;
+        public AssetReferenceGameObject Prefab => prefab;
         public EnemyAudioSettings Audio => audio;
         public EnemyDeathSettings Death => death;
         public EnemyAttackSettings Attack => attack;

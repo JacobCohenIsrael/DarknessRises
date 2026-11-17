@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Content;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -20,20 +21,25 @@ namespace DarknessRises.Game.Weapons
         private readonly LayerMask shotHitLayers;
         private readonly Transform effectsRoot;
         private readonly Material shotGlowMaterial;
+        private readonly ShotView shotPrefab;
+        private readonly HitSparkView hitSparkPrefab;
         private readonly ObjectPool<ShotView> shots;
         private readonly ObjectPool<MuzzleFlashView> muzzleFlashes;
         private readonly ObjectPool<HitSparkView> hitSparks;
         private readonly Action<RaycastHit> onShotHit;
         private int shotsUntilLit;
 
-        public PrimaryWeaponEffects(WeaponDefinition weaponDefinition, LayerMask hitLayers)
+        /// <param name="content">Where the Shot and hit spark prefabs are, already loaded. The effects never release them.</param>
+        public PrimaryWeaponEffects(WeaponDefinition weaponDefinition, LayerMask hitLayers, ILoadedContent content)
         {
             definition = weaponDefinition;
             shotHitLayers = hitLayers;
             onShotHit = OnShotHit;
+            shotPrefab = content.Prefab<ShotView>(definition.Shot.Prefab);
+            hitSparkPrefab = content.Prefab<HitSparkView>(definition.HitSpark.Prefab);
 
             effectsRoot = new GameObject($"{definition.name} Effects").transform;
-            shotGlowMaterial = new Material(definition.Shot.Prefab.BodyMaterial) { name = $"{definition.name} Shot Glow" };
+            shotGlowMaterial = new Material(shotPrefab.BodyMaterial) { name = $"{definition.name} Shot Glow" };
             shotGlowMaterial.SetColor(BaseColorId, definition.Shot.GlowColor);
 
             shots = new ObjectPool<ShotView>(CreateShot, OnGetPooled, OnReleasePooled, OnDestroyPooled, defaultCapacity: MostShotsInFlight());
@@ -116,13 +122,13 @@ namespace DarknessRises.Game.Weapons
         // Enough pooled hit sparks for a held trigger with every Shot hitting something.
         private int MostSparksAlive()
         {
-            var sparkSeconds = Mathf.Max(definition.HitSpark.Seconds, definition.HitSpark.Prefab.LifeSeconds);
+            var sparkSeconds = Mathf.Max(definition.HitSpark.Seconds, hitSparkPrefab.LifeSeconds);
             return Mathf.CeilToInt(definition.ShotsPerSecond * sparkSeconds) + 1;
         }
 
         private ShotView CreateShot()
         {
-            var shot = Object.Instantiate(definition.Shot.Prefab, effectsRoot);
+            var shot = Object.Instantiate(shotPrefab, effectsRoot);
             shot.Prepare(shots, definition.Shot, definition.ShotLight, shotGlowMaterial, shotHitLayers, onShotHit);
             shot.gameObject.SetActive(false);
             return shot;
@@ -140,7 +146,7 @@ namespace DarknessRises.Game.Weapons
 
         private HitSparkView CreateHitSpark()
         {
-            var spark = Object.Instantiate(definition.HitSpark.Prefab, effectsRoot);
+            var spark = Object.Instantiate(hitSparkPrefab, effectsRoot);
             spark.gameObject.SetActive(false);
             spark.Prepare(hitSparks, definition.HitSpark);
             return spark;

@@ -3,11 +3,14 @@
     "rootNamespace": "DarknessRises.Game",
     "references": [
         "UniTask",
+        "UniTask.Addressables",
+        "Unity.Addressables",
         "Unity.AI.Navigation",
         "Unity.Cinemachine",
         "Unity.InputSystem",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.ResourceManager",
         "Unity.TextMeshPro",
         "UnityEngine.UI"
     ],

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Grenades
 {
@@ -11,7 +12,7 @@ namespace DarknessRises.Game.Grenades
     public sealed class GrenadeExplosionSettings
     {
         [SerializeField, Tooltip("The pooled explosion.")]
-        private GrenadeExplosionView prefab;
+        private AssetReferenceGameObject prefab = new(string.Empty);
 
         [Header("Light")]
         [SerializeField] private Color lightColor = new(1f, 0.62f, 0.3f);
@@ -36,7 +37,7 @@ namespace DarknessRises.Game.Grenades
         private int sparkCount = 40;
 
         [Header("Sound")]
-        [SerializeField] private AudioClip clip;
+        [SerializeField] private AssetReferenceT<AudioClip> clip = new(string.Empty);
 
         [SerializeField, Range(0f, 1f)] private float volume = 0.9f;
 
@@ -50,7 +51,7 @@ namespace DarknessRises.Game.Grenades
         [SerializeField, Min(0.01f), Tooltip("Seconds the shake lasts.")]
         private float shakeSeconds = 0.45f;
 
-        public GrenadeExplosionView Prefab => prefab;
+        public AssetReferenceGameObject Prefab => prefab;
         public Color LightColor => lightColor;
         public float LightIntensity => lightIntensity;
         public float LightRange => lightRange;
@@ -58,7 +59,7 @@ namespace DarknessRises.Game.Grenades
         public float LightHeight => lightHeight;
         public int FireballCount => fireballCount;
         public int SparkCount => sparkCount;
-        public AudioClip Clip => clip;
+        public AssetReferenceT<AudioClip> Clip => clip;
         public float Volume => volume;
         public float HearingRange => hearingRange;
         public float ShakeForce => shakeForce;

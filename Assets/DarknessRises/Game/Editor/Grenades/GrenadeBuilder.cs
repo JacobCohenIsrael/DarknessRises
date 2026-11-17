@@ -1,4 +1,5 @@
 using DarknessRises.Game.Controls;
+using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Hud;
 using Unity.Cinemachine;
@@ -91,9 +92,14 @@ namespace DarknessRises.Game.Editor.Grenades
             }
 
             var serialized = new SerializedObject(grenade);
-            SetIfMissing(serialized.FindProperty("body.prefab"), LoadOrCreateGrenadePrefab);
-            SetIfMissing(serialized.FindProperty("explosion.prefab"), LoadOrCreateExplosionPrefab);
-            SetIfMissing(serialized.FindProperty("explosion.clip"), () => AssetDatabase.LoadAssetAtPath<AudioClip>(ExplosionClipPath));
+            // Loaded through Addressables with the character's other content.
+            const string group = AddressableContent.SharedGroup;
+            AddressableContent.ReferenceIfEmpty(serialized.FindProperty("body.prefab"), () => LoadOrCreateGrenadePrefab().gameObject, group);
+            AddressableContent.ReferenceIfEmpty(serialized.FindProperty("explosion.prefab"), () => LoadOrCreateExplosionPrefab().gameObject, group);
+            AddressableContent.ReferenceIfEmpty(
+                serialized.FindProperty("explosion.clip"),
+                () => AssetDatabase.LoadAssetAtPath<AudioClip>(ExplosionClipPath),
+                group);
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Re-save so fields added since the asset was created are written with their defaults.
@@ -399,14 +405,6 @@ namespace DarknessRises.Game.Editor.Grenades
             material.SetColor("_BaseColor", baseColor);
             AssetDatabase.CreateAsset(material, path);
             return material;
-        }
-
-        private static void SetIfMissing(SerializedProperty property, System.Func<Object> create)
-        {
-            if (property.objectReferenceValue == null)
-            {
-                property.objectReferenceValue = create();
-            }
         }
 
         private static void EnsureFolder(string path)

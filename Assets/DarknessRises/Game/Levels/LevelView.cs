@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Randomness;
@@ -65,9 +66,15 @@ namespace DarknessRises.Game.Levels
 
         /// <summary>
         /// Starts the Level: the start beat plays as the character walks in along <paramref name="routeProgress"/>,
-        /// then each Room's fights run as the character reaches them. Its Enemies run on <paramref name="enemyTime"/>.
+        /// then each Room's fights run as the character reaches them. Its Enemies run on <paramref name="enemyTime"/>,
+        /// built from the prefabs and sounds already loaded in <paramref name="content"/>.
         /// </summary>
-        public void Run(LevelDefinition levelDefinition, RouteProgress routeProgress, Transform character, EnemyTime enemyTime)
+        public void Run(
+            LevelDefinition levelDefinition,
+            RouteProgress routeProgress,
+            Transform character,
+            EnemyTime enemyTime,
+            ILoadedContent content)
         {
             Stop();
 
@@ -103,7 +110,7 @@ namespace DarknessRises.Game.Levels
                 roomSpawnPoints[i] = rooms[i].SpawnPoints;
             }
 
-            pools = new EnemyPools(transform, enemyTime);
+            pools = new EnemyPools(transform, enemyTime, content);
             pools.EnemyDied += OnEnemyDied;
             Prewarm(stationWaves, roomStragglers);
             spawner = new LevelSpawner(

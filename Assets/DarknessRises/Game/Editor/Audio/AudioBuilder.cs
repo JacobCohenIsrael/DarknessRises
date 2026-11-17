@@ -23,7 +23,7 @@ namespace DarknessRises.Game.Editor.Audio
         private const string AudioFolder = Root + "/Audio";
         private const string ConfigurationFolder = Root + "/Configuration";
 
-        private const string MixerPath = AudioFolder + "/GameMixer.mixer";
+        public const string MixerPath = AudioFolder + "/GameMixer.mixer";
         private const string AudioDefinitionPath = ConfigurationFolder + "/AudioDefinition.asset";
         private const string EnemiesGroupName = "Enemies";
 

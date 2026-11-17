@@ -17,13 +17,43 @@ MonoBehaviour:
   acceleration: 8
   turnSpeed: 240
   pathRefreshSeconds: 0.25
-  prefab: {fileID: 8717080933844714037, guid: 420f6ad99c6d238489fbd1a76efe9fc8, type: 3}
+  prefab:
+    m_AssetGUID: 420f6ad99c6d238489fbd1a76efe9fc8
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
   audio:
-    spawnClip: {fileID: 0}
-    hurtClip: {fileID: 8300000, guid: 75adfe9a619833445a701305b983e548, type: 3}
-    deathClip: {fileID: 8300000, guid: a37f44cbf8c2a7443a3c361efa2f233a, type: 3}
-    windUpClip: {fileID: 8300000, guid: 7f4aa26d5b55226409cda231ffaf869b, type: 3}
-    attackClip: {fileID: 8300000, guid: cc6699269b4c1d44ea1e860518b9bb73, type: 3}
+    spawnClip:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    hurtClip:
+      m_AssetGUID: 75adfe9a619833445a701305b983e548
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    deathClip:
+      m_AssetGUID: a37f44cbf8c2a7443a3c361efa2f233a
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    windUpClip:
+      m_AssetGUID: 7f4aa26d5b55226409cda231ffaf869b
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    attackClip:
+      m_AssetGUID: cc6699269b4c1d44ea1e860518b9bb73
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
     outputGroup: {fileID: 1199663272804557088, guid: 0fc8da764e90fb94287f053470bdf171, type: 2}
     volume: 0.8
     hearingRange: 25
@@ -47,7 +77,11 @@ MonoBehaviour:
       color: {r: 3, g: 0.7, b: 0.15, a: 1}
     sounds:
       clips:
-      - {fileID: 8300000, guid: ac6034ade498bb94b87620cdf6eac48b, type: 3}
+      - m_AssetGUID: ac6034ade498bb94b87620cdf6eac48b
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
       minIntervalSeconds: 2.5
       maxIntervalSeconds: 6
       minPitch: 0.6

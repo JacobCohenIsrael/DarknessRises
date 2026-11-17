@@ -6,9 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/DarknessRises/Scenes/Level.unity
-    guid: 7c4ada42a163cca449990214c134c649
-  - enabled: 1
-    path: Assets/DarknessRises/Scenes/TestRoom.unity
-    guid: 0af79ab275eac414f99c7770d52f0a39
-  m_configObjects: {}
+    path: Assets/DarknessRises/Scenes/Boot.unity
+    guid: b1eceed2bbffc8e478c6db5a96bc0e3b
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 4b30825a3a4a2964d8ae5bcac5a1352c, type: 2}

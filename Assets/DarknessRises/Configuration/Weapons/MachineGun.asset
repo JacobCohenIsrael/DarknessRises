@@ -20,7 +20,12 @@ MonoBehaviour:
   range: 20
   spreadDegrees: 4
   shot:
-    prefab: {fileID: 7200641279141617022, guid: 688c6b22d6fbcf843b1886d15e51e8d7, type: 3}
+    prefab:
+      m_AssetGUID: 688c6b22d6fbcf843b1886d15e51e8d7
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
     glowColor: {r: 1, g: 0.88, b: 0.55, a: 1}
     size: 0.09
     trailSeconds: 0.05
@@ -37,7 +42,12 @@ MonoBehaviour:
     range: 5
     seconds: 0.05
   hitSpark:
-    prefab: {fileID: 3657083395534766733, guid: 4dc8e0d67c65d5247bbf69778eb2f48b, type: 3}
+    prefab:
+      m_AssetGUID: 4dc8e0d67c65d5247bbf69778eb2f48b
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
     color: {r: 1, g: 0.7, b: 0.35, a: 1}
     intensity: 6
     range: 2.5

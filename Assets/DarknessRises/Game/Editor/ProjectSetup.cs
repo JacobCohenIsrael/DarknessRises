@@ -1,3 +1,5 @@
+using DarknessRises.Game.Editor.Boot;
+using DarknessRises.Game.Editor.Content;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -7,13 +9,14 @@ namespace DarknessRises.Game.Editor
     /// <summary>
     /// Project-wide settings for the remake, kept as code so they can be re-applied and reviewed.
     /// Run headless with:
-    /// <c>unity run . -- -executeMethod DarknessRises.Game.Editor.ProjectSetup.ApplyAndBuildTestRoom -quit</c>
+    /// <c>unity run . -- -executeMethod DarknessRises.Game.Editor.ProjectSetup.ApplyAndBuildAll</c>
     /// </summary>
     public static class ProjectSetup
     {
         private const string CompanyName = "TheGamefather";
         private const string ProductName = "Darkness Rises";
         private const string ProjectWideInputActionsKey = "com.unity.input.settings.actions";
+        private const string ConfigurationFolder = "Assets/DarknessRises/Configuration";
 
         [MenuItem("Darkness Rises/Apply Project Setup")]
         public static void Apply()
@@ -33,9 +36,16 @@ namespace DarknessRises.Game.Editor
             EditorBuildSettings.RemoveConfigObject(ProjectWideInputActionsKey);
 
             OnlyTheMainLightCastsShadows();
+            AddressableContent.Setup();
 
             AssetDatabase.SaveAssets();
             Debug.Log("[ProjectSetup] Applied project settings.");
+        }
+
+        /// <summary>Marks the content every scene shares, once the builders have made it.</summary>
+        private static void MarkSharedContent()
+        {
+            AddressableContent.MarkShared(ConfigurationFolder, Weapons.PistolBuilder.ControlsPath, Audio.AudioBuilder.MixerPath);
         }
 
         /// <summary>
@@ -54,19 +64,23 @@ namespace DarknessRises.Game.Editor
             }
         }
 
-        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room.</summary>
+        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room and the boot scene.</summary>
         public static void ApplyAndBuildTestRoom()
         {
             Apply();
             TestRoomBuilder.Build();
+            MarkSharedContent();
+            BootBuilder.Build();
         }
 
-        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room and the Level.</summary>
+        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room, the Level and the boot scene.</summary>
         public static void ApplyAndBuildAll()
         {
             Apply();
             TestRoomBuilder.Build();
             Levels.LevelBuilder.Build();
+            MarkSharedContent();
+            BootBuilder.Build();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Routes;
 using UnityEngine;
@@ -27,15 +28,15 @@ namespace DarknessRises.Game.Waves
 
         /// <summary>
         /// Starts running each Station's authored Waves as the character reaches it. Spawned Enemies run on
-        /// <paramref name="enemyTime"/>.
+        /// <paramref name="enemyTime"/>, built from the prefabs and sounds already loaded in <paramref name="content"/>.
         /// </summary>
-        public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character, EnemyTime enemyTime)
+        public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character, EnemyTime enemyTime, ILoadedContent content)
         {
             Stop();
 
             progress = routeProgress;
             hunted = character;
-            pools = new EnemyPools(transform, enemyTime);
+            pools = new EnemyPools(transform, enemyTime, content);
             pools.EnemyDied += OnEnemyDied;
             picker = new SpawnPointPicker(spawnPoints.Count, new System.Random());
             lighting = new SceneSpawnPointLighting(spawnPoints, route.SpawnPointLitIntensity);

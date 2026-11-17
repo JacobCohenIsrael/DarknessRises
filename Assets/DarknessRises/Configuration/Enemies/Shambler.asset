@@ -40,3 +40,16 @@ MonoBehaviour:
     windUpLeanDegrees: 22
     attackLungeDegrees: 28
     staggerLeanDegrees: 35
+  tells:
+    eyeGlint:
+      range: 7
+      fadeDistance: 1.5
+      color: {r: 3, g: 0.7, b: 0.15, a: 1}
+    sounds:
+      clips:
+      - {fileID: 8300000, guid: ac6034ade498bb94b87620cdf6eac48b, type: 3}
+      minIntervalSeconds: 2.5
+      maxIntervalSeconds: 6
+      minPitch: 0.6
+      maxPitch: 0.8
+      volume: 0.7

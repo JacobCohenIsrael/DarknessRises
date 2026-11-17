@@ -27,8 +27,8 @@ namespace DarknessRises.Game.EditModeTests.Enemies.Tells
             schedule.Start();
 
             Assert.That(random.LastRange, Is.EqualTo((1f, 2f)));
-            Assert.That(schedule.Tick(1.4f), Is.False);
-            Assert.That(schedule.Tick(0.1f), Is.True);
+            Assert.That(schedule.Tick(1.25f), Is.False);
+            Assert.That(schedule.Tick(0.25f), Is.True);
         }
 
         [Test]
@@ -38,10 +38,10 @@ namespace DarknessRises.Game.EditModeTests.Enemies.Tells
             schedule.Start();
 
             Assert.That(schedule.Tick(1f), Is.True);
-            Assert.That(schedule.Tick(2.9f), Is.False);
-            Assert.That(schedule.Tick(0.1f), Is.True);
-            Assert.That(schedule.Tick(1.9f), Is.False);
-            Assert.That(schedule.Tick(0.1f), Is.True);
+            Assert.That(schedule.Tick(2.5f), Is.False);
+            Assert.That(schedule.Tick(0.5f), Is.True);
+            Assert.That(schedule.Tick(1.5f), Is.False);
+            Assert.That(schedule.Tick(0.5f), Is.True);
         }
 
         [Test]

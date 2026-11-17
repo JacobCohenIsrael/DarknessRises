@@ -24,11 +24,14 @@ A top-down survival shooter for mobile. The character walks through pitch-black 
 
 ## Unity automation
 
-Run Unity headless through the `unity` CLI for agent work:
+Agents work with Unity through these tools:
 
-- Tests: `unity test . --mode EditMode`
-- Batch commands: `unity run .` with the method to execute
-- Live Editor: `unity status`, then `unity command` / `unity recompile` against the open Editor
+- **`unity` CLI**: drives Unity from the command line, both headless and against a running Editor.
+  - Tests: `unity test . --mode EditMode`
+  - Batch commands: `unity run .` with the method to execute
+  - Live Editor: `unity status`, then `unity command` / `unity recompile` against the open Editor
+- **Unity Pipeline package** (`com.unity.pipeline`): installed in the project with `unity pipeline install`. It's what lets the CLI connect to a running Editor; keep it installed and upgrade it with `unity pipeline upgrade`.
+- **Claude Unity plugin**: load the `unity:using-unity` skill before writing Unity code, and follow the guides it points to.
 
 Unity allows one Editor per project. If it's already open, use the live commands instead of starting another one, and never close an Editor you didn't start. Let Unity edit scenes, prefabs and assets; don't hand-edit their YAML.
 

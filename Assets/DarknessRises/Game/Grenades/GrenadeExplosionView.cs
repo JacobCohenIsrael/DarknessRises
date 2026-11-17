@@ -19,6 +19,7 @@ namespace DarknessRises.Game.Grenades
 
         private IObjectPool<GrenadeExplosionView> pool;
         private GrenadeExplosionSettings settings;
+        private AudioClip bangClip;
         private float lightSecondsLeft;
         private float lifeSecondsLeft;
 
@@ -28,11 +29,12 @@ namespace DarknessRises.Game.Grenades
             fireballs.main.startLifetime.constantMax,
             sparks.main.startLifetime.constantMax);
 
-        /// <summary>Called once, when the pool creates this explosion.</summary>
-        public void Prepare(IObjectPool<GrenadeExplosionView> owner, GrenadeExplosionSettings explosionSettings)
+        /// <summary>Called once, when the pool creates this explosion. <paramref name="bangSound"/> is its bang, already loaded.</summary>
+        public void Prepare(IObjectPool<GrenadeExplosionView> owner, GrenadeExplosionSettings explosionSettings, AudioClip bangSound)
         {
             pool = owner;
             settings = explosionSettings;
+            bangClip = bangSound;
 
             flashLight.type = LightType.Point;
             flashLight.shadows = LightShadows.None;
@@ -71,9 +73,9 @@ namespace DarknessRises.Game.Grenades
             sparks.Emit(settings.SparkCount);
             lifeSecondsLeft = LifeSeconds;
 
-            if (settings.Clip != null)
+            if (bangClip != null)
             {
-                bang.PlayOneShot(settings.Clip);
+                bang.PlayOneShot(bangClip);
             }
 
             if (settings.ShakeForce > 0f)

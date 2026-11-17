@@ -1,3 +1,4 @@
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Player;
 using Unity.Cinemachine;
@@ -29,6 +30,8 @@ namespace DarknessRises.Game.Health
         private InputActionReference godMode;
 
         private HitReactionSettings settings;
+        private AudioClip hurtClip;
+        private AudioClip deathClip;
         private bool isShown = true;
 #if UNITY_EDITOR || DEBUG
         private GodModeToggle godModeToggle;
@@ -38,12 +41,17 @@ namespace DarknessRises.Game.Health
 
         public bool CanBeAttacked => Health != null && Health.IsAlive;
 
-        /// <summary>Gives the character full, fresh hit points from <paramref name="player"/>.</summary>
-        public CharacterHealth Show(PlayerDefinition player)
+        /// <summary>
+        /// Gives the character full, fresh hit points from <paramref name="player"/>. Its hurt and death sounds come from
+        /// <paramref name="content"/>, already loaded.
+        /// </summary>
+        public CharacterHealth Show(PlayerDefinition player, ILoadedContent content)
         {
             Unbind();
 
             settings = player.HitReaction;
+            hurtClip = content.Clip(settings.HurtClip);
+            deathClip = content.Clip(settings.DeathClip);
             Health = new CharacterHealth(player.HitPoints, player.InvulnerabilitySeconds);
             Health.Hurt += OnHurt;
             Health.Died += OnDied;
@@ -106,13 +114,13 @@ namespace DarknessRises.Game.Health
         private void OnHurt()
         {
             impulseSource.GenerateImpulseWithForce(settings.ShakeForce);
-            Play(settings.HurtClip);
+            Play(hurtClip);
         }
 
         private void OnDied()
         {
             impulseSource.GenerateImpulseWithForce(settings.ShakeForce);
-            Play(settings.DeathClip);
+            Play(deathClip);
             SetShown(true);
         }
 

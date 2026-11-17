@@ -7,14 +7,13 @@ using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace DarknessRises.Game.Death
 {
     /// <summary>
     /// What happens when the character dies: it stops walking and shooting, plays its death, and the death screen
-    /// offers Restart or Exit. Exit shows the end screen first. Both start a new Run, for now by reloading the scene;
-    /// the Run flow ticket replaces that.
+    /// offers Restart or Exit. Exit shows the end screen first. Both ask for a new Run through
+    /// <see cref="NewRunRequested"/>; whoever runs the Level (the boot, for now) starts it.
     /// </summary>
     public sealed class DeathFlow : MonoBehaviour
     {
@@ -30,6 +29,9 @@ namespace DarknessRises.Game.Death
         private PrimaryWeaponView primaryWeapon;
         private bool isDeathFinished;
         private Action onDeathFinished;
+
+        /// <summary>Raised once the player has picked Restart or Exit and a new Run should start.</summary>
+        public event Action NewRunRequested;
 
         /// <summary>Waits for the character's death, then runs the death and end screens.</summary>
         public void Watch(
@@ -95,17 +97,12 @@ namespace DarknessRises.Game.Death
                 await endScreen.ShowAsync(record, cancellationToken);
             }
 
-            StartNewRun();
+            NewRunRequested?.Invoke();
         }
 
         private void OnDeathFinished()
         {
             isDeathFinished = true;
-        }
-
-        private void StartNewRun()
-        {
-            SceneManager.LoadScene(gameObject.scene.buildIndex);
         }
     }
 }

@@ -1,4 +1,5 @@
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Weapons;
 using UnityEditor;
 using UnityEngine;
@@ -72,7 +73,7 @@ namespace DarknessRises.Game.Editor.Weapons
                 serialized.FindProperty("muzzleFlash.seconds").floatValue = 0.05f;
             }
 
-            FillMissingPrefabs(serialized, pistol.Shot.Prefab, pistol.HitSpark.Prefab);
+            FillMissingPrefabs(serialized, () => pistol.Shot.Prefab.editorAsset, () => pistol.HitSpark.Prefab.editorAsset);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(machineGun);
             return machineGun;
@@ -111,7 +112,7 @@ namespace DarknessRises.Game.Editor.Weapons
                 serialized.FindProperty("hitSpark.sparkCount").intValue = 3;
             }
 
-            FillMissingPrefabs(serialized, LoadOrCreateFlameShotPrefab(), pistol.HitSpark.Prefab);
+            FillMissingPrefabs(serialized, () => LoadOrCreateFlameShotPrefab().gameObject, () => pistol.HitSpark.Prefab.editorAsset);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(flamethrower);
             return flamethrower;
@@ -202,19 +203,11 @@ namespace DarknessRises.Game.Editor.Weapons
             return definition;
         }
 
-        private static void FillMissingPrefabs(SerializedObject definition, ShotView shot, HitSparkView hitSpark)
+        // Loaded through Addressables with the character's other content.
+        private static void FillMissingPrefabs(SerializedObject definition, System.Func<Object> shot, System.Func<Object> hitSpark)
         {
-            var shotPrefab = definition.FindProperty("shot.prefab");
-            if (shotPrefab.objectReferenceValue == null)
-            {
-                shotPrefab.objectReferenceValue = shot;
-            }
-
-            var hitSparkPrefab = definition.FindProperty("hitSpark.prefab");
-            if (hitSparkPrefab.objectReferenceValue == null)
-            {
-                hitSparkPrefab.objectReferenceValue = hitSpark;
-            }
+            AddressableContent.ReferenceIfEmpty(definition.FindProperty("shot.prefab"), shot, AddressableContent.SharedGroup);
+            AddressableContent.ReferenceIfEmpty(definition.FindProperty("hitSpark.prefab"), hitSpark, AddressableContent.SharedGroup);
         }
 
         // A soft, additive glow lying flat, a shadowless light the Weapon turns on for some Shots,

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
 using UnityEngine;
 
@@ -43,9 +44,9 @@ namespace DarknessRises.Game.Weapons
 
         /// <summary>
         /// Arms the character with a fresh, fully loaded Primary for each of <paramref name="definitions"/>,
-        /// in switching order, and equips the first.
+        /// in switching order, and equips the first. Their Shots and hit sparks come from <paramref name="content"/>, already loaded.
         /// </summary>
-        public PrimaryWeaponLoadout Arm(IReadOnlyList<WeaponDefinition> definitions)
+        public PrimaryWeaponLoadout Arm(IReadOnlyList<WeaponDefinition> definitions, ILoadedContent content)
         {
             Disarm();
 
@@ -55,7 +56,7 @@ namespace DarknessRises.Game.Weapons
             for (var i = 0; i < definitions.Count; i++)
             {
                 stats[i] = definitions[i].PrimaryStats;
-                effects[i] = new PrimaryWeaponEffects(definitions[i], shotHitLayers);
+                effects[i] = new PrimaryWeaponEffects(definitions[i], shotHitLayers, content);
             }
 
             Loadout = new PrimaryWeaponLoadout(stats);

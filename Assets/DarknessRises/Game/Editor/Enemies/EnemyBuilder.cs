@@ -1,3 +1,4 @@
+using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Enemies.Tells;
 using UnityEditor;
@@ -53,32 +54,35 @@ namespace DarknessRises.Game.Editor.Enemies
                 // The definition's defaults are the Shambler: slow and tough, slower than the character walks.
                 shambler = ScriptableObject.CreateInstance<EnemyDefinition>();
                 AssetDatabase.CreateAsset(shambler, ShamblerDefinitionPath);
-
-                var serializedNew = new SerializedObject(shambler);
-                serializedNew.FindProperty("audio.hurtClip").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(HurtClipPath);
-                serializedNew.FindProperty("audio.deathClip").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(DeathClipPath);
-                serializedNew.ApplyModifiedPropertiesWithoutUndo();
             }
 
             var serialized = new SerializedObject(shambler);
-            var prefab = serialized.FindProperty("prefab");
-            if (prefab.objectReferenceValue == null)
-            {
-                prefab.objectReferenceValue = LoadOrCreateShamblerPrefab();
-            }
 
-            SetClipIfEmpty(serialized.FindProperty("audio.windUpClip"), WindUpClipPath);
-            SetClipIfEmpty(serialized.FindProperty("audio.attackClip"), AttackClipPath);
+            // Loaded through Addressables, so each Level loads only the Enemy types it uses.
+            AddressableContent.ReferenceIfEmpty(
+                serialized.FindProperty("prefab"),
+                () => LoadOrCreateShamblerPrefab().gameObject,
+                AddressableContent.EnemiesGroup);
+            ReferenceClipIfEmpty(serialized.FindProperty("audio.spawnClip"), null);
+            ReferenceClipIfEmpty(serialized.FindProperty("audio.hurtClip"), HurtClipPath);
+            ReferenceClipIfEmpty(serialized.FindProperty("audio.deathClip"), DeathClipPath);
+            ReferenceClipIfEmpty(serialized.FindProperty("audio.windUpClip"), WindUpClipPath);
+            ReferenceClipIfEmpty(serialized.FindProperty("audio.attackClip"), AttackClipPath);
 
             // Tell sounds were added after the Shambler; give an older asset the placeholders once.
             var tellClips = serialized.FindProperty("tells.sounds.clips");
             if (tellClips.arraySize == 0)
             {
                 tellClips.arraySize = TellClipPaths.Length;
-                for (var i = 0; i < TellClipPaths.Length; i++)
-                {
-                    tellClips.GetArrayElementAtIndex(i).objectReferenceValue = LoadMonoClip(TellClipPaths[i]);
-                }
+            }
+
+            for (var i = 0; i < tellClips.arraySize; i++)
+            {
+                var path = i < TellClipPaths.Length ? TellClipPaths[i] : null;
+                AddressableContent.ReferenceIfEmpty(
+                    tellClips.GetArrayElementAtIndex(i),
+                    () => path != null ? LoadMonoClip(path) : null,
+                    AddressableContent.EnemiesGroup);
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
@@ -239,12 +243,15 @@ namespace DarknessRises.Game.Editor.Enemies
             }
         }
 
-        private static void SetClipIfEmpty(SerializedProperty clip, string path)
+        // An empty clip gets the placeholder at <paramref name="path"/> (none if null); a set one stays as it is.
+        private static void ReferenceClipIfEmpty(SerializedProperty clip, string path)
         {
-            if (clip.objectReferenceValue == null)
+            if (path == null && AddressableContent.Referenced<AudioClip>(clip) == null)
             {
-                clip.objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+                return;
             }
+
+            AddressableContent.ReferenceIfEmpty(clip, () => AssetDatabase.LoadAssetAtPath<AudioClip>(path), AddressableContent.EnemiesGroup);
         }
 
         private static MeshRenderer AddPart(

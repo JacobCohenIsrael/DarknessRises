@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Weapons
 {
@@ -11,7 +12,7 @@ namespace DarknessRises.Game.Weapons
     public sealed class HitSparkSettings
     {
         [SerializeField, Tooltip("The pooled hit spark.")]
-        private HitSparkView prefab;
+        private AssetReferenceGameObject prefab = new(string.Empty);
 
         [SerializeField] private Color color = new(1f, 0.7f, 0.35f);
 
@@ -30,7 +31,7 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Min(0), Tooltip("Sparks thrown off by one hit.")]
         private int sparkCount = 8;
 
-        public HitSparkView Prefab => prefab;
+        public AssetReferenceGameObject Prefab => prefab;
         public Color Color => color;
         public float Intensity => intensity;
         public float Range => range;

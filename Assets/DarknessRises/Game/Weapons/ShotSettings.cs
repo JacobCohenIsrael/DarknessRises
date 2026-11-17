@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Weapons
 {
@@ -10,7 +11,7 @@ namespace DarknessRises.Game.Weapons
     public sealed class ShotSettings
     {
         [SerializeField, Tooltip("The pooled Shot to fire.")]
-        private ShotView prefab;
+        private AssetReferenceGameObject prefab = new(string.Empty);
 
         [SerializeField, ColorUsage(false, true), Tooltip("Glow colour of the Shot and its trail. Unlit, so it shows without any light.")]
         private Color glowColor = new(1f, 0.75f, 0.35f);
@@ -24,7 +25,7 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Min(0.01f), Tooltip("How many times its starting size the Shot has grown by the end of its range, like a spreading flame. 1 keeps its size.")]
         private float sizeAtRange = 1f;
 
-        public ShotView Prefab => prefab;
+        public AssetReferenceGameObject Prefab => prefab;
         public Color GlowColor => glowColor;
         public float Size => size;
         public float TrailSeconds => trailSeconds;

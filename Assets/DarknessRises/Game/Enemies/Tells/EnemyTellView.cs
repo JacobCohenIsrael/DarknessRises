@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Randomness;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ namespace DarknessRises.Game.Enemies.Tells
         private AudioSource tellVoice;
 
         private EnemyTellSettings settings;
+        private AudioClip[] soundClips;
         private IRandom random;
         private EnemyTime time;
         private TellSoundSchedule soundSchedule;
@@ -38,9 +40,10 @@ namespace DarknessRises.Game.Enemies.Tells
 
         /// <summary>
         /// Called once, when the pool creates the Enemy, before the Enemy remembers its renderers' materials,
-        /// so the eyes' own material instance is what it restores on every spawn.
+        /// so the eyes' own material instance is what it restores on every spawn. The Tell sounds come from
+        /// <paramref name="content"/>, already loaded.
         /// </summary>
-        public void Prepare(EnemyTellSettings tellSettings, EnemyAudioSettings audio, EnemyTime enemyTime)
+        public void Prepare(EnemyTellSettings tellSettings, EnemyAudioSettings audio, EnemyTime enemyTime, ILoadedContent content)
         {
             settings = tellSettings;
             time = enemyTime;
@@ -48,6 +51,7 @@ namespace DarknessRises.Game.Enemies.Tells
             // Seeded per Enemy, so Enemies made in the same frame don't share a sequence and call out together.
             random = new SystemRandom(unchecked((Environment.TickCount * 397) ^ RuntimeHelpers.GetHashCode(this)));
             var sounds = settings.Sounds;
+            soundClips = content.Clips(sounds.Clips);
             soundSchedule = new TellSoundSchedule(sounds.MinIntervalSeconds, sounds.MaxIntervalSeconds, random);
 
             tellVoice.playOnAwake = false;
@@ -83,7 +87,7 @@ namespace DarknessRises.Game.Enemies.Tells
             glint = -1f;
             UpdateGlint();
 
-            if (settings.Sounds.Clips.Length > 0)
+            if (soundClips.Length > 0)
             {
                 soundSchedule.Start();
             }
@@ -141,7 +145,7 @@ namespace DarknessRises.Game.Enemies.Tells
         private void PlayTellSound()
         {
             var sounds = settings.Sounds;
-            var clip = sounds.Clips[soundSchedule.PickIndex(sounds.Clips.Length)];
+            var clip = soundClips[soundSchedule.PickIndex(soundClips.Length)];
             if (clip == null)
             {
                 return;

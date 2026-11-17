@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Enemies.Tells
 {
@@ -11,7 +12,7 @@ namespace DarknessRises.Game.Enemies.Tells
     public sealed class TellSoundSettings
     {
         [SerializeField, Tooltip("One of these is picked at random each time. Leave empty for a silent Enemy type.")]
-        private AudioClip[] clips = new AudioClip[0];
+        private AssetReferenceT<AudioClip>[] clips = new AssetReferenceT<AudioClip>[0];
 
         [SerializeField, Min(0f), Tooltip("Fewest seconds between two Tell sounds. The first one comes this randomly soon after spawning too.")]
         private float minIntervalSeconds = 2.5f;
@@ -28,7 +29,7 @@ namespace DarknessRises.Game.Enemies.Tells
         [SerializeField, Range(0f, 1f)]
         private float volume = 0.7f;
 
-        public AudioClip[] Clips => clips;
+        public AssetReferenceT<AudioClip>[] Clips => clips;
         public float MinIntervalSeconds => minIntervalSeconds;
         public float MaxIntervalSeconds => maxIntervalSeconds;
         public float MinPitch => minPitch;

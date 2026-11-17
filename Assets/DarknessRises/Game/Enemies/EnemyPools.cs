@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Content;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -17,12 +18,15 @@ namespace DarknessRises.Game.Enemies
         private readonly Dictionary<EnemyDefinition, ObjectPool<EnemyView>> pools = new();
         private readonly Action<Enemy> onEnemyDied;
         private readonly EnemyTime time;
+        private readonly ILoadedContent content;
 
         /// <param name="enemyTime">How fast time runs for every pooled Enemy (Slow-mo).</param>
-        public EnemyPools(Transform parent, EnemyTime enemyTime)
+        /// <param name="loadedContent">Where each Enemy type's prefab and sounds are, already loaded. The pools never release it.</param>
+        public EnemyPools(Transform parent, EnemyTime enemyTime, ILoadedContent loadedContent)
         {
             onEnemyDied = OnEnemyDied;
             time = enemyTime;
+            content = loadedContent;
             root = new GameObject("Enemies").transform;
             root.SetParent(parent, false);
 
@@ -101,11 +105,11 @@ namespace DarknessRises.Game.Enemies
 
         private EnemyView Create(EnemyDefinition definition, IObjectPool<EnemyView> pool)
         {
-            var enemy = Object.Instantiate(definition.Prefab, hatchery);
+            var enemy = Object.Instantiate(content.Prefab<EnemyView>(definition.Prefab), hatchery);
             enemy.name = definition.name;
             enemy.gameObject.SetActive(false);
             enemy.transform.SetParent(root, false);
-            enemy.Prepare(pool, definition, time);
+            enemy.Prepare(pool, definition, time, content);
             enemy.Enemy.Died += onEnemyDied;
             return enemy;
         }

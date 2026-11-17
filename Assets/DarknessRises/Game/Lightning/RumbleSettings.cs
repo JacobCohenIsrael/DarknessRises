@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Lightning
 {
@@ -9,7 +10,7 @@ namespace DarknessRises.Game.Lightning
     [Serializable]
     public sealed class RumbleSettings
     {
-        [SerializeField] private AudioClip clip;
+        [SerializeField] private AssetReferenceT<AudioClip> clip = new(string.Empty);
 
         [SerializeField, Range(0f, 1f)] private float volume = 0.9f;
 
@@ -19,7 +20,7 @@ namespace DarknessRises.Game.Lightning
         [SerializeField, Min(0f), Tooltip("Seconds the Rumble takes to fade out once the flash has struck.")]
         private float fadeOutSeconds = 1.6f;
 
-        public AudioClip Clip => clip;
+        public AssetReferenceT<AudioClip> Clip => clip;
         public float Volume => volume;
         public float ClipStartSeconds => clipStartSeconds;
         public float FadeOutSeconds => fadeOutSeconds;

@@ -22,6 +22,7 @@ namespace DarknessRises.Game.Lightning
 
         private LightningFlashSettings flash;
         private RumbleSettings rumble;
+        private AudioClip rumbleClip;
         private Room room;
         private MaterialPropertyBlock windowProperties;
 
@@ -56,15 +57,21 @@ namespace DarknessRises.Game.Lightning
             rumbleSource.playOnAwake = false;
             rumbleSource.loop = false;
             rumbleSource.spatialBlend = 0f;
-            rumbleSource.clip = rumble.Clip;
 
             StopFlash();
+        }
+
+        /// <summary>The Rumble clip, loaded with the Level's content. Without one, Lightning comes silently.</summary>
+        public void UseRumble(AudioClip clip)
+        {
+            rumbleClip = clip;
+            rumbleSource.clip = clip;
         }
 
         /// <summary>Starts the Rumble. It fades out once the flash is due, <paramref name="secondsUntilFlash"/> from now.</summary>
         public void PlayRumble(float secondsUntilFlash)
         {
-            var clip = rumble.Clip;
+            var clip = rumbleClip;
             if (clip == null)
             {
                 return;

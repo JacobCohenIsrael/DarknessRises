@@ -3,6 +3,7 @@ using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Audio;
+using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Grenades;
 using DarknessRises.Game.Editor.Health;
@@ -122,7 +123,8 @@ namespace DarknessRises.Game.Editor
             gameRoot.Apply();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
-            BuildScenes.Include(ScenePath, first: false);
+            // The sandbox loads additively through Addressables too (boot with -testRoom), or plays on its own in the Editor.
+            AddressableContent.Add(AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath), AddressableContent.SandboxGroup);
             AssetDatabase.SaveAssets();
             Debug.Log($"[TestRoomBuilder] Built {ScenePath}.");
         }
@@ -191,12 +193,11 @@ namespace DarknessRises.Game.Editor
         {
             var lightning = LoadOrCreate<LightningDefinition>(LightningDefinitionPath);
             var serialized = new SerializedObject(lightning);
-            var clip = serialized.FindProperty("rumble.clip");
-            if (clip.objectReferenceValue == null)
-            {
-                clip.objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(RumbleClipPath);
-                serialized.ApplyModifiedPropertiesWithoutUndo();
-            }
+            AddressableContent.ReferenceIfEmpty(
+                serialized.FindProperty("rumble.clip"),
+                () => AssetDatabase.LoadAssetAtPath<AudioClip>(RumbleClipPath),
+                AddressableContent.SharedGroup);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
 
             return lightning;
         }

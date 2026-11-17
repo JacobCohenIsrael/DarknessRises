@@ -1,3 +1,4 @@
+using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
@@ -60,14 +61,19 @@ namespace DarknessRises.Game.Enemies
         private bool isWindUpShown;
         private float facingYaw;
         private EnemyTime time;
+        private AudioClip spawnClip;
+        private AudioClip hurtClip;
+        private AudioClip deathClip;
+        private AudioClip windUpClip;
+        private AudioClip attackClip;
         private float agentTimeScale = EnemyTime.NormalScale;
 
         public Enemy Enemy { get; } = new();
 
         public EnemyBehaviour Behaviour { get; private set; }
 
-        /// <summary>Called once, when the pool creates this Enemy.</summary>
-        public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition, EnemyTime enemyTime)
+        /// <summary>Called once, when the pool creates this Enemy. Its sounds come from <paramref name="content"/>, already loaded.</summary>
+        public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition, EnemyTime enemyTime, ILoadedContent content)
         {
             pool = owner;
             definition = enemyDefinition;
@@ -84,9 +90,14 @@ namespace DarknessRises.Game.Enemies
             voice.maxDistance = audio.HearingRange;
             voice.volume = audio.Volume;
             voice.outputAudioMixerGroup = audio.OutputGroup;
+            spawnClip = content.Clip(audio.SpawnClip);
+            hurtClip = content.Clip(audio.HurtClip);
+            deathClip = content.Clip(audio.DeathClip);
+            windUpClip = content.Clip(audio.WindUpClip);
+            attackClip = content.Clip(audio.AttackClip);
 
             // Before the living materials are remembered, so the eyes' glint material is what each spawn restores.
-            tells.Prepare(definition.Tells, audio, time);
+            tells.Prepare(definition.Tells, audio, time, content);
 
             livingMaterials = new Material[renderers.Length];
             for (var i = 0; i < renderers.Length; i++)
@@ -146,7 +157,7 @@ namespace DarknessRises.Game.Enemies
             Enemy.Spawn(definition.HitPoints);
             Behaviour.Begin();
             tells.Wake(target);
-            Play(definition.Audio.SpawnClip);
+            Play(spawnClip);
         }
 
         public void TakeShot(int damage)
@@ -323,28 +334,28 @@ namespace DarknessRises.Game.Enemies
 
         private void OnWindUpStarted()
         {
-            Play(definition.Audio.WindUpClip);
+            Play(windUpClip);
         }
 
         private void OnAttackLanded(int damage)
         {
-            Play(definition.Audio.AttackClip);
+            Play(attackClip);
             attackTarget?.TakeAttack(damage);
         }
 
         private void OnAttackMissed()
         {
-            Play(definition.Audio.AttackClip);
+            Play(attackClip);
         }
 
         private void OnHurt(Enemy _)
         {
-            Play(definition.Audio.HurtClip);
+            Play(hurtClip);
         }
 
         private void OnDied(Enemy _)
         {
-            Play(definition.Audio.DeathClip);
+            Play(deathClip);
             tells.Silence();
 
             // Out of the way of Shots and the living, and free to sink through the floor.

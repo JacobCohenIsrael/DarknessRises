@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Health
 {
@@ -17,10 +18,10 @@ namespace DarknessRises.Game.Health
         private float blinkSeconds = 0.08f;
 
         [SerializeField, Tooltip("Played when a hit lands and the character survives it.")]
-        private AudioClip hurtClip;
+        private AssetReferenceT<AudioClip> hurtClip = new(string.Empty);
 
         [SerializeField, Tooltip("Played when the character dies.")]
-        private AudioClip deathClip;
+        private AssetReferenceT<AudioClip> deathClip = new(string.Empty);
 
         [SerializeField, Range(0f, 1f)]
         private float volume = 0.9f;
@@ -28,8 +29,8 @@ namespace DarknessRises.Game.Health
         public float ShakeForce => shakeForce;
         public float ShakeSeconds => shakeSeconds;
         public float BlinkSeconds => blinkSeconds;
-        public AudioClip HurtClip => hurtClip;
-        public AudioClip DeathClip => deathClip;
+        public AssetReferenceT<AudioClip> HurtClip => hurtClip;
+        public AssetReferenceT<AudioClip> DeathClip => deathClip;
         public float Volume => volume;
     }
 }

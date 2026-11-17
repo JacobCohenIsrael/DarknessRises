@@ -2,6 +2,7 @@ using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
@@ -75,17 +76,15 @@ namespace DarknessRises.Game.Editor.Health
         private static void AuthorPlaceholderSounds(GameConfiguration configuration)
         {
             var player = new SerializedObject(configuration.Player);
-            SetIfEmpty(player.FindProperty("hitReaction.hurtClip"), HurtClipPath);
-            SetIfEmpty(player.FindProperty("hitReaction.deathClip"), DeathClipPath);
+            ReferenceIfEmpty(player.FindProperty("hitReaction.hurtClip"), HurtClipPath);
+            ReferenceIfEmpty(player.FindProperty("hitReaction.deathClip"), DeathClipPath);
             player.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void SetIfEmpty(SerializedProperty clip, string path)
+        // The character's sounds load through Addressables with its other content.
+        private static void ReferenceIfEmpty(SerializedProperty clip, string path)
         {
-            if (clip.objectReferenceValue == null)
-            {
-                clip.objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-            }
+            AddressableContent.ReferenceIfEmpty(clip, () => AssetDatabase.LoadAssetAtPath<AudioClip>(path), AddressableContent.SharedGroup);
         }
 
         private static void AddImpulseListener(FixedAngleCameraView cameraView)

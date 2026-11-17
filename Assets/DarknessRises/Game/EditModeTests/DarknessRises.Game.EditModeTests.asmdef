@@ -3,6 +3,7 @@
     "rootNamespace": "DarknessRises.Game.EditModeTests",
     "references": [
         "DarknessRises.Game",
+        "UniTask",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

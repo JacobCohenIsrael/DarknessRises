@@ -22,6 +22,7 @@ namespace DarknessRises.Game
         [SerializeField] private RouteWalker routeWalker;
         [SerializeField] private PrimaryWeaponView primaryWeapon;
         [SerializeField] private AmmoHudView ammoHud;
+        [SerializeField] private CharacterAnimationView characterAnimation;
 
         private void Awake()
         {
@@ -33,6 +34,7 @@ namespace DarknessRises.Game
                 character,
                 cameraTarget);
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
+            characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
         }
 
         /// <summary>Pushes the authored configuration into the scene's views.</summary>

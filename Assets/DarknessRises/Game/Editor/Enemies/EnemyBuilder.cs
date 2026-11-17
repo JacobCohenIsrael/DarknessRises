@@ -23,6 +23,8 @@ namespace DarknessRises.Game.Editor.Enemies
         // Approved Free Pack placeholders.
         private const string HurtClipPath = "Assets/Free Pack/Bullet Impact 14.wav";
         private const string DeathClipPath = "Assets/Free Pack/Bloody punch.wav";
+        private const string WindUpClipPath = "Assets/Free Pack/Magic Spell_Short Reverse_1.wav";
+        private const string AttackClipPath = "Assets/Free Pack/Magic Spell_Simple Swoosh_6.wav";
 
         private const string LitShaderName = "Universal Render Pipeline/Lit";
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
@@ -33,6 +35,8 @@ namespace DarknessRises.Game.Editor.Enemies
         private static readonly Color BodyColor = new(0.2f, 0.24f, 0.19f);
         private const float EyeSize = 0.11f;
         private static readonly Color EyeColor = new(3f, 0.7f, 0.15f);
+        private static readonly Color WindUpEyeColor = new(8f, 0.4f, 0.2f);
+        private static readonly string[] EyeNames = { "Left Eye", "Right Eye" };
 
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
@@ -56,8 +60,12 @@ namespace DarknessRises.Game.Editor.Enemies
             if (prefab.objectReferenceValue == null)
             {
                 prefab.objectReferenceValue = LoadOrCreateShamblerPrefab();
-                serialized.ApplyModifiedPropertiesWithoutUndo();
             }
+
+            SetClipIfEmpty(serialized.FindProperty("audio.windUpClip"), WindUpClipPath);
+            SetClipIfEmpty(serialized.FindProperty("audio.attackClip"), AttackClipPath);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            AddWindUpEyes(ShamblerPrefabPath);
 
             // Re-save so fields added since the asset was created are written with their defaults.
             EditorUtility.SetDirty(shambler);
@@ -128,6 +136,49 @@ namespace DarknessRises.Game.Editor.Enemies
             var prefab = PrefabUtility.SaveAsPrefabAsset(shambler, ShamblerPrefabPath);
             Object.DestroyImmediate(shambler);
             return prefab.GetComponent<EnemyView>();
+        }
+
+        /// <summary>
+        /// Wires the Shambler's eyes to flare during its Wind-up, if they aren't already. Works on an existing prefab,
+        /// so prefabs built before Wind-ups existed are brought up to date in place.
+        /// </summary>
+        private static void AddWindUpEyes(string prefabPath)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyView>(prefabPath);
+            if (existing == null || new SerializedObject(existing).FindProperty("windUpRenderers").arraySize > 0)
+            {
+                return;
+            }
+
+            var windUpMaterial = LoadOrCreateMaterial("ShamblerEyesWindUp", UnlitShaderName, WindUpEyeColor);
+            var contents = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                var view = contents.GetComponent<EnemyView>();
+                var serialized = new SerializedObject(view);
+                var renderers = serialized.FindProperty("windUpRenderers");
+                renderers.arraySize = EyeNames.Length;
+                for (var i = 0; i < EyeNames.Length; i++)
+                {
+                    renderers.GetArrayElementAtIndex(i).objectReferenceValue = contents.transform.Find(EyeNames[i]).GetComponent<Renderer>();
+                }
+
+                serialized.FindProperty("windUpMaterial").objectReferenceValue = windUpMaterial;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(contents, prefabPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
+        }
+
+        private static void SetClipIfEmpty(SerializedProperty clip, string path)
+        {
+            if (clip.objectReferenceValue == null)
+            {
+                clip.objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+            }
         }
 
         private static MeshRenderer AddPart(

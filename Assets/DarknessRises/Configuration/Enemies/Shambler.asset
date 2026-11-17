@@ -22,6 +22,8 @@ MonoBehaviour:
     spawnClip: {fileID: 0}
     hurtClip: {fileID: 8300000, guid: 75adfe9a619833445a701305b983e548, type: 3}
     deathClip: {fileID: 8300000, guid: a37f44cbf8c2a7443a3c361efa2f233a, type: 3}
+    windUpClip: {fileID: 8300000, guid: 7f4aa26d5b55226409cda231ffaf869b, type: 3}
+    attackClip: {fileID: 8300000, guid: cc6699269b4c1d44ea1e860518b9bb73, type: 3}
     volume: 0.8
     hearingRange: 25
   death:
@@ -34,3 +36,6 @@ MonoBehaviour:
     damage: 1
     cooldownSeconds: 1.5
     staggerSeconds: 0.6
+    windUpLeanDegrees: 22
+    attackLungeDegrees: 28
+    staggerLeanDegrees: 35

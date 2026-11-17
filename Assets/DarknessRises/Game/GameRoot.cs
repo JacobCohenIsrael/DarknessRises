@@ -1,11 +1,15 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Death;
+using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Runs;
 using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
@@ -43,6 +47,13 @@ namespace DarknessRises.Game
 #endif
         [SerializeField] private RouteWavesView routeWaves;
 
+        [Header("Health and death")]
+        [SerializeField] private CharacterHealthView characterHealth;
+        [SerializeField] private HitPointsHudView hitPointsHud;
+        [SerializeField] private DeathFlow deathFlow;
+
+        private RunRecord runRecord;
+
         private void Awake()
         {
             Apply();
@@ -54,6 +65,7 @@ namespace DarknessRises.Game
             routeWaves.Run(configuration.Route, routeWalker.Progress, character);
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
+            ShowHealthAndDeath();
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
         }
 
@@ -69,6 +81,25 @@ namespace DarknessRises.Game
         private void Start()
         {
             lightningScheduler.EnterRoom(room.LetsLightningIn);
+        }
+
+        private void ShowHealthAndDeath()
+        {
+            var health = characterHealth.Show(configuration.Player);
+            hitPointsHud.Show(health);
+            runRecord = new RunRecord();
+            routeWaves.EnemyDied += OnEnemyDied;
+            deathFlow.Watch(health, runRecord, characterAnimation, routeWalker, primaryWeapon);
+        }
+
+        private void OnEnemyDied(Enemy _)
+        {
+            runRecord.CountKill();
+        }
+
+        private void OnDestroy()
+        {
+            routeWaves.EnemyDied -= OnEnemyDied;
         }
 
         private void OnDisable()

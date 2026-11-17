@@ -6,9 +6,10 @@ using UnityEngine.Pool;
 namespace DarknessRises.Game.Enemies
 {
     /// <summary>
-    /// A pooled Enemy in the scene. It chases the character with its NavMesh agent, forwards Shots to its
-    /// <see cref="Enemies.Enemy"/> rule, and when that dies, lies still, sinks into the floor and fades out,
-    /// then goes back to its pool.
+    /// A pooled Enemy in the scene. It chases the character with its NavMesh agent, and shows what its
+    /// <see cref="EnemyBehaviour"/> decides: a Wind-up (flaring eyes, rearing back, a sound), the attack (a lunge that
+    /// hurts the character if it lands) and a Stagger (knocked back). It forwards Shots to its <see cref="Enemies.Enemy"/>
+    /// rule, and when that dies, lies still, sinks into the floor and fades out, then goes back to its pool.
     /// </summary>
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyView : MonoBehaviour, IShotTarget
@@ -29,17 +30,30 @@ namespace DarknessRises.Game.Enemies
         [SerializeField, Tooltip("Transparent material the renderers switch to while the dead Enemy fades out.")]
         private Material fadeMaterial;
 
+        [SerializeField, Tooltip("Renderers that flare during the Wind-up, e.g. the eyes. Also listed in the renderers above.")]
+        private Renderer[] windUpRenderers = new Renderer[0];
+
+        [SerializeField, Tooltip("Bright material the Wind-up renderers switch to while the Enemy winds up.")]
+        private Material windUpMaterial;
+
         private IObjectPool<EnemyView> pool;
         private EnemyDefinition definition;
         private Material[] livingMaterials;
+        private Material[] windUpLivingMaterials;
         private Material fadeInstance;
         private Color fadeColor;
         private Transform target;
+        private IEnemyAttackTarget attackTarget;
         private float secondsUntilPathRefresh;
         private float secondsDead;
         private Vector3 deathPosition;
+        private bool isHoldingStill;
+        private bool isWindUpShown;
+        private float facingYaw;
 
         public Enemy Enemy { get; } = new();
+
+        public EnemyBehaviour Behaviour { get; private set; }
 
         /// <summary>Called once, when the pool creates this Enemy.</summary>
         public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition)
@@ -66,17 +80,33 @@ namespace DarknessRises.Game.Enemies
                 livingMaterials[i] = renderers[i].sharedMaterial;
             }
 
+            windUpLivingMaterials = new Material[windUpRenderers.Length];
+            for (var i = 0; i < windUpRenderers.Length; i++)
+            {
+                windUpLivingMaterials[i] = windUpRenderers[i].sharedMaterial;
+            }
+
             fadeInstance = new Material(fadeMaterial) { name = $"{definition.name} Fade" };
             fadeColor = fadeInstance.GetColor(BaseColorId);
+
+            var attack = definition.Attack;
+            Behaviour = new EnemyBehaviour(Enemy, attack.WindUpSeconds, attack.Damage, attack.CooldownSeconds, attack.StaggerSeconds);
+            Behaviour.WindUpStarted += OnWindUpStarted;
+            Behaviour.AttackLanded += OnAttackLanded;
+            Behaviour.AttackMissed += OnAttackMissed;
 
             Enemy.Hurt += OnHurt;
             Enemy.Died += OnDied;
         }
 
-        /// <summary>Brings the Enemy in at <paramref name="position"/>, alive, hunting <paramref name="hunted"/>.</summary>
+        /// <summary>
+        /// Brings the Enemy in at <paramref name="position"/>, alive, hunting <paramref name="hunted"/>. It attacks the
+        /// <see cref="IEnemyAttackTarget"/> on the hunted object, if there is one.
+        /// </summary>
         public void Spawn(Vector3 position, Transform hunted)
         {
             target = hunted;
+            target.TryGetComponent(out attackTarget);
             var facing = target.position - position;
             facing.y = 0f;
             var rotation = facing.sqrMagnitude > 0f ? Quaternion.LookRotation(facing, Vector3.up) : Quaternion.identity;
@@ -88,14 +118,18 @@ namespace DarknessRises.Game.Enemies
                 renderers[i].sharedMaterial = livingMaterials[i];
             }
 
+            isWindUpShown = false;
             hitbox.enabled = true;
             gameObject.SetActive(true);
             agent.enabled = true;
             agent.Warp(position);
             agent.isStopped = false;
+            agent.updateRotation = true;
+            isHoldingStill = false;
             secondsUntilPathRefresh = 0f;
 
             Enemy.Spawn(definition.HitPoints);
+            Behaviour.Begin();
             Play(definition.Audio.SpawnClip);
         }
 
@@ -106,13 +140,23 @@ namespace DarknessRises.Game.Enemies
 
         private void Update()
         {
-            if (Enemy.IsAlive)
+            var deltaSeconds = Time.deltaTime;
+            if (!Enemy.IsAlive)
             {
-                Hunt(Time.deltaTime);
+                SinkAndFade(deltaSeconds);
+                return;
+            }
+
+            Behaviour.Tick(deltaSeconds, IsCharacterInRange());
+            ShowWindUp(Behaviour.State == EnemyBehaviourState.WindingUp);
+
+            if (Behaviour.IsChasing)
+            {
+                Hunt(deltaSeconds);
             }
             else
             {
-                SinkAndFade(Time.deltaTime);
+                HoldStill(deltaSeconds);
             }
         }
 
@@ -120,11 +164,41 @@ namespace DarknessRises.Game.Enemies
         {
             Enemy.Hurt -= OnHurt;
             Enemy.Died -= OnDied;
+            if (Behaviour != null)
+            {
+                Behaviour.WindUpStarted -= OnWindUpStarted;
+                Behaviour.AttackLanded -= OnAttackLanded;
+                Behaviour.AttackMissed -= OnAttackMissed;
+            }
+
             Destroy(fadeInstance);
+        }
+
+        private bool IsCharacterInRange()
+        {
+            if (attackTarget == null || !attackTarget.CanBeAttacked)
+            {
+                return false;
+            }
+
+            var offset = target.position - transform.position;
+            offset.y = 0f;
+            var range = definition.Attack.Range;
+            return offset.sqrMagnitude <= range * range;
         }
 
         private void Hunt(float deltaSeconds)
         {
+            if (isHoldingStill)
+            {
+                // Back on its feet: straighten up and let the agent steer again.
+                isHoldingStill = false;
+                transform.rotation = Quaternion.Euler(0f, facingYaw, 0f);
+                agent.updateRotation = true;
+                agent.isStopped = false;
+                secondsUntilPathRefresh = 0f;
+            }
+
             secondsUntilPathRefresh -= deltaSeconds;
             if (secondsUntilPathRefresh > 0f)
             {
@@ -133,6 +207,57 @@ namespace DarknessRises.Game.Enemies
 
             secondsUntilPathRefresh = definition.PathRefreshSeconds;
             agent.SetDestination(target.position);
+        }
+
+        // Winding up, recovering or reeling: stands its ground, turns to the character and leans to show what it's doing.
+        private void HoldStill(float deltaSeconds)
+        {
+            if (!isHoldingStill)
+            {
+                isHoldingStill = true;
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+                agent.updateRotation = false;
+                facingYaw = transform.eulerAngles.y;
+            }
+
+            var toCharacter = target.position - transform.position;
+            toCharacter.y = 0f;
+            if (toCharacter.sqrMagnitude > 0f)
+            {
+                var targetYaw = Quaternion.LookRotation(toCharacter, Vector3.up).eulerAngles.y;
+                facingYaw = Mathf.MoveTowardsAngle(facingYaw, targetYaw, definition.TurnSpeed * deltaSeconds);
+            }
+
+            transform.rotation = Quaternion.Euler(Lean(), facingYaw, 0f);
+        }
+
+        // Degrees of pitch: positive leans forward, negative rears back.
+        private float Lean()
+        {
+            var attack = definition.Attack;
+            var progress = Behaviour.StateProgress;
+            return Behaviour.State switch
+            {
+                EnemyBehaviourState.WindingUp => -attack.WindUpLeanDegrees * progress,
+                EnemyBehaviourState.Recovering => attack.AttackLungeDegrees * (1f - progress),
+                EnemyBehaviourState.Staggered => -attack.StaggerLeanDegrees * (1f - progress),
+                _ => 0f,
+            };
+        }
+
+        private void ShowWindUp(bool shown)
+        {
+            if (shown == isWindUpShown)
+            {
+                return;
+            }
+
+            isWindUpShown = shown;
+            for (var i = 0; i < windUpRenderers.Length; i++)
+            {
+                windUpRenderers[i].sharedMaterial = shown ? windUpMaterial : windUpLivingMaterials[i];
+            }
         }
 
         private void SinkAndFade(float deltaSeconds)
@@ -155,6 +280,22 @@ namespace DarknessRises.Game.Enemies
             var color = fadeColor;
             color.a = fadeColor.a * (1f - sinking);
             fadeInstance.SetColor(BaseColorId, color);
+        }
+
+        private void OnWindUpStarted()
+        {
+            Play(definition.Audio.WindUpClip);
+        }
+
+        private void OnAttackLanded(int damage)
+        {
+            Play(definition.Audio.AttackClip);
+            attackTarget?.TakeAttack(damage);
+        }
+
+        private void OnAttackMissed()
+        {
+            Play(definition.Audio.AttackClip);
         }
 
         private void OnHurt(Enemy _)

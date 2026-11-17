@@ -22,6 +22,9 @@ namespace DarknessRises.Game.Waves
         private SceneSpawnPointLighting lighting;
         private Transform hunted;
 
+        /// <summary>Raised when any Enemy these Waves brought in dies.</summary>
+        public event Action<Enemy> EnemyDied;
+
         /// <summary>Starts running each Station's authored Waves as the character reaches it.</summary>
         public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character)
         {
@@ -30,6 +33,7 @@ namespace DarknessRises.Game.Waves
             progress = routeProgress;
             hunted = character;
             pools = new EnemyPools(transform);
+            pools.EnemyDied += OnEnemyDied;
             picker = new SpawnPointPicker(spawnPoints.Count, new System.Random());
             lighting = new SceneSpawnPointLighting(spawnPoints, route.SpawnPointLitIntensity);
 
@@ -75,8 +79,14 @@ namespace DarknessRises.Game.Waves
 
             progress.StationReached -= OnStationReached;
             waves.Dispose();
+            pools.EnemyDied -= OnEnemyDied;
             pools.Dispose();
             waves = null;
+        }
+
+        private void OnEnemyDied(Enemy enemy)
+        {
+            EnemyDied?.Invoke(enemy);
         }
 
         // Subscribed before the Waves are, so lights created since the last Station count from the first spawn.

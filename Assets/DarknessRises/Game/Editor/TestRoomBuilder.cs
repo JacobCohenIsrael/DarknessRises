@@ -1,6 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Player;
 using DarknessRises.Game.Editor.Waves;
@@ -121,6 +122,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
             SetReference(gameRoot, "routeWaves", routeWaves);
+            HealthBuilder.Build(gameRoot, character, cameraView);
 
             // Show the authored values in the Scene view too, not only in Play mode.
             gameRoot.Apply();

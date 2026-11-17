@@ -25,14 +25,17 @@ namespace DarknessRises.Game.Waves
         /// <summary>Raised when any Enemy these Waves brought in dies.</summary>
         public event Action<Enemy> EnemyDied;
 
-        /// <summary>Starts running each Station's authored Waves as the character reaches it.</summary>
-        public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character)
+        /// <summary>
+        /// Starts running each Station's authored Waves as the character reaches it. Spawned Enemies run on
+        /// <paramref name="enemyTime"/>.
+        /// </summary>
+        public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character, EnemyTime enemyTime)
         {
             Stop();
 
             progress = routeProgress;
             hunted = character;
-            pools = new EnemyPools(transform);
+            pools = new EnemyPools(transform, enemyTime);
             pools.EnemyDied += OnEnemyDied;
             picker = new SpawnPointPicker(spawnPoints.Count, new System.Random());
             lighting = new SceneSpawnPointLighting(spawnPoints, route.SpawnPointLitIntensity);

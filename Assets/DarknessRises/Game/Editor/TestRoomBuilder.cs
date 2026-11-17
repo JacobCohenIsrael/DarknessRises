@@ -1,9 +1,13 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Controls;
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Audio;
+using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Player;
+using DarknessRises.Game.Editor.Skills;
 using DarknessRises.Game.Editor.Waves;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Lightning;
@@ -122,6 +126,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
             SetReference(gameRoot, "routeWaves", routeWaves);
+            SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
             HealthBuilder.Build(gameRoot, character, cameraView);
 
             // Show the authored values in the Scene view too, not only in Play mode.
@@ -147,8 +152,13 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("route").objectReferenceValue = route;
             serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
+            serialized.FindProperty("flare").objectReferenceValue = SkillsBuilder.LoadOrCreateFlare();
+            serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();
+            var audio = AudioBuilder.LoadOrCreateAudio();
+            serialized.FindProperty("audio").objectReferenceValue = audio;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
+            AudioBuilder.RouteEnemyAudio(EnemyBuilder.LoadOrCreateShambler(), audio);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
             EditorUtility.SetDirty(player);

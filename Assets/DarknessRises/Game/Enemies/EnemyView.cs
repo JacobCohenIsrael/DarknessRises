@@ -11,6 +11,11 @@ namespace DarknessRises.Game.Enemies
     /// hurts the character if it lands) and a Stagger (knocked back). It forwards Shots to its <see cref="Enemies.Enemy"/>
     /// rule, and when that dies, lies still, sinks into the floor and fades out, then goes back to its pool.
     /// </summary>
+    /// <remarks>
+    /// Everything it does runs on <see cref="EnemyTime"/>, never the global time scale, so Slow-mo slows Enemies
+    /// alone: frame time (including the Wind-up, recovery and Stagger), NavMesh agent speed, and its sounds through
+    /// the Enemy mixer group.
+    /// </remarks>
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyView : MonoBehaviour, IShotTarget
     {
@@ -50,20 +55,21 @@ namespace DarknessRises.Game.Enemies
         private bool isHoldingStill;
         private bool isWindUpShown;
         private float facingYaw;
+        private EnemyTime time;
+        private float agentTimeScale = EnemyTime.NormalScale;
 
         public Enemy Enemy { get; } = new();
 
         public EnemyBehaviour Behaviour { get; private set; }
 
         /// <summary>Called once, when the pool creates this Enemy.</summary>
-        public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition)
+        public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition, EnemyTime enemyTime)
         {
             pool = owner;
             definition = enemyDefinition;
+            time = enemyTime;
 
-            agent.speed = definition.Speed;
-            agent.acceleration = definition.Acceleration;
-            agent.angularSpeed = definition.TurnSpeed;
+            ScaleAgentTime(EnemyTime.NormalScale);
             agent.stoppingDistance = definition.Attack.Range;
             agent.autoBraking = true;
 
@@ -73,6 +79,7 @@ namespace DarknessRises.Game.Enemies
             voice.rolloffMode = AudioRolloffMode.Linear;
             voice.maxDistance = audio.HearingRange;
             voice.volume = audio.Volume;
+            voice.outputAudioMixerGroup = audio.OutputGroup;
 
             livingMaterials = new Material[renderers.Length];
             for (var i = 0; i < renderers.Length; i++)
@@ -125,6 +132,7 @@ namespace DarknessRises.Game.Enemies
             agent.Warp(position);
             agent.isStopped = false;
             agent.updateRotation = true;
+            ScaleAgentTime(time.Scale);
             isHoldingStill = false;
             secondsUntilPathRefresh = 0f;
 
@@ -140,11 +148,17 @@ namespace DarknessRises.Game.Enemies
 
         private void Update()
         {
-            var deltaSeconds = Time.deltaTime;
+            // Enemy time: Slow-mo slows the Wind-up, recovery and Stagger along with the chase.
+            var deltaSeconds = time.Scaled(Time.deltaTime);
             if (!Enemy.IsAlive)
             {
                 SinkAndFade(deltaSeconds);
                 return;
+            }
+
+            if (time.Scale != agentTimeScale)
+            {
+                ScaleAgentTime(time.Scale);
             }
 
             Behaviour.Tick(deltaSeconds, IsCharacterInRange());
@@ -244,6 +258,23 @@ namespace DarknessRises.Game.Enemies
                 EnemyBehaviourState.Staggered => -attack.StaggerLeanDegrees * (1f - progress),
                 _ => 0f,
             };
+        }
+
+        /// <summary>
+        /// Runs the agent's movement at <paramref name="scale"/> times normal speed: speeds and its current velocity
+        /// scale with time, acceleration with time squared, so a slowed Enemy moves exactly like a slowed-down film.
+        /// </summary>
+        private void ScaleAgentTime(float scale)
+        {
+            if (agent.isOnNavMesh && agentTimeScale > 0f)
+            {
+                agent.velocity *= scale / agentTimeScale;
+            }
+
+            agentTimeScale = scale;
+            agent.speed = definition.Speed * scale;
+            agent.acceleration = definition.Acceleration * scale * scale;
+            agent.angularSpeed = definition.TurnSpeed * scale;
         }
 
         private void ShowWindUp(bool shown)

@@ -16,11 +16,13 @@ namespace DarknessRises.Game.Enemies
         private readonly Transform hatchery;
         private readonly Dictionary<EnemyDefinition, ObjectPool<EnemyView>> pools = new();
         private readonly Action<Enemy> onEnemyDied;
+        private readonly EnemyTime time;
 
-        public EnemyPools(Transform parent)
+        /// <param name="enemyTime">How fast time runs for every pooled Enemy (Slow-mo).</param>
+        public EnemyPools(Transform parent, EnemyTime enemyTime)
         {
             onEnemyDied = OnEnemyDied;
-
+            time = enemyTime;
             root = new GameObject("Enemies").transform;
             root.SetParent(parent, false);
 
@@ -103,7 +105,7 @@ namespace DarknessRises.Game.Enemies
             enemy.name = definition.name;
             enemy.gameObject.SetActive(false);
             enemy.transform.SetParent(root, false);
-            enemy.Prepare(pool, definition);
+            enemy.Prepare(pool, definition, time);
             enemy.Enemy.Died += onEnemyDied;
             return enemy;
         }

@@ -24,6 +24,7 @@ MonoBehaviour:
     deathClip: {fileID: 8300000, guid: a37f44cbf8c2a7443a3c361efa2f233a, type: 3}
     windUpClip: {fileID: 8300000, guid: 7f4aa26d5b55226409cda231ffaf869b, type: 3}
     attackClip: {fileID: 8300000, guid: cc6699269b4c1d44ea1e860518b9bb73, type: 3}
+    outputGroup: {fileID: 1199663272804557088, guid: 0fc8da764e90fb94287f053470bdf171, type: 2}
     volume: 0.8
     hearingRange: 25
   death:

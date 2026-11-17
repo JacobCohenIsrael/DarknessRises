@@ -1,0 +1,121 @@
+using System.Collections.Generic;
+using DarknessRises.Game.Levels;
+using DarknessRises.Game.Routes;
+using DarknessRises.Game.Waves;
+using NUnit.Framework;
+using UnityEngine;
+
+namespace DarknessRises.Game.EditModeTests.Levels
+{
+    public sealed class LevelFightsTests
+    {
+        private const string Shambler = "Shambler";
+        private const string Straggler = "Straggler";
+
+        private FakeSpawner waveSpawner;
+        private FakeSpawner stragglerSpawner;
+        private ScriptedRandom random;
+        private Station fight;
+        private Station exit;
+        private RouteProgress progress;
+        private LevelFights<string> fights;
+
+        // A 20 m Route walked at 1 m/s, with a fight at 10 m and the Level's end at 18 m.
+        [SetUp]
+        public void SetUp()
+        {
+            waveSpawner = new FakeSpawner();
+            stragglerSpawner = new FakeSpawner();
+            random = new ScriptedRandom();
+            fight = new Station(0, 10f);
+            exit = new Station(1, 18f);
+            progress = new RouteProgress(
+                new RoutePath(new[] { Vector3.zero, new Vector3(20f, 0f, 0f) }),
+                new[] { fight, exit },
+                1f);
+
+            var stationWaves = new IReadOnlyList<WavePlan<string>>[]
+            {
+                new[] { new WavePlan<string>(0f, 0f, new[] { Shambler, Shambler }) },
+            };
+
+            var stragglers = new StragglerSchedule<string>(stragglerSpawner, random);
+            random.Next(3f);
+            stragglers.Follow(new StragglerPlan<string>(Straggler, 3f, 3f, 2));
+            fights = new LevelFights<string>(progress, stationWaves, waveSpawner, stragglers);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            fights.Dispose();
+        }
+
+        private void Run(float seconds, float step = 0.5f)
+        {
+            for (var t = 0f; t < seconds; t += step)
+            {
+                progress.Tick(step);
+                fights.Tick(step);
+            }
+        }
+
+        [Test]
+        public void Stragglers_come_while_the_character_keeps_walking()
+        {
+            fights.StragglersAllowed = true;
+
+            Run(4f);
+
+            Assert.That(stragglerSpawner.Spawned, Is.EqualTo(new[] { Straggler }));
+            Assert.That(progress.IsAtStation, Is.False);
+            Assert.That(progress.Distance, Is.EqualTo(4f), "A Straggler never stops the character.");
+        }
+
+        [Test]
+        public void No_Stragglers_come_while_they_arent_allowed()
+        {
+            fights.StragglersAllowed = false;
+
+            Run(9f);
+
+            Assert.That(stragglerSpawner.Spawned, Is.Empty);
+        }
+
+        [Test]
+        public void No_Stragglers_come_while_the_character_fights_at_a_Station()
+        {
+            fights.StragglersAllowed = true;
+            Run(10f);
+            stragglerSpawner.KillAll();
+            var stragglersBefore = stragglerSpawner.Spawned.Count;
+
+            Assert.That(progress.CurrentStation, Is.SameAs(fight));
+            Run(30f);
+
+            Assert.That(stragglerSpawner.Spawned, Has.Count.EqualTo(stragglersBefore));
+            Assert.That(waveSpawner.Spawned, Has.Count.EqualTo(2));
+            Assert.That(fights.AliveCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void The_last_Station_is_left_to_the_owner_instead_of_being_cleared()
+        {
+            Station reached = null;
+            fights.ExitReached += station => reached = station;
+
+            Run(10f);
+            waveSpawner.KillAll();
+            Run(20f);
+
+            Assert.That(fight.IsCleared, Is.True);
+            Assert.That(reached, Is.SameAs(exit));
+            Assert.That(exit.IsCleared, Is.False);
+            Assert.That(progress.CurrentStation, Is.SameAs(exit));
+
+            exit.Clear();
+            Run(3f);
+            Assert.That(progress.IsFinished, Is.True);
+        }
+    }
+}

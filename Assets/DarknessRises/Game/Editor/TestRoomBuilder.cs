@@ -464,7 +464,7 @@ namespace DarknessRises.Game.Editor
             var character = new GameObject("Character").transform;
             character.position = start;
 
-            CharacterBuilder.BuildPlaceholderModel(character, material);
+            CharacterBuilder.BuildModel(character, material);
 
             var auraObject = new GameObject("Aura", typeof(Light), typeof(AuraView));
             auraObject.transform.SetParent(character);

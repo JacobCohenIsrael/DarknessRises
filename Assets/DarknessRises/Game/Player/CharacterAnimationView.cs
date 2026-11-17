@@ -7,8 +7,9 @@ namespace DarknessRises.Game.Player
 {
     /// <summary>
     /// Shows the character's animations: walking along the Route, shooting, throwing and dying, with the upper body
-    /// turned to face the aim point. The rules live in <see cref="CharacterFacing"/> and <see cref="OneShotMotion"/>;
-    /// this feeds them frame time and drives the Animator.
+    /// turned to face the aim point and both hands on the Weapon. The rules live in <see cref="CharacterFacing"/> and
+    /// <see cref="OneShotMotion"/>; this feeds them frame time, drives the Animator, and after it twists the upper
+    /// body and puts the hands on the Weapon's grips.
     /// </summary>
     /// <remarks>
     /// The Grenade and death tickets call <see cref="Throw"/> and <see cref="Die"/>, and listen to
@@ -41,12 +42,26 @@ namespace DarknessRises.Game.Player
         [SerializeField, Tooltip("The Animator layer that plays aiming, shooting and throwing over the walk.")]
         private int upperBodyLayer = 1;
 
+        [SerializeField] private ArmIk rightArm;
+        [SerializeField] private ArmIk leftArm;
+
+        [SerializeField, Tooltip("Holds the Weapon's model and the grips, and kicks back with each shot. Not the muzzle.")]
+        private Transform recoil;
+
         private CharacterAnimationSettings settings;
         private RouteProgress route;
         private PrimaryWeapon weapon;
         private CharacterFacing facing;
         private OneShotMotion throwMotion;
         private OneShotMotion deathMotion;
+        private float handsWeight;
+        private float recoilSecondsLeft;
+        private HumanPoseHandler poseHandler;
+        private HumanPose pose;
+        private float deadSeconds;
+        private bool isFalling;
+        private Vector3 fallStartPosition;
+        private Quaternion fallStartRotation;
 
         /// <summary>Raised when the Grenade leaves the hand, partway through the throw.</summary>
         public event Action GrenadeReleased;
@@ -84,6 +99,12 @@ namespace DarknessRises.Game.Player
             deathMotion.Finished += OnDeathFinished;
             weapon.Fired += OnFired;
 
+            handsWeight = 1f;
+            recoilSecondsLeft = 0f;
+            deadSeconds = 0f;
+            isFalling = false;
+            poseHandler?.Dispose();
+            poseHandler = animator.isHuman ? new HumanPoseHandler(animator.avatar, animator.transform) : null;
             animator.Rebind();
             animator.SetLayerWeight(upperBodyLayer, 1f);
         }
@@ -141,9 +162,17 @@ namespace DarknessRises.Game.Player
             var deltaSeconds = Time.deltaTime;
             throwMotion.Tick(deltaSeconds);
             deathMotion.Tick(deltaSeconds);
+            recoilSecondsLeft = Mathf.Max(0f, recoilSecondsLeft - deltaSeconds);
+
+            // The hands leave the Weapon to throw or to fall, and go back once the throw is over.
+            var handsTarget = IsDead || IsThrowing ? 0f : 1f;
+            handsWeight = settings.HandsBlendSeconds > 0f
+                ? Mathf.MoveTowards(handsWeight, handsTarget, deltaSeconds / settings.HandsBlendSeconds)
+                : handsTarget;
 
             if (IsDead)
             {
+                deadSeconds += deltaSeconds;
                 animator.SetFloat(MoveForwardId, 0f, settings.LocomotionBlendSeconds, deltaSeconds);
                 animator.SetFloat(MoveRightId, 0f, settings.LocomotionBlendSeconds, deltaSeconds);
                 return;
@@ -157,7 +186,7 @@ namespace DarknessRises.Game.Player
             animator.SetFloat(MoveRightId, move.x, settings.LocomotionBlendSeconds, deltaSeconds);
         }
 
-        // After the Animator has posed the bones, so the twist adds to the animated pose.
+        // After the Animator has posed the bones: the twist adds to the animated pose, then the hands go on the grips.
         private void LateUpdate()
         {
             if (facing == null)
@@ -167,22 +196,67 @@ namespace DarknessRises.Game.Player
 
             model.rotation = Quaternion.Euler(0f, facing.BodyYaw, 0f);
 
-            if (IsDead)
+            var kick = settings.RecoilSeconds > 0f ? recoilSecondsLeft / settings.RecoilSeconds : 0f;
+            recoil.localPosition = Vector3.back * (settings.RecoilDistance * kick);
+
+            // The Weapon's model goes away while the hands are off it, so it doesn't hang in the air. Shots still fire.
+            var weaponShown = handsWeight > 0.5f;
+            if (recoil.gameObject.activeSelf != weaponShown)
             {
-                return;
+                recoil.gameObject.SetActive(weaponShown);
             }
 
-            var twist = facing.Twist;
-            for (var i = 0; i < twistBones.Length; i++)
+            if (IsDead)
             {
-                var bone = twistBones[i].Bone;
-                bone.rotation = Quaternion.AngleAxis(twist * twistBones[i].Share, Vector3.up) * bone.rotation;
+                Fall();
             }
+            else
+            {
+                var twist = facing.Twist;
+                for (var i = 0; i < twistBones.Length; i++)
+                {
+                    var bone = twistBones[i].Bone;
+                    bone.rotation = Quaternion.AngleAxis(twist * twistBones[i].Share, Vector3.up) * bone.rotation;
+                }
+            }
+
+            rightArm.Solve(aim, handsWeight);
+            leftArm.Solve(aim, handsWeight);
         }
 
         private void OnDestroy()
         {
             Unsubscribe();
+            poseHandler?.Dispose();
+            poseHandler = null;
+        }
+
+        // Tips the body over backwards onto the floor, on top of whatever the death clip does to the limbs.
+        private void Fall()
+        {
+            if (!settings.FallOnDeath || poseHandler == null)
+            {
+                return;
+            }
+
+            poseHandler.GetHumanPose(ref pose);
+            if (!isFalling)
+            {
+                isFalling = true;
+                fallStartPosition = pose.bodyPosition;
+                fallStartRotation = pose.bodyRotation;
+            }
+
+            // It gathers speed as it goes over, like a body falling.
+            var progress = settings.DeathFallSeconds > 0f ? Mathf.Clamp01(deadSeconds / settings.DeathFallSeconds) : 1f;
+            var eased = progress * progress;
+            var lying = Quaternion.Euler(-settings.DeathFallDegrees, 0f, 0f) * fallStartRotation;
+            pose.bodyRotation = Quaternion.Slerp(fallStartRotation, lying, eased);
+            pose.bodyPosition = new Vector3(
+                fallStartPosition.x,
+                Mathf.Lerp(fallStartPosition.y, settings.DeathLyingHeight, eased),
+                fallStartPosition.z);
+            poseHandler.SetHumanPose(ref pose);
         }
 
         private void OnFired()
@@ -191,6 +265,7 @@ namespace DarknessRises.Game.Player
             if (!IsDead && !IsThrowing)
             {
                 animator.SetTrigger(ShootId);
+                recoilSecondsLeft = settings.RecoilSeconds;
             }
         }
 

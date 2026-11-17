@@ -25,9 +25,16 @@ MonoBehaviour:
     upperBodyTurnSpeed: 1440
     maxUpperBodyTwist: 100
     locomotionBlendSeconds: 0.12
-    grenadeReleaseSeconds: 0.45
-    throwSeconds: 1
+    handsBlendSeconds: 0.15
+    recoilDistance: 0.06
+    recoilSeconds: 0.12
+    grenadeReleaseSeconds: 0.67
+    throwSeconds: 1.17
     deathSeconds: 1.5
+    fallOnDeath: 1
+    deathFallSeconds: 0.85
+    deathFallDegrees: 84
+    deathLyingHeight: 0.15
   hitReaction:
     shakeForce: 0.5
     shakeSeconds: 0.3

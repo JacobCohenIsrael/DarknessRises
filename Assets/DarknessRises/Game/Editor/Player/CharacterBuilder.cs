@@ -7,25 +7,33 @@ using UnityEngine;
 namespace DarknessRises.Game.Editor.Player
 {
     /// <summary>
-    /// Builds the character's model and animation: a jointed placeholder model, its Animator controller
-    /// (a directional walk with death on the base layer, and aim, shoot and throw on an upper-body layer),
-    /// and the view that drives it. The controller is regenerated from the <see cref="CharacterAnimationSet"/>
-    /// on every rebuild; empty slots in the set get generated placeholder clips that pose the placeholder model.
+    /// Builds the character's model and animation: the humanoid model from Human Basic Motions, its Animator
+    /// controller (a directional walk with death on the base layer, and aim, shoot and throw on an upper-body layer),
+    /// the grips its hands hold the Weapon by, and the view that drives it. The controller is regenerated from the
+    /// <see cref="CharacterAnimationSet"/> on every rebuild; empty required slots get the project's default clips.
     /// </summary>
     /// <remarks>
-    /// To drop in real clips, assign them in the set (and swap the model for one they fit), then rebuild the Test Room.
     /// Keep the throw and death timings in the Player definition in step with the clips.
     /// </remarks>
     public static class CharacterBuilder
     {
         private const string AnimationFolder = "Assets/DarknessRises/Animation/Character";
-        private const string PlaceholderClipsFolder = AnimationFolder + "/Placeholder";
+        private const string GeneratedClipsFolder = AnimationFolder + "/Generated";
         private const string AnimationSetPath = AnimationFolder + "/CharacterAnimationSet.asset";
         private const string ControllerPath = AnimationFolder + "/Character.controller";
         private const string UpperBodyMaskPath = AnimationFolder + "/CharacterUpperBody.mask";
-        private const string PlaceholderAvatarPath = PlaceholderClipsFolder + "/PlaceholderCharacter.asset";
+        private const string DeathClipPath = GeneratedClipsFolder + "/Death.anim";
+
+        // Imported from the Asset Store (approved sources): Human Basic Motions FREE and Crafting Mecanim Animation Pack FREE.
+        private const string HumanAnimations = "Assets/Kevin Iglesias/Human Animations";
+        private const string ModelPath = HumanAnimations + "/Models/HumanM_Model.fbx";
+        private const string IdlePath = HumanAnimations + "/Animations/Male/Idles/HumanM@Idle01.fbx";
+        private const string WalkFolder = HumanAnimations + "/Animations/Male/Movement/Walk";
+        private const string ThrowPath = "Assets/ExplosiveLLC/Crafting Mecanim Animation Pack FREE/Animations/Crafter@Carry-Handoff.FBX";
 
         private const string ModelName = "Model";
+        private const string RecoilName = "Recoil";
+        private const string PlaceholderPistolName = "Placeholder Pistol";
 
         // Animator parameters, matching CharacterAnimationView.
         private const string MoveForward = "MoveForward";
@@ -35,109 +43,145 @@ namespace DarknessRises.Game.Editor.Player
         private const string Dead = "Dead";
         private const int UpperBodyLayer = 1;
 
-        // Placeholder model paths, relative to the model root.
-        private const string HipsPath = "Hips";
-        private const string LeftLegPath = HipsPath + "/Left Leg";
-        private const string RightLegPath = HipsPath + "/Right Leg";
-        private const string UpperBodyPath = HipsPath + "/Upper Body";
-        private const string GunArmPath = UpperBodyPath + "/Gun Arm";
-        private const string ThrowArmPath = UpperBodyPath + "/Throw Arm";
+        // Two-handed grip on the Weapon, in the weapon mount's space (metres): the right hand holds it,
+        // the left cups it from below and to the side.
+        private static readonly Vector3 RightGrip = new(0.02f, -0.05f, 0.3f);
+        private static readonly Vector3 LeftGrip = new(-0.05f, -0.08f, 0.32f);
+        private static readonly Vector3 LeftGripTurn = new(0f, 25f, 0f);
+        private static readonly Vector3 RightElbowHint = new(0.6f, -1f, 0f);
+        private static readonly Vector3 LeftElbowHint = new(-0.6f, -1f, 0f);
 
-        // Placeholder model layout, in metres.
-        private const float HipsHeight = 0.9f;
-        private const float HipsHalfWidth = 0.13f;
-        private static readonly Vector3 LegSize = new(0.16f, HipsHeight, 0.18f);
-        private static readonly Vector3 TorsoCentre = new(0f, 0.38f, 0f);
-        private static readonly Vector3 TorsoScale = new(0.48f, 0.4f, 0.3f);
-        private static readonly Vector3 HeadCentre = new(0f, 0.86f, 0f);
-        private const float HeadSize = 0.3f;
-        private static readonly Vector3 GunShoulder = new(0.25f, 0.55f, 0f);
-        private static readonly Vector3 ThrowShoulder = new(-0.25f, 0.55f, 0f);
-        private static readonly Vector3 ArmSize = new(0.11f, 0.5f, 0.11f);
+        // How the upper body's twist is shared along the spine.
+        private const float SpineShare = 0.3f;
+        private const float ChestShare = 0.3f;
+        private const float UpperChestShare = 0.4f;
 
-        // Placeholder poses: the gun arm reaches from the shoulder to the placeholder Pistol in front of the chest.
-        private static readonly Vector3 GunArmAimed = new(-70f, -32f, 0f);
-        private static readonly Vector3 GunArmRecoil = new(-88f, -32f, 0f);
-
-        // Placeholder clip timings, in seconds. The throw's release and length match the Player definition's defaults.
-        private const float IdleSeconds = 2f;
-        private const float StepSeconds = 0.4f;
-        private const float ShootSeconds = 0.2f;
-        private const float ThrowWindUpSeconds = 0.3f;
-        private const float ThrowReleaseSeconds = 0.45f;
-        private const float ThrowSeconds = 1f;
-        private const float FallSeconds = 0.9f;
-        private const float DeathSeconds = 1.2f;
-
-        // The character's body for physics, the same size as the capsule it replaces.
-        private const float BodyHeight = 2f;
-        private const float BodyRadius = 0.4f;
-
-        /// <summary>Adds the jointed placeholder model under <paramref name="character"/>, and a capsule collider for its body.</summary>
-        public static void BuildPlaceholderModel(Transform character, Material material)
+        /// <summary>Adds the humanoid model under <paramref name="character"/>, and a capsule collider for its body.</summary>
+        public static void BuildModel(Transform character, Material material)
         {
+            const float bodyHeight = 2f;
+            const float bodyRadius = 0.4f;
             var body = character.gameObject.AddComponent<CapsuleCollider>();
-            body.height = BodyHeight;
-            body.radius = BodyRadius;
-            body.center = Vector3.up * (BodyHeight / 2f);
+            body.height = bodyHeight;
+            body.radius = bodyRadius;
+            body.center = Vector3.up * (bodyHeight / 2f);
 
-            var model = new GameObject(ModelName, typeof(Animator)).transform;
-            model.SetParent(character, false);
+            var modelAsset = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath)
+                ?? throw new System.InvalidOperationException($"Import Human Basic Motions FREE first: {ModelPath} is missing.");
+            var model = (GameObject)PrefabUtility.InstantiatePrefab(modelAsset, character);
+            model.name = ModelName;
+            model.transform.localPosition = Vector3.zero;
+            model.transform.localRotation = Quaternion.identity;
 
-            var hips = AddJoint("Hips", model, Vector3.up * HipsHeight);
+            // The pack's demo material is Built-in only; paint the model with the project's URP character material.
+            foreach (var renderer in model.GetComponentsInChildren<Renderer>())
+            {
+                var materials = new Material[renderer.sharedMaterials.Length];
+                for (var i = 0; i < materials.Length; i++)
+                {
+                    materials[i] = material;
+                }
 
-            var leftLeg = AddJoint("Left Leg", hips, Vector3.left * HipsHalfWidth);
-            AddPart(PrimitiveType.Cube, "Left Leg Mesh", leftLeg, Vector3.down * (LegSize.y / 2f), LegSize, material);
-            var rightLeg = AddJoint("Right Leg", hips, Vector3.right * HipsHalfWidth);
-            AddPart(PrimitiveType.Cube, "Right Leg Mesh", rightLeg, Vector3.down * (LegSize.y / 2f), LegSize, material);
-
-            var upperBody = AddJoint("Upper Body", hips, Vector3.zero);
-            AddPart(PrimitiveType.Capsule, "Torso", upperBody, TorsoCentre, TorsoScale, material);
-            AddPart(PrimitiveType.Sphere, "Head", upperBody, HeadCentre, Vector3.one * HeadSize, material);
-
-            var gunArm = AddJoint("Gun Arm", upperBody, GunShoulder);
-            AddPart(PrimitiveType.Cube, "Gun Arm Mesh", gunArm, Vector3.down * (ArmSize.y / 2f), ArmSize, material);
-            var throwArm = AddJoint("Throw Arm", upperBody, ThrowShoulder);
-            AddPart(PrimitiveType.Cube, "Throw Arm Mesh", throwArm, Vector3.down * (ArmSize.y / 2f), ArmSize, material);
+                renderer.sharedMaterials = materials;
+            }
         }
 
         /// <summary>
         /// Builds the Animator controller from the animation set and adds the view that drives it, turning the
-        /// upper body toward <paramref name="primaryWeapon"/>'s aim.
+        /// upper body toward <paramref name="primaryWeapon"/>'s aim and putting the hands on its grips.
         /// </summary>
         public static CharacterAnimationView Animate(Transform character, PrimaryWeaponView primaryWeapon)
         {
-            EnsureFolder(PlaceholderClipsFolder);
+            EnsureFolder(GeneratedClipsFolder);
 
             var model = character.Find(ModelName)
                 ?? throw new System.InvalidOperationException($"{character.name} has no {ModelName} to animate.");
-
-            var set = LoadOrCreateAnimationSet();
-            var mask = BuildUpperBodyMask(model);
-            var controller = BuildController(set, mask);
-
             var animator = model.GetComponent<Animator>();
+
+            var set = LoadOrCreateAnimationSet(animator);
+            var controller = BuildController(set, BuildUpperBodyMask());
+
             animator.runtimeAnimatorController = controller;
-            animator.avatar = LoadOrCreatePlaceholderAvatar(model.gameObject);
             animator.applyRootMotion = false;
 
-            var aim = new SerializedObject(primaryWeapon).FindProperty("mount").objectReferenceValue;
+            var mount = (Transform)new SerializedObject(primaryWeapon).FindProperty("mount").objectReferenceValue;
+            var recoil = BuildGrips(mount, out var rightGrip, out var leftGrip);
 
             var view = character.gameObject.AddComponent<CharacterAnimationView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("animator").objectReferenceValue = animator;
             serialized.FindProperty("model").objectReferenceValue = model;
-            serialized.FindProperty("aim").objectReferenceValue = aim;
+            serialized.FindProperty("aim").objectReferenceValue = mount;
             serialized.FindProperty("upperBodyLayer").intValue = UpperBodyLayer;
-            var twistBones = serialized.FindProperty("twistBones");
-            twistBones.arraySize = 1;
-            twistBones.GetArrayElementAtIndex(0).FindPropertyRelative("bone").objectReferenceValue = model.Find(UpperBodyPath);
-            twistBones.GetArrayElementAtIndex(0).FindPropertyRelative("share").floatValue = 1f;
+            serialized.FindProperty("recoil").objectReferenceValue = recoil;
+            SetTwistBones(serialized.FindProperty("twistBones"), animator);
+            SetArm(serialized.FindProperty("rightArm"), animator, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm,
+                HumanBodyBones.RightHand, HumanBodyBones.RightMiddleProximal, rightGrip, RightElbowHint);
+            SetArm(serialized.FindProperty("leftArm"), animator, HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm,
+                HumanBodyBones.LeftHand, HumanBodyBones.LeftMiddleProximal, leftGrip, LeftElbowHint);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
         }
 
-        private static CharacterAnimationSet LoadOrCreateAnimationSet()
+        // The Weapon's model moves onto a recoil pivot with the grips, so a shot kicks the gun and the hands back together.
+        // The muzzle stays where it is: Shots always leave from it.
+        private static Transform BuildGrips(Transform mount, out Transform rightGrip, out Transform leftGrip)
+        {
+            var recoil = new GameObject(RecoilName).transform;
+            recoil.SetParent(mount, false);
+
+            var pistol = mount.Find(PlaceholderPistolName);
+            if (pistol != null)
+            {
+                pistol.SetParent(recoil, false);
+            }
+
+            rightGrip = new GameObject("Right Grip").transform;
+            rightGrip.SetParent(recoil, false);
+            rightGrip.localPosition = RightGrip;
+
+            leftGrip = new GameObject("Left Grip").transform;
+            leftGrip.SetParent(recoil, false);
+            leftGrip.localPosition = LeftGrip;
+            leftGrip.localEulerAngles = LeftGripTurn;
+            return recoil;
+        }
+
+        private static void SetTwistBones(SerializedProperty list, Animator animator)
+        {
+            var upperChest = animator.GetBoneTransform(HumanBodyBones.UpperChest);
+            var bones = upperChest != null
+                ? new[] { (HumanBodyBones.Spine, SpineShare), (HumanBodyBones.Chest, ChestShare), (HumanBodyBones.UpperChest, UpperChestShare) }
+                : new[] { (HumanBodyBones.Spine, SpineShare), (HumanBodyBones.Chest, ChestShare + UpperChestShare) };
+
+            list.arraySize = bones.Length;
+            for (var i = 0; i < bones.Length; i++)
+            {
+                var element = list.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("bone").objectReferenceValue = animator.GetBoneTransform(bones[i].Item1);
+                element.FindPropertyRelative("share").floatValue = bones[i].Item2;
+            }
+        }
+
+        private static void SetArm(
+            SerializedProperty arm,
+            Animator animator,
+            HumanBodyBones upper,
+            HumanBodyBones lower,
+            HumanBodyBones hand,
+            HumanBodyBones fingers,
+            Transform grip,
+            Vector3 elbowHint)
+        {
+            arm.FindPropertyRelative("upperArm").objectReferenceValue = animator.GetBoneTransform(upper);
+            arm.FindPropertyRelative("forearm").objectReferenceValue = animator.GetBoneTransform(lower);
+            arm.FindPropertyRelative("hand").objectReferenceValue = animator.GetBoneTransform(hand);
+            arm.FindPropertyRelative("fingers").objectReferenceValue = animator.GetBoneTransform(fingers);
+            arm.FindPropertyRelative("grip").objectReferenceValue = grip;
+            arm.FindPropertyRelative("elbowHint").vector3Value = elbowHint;
+        }
+
+        private static CharacterAnimationSet LoadOrCreateAnimationSet(Animator animator)
         {
             var set = AssetDatabase.LoadAssetAtPath<CharacterAnimationSet>(AnimationSetPath);
             if (set == null)
@@ -147,26 +191,46 @@ namespace DarknessRises.Game.Editor.Player
             }
 
             var serialized = new SerializedObject(set);
-            FillSlot(serialized, "idle", CreateIdle);
-            FillSlot(serialized, "walkForward", () => CreateWalk("Walk Forward", Vector3.right, false));
-            FillSlot(serialized, "walkBackward", () => CreateWalk("Walk Backward", Vector3.right, true));
-            FillSlot(serialized, "walkLeft", () => CreateSideStep("Walk Left", -1f));
-            FillSlot(serialized, "walkRight", () => CreateSideStep("Walk Right", 1f));
-            FillSlot(serialized, "death", CreateDeath);
-            FillSlot(serialized, "aim", CreateAim);
-            FillSlot(serialized, "shoot", CreateShoot);
-            FillSlot(serialized, "throwGrenade", CreateThrow);
+            FillSlot(serialized, "idle", () => LoadClip(IdlePath));
+            FillSlot(serialized, "walkForward", () => LoadWalk("Forward"));
+            FillSlot(serialized, "walkBackward", () => LoadWalk("Backward"));
+            FillSlot(serialized, "walkLeft", () => LoadWalk("Left"));
+            FillSlot(serialized, "walkRight", () => LoadWalk("Right"));
+            FillSlot(serialized, "walkForwardLeft", () => LoadWalk("ForwardLeft"));
+            FillSlot(serialized, "walkForwardRight", () => LoadWalk("ForwardRight"));
+            FillSlot(serialized, "walkBackwardLeft", () => LoadWalk("BackwardLeft"));
+            FillSlot(serialized, "walkBackwardRight", () => LoadWalk("BackwardRight"));
+            FillSlot(serialized, "throwGrenade", () => LoadClip(ThrowPath));
+            FillSlot(serialized, "death", () => LoadOrCreateDeath(serialized.FindProperty("idle").objectReferenceValue as AnimationClip));
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return set;
         }
 
-        private static void FillSlot(SerializedObject set, string slot, System.Func<AnimationClip> createPlaceholder)
+        private static void FillSlot(SerializedObject set, string slot, System.Func<AnimationClip> defaultClip)
         {
             var property = set.FindProperty(slot);
             if (property.objectReferenceValue == null)
             {
-                property.objectReferenceValue = createPlaceholder();
+                property.objectReferenceValue = defaultClip();
             }
+        }
+
+        private static AnimationClip LoadWalk(string direction)
+        {
+            return LoadClip($"{WalkFolder}/HumanM@Walk01_{direction}.fbx");
+        }
+
+        private static AnimationClip LoadClip(string path)
+        {
+            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path))
+            {
+                if (asset is AnimationClip clip && !clip.name.StartsWith("__preview__"))
+                {
+                    return clip;
+                }
+            }
+
+            throw new System.InvalidOperationException($"No animation clip in {path}. Import the character's Asset Store packs first.");
         }
 
         private static AnimatorController BuildController(CharacterAnimationSet set, AvatarMask upperBodyMask)
@@ -226,11 +290,16 @@ namespace DarknessRises.Game.Editor.Player
             walk.blendType = BlendTreeType.FreeformDirectional2D;
             walk.blendParameter = MoveRight;
             walk.blendParameterY = MoveForward;
-            walk.AddChild(set.Idle, Vector2.zero);
-            walk.AddChild(set.WalkForward, Vector2.up);
-            walk.AddChild(set.WalkBackward, Vector2.down);
-            walk.AddChild(set.WalkLeft, Vector2.left);
-            walk.AddChild(set.WalkRight, Vector2.right);
+            var diagonal = Mathf.Sqrt(0.5f);
+            AddWalk(walk, set.Idle, Vector2.zero);
+            AddWalk(walk, set.WalkForward, Vector2.up);
+            AddWalk(walk, set.WalkBackward, Vector2.down);
+            AddWalk(walk, set.WalkLeft, Vector2.left);
+            AddWalk(walk, set.WalkRight, Vector2.right);
+            AddWalk(walk, set.WalkForwardLeft, new Vector2(-diagonal, diagonal));
+            AddWalk(walk, set.WalkForwardRight, new Vector2(diagonal, diagonal));
+            AddWalk(walk, set.WalkBackwardLeft, new Vector2(-diagonal, -diagonal));
+            AddWalk(walk, set.WalkBackwardRight, new Vector2(diagonal, -diagonal));
             machine.defaultState = locomotion;
 
             var death = machine.AddState("Death");
@@ -242,6 +311,16 @@ namespace DarknessRises.Game.Editor.Player
             toDeath.duration = 0.1f;
         }
 
+        private static void AddWalk(BlendTree walk, AnimationClip clip, Vector2 direction)
+        {
+            if (clip != null)
+            {
+                walk.AddChild(clip, direction);
+            }
+        }
+
+        // An empty Aim or Shoot slot leaves an empty state: the layer then adds nothing over the walk,
+        // and the view's arm IK holds the Weapon and its recoil kicks it.
         private static void BuildUpperBodyLayer(AnimatorStateMachine machine, CharacterAnimationSet set)
         {
             var aim = machine.AddState("Aim");
@@ -257,10 +336,10 @@ namespace DarknessRises.Game.Editor.Player
             // Every shot restarts the recoil, even mid-recoil.
             AddTriggered(aim, shoot, Shoot, 0.02f);
             AddTriggered(shoot, shoot, Shoot, 0f);
-            AddTriggered(aim, throwGrenade, Throw, 0.05f);
-            AddTriggered(shoot, throwGrenade, Throw, 0.05f);
-            AddBackWhenDone(shoot, aim, 0.05f);
-            AddBackWhenDone(throwGrenade, aim, 0.1f);
+            AddTriggered(aim, throwGrenade, Throw, 0.1f);
+            AddTriggered(shoot, throwGrenade, Throw, 0.1f);
+            AddBackWhenDone(shoot, aim, 0.05f, set.Shoot != null);
+            AddBackWhenDone(throwGrenade, aim, 0.15f, true);
         }
 
         private static void AddTriggered(AnimatorState from, AnimatorState to, string trigger, float duration)
@@ -271,17 +350,17 @@ namespace DarknessRises.Game.Editor.Player
             transition.duration = duration;
         }
 
-        private static void AddBackWhenDone(AnimatorState from, AnimatorState to, float duration)
+        // An empty state has no length to wait out, so it goes straight back.
+        private static void AddBackWhenDone(AnimatorState from, AnimatorState to, float duration, bool hasClip)
         {
             var transition = from.AddTransition(to);
             transition.hasExitTime = true;
-            transition.exitTime = 1f;
+            transition.exitTime = hasClip ? 1f - duration : 0f;
             transition.duration = duration;
         }
 
-        // Aim, shoot and throw play on the arms, head and torso; the legs, hips and the upper body's twist joint
-        // stay with the walk. For a humanoid model the matching humanoid body parts are set too.
-        private static AvatarMask BuildUpperBodyMask(Transform model)
+        // Aim, shoot and throw play on the spine, arms and head; the legs and root stay with the walk.
+        private static AvatarMask BuildUpperBodyMask()
         {
             var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(UpperBodyMaskPath);
             if (mask == null)
@@ -290,16 +369,7 @@ namespace DarknessRises.Game.Editor.Player
                 AssetDatabase.CreateAsset(mask, UpperBodyMaskPath);
             }
 
-            // Paths are relative to the Animator's object, like the clips' curve paths.
-            var bones = model.GetComponentsInChildren<Transform>(true);
-            mask.transformCount = bones.Length - 1;
-            for (var i = 1; i < bones.Length; i++)
-            {
-                var path = AnimationUtility.CalculateTransformPath(bones[i], model);
-                mask.SetTransformPath(i - 1, path);
-                mask.SetTransformActive(i - 1, path.StartsWith(UpperBodyPath + "/"));
-            }
-
+            mask.transformCount = 0;
             for (var part = AvatarMaskBodyPart.Root; part < AvatarMaskBodyPart.LastBodyPart; part++)
             {
                 var lowerBody = part is AvatarMaskBodyPart.Root
@@ -314,188 +384,63 @@ namespace DarknessRises.Game.Editor.Player
             return mask;
         }
 
-        private static Avatar LoadOrCreatePlaceholderAvatar(GameObject model)
+        /// <summary>
+        /// Neither approved pack has a death, so this generates the limbs' part of one from the idle's first pose:
+        /// the knees buckle, then straighten as the body lies down and the arms fall to its sides. The view tips the
+        /// body itself over (Player definition, Animation, fall on death): a generated clip's root curves aren't
+        /// read as humanoid body motion. Replace it in the animation set when a real clip exists.
+        /// </summary>
+        private static AnimationClip LoadOrCreateDeath(AnimationClip idle)
         {
-            var avatar = AssetDatabase.LoadAssetAtPath<Avatar>(PlaceholderAvatarPath);
-            if (avatar != null)
-            {
-                return avatar;
-            }
-
-            avatar = AvatarBuilder.BuildGenericAvatar(model, string.Empty);
-            avatar.name = "PlaceholderCharacter";
-            AssetDatabase.CreateAsset(avatar, PlaceholderAvatarPath);
-            return avatar;
-        }
-
-        private static AnimationClip CreateIdle()
-        {
-            var clip = new AnimationClip { name = "Idle" };
-            SetEuler(clip, UpperBodyPath, new[] { 0f, IdleSeconds / 2f, IdleSeconds }, new[] { Vector3.zero, new Vector3(3f, 0f, 0f), Vector3.zero });
-            SetPosition(clip, HipsPath, new[] { 0f, IdleSeconds }, new[] { Vector3.up * HipsHeight, Vector3.up * HipsHeight });
-            return SavePlaceholder(clip, true);
-        }
-
-        // Legs swing about the hips' x axis; walking backwards plays the same swing in reverse.
-        private static AnimationClip CreateWalk(string name, Vector3 axis, bool backwards)
-        {
-            const float swing = 25f;
-            var direction = backwards ? -1f : 1f;
-            var times = new[] { 0f, StepSeconds, StepSeconds * 2f };
-            var clip = new AnimationClip { name = name };
-            SetEuler(clip, LeftLegPath, times, new[] { axis * -swing * direction, axis * swing * direction, axis * -swing * direction });
-            SetEuler(clip, RightLegPath, times, new[] { axis * swing * direction, axis * -swing * direction, axis * swing * direction });
-            SetBob(clip);
-            return SavePlaceholder(clip, true);
-        }
-
-        // Side-steps: the leading leg swings out about the z axis, then the other follows.
-        private static AnimationClip CreateSideStep(string name, float side)
-        {
-            const float step = 20f;
-            var times = new[] { 0f, StepSeconds, StepSeconds * 2f };
-            var leading = side > 0f ? RightLegPath : LeftLegPath;
-            var following = side > 0f ? LeftLegPath : RightLegPath;
-            var clip = new AnimationClip { name = name };
-            SetEuler(clip, leading, times, new[] { Vector3.zero, Vector3.forward * step * side, Vector3.zero });
-            SetEuler(clip, following, times, new[] { Vector3.zero, Vector3.forward * step * side * 0.5f, Vector3.zero });
-            SetBob(clip);
-            return SavePlaceholder(clip, true);
-        }
-
-        private static void SetBob(AnimationClip clip)
-        {
-            const float bob = 0.03f;
-            var low = Vector3.up * HipsHeight;
-            var high = Vector3.up * (HipsHeight + bob);
-            SetPosition(
-                clip,
-                HipsPath,
-                new[] { 0f, StepSeconds / 2f, StepSeconds, StepSeconds * 1.5f, StepSeconds * 2f },
-                new[] { low, high, low, high, low });
-        }
-
-        // Falls backwards, stiff as a plank, onto the floor.
-        private static AnimationClip CreateDeath()
-        {
-            const float lyingHipsHeight = 0.2f;
-            var clip = new AnimationClip { name = "Death" };
-            var times = new[] { 0f, FallSeconds, DeathSeconds };
-            SetEuler(clip, HipsPath, times, new[] { Vector3.zero, new Vector3(-85f, 0f, 0f), new Vector3(-85f, 0f, 0f) });
-            SetPosition(clip, HipsPath, times, new[] { Vector3.up * HipsHeight, Vector3.up * lyingHipsHeight, Vector3.up * lyingHipsHeight });
-            return SavePlaceholder(clip, false);
-        }
-
-        private static AnimationClip CreateAim()
-        {
-            var clip = new AnimationClip { name = "Aim" };
-            var times = new[] { 0f, 1f };
-            SetEuler(clip, GunArmPath, times, new[] { GunArmAimed, GunArmAimed });
-            SetEuler(clip, ThrowArmPath, times, new[] { Vector3.zero, Vector3.zero });
-            return SavePlaceholder(clip, true);
-        }
-
-        private static AnimationClip CreateShoot()
-        {
-            var clip = new AnimationClip { name = "Shoot" };
-            SetEuler(clip, GunArmPath, new[] { 0f, ShootSeconds / 4f, ShootSeconds }, new[] { GunArmAimed, GunArmRecoil, GunArmAimed });
-            SetEuler(clip, ThrowArmPath, new[] { 0f, ShootSeconds }, new[] { Vector3.zero, Vector3.zero });
-            return SavePlaceholder(clip, false);
-        }
-
-        // Overarm: winds up behind the head, lets go reaching forward and up, then comes back down.
-        private static AnimationClip CreateThrow()
-        {
-            var clip = new AnimationClip { name = "Throw" };
-            SetEuler(
-                clip,
-                ThrowArmPath,
-                new[] { 0f, ThrowWindUpSeconds, ThrowReleaseSeconds, ThrowSeconds },
-                new[] { Vector3.zero, new Vector3(150f, 0f, 0f), new Vector3(250f, 0f, 0f), new Vector3(360f, 0f, 0f) });
-            SetEuler(clip, GunArmPath, new[] { 0f, ThrowSeconds }, new[] { GunArmAimed, GunArmAimed });
-            return SavePlaceholder(clip, false);
-        }
-
-        private static void SetEuler(AnimationClip clip, string path, float[] times, Vector3[] eulers)
-        {
-            for (var axis = 0; axis < 3; axis++)
-            {
-                var keys = new Keyframe[times.Length];
-                for (var i = 0; i < times.Length; i++)
-                {
-                    keys[i] = new Keyframe(times[i], eulers[i][axis]);
-                }
-
-                var binding = EditorCurveBinding.FloatCurve(path, typeof(Transform), "localEulerAnglesRaw." + "xyz"[axis]);
-                AnimationUtility.SetEditorCurve(clip, binding, Smooth(keys));
-            }
-        }
-
-        private static void SetPosition(AnimationClip clip, string path, float[] times, Vector3[] positions)
-        {
-            for (var axis = 0; axis < 3; axis++)
-            {
-                var keys = new Keyframe[times.Length];
-                for (var i = 0; i < times.Length; i++)
-                {
-                    keys[i] = new Keyframe(times[i], positions[i][axis]);
-                }
-
-                var binding = EditorCurveBinding.FloatCurve(path, typeof(Transform), "m_LocalPosition." + "xyz"[axis]);
-                AnimationUtility.SetEditorCurve(clip, binding, Smooth(keys));
-            }
-        }
-
-        private static AnimationCurve Smooth(Keyframe[] keys)
-        {
-            var curve = new AnimationCurve(keys);
-            for (var i = 0; i < keys.Length; i++)
-            {
-                AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
-                AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
-            }
-
-            return curve;
-        }
-
-        private static AnimationClip SavePlaceholder(AnimationClip clip, bool loop)
-        {
-            var settings = AnimationUtility.GetAnimationClipSettings(clip);
-            settings.loopTime = loop;
-            AnimationUtility.SetAnimationClipSettings(clip, settings);
-
-            var path = $"{PlaceholderClipsFolder}/{clip.name}.anim";
-            var existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+            var existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(DeathClipPath);
             if (existing != null)
             {
-                EditorUtility.CopySerialized(clip, existing);
-                Object.DestroyImmediate(clip);
                 return existing;
             }
 
-            AssetDatabase.CreateAsset(clip, path);
+            const float buckleSeconds = 0.3f;
+            const float landSeconds = 0.85f;
+            const float endSeconds = 1.2f;
+            const float buckledKnees = 0.1f;
+            const float lyingKnees = 0.8f;
+            const float lyingArmsDownUp = 0.1f;
+
+            var clip = new AnimationClip { name = "Death" };
+            var times = new[] { 0f, buckleSeconds, landSeconds, endSeconds };
+            foreach (var binding in AnimationUtility.GetCurveBindings(idle))
+            {
+                var name = binding.propertyName;
+                if (name.StartsWith("RootT.") || name.StartsWith("RootQ."))
+                {
+                    continue;
+                }
+
+                var standing = AnimationUtility.GetEditorCurve(idle, binding).Evaluate(0f);
+                var values = name switch
+                {
+                    "Left Lower Leg Stretch" or "Right Lower Leg Stretch" => new[] { standing, buckledKnees, lyingKnees, lyingKnees },
+                    "Left Arm Down-Up" or "Right Arm Down-Up" => new[] { standing, standing, lyingArmsDownUp, lyingArmsDownUp },
+                    _ => new[] { standing, standing, standing, standing },
+                };
+
+                var keys = new Keyframe[times.Length];
+                for (var i = 0; i < times.Length; i++)
+                {
+                    keys[i] = new Keyframe(times[i], values[i]);
+                }
+
+                var curve = new AnimationCurve(keys);
+                for (var i = 0; i < keys.Length; i++)
+                {
+                    AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
+                    AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
+                }
+
+                AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve(string.Empty, typeof(Animator), name), curve);
+            }
+
+            AssetDatabase.CreateAsset(clip, DeathClipPath);
             return clip;
-        }
-
-        private static Transform AddJoint(string name, Transform parent, Vector3 localPosition)
-        {
-            var joint = new GameObject(name).transform;
-            joint.SetParent(parent, false);
-            joint.localPosition = localPosition;
-            return joint;
-        }
-
-        private static void AddPart(PrimitiveType shape, string name, Transform joint, Vector3 localPosition, Vector3 localScale, Material material)
-        {
-            var part = GameObject.CreatePrimitive(shape);
-            part.name = name;
-
-            // The character's capsule collider stands in for its body; the limbs don't collide.
-            Object.DestroyImmediate(part.GetComponent<Collider>());
-            part.transform.SetParent(joint, false);
-            part.transform.localPosition = localPosition;
-            part.transform.localScale = localScale;
-            part.GetComponent<MeshRenderer>().sharedMaterial = material;
         }
 
         private static void EnsureFolder(string path)

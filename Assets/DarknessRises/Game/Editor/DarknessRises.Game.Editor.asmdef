@@ -3,6 +3,7 @@
     "rootNamespace": "DarknessRises.Game.Editor",
     "references": [
         "DarknessRises.Game",
+        "Unity.AI.Navigation",
         "Unity.Cinemachine",
         "Unity.InputSystem",
         "Unity.RenderPipelines.Core.Runtime",

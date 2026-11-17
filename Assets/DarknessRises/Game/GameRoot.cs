@@ -6,6 +6,7 @@ using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -39,16 +40,17 @@ namespace DarknessRises.Game
 #if UNITY_EDITOR || DEBUG
         private LightningDebugToggle lightningDebugToggle;
 #endif
+        [SerializeField] private RouteWavesView routeWaves;
 
         private void Awake()
         {
             Apply();
             routeWalker.Walk(
                 configuration.Player,
-                configuration.Route,
                 configuration.FixedAngleCamera.LookAhead,
                 character,
                 cameraTarget);
+            routeWaves.Run(configuration.Route, routeWalker.Progress, character);
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
         }

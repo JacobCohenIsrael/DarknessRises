@@ -6,8 +6,8 @@ namespace DarknessRises.Game.Routes
 {
     /// <summary>
     /// Walks the character along the scene's Route each frame and moves the camera's follow target ahead of it.
-    /// The rules live in <see cref="RouteProgress"/>, <see cref="TimedStationClearing"/> and <see cref="RouteLookAhead"/>;
-    /// this only feeds them frame time and shows where they put things.
+    /// The rules live in <see cref="RouteProgress"/> and <see cref="RouteLookAhead"/>; this only feeds them frame time
+    /// and shows where they put things. Whoever owns the fights at Stations clears them through <see cref="Progress"/>.
     /// </summary>
     public sealed class RouteWalker : MonoBehaviour
     {
@@ -15,7 +15,6 @@ namespace DarknessRises.Game.Routes
 
         private Transform character;
         private Transform cameraTarget;
-        private TimedStationClearing stationClearing;
         private RouteLookAhead lookAhead;
 
         /// <summary>The character's progress along the Route, once walking has begun. Owners of Station fights listen here.</summary>
@@ -23,19 +22,15 @@ namespace DarknessRises.Game.Routes
 
         public void Walk(
             PlayerDefinition player,
-            RouteDefinition definition,
             LookAheadSettings lookAheadSettings,
             Transform walkingCharacter,
             Transform followTarget)
         {
-            stationClearing?.Dispose();
-
             character = walkingCharacter;
             cameraTarget = followTarget;
 
             var path = route.CreatePath();
             Progress = new RouteProgress(path, route.CreateStations(path), player.WalkingSpeed);
-            stationClearing = new TimedStationClearing(Progress, definition.PlaceholderStationHoldSeconds);
             lookAhead = new RouteLookAhead(
                 lookAheadSettings.WalkingDistance,
                 lookAheadSettings.StoppedDistance,
@@ -53,15 +48,9 @@ namespace DarknessRises.Game.Routes
             }
 
             var deltaSeconds = Time.deltaTime;
-            stationClearing.Tick(deltaSeconds);
             Progress.Tick(deltaSeconds);
             lookAhead.Tick(deltaSeconds, Progress);
             Show();
-        }
-
-        private void OnDestroy()
-        {
-            stationClearing?.Dispose();
         }
 
         private void Show()

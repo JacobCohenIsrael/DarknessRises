@@ -1,8 +1,10 @@
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Grenades;
+using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
@@ -10,6 +12,7 @@ using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Runs;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
@@ -60,6 +63,14 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The Level, in a Level scene. Without one (the Test Room), the Route's Waves run in the one Room.")]
         private LevelView level;
 
+        [Header("Health and death")]
+        [SerializeField] private CharacterHealthView characterHealth;
+        [SerializeField] private HitPointsHudView hitPointsHud;
+        [SerializeField] private DeathFlow deathFlow;
+
+        private RunRecord runRecord;
+        private bool countsLevelKills;
+
         private void Awake()
         {
             Apply();
@@ -80,6 +91,7 @@ namespace DarknessRises.Game
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
             grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation));
+            ShowHealthAndDeath();
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
             flareHud.Show(skills.Flare.Skill);
@@ -111,6 +123,41 @@ namespace DarknessRises.Game
         private void OnDestroy()
         {
             enemyAudioPitch?.Dispose();
+
+            // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
+            if (countsLevelKills)
+            {
+                level.EnemyDied -= OnEnemyDied;
+            }
+            else if (runRecord != null)
+            {
+                routeWaves.EnemyDied -= OnEnemyDied;
+            }
+        }
+
+        private void ShowHealthAndDeath()
+        {
+            var health = characterHealth.Show(configuration.Player);
+            hitPointsHud.Show(health);
+            runRecord = new RunRecord();
+
+            // Kills come from whoever runs the fights: the Level, or the Test Room's Waves.
+            countsLevelKills = level != null;
+            if (countsLevelKills)
+            {
+                level.EnemyDied += OnEnemyDied;
+            }
+            else
+            {
+                routeWaves.EnemyDied += OnEnemyDied;
+            }
+
+            deathFlow.Watch(health, runRecord, characterAnimation, routeWalker, primaryWeapon);
+        }
+
+        private void OnEnemyDied(Enemy _)
+        {
+            runRecord.CountKill();
         }
 
         private void OnDisable()

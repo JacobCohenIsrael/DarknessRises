@@ -5,6 +5,7 @@ using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Grenades;
+using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
 using DarknessRises.Game.Editor.Player;
@@ -146,6 +147,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
             SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
+            HealthBuilder.Build(gameRoot, character, cameraView);
             return gameRoot;
         }
 

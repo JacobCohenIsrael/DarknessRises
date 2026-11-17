@@ -1,3 +1,4 @@
+using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
 using UnityEngine.AI;
@@ -28,6 +29,9 @@ namespace DarknessRises.Game.Enemies
 
         [SerializeField, Tooltip("Positional source for the Enemy's sounds.")]
         private AudioSource voice;
+
+        [SerializeField, Tooltip("Shows the Enemy's Tells: glinting eyes and positional sounds.")]
+        private EnemyTellView tells;
 
         [SerializeField, Tooltip("Every renderer that sinks and fades out when the Enemy dies.")]
         private Renderer[] renderers = new Renderer[0];
@@ -80,6 +84,9 @@ namespace DarknessRises.Game.Enemies
             voice.maxDistance = audio.HearingRange;
             voice.volume = audio.Volume;
             voice.outputAudioMixerGroup = audio.OutputGroup;
+
+            // Before the living materials are remembered, so the eyes' glint material is what each spawn restores.
+            tells.Prepare(definition.Tells, audio, time);
 
             livingMaterials = new Material[renderers.Length];
             for (var i = 0; i < renderers.Length; i++)
@@ -138,6 +145,7 @@ namespace DarknessRises.Game.Enemies
 
             Enemy.Spawn(definition.HitPoints);
             Behaviour.Begin();
+            tells.Wake(target);
             Play(definition.Audio.SpawnClip);
         }
 
@@ -337,6 +345,7 @@ namespace DarknessRises.Game.Enemies
         private void OnDied(Enemy _)
         {
             Play(definition.Audio.DeathClip);
+            tells.Silence();
 
             // Out of the way of Shots and the living, and free to sink through the floor.
             hitbox.enabled = false;
@@ -364,6 +373,7 @@ namespace DarknessRises.Game.Enemies
             agent = GetComponent<NavMeshAgent>();
             hitbox = GetComponent<Collider>();
             voice = GetComponent<AudioSource>();
+            tells = GetComponent<EnemyTellView>();
             renderers = GetComponentsInChildren<Renderer>();
         }
     }

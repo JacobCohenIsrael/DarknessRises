@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace DarknessRises.Game.Enemies
 {
@@ -16,6 +17,9 @@ namespace DarknessRises.Game.Enemies
         [SerializeField, Tooltip("Played when the Enemy dies.")]
         private AudioClip deathClip;
 
+        [SerializeField, Tooltip("Mixer group the Enemy's sounds go through. Its pitch follows the Enemy time scale, so Slow-mo slows them.")]
+        private AudioMixerGroup outputGroup;
+
         [SerializeField, Range(0f, 1f)]
         private float volume = 0.8f;
 
@@ -25,6 +29,7 @@ namespace DarknessRises.Game.Enemies
         public AudioClip SpawnClip => spawnClip;
         public AudioClip HurtClip => hurtClip;
         public AudioClip DeathClip => deathClip;
+        public AudioMixerGroup OutputGroup => outputGroup;
         public float Volume => volume;
         public float HearingRange => hearingRange;
     }

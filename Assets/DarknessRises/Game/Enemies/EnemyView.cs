@@ -10,6 +10,10 @@ namespace DarknessRises.Game.Enemies
     /// <see cref="Enemies.Enemy"/> rule, and when that dies, lies still, sinks into the floor and fades out,
     /// then goes back to its pool.
     /// </summary>
+    /// <remarks>
+    /// Everything it does runs on <see cref="EnemyTime"/>, never the global time scale, so Slow-mo slows Enemies
+    /// alone: frame time, NavMesh agent speed, and its sounds through the Enemy mixer group.
+    /// </remarks>
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyView : MonoBehaviour, IShotTarget
     {
@@ -38,18 +42,19 @@ namespace DarknessRises.Game.Enemies
         private float secondsUntilPathRefresh;
         private float secondsDead;
         private Vector3 deathPosition;
+        private EnemyTime time;
+        private float agentTimeScale = EnemyTime.NormalScale;
 
         public Enemy Enemy { get; } = new();
 
         /// <summary>Called once, when the pool creates this Enemy.</summary>
-        public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition)
+        public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition, EnemyTime enemyTime)
         {
             pool = owner;
             definition = enemyDefinition;
+            time = enemyTime;
 
-            agent.speed = definition.Speed;
-            agent.acceleration = definition.Acceleration;
-            agent.angularSpeed = definition.TurnSpeed;
+            ScaleAgentTime(EnemyTime.NormalScale);
             agent.stoppingDistance = definition.Attack.Range;
             agent.autoBraking = true;
 
@@ -59,6 +64,7 @@ namespace DarknessRises.Game.Enemies
             voice.rolloffMode = AudioRolloffMode.Linear;
             voice.maxDistance = audio.HearingRange;
             voice.volume = audio.Volume;
+            voice.outputAudioMixerGroup = audio.OutputGroup;
 
             livingMaterials = new Material[renderers.Length];
             for (var i = 0; i < renderers.Length; i++)
@@ -93,6 +99,7 @@ namespace DarknessRises.Game.Enemies
             agent.enabled = true;
             agent.Warp(position);
             agent.isStopped = false;
+            ScaleAgentTime(time.Scale);
             secondsUntilPathRefresh = 0f;
 
             Enemy.Spawn(definition.HitPoints);
@@ -106,13 +113,19 @@ namespace DarknessRises.Game.Enemies
 
         private void Update()
         {
+            var deltaSeconds = time.Scaled(Time.deltaTime);
             if (Enemy.IsAlive)
             {
-                Hunt(Time.deltaTime);
+                if (time.Scale != agentTimeScale)
+                {
+                    ScaleAgentTime(time.Scale);
+                }
+
+                Hunt(deltaSeconds);
             }
             else
             {
-                SinkAndFade(Time.deltaTime);
+                SinkAndFade(deltaSeconds);
             }
         }
 
@@ -133,6 +146,23 @@ namespace DarknessRises.Game.Enemies
 
             secondsUntilPathRefresh = definition.PathRefreshSeconds;
             agent.SetDestination(target.position);
+        }
+
+        /// <summary>
+        /// Runs the agent's movement at <paramref name="scale"/> times normal speed: speeds and its current velocity
+        /// scale with time, acceleration with time squared, so a slowed Enemy moves exactly like a slowed-down film.
+        /// </summary>
+        private void ScaleAgentTime(float scale)
+        {
+            if (agent.isOnNavMesh && agentTimeScale > 0f)
+            {
+                agent.velocity *= scale / agentTimeScale;
+            }
+
+            agentTimeScale = scale;
+            agent.speed = definition.Speed * scale;
+            agent.acceleration = definition.Acceleration * scale * scale;
+            agent.angularSpeed = definition.TurnSpeed * scale;
         }
 
         private void SinkAndFade(float deltaSeconds)

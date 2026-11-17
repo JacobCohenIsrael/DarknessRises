@@ -18,6 +18,12 @@ namespace DarknessRises.Game.Controls
         [SerializeField, Tooltip("Gameplay/Reload.")]
         private InputActionReference reload;
 
+        [SerializeField, Tooltip("Gameplay/Flare: triggers the Flare Skill.")]
+        private InputActionReference flare;
+
+        [SerializeField, Tooltip("Gameplay/SlowMo: triggers the Slow-mo Skill.")]
+        private InputActionReference slowMo;
+
         [SerializeField, Tooltip("Gameplay/Grenade: throws a Grenade at the aim point.")]
         private InputActionReference grenade;
 
@@ -26,6 +32,8 @@ namespace DarknessRises.Game.Controls
 
         public bool IsFireHeld => fire.action.IsPressed();
         public bool WasReloadPressedThisFrame => reload.action.WasPressedThisFrame();
+        public bool WasFlarePressedThisFrame => flare.action.WasPressedThisFrame();
+        public bool WasSlowMoPressedThisFrame => slowMo.action.WasPressedThisFrame();
         public bool WasGrenadePressedThisFrame => grenade.action.WasPressedThisFrame();
 
         /// <summary>The point in the Room under the pointer, on the horizontal plane at <paramref name="height"/>.</summary>
@@ -40,6 +48,8 @@ namespace DarknessRises.Game.Controls
             aim.action.Enable();
             fire.action.Enable();
             reload.action.Enable();
+            flare.action.Enable();
+            slowMo.action.Enable();
             grenade.action.Enable();
         }
 
@@ -48,6 +58,8 @@ namespace DarknessRises.Game.Controls
             aim.action.Disable();
             fire.action.Disable();
             reload.action.Disable();
+            flare.action.Disable();
+            slowMo.action.Disable();
             grenade.action.Disable();
         }
     }

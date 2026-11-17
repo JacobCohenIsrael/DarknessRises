@@ -1,6 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Grenades;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Player;
 using DarknessRises.Game.Editor.Waves;
@@ -117,6 +118,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "primaryWeapon", primaryWeapon);
             SetReference(gameRoot, "characterAnimation", CharacterBuilder.Animate(character, primaryWeapon));
             SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
+            GrenadeBuilder.Build(gameRoot, character);
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
@@ -145,6 +147,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("route").objectReferenceValue = route;
             serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
+            serialized.FindProperty("grenade").objectReferenceValue = GrenadeBuilder.LoadOrCreateGrenade();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
 

@@ -18,11 +18,15 @@ namespace DarknessRises.Game.Controls
         [SerializeField, Tooltip("Gameplay/Reload.")]
         private InputActionReference reload;
 
+        [SerializeField, Tooltip("Gameplay/Grenade: throws a Grenade at the aim point.")]
+        private InputActionReference grenade;
+
         [SerializeField, Tooltip("The camera the player sees the Room through, used to turn the pointer into an aim point.")]
         private Camera viewCamera;
 
         public bool IsFireHeld => fire.action.IsPressed();
         public bool WasReloadPressedThisFrame => reload.action.WasPressedThisFrame();
+        public bool WasGrenadePressedThisFrame => grenade.action.WasPressedThisFrame();
 
         /// <summary>The point in the Room under the pointer, on the horizontal plane at <paramref name="height"/>.</summary>
         public bool TryGetAimPoint(float height, out Vector3 aimPoint)
@@ -36,6 +40,7 @@ namespace DarknessRises.Game.Controls
             aim.action.Enable();
             fire.action.Enable();
             reload.action.Enable();
+            grenade.action.Enable();
         }
 
         private void OnDisable()
@@ -43,6 +48,7 @@ namespace DarknessRises.Game.Controls
             aim.action.Disable();
             fire.action.Disable();
             reload.action.Disable();
+            grenade.action.Disable();
         }
     }
 }

@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aed9b6296ab413a40984c08587979988, type: 3}
+  m_Name: Grenade
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Grenades.GrenadeDefinition
+  charges: 3
+  refillSeconds: 20
+  throwSpeed: 12
+  maxThrowRange: 14
+  gravity: 20
+  minFlightSeconds: 0.35
+  body:
+    prefab: {fileID: 930537768119490950, guid: aa4f91807ecedce4bb52ef7f333766e6, type: 3}
+    glowColor: {r: 1, g: 0.45, b: 0.15, a: 1}
+    size: 0.18
+    trailSeconds: 0.2
+    tumbleSpeed: 540
+  blastRadius: 3.5
+  damage: 4
+  explosion:
+    prefab: {fileID: 1187643993117742727, guid: 373932479250b134c9289d6a734cf6e2, type: 3}
+    lightColor: {r: 1, g: 0.62, b: 0.3, a: 1}
+    lightIntensity: 40
+    lightRange: 9
+    lightSeconds: 0.9
+    lightHeight: 1.2
+    fireballCount: 18
+    sparkCount: 40
+    clip: {fileID: 8300000, guid: 986d6b30567e30e428f3f21373fe45ca, type: 3}
+    volume: 0.9
+    hearingRange: 60
+    shakeForce: 0.6
+    shakeSeconds: 0.45

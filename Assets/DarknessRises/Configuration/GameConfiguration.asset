@@ -17,3 +17,4 @@ MonoBehaviour:
   route: {fileID: 11400000, guid: 5b51c7bb8df5e96449395b992b6e0f37, type: 2}
   pistol: {fileID: 11400000, guid: 2b6aa77312d88324a8564c4e5bb817eb, type: 2}
   lightning: {fileID: 11400000, guid: 01048019a8ed09a4486281121f8102c7, type: 2}
+  grenade: {fileID: 11400000, guid: 30dde1c9375512b469def22f100c7f4a, type: 2}

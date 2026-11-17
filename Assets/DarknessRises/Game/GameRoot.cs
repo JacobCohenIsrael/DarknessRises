@@ -3,6 +3,7 @@ using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
@@ -40,13 +41,19 @@ namespace DarknessRises.Game
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
+        [SerializeField] private GrenadeThrowerView grenadeThrower;
+        [SerializeField] private GrenadeHudView grenadeHud;
 
         [SerializeField, Tooltip("Debug/ToggleLightning. Only read in the Editor and debug builds.")]
         private InputActionReference toggleLightning;
 
+        [SerializeField, Tooltip("Debug/PrimaryWeapon1-3: equip the Nth Primary. Only read in the Editor and debug builds.")]
+        private InputActionReference[] switchPrimaryWeapon;
+
         private LightningScheduler lightningScheduler;
 #if UNITY_EDITOR || DEBUG
         private LightningDebugToggle lightningDebugToggle;
+        private PrimaryWeaponDebugSwitch primaryWeaponDebugSwitch;
 #endif
         [SerializeField] private RouteWavesView routeWaves;
         [SerializeField] private CharacterSkillsView characterSkills;
@@ -85,8 +92,10 @@ namespace DarknessRises.Game
                 routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime);
             }
 
-            ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
+            primaryWeapon.Arm(new[] { configuration.Pistol, configuration.MachineGun, configuration.Flamethrower });
+            ammoHud.Show(primaryWeapon.Weapon);
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
+            grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation));
             ShowHealthAndDeath();
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
@@ -105,7 +114,9 @@ namespace DarknessRises.Game
 
 #if UNITY_EDITOR || DEBUG
             lightningDebugToggle = new LightningDebugToggle(toggleLightning, lightningScheduler, lightning);
+            primaryWeaponDebugSwitch = new PrimaryWeaponDebugSwitch(switchPrimaryWeapon, primaryWeapon);
 #endif
+            primaryWeapon.Switched += OnPrimaryWeaponSwitched;
         }
 
         private void Start()
@@ -168,12 +179,21 @@ namespace DarknessRises.Game
 #if UNITY_EDITOR || DEBUG
             lightningDebugToggle.Dispose();
             lightningDebugToggle = null;
+            primaryWeaponDebugSwitch.Dispose();
+            primaryWeaponDebugSwitch = null;
 #endif
+            primaryWeapon.Switched -= OnPrimaryWeaponSwitched;
         }
 
         private void Update()
         {
             lightningScheduler.Tick(Time.deltaTime);
+        }
+
+        private void OnPrimaryWeaponSwitched(PrimaryWeapon equipped)
+        {
+            ammoHud.Show(equipped);
+            characterAnimation.ShowWeapon(equipped);
         }
 
         // The character walked into another Room of the Level: Lightning comes through its windows, if it has any.

@@ -21,9 +21,13 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Min(0f), Tooltip("Seconds the trail behind a Shot lasts. 0 hides the trail.")]
         private float trailSeconds = 0.06f;
 
+        [SerializeField, Min(0.01f), Tooltip("How many times its starting size the Shot has grown by the end of its range, like a spreading flame. 1 keeps its size.")]
+        private float sizeAtRange = 1f;
+
         public ShotView Prefab => prefab;
         public Color GlowColor => glowColor;
         public float Size => size;
         public float TrailSeconds => trailSeconds;
+        public float SizeAtRange => sizeAtRange;
     }
 }

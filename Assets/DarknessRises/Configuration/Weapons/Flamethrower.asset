@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dffe5275e11559e428e63db9d7e643c8, type: 3}
+  m_Name: Flamethrower
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Weapons.WeaponDefinition
+  shotsPerSecond: 15
+  magazineSize: 60
+  reloadSeconds: 2.5
+  shotSpeed: 12
+  damage: 1
+  range: 6
+  spreadDegrees: 14
+  shot:
+    prefab: {fileID: 4339596024223537202, guid: 95dfef04350f10a4fbdde45823d7ab5c, type: 3}
+    glowColor: {r: 1, g: 0.62, b: 0.2, a: 1}
+    size: 0.2
+    trailSeconds: 0
+    sizeAtRange: 3
+  shotLight:
+    carriesLight: 1
+    color: {r: 1, g: 0.5, b: 0.15, a: 1}
+    intensity: 5
+    range: 4.5
+    everyNthShot: 3
+  muzzleFlash:
+    color: {r: 1, g: 0.5, b: 0.15, a: 1}
+    intensity: 6
+    range: 4
+    seconds: 0.1
+  hitSpark:
+    prefab: {fileID: 3657083395534766733, guid: 4dc8e0d67c65d5247bbf69778eb2f48b, type: 3}
+    color: {r: 1, g: 0.5, b: 0.15, a: 1}
+    intensity: 2
+    range: 2.5
+    seconds: 0.12
+    surfaceOffset: 0.25
+    sparkCount: 3

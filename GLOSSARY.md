@@ -143,7 +143,7 @@ A Weapon with limited uses, fired with a separate input, such as the Grenade.
 _Avoid_: special, sidearm
 
 **Grenade**:
-A Secondary weapon the character throws. It explodes, damaging Enemies in an area and lighting it up for a moment.
+A Secondary weapon the character throws. It explodes, damaging Enemies in an area and lighting it up for a moment. The character carries a few Grenade charges, which refill one at a time.
 
 **Shot**:
 One thing a Weapon fires that travels and can hit an Enemy. A Shot always glows enough to be seen; some Weapons' Shots also light their surroundings.

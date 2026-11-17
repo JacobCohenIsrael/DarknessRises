@@ -16,3 +16,7 @@ MonoBehaviour:
   distance: 16
   fieldOfView: 40
   followDamping: {x: 0.5, y: 0.5, z: 0.5}
+  lookAhead:
+    walkingDistance: 4
+    stoppedDistance: 0
+    changeSpeed: 3

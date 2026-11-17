@@ -1,6 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Player;
+using DarknessRises.Game.Routes;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -26,6 +27,7 @@ namespace DarknessRises.Game.Editor
         public const string GameConfigurationPath = ConfigurationFolder + "/GameConfiguration.asset";
         private const string PlayerDefinitionPath = ConfigurationFolder + "/PlayerDefinition.asset";
         private const string CameraDefinitionPath = ConfigurationFolder + "/CameraDefinition.asset";
+        private const string RouteDefinitionPath = ConfigurationFolder + "/RouteDefinition.asset";
         private const string LightingSettingsPath = LightingFolder + "/Darkness.lighting";
 
         private const string LitShaderName = "Universal Render Pipeline/Lit";
@@ -47,6 +49,20 @@ namespace DarknessRises.Game.Editor
             new(7f, 0f, 7f),
         };
 
+        // The test Route winds between the pillars, stopping at two Stations, and ends in the far corner.
+        private static readonly Vector3[] RouteWaypoints =
+        {
+            new(-8f, 0f, -8f),
+            new(-8f, 0f, -1f),
+            new(-1f, 0f, -1f),
+            new(-1f, 0f, 6f),
+            new(4f, 0f, 4f),
+            new(8f, 0f, 1f),
+            new(8f, 0f, -8f),
+        };
+
+        private static readonly int[] StationWaypoints = { 2, 4 };
+
         [MenuItem("Darkness Rises/Rebuild Test Room")]
         public static void Build()
         {
@@ -66,9 +82,10 @@ namespace DarknessRises.Game.Editor
             MakeDark();
 
             BuildRoom(floorMaterial, wallMaterial);
+            var routeWalker = BuildRoute();
             var character = BuildCharacter(characterMaterial, out var aura);
-            var cameraView = BuildCameras();
-            var gameRoot = BuildGameRoot(configuration, character, aura, cameraView);
+            var cameraView = BuildCameras(out var cameraTarget);
+            var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
 
             // Show the authored values in the Scene view too, not only in Play mode.
             gameRoot.Apply();
@@ -83,12 +100,19 @@ namespace DarknessRises.Game.Editor
         {
             var player = LoadOrCreate<PlayerDefinition>(PlayerDefinitionPath);
             var fixedAngleCamera = LoadOrCreate<CameraDefinition>(CameraDefinitionPath);
+            var route = LoadOrCreate<RouteDefinition>(RouteDefinitionPath);
             var configuration = LoadOrCreate<GameConfiguration>(GameConfigurationPath);
 
             var serialized = new SerializedObject(configuration);
             serialized.FindProperty("player").objectReferenceValue = player;
             serialized.FindProperty("fixedAngleCamera").objectReferenceValue = fixedAngleCamera;
+            serialized.FindProperty("route").objectReferenceValue = route;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            // Re-save the definitions so fields added since they were created are written to disk with their defaults.
+            EditorUtility.SetDirty(player);
+            EditorUtility.SetDirty(fixedAngleCamera);
+            EditorUtility.SetDirty(route);
             return configuration;
         }
 
@@ -155,9 +179,45 @@ namespace DarknessRises.Game.Editor
             }
         }
 
+        private static RouteWalker BuildRoute()
+        {
+            var route = new GameObject("Route", typeof(RouteLayout), typeof(RouteWalker));
+            var waypoints = new Transform[RouteWaypoints.Length];
+            var stationCount = 0;
+            for (var i = 0; i < RouteWaypoints.Length; i++)
+            {
+                var isStation = System.Array.IndexOf(StationWaypoints, i) >= 0;
+                var waypoint = new GameObject(isStation ? $"Station {++stationCount}" : $"Waypoint {i + 1}");
+                if (isStation)
+                {
+                    waypoint.AddComponent<StationMarker>();
+                }
+
+                waypoint.transform.SetParent(route.transform);
+                waypoint.transform.localPosition = RouteWaypoints[i];
+                waypoints[i] = waypoint.transform;
+            }
+
+            var layout = route.GetComponent<RouteLayout>();
+            var serialized = new SerializedObject(layout);
+            var list = serialized.FindProperty("waypoints");
+            list.arraySize = waypoints.Length;
+            for (var i = 0; i < waypoints.Length; i++)
+            {
+                list.GetArrayElementAtIndex(i).objectReferenceValue = waypoints[i];
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            var walker = route.GetComponent<RouteWalker>();
+            SetReference(walker, "route", layout);
+            return walker;
+        }
+
         private static Transform BuildCharacter(Material material, out AuraView aura)
         {
             var character = new GameObject("Character").transform;
+            character.position = RouteWaypoints[0];
 
             var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             body.name = "Placeholder Body";
@@ -174,8 +234,12 @@ namespace DarknessRises.Game.Editor
             return character;
         }
 
-        private static FixedAngleCameraView BuildCameras()
+        private static FixedAngleCameraView BuildCameras(out Transform cameraTarget)
         {
+            // The camera follows this point a little ahead of the character along the Route.
+            cameraTarget = new GameObject("Camera Target").transform;
+            cameraTarget.position = RouteWaypoints[0];
+
             var mainCamera = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener), typeof(CinemachineBrain));
             mainCamera.tag = "MainCamera";
             var unityCamera = mainCamera.GetComponent<Camera>();
@@ -198,7 +262,9 @@ namespace DarknessRises.Game.Editor
             GameConfiguration configuration,
             Transform character,
             AuraView aura,
-            FixedAngleCameraView cameraView)
+            FixedAngleCameraView cameraView,
+            Transform cameraTarget,
+            RouteWalker routeWalker)
         {
             var gameRoot = new GameObject("Game Root").AddComponent<GameRoot>();
             var serialized = new SerializedObject(gameRoot);
@@ -206,6 +272,8 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("character").objectReferenceValue = character;
             serialized.FindProperty("aura").objectReferenceValue = aura;
             serialized.FindProperty("fixedAngleCamera").objectReferenceValue = cameraView;
+            serialized.FindProperty("cameraTarget").objectReferenceValue = cameraTarget;
+            serialized.FindProperty("routeWalker").objectReferenceValue = routeWalker;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return gameRoot;
         }

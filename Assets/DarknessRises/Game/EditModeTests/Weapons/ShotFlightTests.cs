@@ -44,5 +44,19 @@ namespace DarknessRises.Game.EditModeTests.Weapons
             Assert.That(flight.IsSpent, Is.True);
             Assert.That(flight.Position, Is.EqualTo(hitPoint));
         }
+
+        [Test]
+        public void TracksHowMuchOfItsRangeIsUsed()
+        {
+            var flight = new ShotFlight(Vector3.zero, Vector3.right, Speed, Range);
+            Assert.That(flight.RangeUsed, Is.EqualTo(0f));
+
+            flight.Advance(flight.StepLength(0.125f));
+            Assert.That(flight.RangeUsed, Is.EqualTo(0.25f).Within(1e-5f));
+
+            flight.Stop(Vector3.right * 4f);
+            Assert.That(flight.RangeUsed, Is.EqualTo(1f));
+        }
     }
 }
+

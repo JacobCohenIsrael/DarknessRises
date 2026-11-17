@@ -18,12 +18,16 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private CameraDefinition fixedAngleCamera;
         [SerializeField] private RouteDefinition route;
         [SerializeField] private WeaponDefinition pistol;
+        [SerializeField] private WeaponDefinition machineGun;
+        [SerializeField] private WeaponDefinition flamethrower;
         [SerializeField] private LightningDefinition lightning;
 
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
         public RouteDefinition Route => route;
         public WeaponDefinition Pistol => pistol;
+        public WeaponDefinition MachineGun => machineGun;
+        public WeaponDefinition Flamethrower => flamethrower;
         public LightningDefinition Lightning => lightning;
     }
 }

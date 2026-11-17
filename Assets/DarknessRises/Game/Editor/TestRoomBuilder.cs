@@ -120,6 +120,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
+            PrimaryWeaponsBuilder.WireDebugSwitch(gameRoot);
             SetReference(gameRoot, "routeWaves", routeWaves);
 
             // Show the authored values in the Scene view too, not only in Play mode.
@@ -143,7 +144,10 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("player").objectReferenceValue = player;
             serialized.FindProperty("fixedAngleCamera").objectReferenceValue = fixedAngleCamera;
             serialized.FindProperty("route").objectReferenceValue = route;
-            serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
+            var pistol = PistolBuilder.LoadOrCreatePistol();
+            serialized.FindProperty("pistol").objectReferenceValue = pistol;
+            serialized.FindProperty("machineGun").objectReferenceValue = PrimaryWeaponsBuilder.LoadOrCreateMachineGun(pistol);
+            serialized.FindProperty("flamethrower").objectReferenceValue = PrimaryWeaponsBuilder.LoadOrCreateFlamethrower(pistol);
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);

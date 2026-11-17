@@ -7,8 +7,9 @@ namespace DarknessRises.Game.Player
 {
     /// <summary>
     /// Shows the character's animations: walking along the Route, shooting, throwing and dying, with the upper body
-    /// turned to face the aim point. The rules live in <see cref="CharacterFacing"/> and <see cref="OneShotMotion"/>;
-    /// this feeds them frame time and drives the Animator.
+    /// turned to face the aim point and both hands on the Weapon. The rules live in <see cref="CharacterFacing"/> and
+    /// <see cref="OneShotMotion"/>; this feeds them frame time, drives the Animator, and after it twists the upper
+    /// body and puts the hands on the Weapon's grips.
     /// </summary>
     /// <remarks>
     /// The Grenade and death tickets call <see cref="Throw"/> and <see cref="Die"/>, and listen to
@@ -41,12 +42,20 @@ namespace DarknessRises.Game.Player
         [SerializeField, Tooltip("The Animator layer that plays aiming, shooting and throwing over the walk.")]
         private int upperBodyLayer = 1;
 
+        [SerializeField] private ArmIk rightArm;
+        [SerializeField] private ArmIk leftArm;
+
+        [SerializeField, Tooltip("Holds the Weapon's model and the grips, and kicks back with each shot. Not the muzzle.")]
+        private Transform recoil;
+
         private CharacterAnimationSettings settings;
         private RouteProgress route;
         private PrimaryWeapon weapon;
         private CharacterFacing facing;
         private OneShotMotion throwMotion;
         private OneShotMotion deathMotion;
+        private float handsWeight;
+        private float recoilSecondsLeft;
 
         /// <summary>Raised when the Grenade leaves the hand, partway through the throw.</summary>
         public event Action GrenadeReleased;
@@ -84,6 +93,8 @@ namespace DarknessRises.Game.Player
             deathMotion.Finished += OnDeathFinished;
             weapon.Fired += OnFired;
 
+            handsWeight = 1f;
+            recoilSecondsLeft = 0f;
             animator.Rebind();
             animator.SetLayerWeight(upperBodyLayer, 1f);
         }
@@ -129,6 +140,13 @@ namespace DarknessRises.Game.Player
             var deltaSeconds = Time.deltaTime;
             throwMotion.Tick(deltaSeconds);
             deathMotion.Tick(deltaSeconds);
+            recoilSecondsLeft = Mathf.Max(0f, recoilSecondsLeft - deltaSeconds);
+
+            // The hands leave the Weapon to throw or to fall, and go back once the throw is over.
+            var handsTarget = IsDead || IsThrowing ? 0f : 1f;
+            handsWeight = settings.HandsBlendSeconds > 0f
+                ? Mathf.MoveTowards(handsWeight, handsTarget, deltaSeconds / settings.HandsBlendSeconds)
+                : handsTarget;
 
             if (IsDead)
             {
@@ -145,7 +163,7 @@ namespace DarknessRises.Game.Player
             animator.SetFloat(MoveRightId, move.x, settings.LocomotionBlendSeconds, deltaSeconds);
         }
 
-        // After the Animator has posed the bones, so the twist adds to the animated pose.
+        // After the Animator has posed the bones: the twist adds to the animated pose, then the hands go on the grips.
         private void LateUpdate()
         {
             if (facing == null)
@@ -155,17 +173,21 @@ namespace DarknessRises.Game.Player
 
             model.rotation = Quaternion.Euler(0f, facing.BodyYaw, 0f);
 
-            if (IsDead)
+            var kick = settings.RecoilSeconds > 0f ? recoilSecondsLeft / settings.RecoilSeconds : 0f;
+            recoil.localPosition = Vector3.back * (settings.RecoilDistance * kick);
+
+            if (!IsDead)
             {
-                return;
+                var twist = facing.Twist;
+                for (var i = 0; i < twistBones.Length; i++)
+                {
+                    var bone = twistBones[i].Bone;
+                    bone.rotation = Quaternion.AngleAxis(twist * twistBones[i].Share, Vector3.up) * bone.rotation;
+                }
             }
 
-            var twist = facing.Twist;
-            for (var i = 0; i < twistBones.Length; i++)
-            {
-                var bone = twistBones[i].Bone;
-                bone.rotation = Quaternion.AngleAxis(twist * twistBones[i].Share, Vector3.up) * bone.rotation;
-            }
+            rightArm.Solve(aim, handsWeight);
+            leftArm.Solve(aim, handsWeight);
         }
 
         private void OnDestroy()
@@ -179,6 +201,7 @@ namespace DarknessRises.Game.Player
             if (!IsDead && !IsThrowing)
             {
                 animator.SetTrigger(ShootId);
+                recoilSecondsLeft = settings.RecoilSeconds;
             }
         }
 

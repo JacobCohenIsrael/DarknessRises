@@ -12,12 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 341c6341544c9004c928a0eb4e7ecc2d, type: 3}
   m_Name: CharacterAnimationSet
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Player.CharacterAnimationSet
-  idle: {fileID: 7400000, guid: 7c27c07ff807dab4cabbdd7bd11f194c, type: 2}
-  walkForward: {fileID: 7400000, guid: 57853bac02456514ba96dafdd125b701, type: 2}
-  walkBackward: {fileID: 7400000, guid: 1b218ec382326024297489e361347d33, type: 2}
-  walkLeft: {fileID: 7400000, guid: ac89785bc051f5c4eab642dcb664ff40, type: 2}
-  walkRight: {fileID: 7400000, guid: f06a07fb2c7acb04ebca15d4b7d46ae1, type: 2}
-  death: {fileID: 7400000, guid: 1b25e196a8db3a34ca3c8ffb609afee5, type: 2}
-  aim: {fileID: 7400000, guid: 5d7075afd5b19134ba30192cc88a3e60, type: 2}
-  shoot: {fileID: 7400000, guid: efd1b19c3cd204e4c98b44846b59628e, type: 2}
-  throwGrenade: {fileID: 7400000, guid: 38c09259cd2b57645994cab5f38baee4, type: 2}
+  idle: {fileID: -2576967968662016515, guid: 56fd86b76fc74d24d83522069f5deb9b, type: 3}
+  walkForward: {fileID: 3094330708855449807, guid: c133e3c197c12e04a9dd23bd0966910f, type: 3}
+  walkBackward: {fileID: 3094330708855449807, guid: f1f1135ca9cfa8c47bf81718bb0d6873, type: 3}
+  walkLeft: {fileID: 3094330708855449807, guid: b702e254d5e77904da0429cfcbc77709, type: 3}
+  walkRight: {fileID: 3094330708855449807, guid: 2cd37dc84c089ac4981cd6d36abd33eb, type: 3}
+  walkForwardLeft: {fileID: 3094330708855449807, guid: 3a4cf5e04ded562489d1c3b2da8c2d7a, type: 3}
+  walkForwardRight: {fileID: 3094330708855449807, guid: dd9cde7e792f5f946b091935d7903296, type: 3}
+  walkBackwardLeft: {fileID: 3094330708855449807, guid: 5dcc71b9770f2554e8fd3ea0d6c1e1f4, type: 3}
+  walkBackwardRight: {fileID: 3094330708855449807, guid: 55d43189338018e4c9e0c2ce1f608563, type: 3}
+  death: {fileID: 7400000, guid: d0354feb32ff5c942a217b4945c43565, type: 2}
+  aim: {fileID: 0}
+  shoot: {fileID: 0}
+  throwGrenade: {fileID: 7400000, guid: 5ddce69c55ff9b04886b01d04097b8a4, type: 3}

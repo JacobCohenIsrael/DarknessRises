@@ -8,28 +8,4 @@ AvatarMask:
   m_PrefabAsset: {fileID: 0}
   m_Name: CharacterUpperBody
   m_Mask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000u
-  m_Elements:
-  - m_Path: Hips
-    m_Weight: 0
-  - m_Path: Hips/Left Leg
-    m_Weight: 0
-  - m_Path: Hips/Left Leg/Left Leg Mesh
-    m_Weight: 0
-  - m_Path: Hips/Right Leg
-    m_Weight: 0
-  - m_Path: Hips/Right Leg/Right Leg Mesh
-    m_Weight: 0
-  - m_Path: Hips/Upper Body
-    m_Weight: 0
-  - m_Path: Hips/Upper Body/Torso
-    m_Weight: 1
-  - m_Path: Hips/Upper Body/Head
-    m_Weight: 1
-  - m_Path: Hips/Upper Body/Gun Arm
-    m_Weight: 1
-  - m_Path: Hips/Upper Body/Gun Arm/Gun Arm Mesh
-    m_Weight: 1
-  - m_Path: Hips/Upper Body/Throw Arm
-    m_Weight: 1
-  - m_Path: Hips/Upper Body/Throw Arm/Throw Arm Mesh
-    m_Weight: 1
+  m_Elements: []

@@ -1,10 +1,17 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Hud;
+using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
+using DarknessRises.Game.Randomness;
+using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
+using UnityEngine.InputSystem;
+#if UNITY_EDITOR || DEBUG
+using DarknessRises.Game.Debugging;
+#endif
 
 namespace DarknessRises.Game
 {
@@ -23,6 +30,16 @@ namespace DarknessRises.Game
         [SerializeField] private PrimaryWeaponView primaryWeapon;
         [SerializeField] private AmmoHudView ammoHud;
         [SerializeField] private CharacterAnimationView characterAnimation;
+        [SerializeField] private Room room;
+        [SerializeField] private LightningView lightning;
+
+        [SerializeField, Tooltip("Debug/ToggleLightning. Only read in the Editor and debug builds.")]
+        private InputActionReference toggleLightning;
+
+        private LightningScheduler lightningScheduler;
+#if UNITY_EDITOR || DEBUG
+        private LightningDebugToggle lightningDebugToggle;
+#endif
 
         private void Awake()
         {
@@ -35,6 +52,36 @@ namespace DarknessRises.Game
                 cameraTarget);
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
+            lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
+        }
+
+        private void OnEnable()
+        {
+            lightningScheduler.Rumbled += lightning.PlayRumble;
+            lightningScheduler.Flashed += lightning.Flash;
+#if UNITY_EDITOR || DEBUG
+            lightningDebugToggle = new LightningDebugToggle(toggleLightning, lightningScheduler, lightning);
+#endif
+        }
+
+        private void Start()
+        {
+            lightningScheduler.EnterRoom(room.LetsLightningIn);
+        }
+
+        private void OnDisable()
+        {
+            lightningScheduler.Rumbled -= lightning.PlayRumble;
+            lightningScheduler.Flashed -= lightning.Flash;
+#if UNITY_EDITOR || DEBUG
+            lightningDebugToggle.Dispose();
+            lightningDebugToggle = null;
+#endif
+        }
+
+        private void Update()
+        {
+            lightningScheduler.Tick(Time.deltaTime);
         }
 
         /// <summary>Pushes the authored configuration into the scene's views.</summary>
@@ -42,6 +89,7 @@ namespace DarknessRises.Game
         {
             aura.Show(configuration.Player.Aura);
             fixedAngleCamera.Frame(configuration.FixedAngleCamera, cameraTarget);
+            lightning.Show(configuration.Lightning, room);
         }
     }
 }

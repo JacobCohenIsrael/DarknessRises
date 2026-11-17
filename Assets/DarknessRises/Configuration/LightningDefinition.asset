@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e03e7897b8f0a546b662f1353961ca9, type: 3}
+  m_Name: LightningDefinition
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Lightning.LightningDefinition
+  minIntervalSeconds: 4
+  maxIntervalSeconds: 6.5
+  rumbleLeadSeconds: 1.2
+  flash:
+    durationSeconds: 1.1
+    shape:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 50
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.02
+        value: 1
+        inSlope: 50
+        outSlope: -17.6
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.07
+        value: 0.12
+        inSlope: -17.6
+        outSlope: 14.600001
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.12
+        value: 0.85
+        inSlope: 14.600001
+        outSlope: -4.375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.2
+        value: 0.5
+        inSlope: -4.375
+        outSlope: -1.4
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.4
+        value: 0.22
+        inSlope: -1.4
+        outSlope: -0.53333336
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.7
+        value: 0.06
+        inSlope: -0.53333336
+        outSlope: -0.19999999
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: -0.19999999
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    elevationDegrees: 28
+    keyColor: {r: 0.78, g: 0.87, b: 1, a: 1}
+    keyIntensity: 3.2
+    shadowStrength: 1
+    fillColor: {r: 0.45, g: 0.55, b: 0.85, a: 1}
+    fillIntensity: 0.6
+    fillElevationDegrees: 45
+    fillYawOffsetDegrees: 180
+    windowGlowColor: {r: 1.4, g: 1.6, b: 2, a: 1}
+  rumble:
+    clip: {fileID: 8300000, guid: 5ae4d298ed547ba4c88587effb75d7e1, type: 3}
+    volume: 0.9
+    clipStartSeconds: 8.3
+    fadeOutSeconds: 1.6

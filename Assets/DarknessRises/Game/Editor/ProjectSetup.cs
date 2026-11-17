@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace DarknessRises.Game.Editor
 {
@@ -31,8 +32,26 @@ namespace DarknessRises.Game.Editor
             // the template's sample project-wide actions (with Move/Jump) don't fit a game where the player never steers.
             EditorBuildSettings.RemoveConfigObject(ProjectWideInputActionsKey);
 
+            OnlyTheMainLightCastsShadows();
+
             AssetDatabase.SaveAssets();
             Debug.Log("[ProjectSetup] Applied project settings.");
+        }
+
+        /// <summary>
+        /// Lightning (the main light) is the only light that casts real-time shadows, so every URP asset
+        /// turns off shadows for additional lights. That keeps a stray shadowed point light from costing a shadow pass on mobile.
+        /// </summary>
+        private static void OnlyTheMainLightCastsShadows()
+        {
+            foreach (var guid in AssetDatabase.FindAssets("t:UniversalRenderPipelineAsset", new[] { "Assets" }))
+            {
+                var asset = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(AssetDatabase.GUIDToAssetPath(guid));
+                var serialized = new SerializedObject(asset);
+                serialized.FindProperty("m_MainLightShadowsSupported").boolValue = true;
+                serialized.FindProperty("m_AdditionalLightShadowsSupported").boolValue = false;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
 
         /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room.</summary>

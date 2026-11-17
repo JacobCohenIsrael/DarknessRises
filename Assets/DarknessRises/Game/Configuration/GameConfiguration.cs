@@ -1,4 +1,5 @@
 using DarknessRises.Game.Cameras;
+using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Weapons;
@@ -17,10 +18,12 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private CameraDefinition fixedAngleCamera;
         [SerializeField] private RouteDefinition route;
         [SerializeField] private WeaponDefinition pistol;
+        [SerializeField] private LightningDefinition lightning;
 
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
         public RouteDefinition Route => route;
         public WeaponDefinition Pistol => pistol;
+        public LightningDefinition Lightning => lightning;
     }
 }

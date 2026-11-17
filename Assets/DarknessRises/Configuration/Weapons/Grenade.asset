@@ -29,7 +29,7 @@ MonoBehaviour:
   explosion:
     prefab: {fileID: 1187643993117742727, guid: 373932479250b134c9289d6a734cf6e2, type: 3}
     lightColor: {r: 1, g: 0.62, b: 0.3, a: 1}
-    lightIntensity: 40
+    lightIntensity: 80
     lightRange: 9
     lightSeconds: 0.9
     lightHeight: 1.2

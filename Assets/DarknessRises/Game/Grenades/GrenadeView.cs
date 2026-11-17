@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Weapons;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -12,6 +13,11 @@ namespace DarknessRises.Game.Grenades
     {
         // Metres the Grenade is kept off a surface it hits, so the explosion's light isn't buried in it.
         private const float SurfaceOffset = 0.05f;
+
+        // Colliders one flight step can cross. A step is a few centimetres; this is plenty.
+        private const int MaxStepHits = 8;
+
+        private readonly RaycastHit[] hits = new RaycastHit[MaxStepHits];
 
         [SerializeField] private MeshRenderer body;
         [SerializeField] private TrailRenderer trail;
@@ -63,9 +69,7 @@ namespace DarknessRises.Game.Grenades
             var step = flight.Position - from;
             var stepLength = step.magnitude;
 
-            // Walls and Obstacles stop the Grenade where it hits them; Enemies too.
-            if (stepLength > 0f
-                && Physics.Raycast(from, step / stepLength, out var hit, stepLength, hitLayers, QueryTriggerInteraction.Ignore))
+            if (stepLength > 0f && TryHitSolid(from, step / stepLength, stepLength, out var hit))
             {
                 flight.Stop(hit.point + hit.normal * SurfaceOffset);
             }
@@ -78,6 +82,26 @@ namespace DarknessRises.Game.Grenades
                 onLanded(flight.Position);
                 pool.Release(this);
             }
+        }
+
+        // Walls and Obstacles stop the Grenade where it hits them. It flies over and past Enemies (anything a Shot
+        // can damage), so it can be lobbed into the middle of a group instead of going off on the first one in the way.
+        private bool TryHitSolid(Vector3 origin, Vector3 direction, float distance, out RaycastHit nearest)
+        {
+            var count = Physics.RaycastNonAlloc(origin, direction, hits, distance, hitLayers, QueryTriggerInteraction.Ignore);
+            nearest = default;
+            var found = false;
+            for (var i = 0; i < count; i++)
+            {
+                var hit = hits[i];
+                if ((!found || hit.distance < nearest.distance) && !hit.collider.TryGetComponent<IShotTarget>(out _))
+                {
+                    nearest = hit;
+                    found = true;
+                }
+            }
+
+            return found;
         }
 
         private void Reset()

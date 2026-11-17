@@ -17,7 +17,7 @@ namespace DarknessRises.Game.Grenades
         [SerializeField] private Color lightColor = new(1f, 0.62f, 0.3f);
 
         [SerializeField, Min(0f), Tooltip("URP point light intensity at the peak of the flash.")]
-        private float lightIntensity = 40f;
+        private float lightIntensity = 80f;
 
         [SerializeField, Min(0f), Tooltip("Metres the light reaches. Wider than the blast, so the player sees what's around it.")]
         private float lightRange = 9f;

@@ -34,7 +34,7 @@ namespace DarknessRises.Game.Grenades
         [SerializeField, Tooltip("The floor the aim point is found on. The character's root.")]
         private Transform floor;
 
-        [SerializeField, Tooltip("What a Grenade in flight stops at.")]
+        [SerializeField, Tooltip("What a Grenade in flight stops at. Enemies on these layers are flown past.")]
         private LayerMask flightHitLayers = Physics.DefaultRaycastLayers;
 
         [SerializeField, Tooltip("What the blast can damage.")]

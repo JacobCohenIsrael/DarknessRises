@@ -1,5 +1,6 @@
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
+using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
@@ -26,6 +27,7 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private SlowMoDefinition slowMo;
         [SerializeField] private AudioDefinition audio;
         [SerializeField, Tooltip("The Level the game boots into.")] private LevelDefinition level;
+        [SerializeField] private GrenadeDefinition grenade;
 
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
@@ -36,5 +38,6 @@ namespace DarknessRises.Game.Configuration
         public SlowMoDefinition SlowMo => slowMo;
         public AudioDefinition Audio => audio;
         public LevelDefinition Level => level;
+        public GrenadeDefinition Grenade => grenade;
     }
 }

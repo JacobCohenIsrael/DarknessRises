@@ -37,6 +37,16 @@
                     "priority": 0
                 },
                 {
+                    "name": "Grenade",
+                    "type": "Button",
+                    "id": "8ea09453-042e-4458-8616-11497d96d991",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
                     "name": "Flare",
                     "type": "Button",
                     "id": "6cec26bc-9af3-476d-a9eb-a217de7f4662",
@@ -88,6 +98,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Reload",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44188a61-96cf-4c18-a5b6-b6ba16b1fd2b",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Grenade",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

@@ -28,3 +28,11 @@ MonoBehaviour:
     intensity: 12
     range: 6
     seconds: 0.07
+  hitSpark:
+    prefab: {fileID: 3657083395534766733, guid: 4dc8e0d67c65d5247bbf69778eb2f48b, type: 3}
+    color: {r: 1, g: 0.7, b: 0.35, a: 1}
+    intensity: 6
+    range: 2.5
+    seconds: 0.12
+    surfaceOffset: 0.25
+    sparkCount: 8

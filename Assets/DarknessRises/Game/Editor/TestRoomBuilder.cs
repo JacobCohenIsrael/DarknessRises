@@ -3,6 +3,7 @@ using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Player;
+using DarknessRises.Game.Editor.Waves;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
@@ -103,6 +104,10 @@ namespace DarknessRises.Game.Editor
             MakeDark();
 
             var room = BuildRoom(floorMaterial, wallMaterial, windowSkyMaterial);
+
+            // Baked before anything else is in the scene, so only the Room shapes where Enemies can walk.
+            WavesBuilder.BakeNavMesh(room.transform);
+            var routeWaves = WavesBuilder.BuildWaves(room.transform);
             var routeWalker = BuildRoute();
             var character = BuildCharacter(characterMaterial, out var aura);
             var cameraView = BuildCameras(out var cameraTarget);
@@ -115,6 +120,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
+            SetReference(gameRoot, "routeWaves", routeWaves);
 
             // Show the authored values in the Scene view too, not only in Play mode.
             gameRoot.Apply();
@@ -140,6 +146,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            WavesBuilder.AuthorPlaceholderWaves(route);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
             EditorUtility.SetDirty(player);

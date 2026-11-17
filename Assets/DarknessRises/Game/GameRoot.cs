@@ -30,6 +30,7 @@ namespace DarknessRises.Game
         [SerializeField] private RouteWalker routeWalker;
         [SerializeField] private PrimaryWeaponView primaryWeapon;
         [SerializeField] private AmmoHudView ammoHud;
+        [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
 
@@ -52,6 +53,7 @@ namespace DarknessRises.Game
                 cameraTarget);
             routeWaves.Run(configuration.Route, routeWalker.Progress, character);
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
+            characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
         }
 

@@ -2,6 +2,7 @@ using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Hud;
+using DarknessRises.Game.Editor.Player;
 using DarknessRises.Game.Editor.Waves;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Lightning;
@@ -49,8 +50,6 @@ namespace DarknessRises.Game.Editor
         private const float WallHeight = 3f;
         private const float WallThickness = 0.5f;
         private const float PillarSize = 1f;
-        private const float CharacterHeight = 2f;
-        private const float CharacterRadius = 0.4f;
 
         private static readonly Vector3[] PillarPositions =
         {
@@ -114,7 +113,9 @@ namespace DarknessRises.Game.Editor
             var cameraView = BuildCameras(out var cameraTarget);
             var lightning = BuildLightning();
             var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
-            SetReference(gameRoot, "primaryWeapon", PistolBuilder.BuildPrimaryWeapon(character, Camera.main));
+            var primaryWeapon = PistolBuilder.BuildPrimaryWeapon(character, Camera.main);
+            SetReference(gameRoot, "primaryWeapon", primaryWeapon);
+            SetReference(gameRoot, "characterAnimation", CharacterBuilder.Animate(character, primaryWeapon));
             SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
@@ -426,12 +427,7 @@ namespace DarknessRises.Game.Editor
             var character = new GameObject("Character").transform;
             character.position = RouteWaypoints[0];
 
-            var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            body.name = "Placeholder Body";
-            body.transform.SetParent(character);
-            body.transform.localPosition = Vector3.up * (CharacterHeight / 2f);
-            body.transform.localScale = new Vector3(CharacterRadius * 2f, CharacterHeight / 2f, CharacterRadius * 2f);
-            Paint(body, material);
+            CharacterBuilder.BuildPlaceholderModel(character, material);
 
             var auraObject = new GameObject("Aura", typeof(Light), typeof(AuraView));
             auraObject.transform.SetParent(character);

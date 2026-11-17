@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 341c6341544c9004c928a0eb4e7ecc2d, type: 3}
+  m_Name: CharacterAnimationSet
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Player.CharacterAnimationSet
+  idle: {fileID: 7400000, guid: 7c27c07ff807dab4cabbdd7bd11f194c, type: 2}
+  walkForward: {fileID: 7400000, guid: 57853bac02456514ba96dafdd125b701, type: 2}
+  walkBackward: {fileID: 7400000, guid: 1b218ec382326024297489e361347d33, type: 2}
+  walkLeft: {fileID: 7400000, guid: ac89785bc051f5c4eab642dcb664ff40, type: 2}
+  walkRight: {fileID: 7400000, guid: f06a07fb2c7acb04ebca15d4b7d46ae1, type: 2}
+  death: {fileID: 7400000, guid: 1b25e196a8db3a34ca3c8ffb609afee5, type: 2}
+  aim: {fileID: 7400000, guid: 5d7075afd5b19134ba30192cc88a3e60, type: 2}
+  shoot: {fileID: 7400000, guid: efd1b19c3cd204e4c98b44846b59628e, type: 2}
+  throwGrenade: {fileID: 7400000, guid: 38c09259cd2b57645994cab5f38baee4, type: 2}

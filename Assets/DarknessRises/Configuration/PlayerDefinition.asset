@@ -20,3 +20,11 @@ MonoBehaviour:
     intensity: 2
     range: 4.5
     height: 2.6
+  animation:
+    bodyTurnSpeed: 360
+    upperBodyTurnSpeed: 1440
+    maxUpperBodyTwist: 100
+    locomotionBlendSeconds: 0.12
+    grenadeReleaseSeconds: 0.45
+    throwSeconds: 1
+    deathSeconds: 1.5

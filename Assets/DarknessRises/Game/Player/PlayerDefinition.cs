@@ -20,9 +20,13 @@ namespace DarknessRises.Game.Player
         [SerializeField, Tooltip("The faint, always-on, shadowless light around the character.")]
         private AuraSettings aura = new();
 
+        [SerializeField, Tooltip("How the body turns and when the throw and death animations reach their gameplay moments.")]
+        private CharacterAnimationSettings animation = new();
+
         public int HitPoints => hitPoints;
         public float InvulnerabilitySeconds => invulnerabilitySeconds;
         public float WalkingSpeed => walkingSpeed;
         public AuraSettings Aura => aura;
+        public CharacterAnimationSettings Animation => animation;
     }
 }

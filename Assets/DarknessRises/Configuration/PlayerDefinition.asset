@@ -31,6 +31,10 @@ MonoBehaviour:
     grenadeReleaseSeconds: 0.67
     throwSeconds: 1.17
     deathSeconds: 1.5
+    fallOnDeath: 1
+    deathFallSeconds: 0.85
+    deathFallDegrees: 84
+    deathLyingHeight: 0.15
   hitReaction:
     shakeForce: 0.5
     shakeSeconds: 0.3

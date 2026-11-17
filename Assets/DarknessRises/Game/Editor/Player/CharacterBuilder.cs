@@ -385,8 +385,10 @@ namespace DarknessRises.Game.Editor.Player
         }
 
         /// <summary>
-        /// Neither approved pack has a death, so this generates one from the idle's first pose: the knees buckle,
-        /// then the body falls onto its back and lies still. Replace it in the animation set when a real clip exists.
+        /// Neither approved pack has a death, so this generates the limbs' part of one from the idle's first pose:
+        /// the knees buckle, then straighten as the body lies down and the arms fall to its sides. The view tips the
+        /// body itself over (Player definition, Animation, fall on death): a generated clip's root curves aren't
+        /// read as humanoid body motion. Replace it in the animation set when a real clip exists.
         /// </summary>
         private static AnimationClip LoadOrCreateDeath(AnimationClip idle)
         {
@@ -399,37 +401,23 @@ namespace DarknessRises.Game.Editor.Player
             const float buckleSeconds = 0.3f;
             const float landSeconds = 0.85f;
             const float endSeconds = 1.2f;
-            const float buckledBodyHeight = 0.7f;
-            const float lyingBodyHeight = 0.14f;
             const float buckledKnees = 0.1f;
             const float lyingKnees = 0.8f;
             const float lyingArmsDownUp = 0.1f;
-            const float fallBackDegrees = -84f;
-            const float buckleBackDegrees = -12f;
 
             var clip = new AnimationClip { name = "Death" };
             var times = new[] { 0f, buckleSeconds, landSeconds, endSeconds };
-            var curves = new System.Collections.Generic.Dictionary<string, float>();
             foreach (var binding in AnimationUtility.GetCurveBindings(idle))
             {
-                curves[binding.propertyName] = AnimationUtility.GetEditorCurve(idle, binding).Evaluate(0f);
-            }
-
-            var standingRoot = new Quaternion(curves["RootQ.x"], curves["RootQ.y"], curves["RootQ.z"], curves["RootQ.w"]);
-            var buckledRoot = Quaternion.Euler(buckleBackDegrees, 0f, 0f) * standingRoot;
-            var lyingRoot = Quaternion.Euler(fallBackDegrees, 0f, 0f) * standingRoot;
-            var height = curves["RootT.y"];
-
-            foreach (var pair in curves)
-            {
-                var standing = pair.Value;
-                var values = pair.Key switch
+                var name = binding.propertyName;
+                if (name.StartsWith("RootT.") || name.StartsWith("RootQ."))
                 {
-                    "RootT.y" => new[] { height, buckledBodyHeight, lyingBodyHeight, lyingBodyHeight },
-                    "RootQ.x" => new[] { standing, buckledRoot.x, lyingRoot.x, lyingRoot.x },
-                    "RootQ.y" => new[] { standing, buckledRoot.y, lyingRoot.y, lyingRoot.y },
-                    "RootQ.z" => new[] { standing, buckledRoot.z, lyingRoot.z, lyingRoot.z },
-                    "RootQ.w" => new[] { standing, buckledRoot.w, lyingRoot.w, lyingRoot.w },
+                    continue;
+                }
+
+                var standing = AnimationUtility.GetEditorCurve(idle, binding).Evaluate(0f);
+                var values = name switch
+                {
                     "Left Lower Leg Stretch" or "Right Lower Leg Stretch" => new[] { standing, buckledKnees, lyingKnees, lyingKnees },
                     "Left Arm Down-Up" or "Right Arm Down-Up" => new[] { standing, standing, lyingArmsDownUp, lyingArmsDownUp },
                     _ => new[] { standing, standing, standing, standing },
@@ -448,7 +436,7 @@ namespace DarknessRises.Game.Editor.Player
                     AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
                 }
 
-                AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve(string.Empty, typeof(Animator), pair.Key), curve);
+                AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve(string.Empty, typeof(Animator), name), curve);
             }
 
             AssetDatabase.CreateAsset(clip, DeathClipPath);

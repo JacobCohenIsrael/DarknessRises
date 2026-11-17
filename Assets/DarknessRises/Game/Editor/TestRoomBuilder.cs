@@ -1,5 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Editor.Hud;
+using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
 using Unity.Cinemachine;
@@ -70,6 +72,7 @@ namespace DarknessRises.Game.Editor
             EnsureFolder(MaterialsFolder);
             EnsureFolder(ScenesFolder);
             EnsureFolder(LightingFolder);
+            HudBuilder.RequireTextMeshProEssentials();
 
             // A new single scene unloads unused assets, so load the assets only after creating it.
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -86,6 +89,8 @@ namespace DarknessRises.Game.Editor
             var character = BuildCharacter(characterMaterial, out var aura);
             var cameraView = BuildCameras(out var cameraTarget);
             var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
+            SetReference(gameRoot, "primaryWeapon", PistolBuilder.BuildPrimaryWeapon(character, Camera.main));
+            SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
 
             // Show the authored values in the Scene view too, not only in Play mode.
             gameRoot.Apply();
@@ -107,6 +112,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("player").objectReferenceValue = player;
             serialized.FindProperty("fixedAngleCamera").objectReferenceValue = fixedAngleCamera;
             serialized.FindProperty("route").objectReferenceValue = route;
+            serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.

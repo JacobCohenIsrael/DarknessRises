@@ -1,7 +1,9 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Hud;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Weapons;
 using UnityEngine;
 
 namespace DarknessRises.Game
@@ -18,6 +20,8 @@ namespace DarknessRises.Game
         [SerializeField] private FixedAngleCameraView fixedAngleCamera;
         [SerializeField] private Transform cameraTarget;
         [SerializeField] private RouteWalker routeWalker;
+        [SerializeField] private PrimaryWeaponView primaryWeapon;
+        [SerializeField] private AmmoHudView ammoHud;
 
         private void Awake()
         {
@@ -28,6 +32,7 @@ namespace DarknessRises.Game
                 configuration.FixedAngleCamera.LookAhead,
                 character,
                 cameraTarget);
+            ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
         }
 
         /// <summary>Pushes the authored configuration into the scene's views.</summary>

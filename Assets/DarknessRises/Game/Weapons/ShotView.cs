@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -5,7 +6,7 @@ namespace DarknessRises.Game.Weapons
 {
     /// <summary>
     /// A pooled Shot: a glowing, unlit body with a short trail that flies straight until it hits something
-    /// or uses up its range, then goes back to its pool.
+    /// or uses up its range, then goes back to its pool. What a hit does is up to whoever fired it.
     /// </summary>
     public sealed class ShotView : MonoBehaviour
     {
@@ -15,14 +16,21 @@ namespace DarknessRises.Game.Weapons
         private IObjectPool<ShotView> pool;
         private ShotFlight flight;
         private LayerMask hitLayers;
+        private Action<RaycastHit> onHit;
 
         public Material BodyMaterial => body.sharedMaterial;
 
         /// <summary>Called once, when the pool creates this Shot.</summary>
-        public void Prepare(IObjectPool<ShotView> owner, ShotSettings settings, Material glowMaterial, LayerMask layers)
+        public void Prepare(
+            IObjectPool<ShotView> owner,
+            ShotSettings settings,
+            Material glowMaterial,
+            LayerMask layers,
+            Action<RaycastHit> hit)
         {
             pool = owner;
             hitLayers = layers;
+            onHit = hit;
             body.sharedMaterial = glowMaterial;
             transform.localScale = Vector3.one * settings.Size;
 
@@ -47,8 +55,8 @@ namespace DarknessRises.Game.Weapons
             var step = flight.StepLength(Time.deltaTime);
             if (Physics.Raycast(flight.Position, flight.Direction, out var hit, step, hitLayers, QueryTriggerInteraction.Ignore))
             {
-                // Enemies and damage arrive with their own ticket; for now a Shot stops at whatever it hits.
                 flight.Stop(hit.point);
+                onHit(hit);
             }
             else
             {

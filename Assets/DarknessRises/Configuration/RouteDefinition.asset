@@ -12,4 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c80748aaeec0d64e9e56d96cfa7b8c6, type: 3}
   m_Name: RouteDefinition
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Routes.RouteDefinition
-  placeholderStationHoldSeconds: 1.5
+  stations:
+  - waves:
+    - delaySeconds: 0.8
+      spawnIntervalSeconds: 1.5
+      groups:
+      - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+        count: 3
+    - delaySeconds: 2
+      spawnIntervalSeconds: 1.2
+      groups:
+      - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+        count: 4
+  - waves:
+    - delaySeconds: 0.8
+      spawnIntervalSeconds: 1.2
+      groups:
+      - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+        count: 4
+    - delaySeconds: 2
+      spawnIntervalSeconds: 1
+      groups:
+      - enemyType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+        count: 6
+  spawnPointLitIntensity: 0.05

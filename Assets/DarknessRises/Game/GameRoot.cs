@@ -1,5 +1,7 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
@@ -7,6 +9,7 @@ using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Skills;
 using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
@@ -43,6 +46,13 @@ namespace DarknessRises.Game
         private LightningDebugToggle lightningDebugToggle;
 #endif
         [SerializeField] private RouteWavesView routeWaves;
+        [SerializeField] private CharacterSkillsView characterSkills;
+        [SerializeField] private SkillHudView flareHud;
+        [SerializeField] private SkillHudView slowMoHud;
+
+        // How fast time runs for Enemies. Slow-mo slows it; the global time scale is never touched.
+        private readonly EnemyTime enemyTime = new();
+        private EnemyAudioPitch enemyAudioPitch;
 
         [SerializeField, Tooltip("The Level, in a Level scene. Without one (the Test Room), the Route's Waves run in the one Room.")]
         private LevelView level;
@@ -57,16 +67,19 @@ namespace DarknessRises.Game
                 cameraTarget);
             if (level != null)
             {
-                level.Run(configuration.Level, routeWalker.Progress, character);
+                level.Run(configuration.Level, routeWalker.Progress, character, enemyTime);
             }
             else
             {
-                routeWaves.Run(configuration.Route, routeWalker.Progress, character);
+                routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime);
             }
 
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
+            var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
+            flareHud.Show(skills.Flare.Skill);
+            slowMoHud.Show(skills.SlowMo.Skill);
         }
 
         private void OnEnable()
@@ -86,6 +99,14 @@ namespace DarknessRises.Game
         private void Start()
         {
             lightningScheduler.EnterRoom(room.LetsLightningIn);
+
+            // In Start, not Awake: a mixer parameter set before the mixer's first update can be overwritten by its snapshot.
+            enemyAudioPitch = new EnemyAudioPitch(configuration.Audio, enemyTime);
+        }
+
+        private void OnDestroy()
+        {
+            enemyAudioPitch?.Dispose();
         }
 
         private void OnDisable()

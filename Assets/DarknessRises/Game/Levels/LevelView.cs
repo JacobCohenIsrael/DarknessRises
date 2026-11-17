@@ -62,9 +62,9 @@ namespace DarknessRises.Game.Levels
 
         /// <summary>
         /// Starts the Level: the start beat plays as the character walks in along <paramref name="routeProgress"/>,
-        /// then each Room's fights run as the character reaches them.
+        /// then each Room's fights run as the character reaches them. Its Enemies run on <paramref name="enemyTime"/>.
         /// </summary>
-        public void Run(LevelDefinition levelDefinition, RouteProgress routeProgress, Transform character)
+        public void Run(LevelDefinition levelDefinition, RouteProgress routeProgress, Transform character, EnemyTime enemyTime)
         {
             Stop();
 
@@ -100,7 +100,7 @@ namespace DarknessRises.Game.Levels
                 roomSpawnPoints[i] = rooms[i].SpawnPoints;
             }
 
-            pools = new EnemyPools(transform);
+            pools = new EnemyPools(transform, enemyTime);
             Prewarm(stationWaves, roomStragglers);
             spawner = new LevelSpawner(
                 pools,

@@ -21,6 +21,8 @@ A top-down survival shooter for mobile. The character walks through pitch-black 
 9. Only Lightning casts real-time shadows. Every other light is shadowless unless a device test shows there's budget for it.
 10. Ask before reusing a legacy visual or audio asset. The Free Pack sounds are approved as placeholders.
 11. Tests: only edit-mode tests of core rules for now. Move fast; feel gets tested by playing.
+12. Load and release content through Addressables, including scenes (additive), so memory holds only what the current Level needs and content can update without a new store build. Never put game content in `Resources`. Every handle is released by the scope that loaded it. See [ADR 0007](docs/adr/0007-addressables-for-content-loading.md).
+13. Development and tests never open a visible window on the user's workstation: no Unity Editor or game window, and no console (cmd/PowerShell) window. Run Unity headless only: `unity test` / `unity run` (batch mode), and `unity open . --batchmode --until-ready` when live-Editor commands or screenshots are needed (offscreen rendering). Start any other process hidden, and close every Editor you started when you're done.
 
 ## Unity automation
 

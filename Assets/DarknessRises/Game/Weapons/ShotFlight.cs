@@ -24,6 +24,9 @@ namespace DarknessRises.Game.Weapons
         public float DistanceTravelled { get; private set; }
         public bool IsSpent => DistanceTravelled >= range;
 
+        /// <summary>How much of its range the Shot has used up, from 0 at the muzzle to 1 at the end.</summary>
+        public float RangeUsed => range > 0f ? Mathf.Clamp01(DistanceTravelled / range) : 1f;
+
         /// <summary>How far the Shot would move in <paramref name="deltaSeconds"/>, never past the end of its range.</summary>
         public float StepLength(float deltaSeconds)
         {

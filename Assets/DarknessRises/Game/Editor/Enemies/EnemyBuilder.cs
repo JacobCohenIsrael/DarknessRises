@@ -301,10 +301,20 @@ namespace DarknessRises.Game.Editor.Enemies
             material = new Material(Shader.Find(LitShaderName)) { name = name };
             material.SetColor("_BaseColor", baseColor);
             material.SetFloat("_Smoothness", EyeSmoothness);
+
+            // Rooms have no reflection probes: glossy eyes would mirror the default environment instead of Darkness.
+            // Highlights from real lights, such as Lightning, still catch them.
+            material.SetFloat("_EnvironmentReflections", 0f);
+            material.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
             material.SetColor("_EmissionColor", Color.black);
+            AssetDatabase.CreateAsset(material, path);
+
+            // URP turns emission off on import while its colour is black. Turn it back on afterwards, so the asset
+            // keeps the emissive shader variant in builds; the glint sets the colour at runtime.
             material.EnableKeyword("_EMISSION");
             material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
-            AssetDatabase.CreateAsset(material, path);
+            EditorUtility.SetDirty(material);
+            AssetDatabase.SaveAssetIfDirty(material);
             return material;
         }
 

@@ -15,9 +15,14 @@ namespace DarknessRises.Game.Enemies
         private readonly Transform root;
         private readonly Transform hatchery;
         private readonly Dictionary<EnemyDefinition, ObjectPool<EnemyView>> pools = new();
+        private readonly Action<Enemy> onEnemyDied;
+        private readonly EnemyTime time;
 
-        public EnemyPools(Transform parent)
+        /// <param name="enemyTime">How fast time runs for every pooled Enemy (Slow-mo).</param>
+        public EnemyPools(Transform parent, EnemyTime enemyTime)
         {
+            onEnemyDied = OnEnemyDied;
+            time = enemyTime;
             root = new GameObject("Enemies").transform;
             root.SetParent(parent, false);
 
@@ -26,6 +31,9 @@ namespace DarknessRises.Game.Enemies
             hatchery.SetParent(root, false);
             hatchery.gameObject.SetActive(false);
         }
+
+        /// <summary>Raised when any Enemy from these pools dies.</summary>
+        public event Action<Enemy> EnemyDied;
 
         /// <summary>Makes sure at least <paramref name="count"/> Enemies of the type are ready in its pool.</summary>
         public void Prewarm(EnemyDefinition definition, int count)
@@ -97,8 +105,14 @@ namespace DarknessRises.Game.Enemies
             enemy.name = definition.name;
             enemy.gameObject.SetActive(false);
             enemy.transform.SetParent(root, false);
-            enemy.Prepare(pool, definition);
+            enemy.Prepare(pool, definition, time);
+            enemy.Enemy.Died += onEnemyDied;
             return enemy;
+        }
+
+        private void OnEnemyDied(Enemy enemy)
+        {
+            EnemyDied?.Invoke(enemy);
         }
 
         private static void OnRelease(EnemyView enemy)

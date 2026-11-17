@@ -1,0 +1,58 @@
+using System;
+using UnityEngine;
+
+namespace DarknessRises.Game.Levels
+{
+    /// <summary>
+    /// The Level's end beat: once the last fight is over, a short, calm, dimly lit moment by the far door,
+    /// then the character walks out as the screen fades to black.
+    /// </summary>
+    [Serializable]
+    public sealed class LevelEndSettings
+    {
+        [SerializeField, Min(0f), Tooltip("Seconds the character stands still in the calm before walking out.")]
+        private float calmSeconds = 3f;
+
+        [SerializeField, Min(0f), Tooltip("Seconds the screen takes to fade to black as the character walks out.")]
+        private float fadeOutSeconds = 1.5f;
+
+        [Header("Calm light by the far door")]
+        [SerializeField, Tooltip("Shadowless light by the exit. It rises during the calm.")]
+        private Color calmLightColor = new(1f, 0.82f, 0.6f);
+
+        [SerializeField, Min(0f), Tooltip("Intensity once it has risen. Dim: a breather, not daylight.")]
+        private float calmLightIntensity = 2f;
+
+        [SerializeField, Min(0f), Tooltip("Metres the light reaches.")]
+        private float calmLightRange = 9f;
+
+        [SerializeField, Min(0f), Tooltip("Seconds the calm light takes to rise.")]
+        private float calmLightRiseSeconds = 1.5f;
+
+        [Header("Card")]
+        [SerializeField, Min(0f)] private float cardFadeInSeconds = 0.6f;
+
+        public float CalmSeconds => calmSeconds;
+        public float FadeOutSeconds => fadeOutSeconds;
+        public Color CalmLightColor => calmLightColor;
+        public float CalmLightRange => calmLightRange;
+
+        /// <summary>Intensity of the calm light, <paramref name="elapsedSeconds"/> after the calm begins.</summary>
+        public float CalmLightIntensityAt(float elapsedSeconds)
+        {
+            return calmLightIntensity * BeatFade.Rise(elapsedSeconds, calmLightRiseSeconds);
+        }
+
+        /// <summary>How black the screen is, from 0 to 1, <paramref name="elapsedSeconds"/> after the character starts walking out.</summary>
+        public float ScreenFadeAt(float elapsedSeconds)
+        {
+            return BeatFade.Rise(elapsedSeconds, fadeOutSeconds);
+        }
+
+        /// <summary>How much the closing card shows, <paramref name="elapsedSeconds"/> after the screen went black.</summary>
+        public float CardAlphaAt(float elapsedSeconds)
+        {
+            return BeatFade.Rise(elapsedSeconds, cardFadeInSeconds);
+        }
+    }
+}

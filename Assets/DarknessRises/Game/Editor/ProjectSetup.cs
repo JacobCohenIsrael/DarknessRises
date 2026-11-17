@@ -60,5 +60,13 @@ namespace DarknessRises.Game.Editor
             Apply();
             TestRoomBuilder.Build();
         }
+
+        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room and the Level.</summary>
+        public static void ApplyAndBuildAll()
+        {
+            Apply();
+            TestRoomBuilder.Build();
+            Levels.LevelBuilder.Build();
+        }
     }
 }

@@ -1,15 +1,14 @@
 using System;
+using System.Collections.Generic;
 using DarknessRises.Game.Controls;
 using UnityEngine;
-using UnityEngine.Pool;
 
 namespace DarknessRises.Game.Weapons
 {
     /// <summary>
-    /// Holds the character's Primary weapon in the scene: forwards the player's Fire and Reload commands to the
-    /// <see cref="PrimaryWeapon"/> rule, turns the weapon mount toward the aim point, and shows each shot
-    /// with a pooled Shot and a pooled Muzzle flash. A Shot that hits something throws a pooled hit spark
-    /// and damages it if it's an <see cref="IShotTarget"/>.
+    /// Holds the character's Primary weapons in the scene: forwards the player's Fire and Reload commands to the
+    /// equipped one in the <see cref="PrimaryWeaponLoadout"/>, turns the weapon mount toward the aim point,
+    /// and shows each shot through that Weapon's <see cref="PrimaryWeaponEffects"/>.
     /// </summary>
     /// <remarks>
     /// Runs after the default execution order so the character has already walked this frame,
@@ -19,8 +18,6 @@ namespace DarknessRises.Game.Weapons
     public sealed class PrimaryWeaponView : MonoBehaviour
     {
         private const int AfterCharacterMovement = 100;
-
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         [SerializeField] private PlayerControls controls;
 
@@ -33,64 +30,75 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Tooltip("What a Shot stops at.")]
         private LayerMask shotHitLayers = Physics.DefaultRaycastLayers;
 
-        private WeaponDefinition definition;
-        private ObjectPool<ShotView> shots;
-        private ObjectPool<MuzzleFlashView> muzzleFlashes;
-        private ObjectPool<HitSparkView> hitSparks;
-        private Action<RaycastHit> onShotHit;
-        private Material shotGlowMaterial;
-        private Transform effectsRoot;
+        private PrimaryWeaponEffects[] effects;
+        private Action[] onFired;
 
-        public PrimaryWeapon Weapon { get; private set; }
+        public PrimaryWeaponLoadout Loadout { get; private set; }
 
-        /// <summary>Arms the character with a fresh, fully loaded Weapon built from <paramref name="weaponDefinition"/>.</summary>
-        public PrimaryWeapon Equip(WeaponDefinition weaponDefinition)
+        /// <summary>The equipped Primary weapon, or null before <see cref="Arm"/>.</summary>
+        public PrimaryWeapon Weapon => Loadout?.Equipped;
+
+        /// <summary>Raised after a different Primary is equipped, with the newly equipped one.</summary>
+        public event Action<PrimaryWeapon> Switched;
+
+        /// <summary>
+        /// Arms the character with a fresh, fully loaded Primary for each of <paramref name="definitions"/>,
+        /// in switching order, and equips the first.
+        /// </summary>
+        public PrimaryWeaponLoadout Arm(IReadOnlyList<WeaponDefinition> definitions)
         {
-            Unequip();
+            Disarm();
 
-            definition = weaponDefinition;
-            Weapon = new PrimaryWeapon(definition.PrimaryStats);
-            Weapon.Fired += OnFired;
+            var stats = new PrimaryWeaponStats[definitions.Count];
+            effects = new PrimaryWeaponEffects[definitions.Count];
+            onFired = new Action[definitions.Count];
+            for (var i = 0; i < definitions.Count; i++)
+            {
+                stats[i] = definitions[i].PrimaryStats;
+                effects[i] = new PrimaryWeaponEffects(definitions[i], shotHitLayers);
+            }
 
-            effectsRoot = new GameObject($"{definition.name} Effects").transform;
-            shotGlowMaterial = new Material(definition.Shot.Prefab.BodyMaterial) { name = $"{definition.name} Shot Glow" };
-            shotGlowMaterial.SetColor(BaseColorId, definition.Shot.GlowColor);
+            Loadout = new PrimaryWeaponLoadout(stats);
+            for (var i = 0; i < effects.Length; i++)
+            {
+                var weaponEffects = effects[i];
+                onFired[i] = () => weaponEffects.Fire(muzzle.position, mount.forward);
+                Loadout[i].Fired += onFired[i];
+            }
 
-            shots = new ObjectPool<ShotView>(CreateShot, OnGetPooled, OnReleasePooled, OnDestroyPooled, defaultCapacity: MostShotsInFlight());
-            muzzleFlashes = new ObjectPool<MuzzleFlashView>(CreateMuzzleFlash, OnGetPooled, OnReleasePooled, OnDestroyPooled, defaultCapacity: MostFlashesAlive());
-            hitSparks = new ObjectPool<HitSparkView>(CreateHitSpark, OnGetPooled, OnReleasePooled, OnDestroyPooled, defaultCapacity: MostSparksAlive());
-            Prewarm(shots, MostShotsInFlight());
-            Prewarm(muzzleFlashes, MostFlashesAlive());
-            Prewarm(hitSparks, MostSparksAlive());
-
-            return Weapon;
+            Loadout.Switched += OnSwitched;
+            return Loadout;
         }
 
-        public void Unequip()
+        /// <summary>Equips the Primary at <paramref name="index"/> in the loadout.</summary>
+        /// <returns>Whether the equipped Primary changed.</returns>
+        public bool Switch(int index)
         {
-            if (Weapon == null)
+            return Loadout != null && Loadout.Switch(index);
+        }
+
+        public void Disarm()
+        {
+            if (Loadout == null)
             {
                 return;
             }
 
-            Weapon.Fired -= OnFired;
-            Weapon = null;
-            shots.Dispose();
-            muzzleFlashes.Dispose();
-            hitSparks.Dispose();
-
-            // On scene unload the effects may already be gone.
-            if (effectsRoot != null)
+            Loadout.Switched -= OnSwitched;
+            for (var i = 0; i < effects.Length; i++)
             {
-                Destroy(effectsRoot.gameObject);
+                Loadout[i].Fired -= onFired[i];
+                effects[i].Dispose();
             }
 
-            Destroy(shotGlowMaterial);
+            Loadout = null;
+            effects = null;
+            onFired = null;
         }
 
         private void Update()
         {
-            if (Weapon == null)
+            if (Loadout == null)
             {
                 return;
             }
@@ -101,121 +109,32 @@ namespace DarknessRises.Game.Weapons
                 mount.rotation = Quaternion.LookRotation(aimDirection, Vector3.up);
             }
 
+            var weapon = Loadout.Equipped;
             if (controls.WasReloadPressedThisFrame)
             {
-                Weapon.Reload();
+                weapon.Reload();
             }
 
             if (controls.IsFireHeld)
             {
-                Weapon.PullTrigger();
+                weapon.PullTrigger();
             }
             else
             {
-                Weapon.ReleaseTrigger();
+                weapon.ReleaseTrigger();
             }
 
-            Weapon.Tick(Time.deltaTime);
+            Loadout.Tick(Time.deltaTime);
         }
 
         private void OnDestroy()
         {
-            Unequip();
+            Disarm();
         }
 
-        private void OnFired()
+        private void OnSwitched(PrimaryWeapon equipped)
         {
-            var direction = mount.forward;
-            direction.y = 0f;
-            shots.Get().Launch(muzzle.position, direction, definition.ShotSpeed, definition.Range);
-            muzzleFlashes.Get().Flash(muzzle.position);
-        }
-
-        private void OnShotHit(RaycastHit hit)
-        {
-            hitSparks.Get().Spark(hit.point, hit.normal);
-            if (hit.collider.TryGetComponent<IShotTarget>(out var target))
-            {
-                target.TakeShot(definition.Damage);
-            }
-        }
-
-        // Enough pooled Shots for a held trigger with every Shot flying its full range.
-        private int MostShotsInFlight()
-        {
-            return Mathf.CeilToInt(definition.ShotsPerSecond * definition.Range / definition.ShotSpeed) + 1;
-        }
-
-        // Enough pooled Muzzle flashes for a held trigger, however short the gap between shots.
-        private int MostFlashesAlive()
-        {
-            return Mathf.CeilToInt(definition.ShotsPerSecond * definition.MuzzleFlash.Seconds) + 1;
-        }
-
-        // Enough pooled hit sparks for a held trigger with every Shot hitting something.
-        private int MostSparksAlive()
-        {
-            var sparkSeconds = Mathf.Max(definition.HitSpark.Seconds, definition.HitSpark.Prefab.LifeSeconds);
-            return Mathf.CeilToInt(definition.ShotsPerSecond * sparkSeconds) + 1;
-        }
-
-        private ShotView CreateShot()
-        {
-            onShotHit ??= OnShotHit;
-            var shot = Instantiate(definition.Shot.Prefab, effectsRoot);
-            shot.Prepare(shots, definition.Shot, shotGlowMaterial, shotHitLayers, onShotHit);
-            shot.gameObject.SetActive(false);
-            return shot;
-        }
-
-        private MuzzleFlashView CreateMuzzleFlash()
-        {
-            var flashObject = new GameObject("Muzzle Flash", typeof(Light), typeof(MuzzleFlashView));
-            flashObject.transform.SetParent(effectsRoot, false);
-            flashObject.SetActive(false);
-            var flash = flashObject.GetComponent<MuzzleFlashView>();
-            flash.Prepare(muzzleFlashes, definition.MuzzleFlash);
-            return flash;
-        }
-
-        private HitSparkView CreateHitSpark()
-        {
-            var spark = Instantiate(definition.HitSpark.Prefab, effectsRoot);
-            spark.gameObject.SetActive(false);
-            spark.Prepare(hitSparks, definition.HitSpark);
-            return spark;
-        }
-
-        private static void OnGetPooled(Component pooled)
-        {
-            pooled.gameObject.SetActive(true);
-        }
-
-        private static void OnReleasePooled(Component pooled)
-        {
-            pooled.gameObject.SetActive(false);
-        }
-
-        private static void OnDestroyPooled(Component pooled)
-        {
-            if (pooled != null)
-            {
-                Destroy(pooled.gameObject);
-            }
-        }
-
-        private static void Prewarm<T>(ObjectPool<T> pool, int count) where T : class
-        {
-            var warmed = new T[count];
-            for (var i = 0; i < count; i++)
-            {
-                warmed[i] = pool.Get();
-            }
-
-            for (var i = 0; i < count; i++)
-            {
-                pool.Release(warmed[i]);
-            }
+            Switched?.Invoke(equipped);
         }
     }
 }

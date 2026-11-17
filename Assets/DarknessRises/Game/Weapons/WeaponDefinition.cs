@@ -26,8 +26,14 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Min(0.1f), Tooltip("Metres a Shot travels before it fades out.")]
         private float range = 20f;
 
+        [SerializeField, Min(0f), Tooltip("Degrees of random spread around the aim, edge to edge. 0 fires dead straight.")]
+        private float spreadDegrees;
+
         [SerializeField, Tooltip("How each Shot looks. It always glows enough to be seen in Darkness.")]
         private ShotSettings shot = new();
+
+        [SerializeField, Tooltip("Whether Shots light their surroundings as they fly, as the Flamethrower's do.")]
+        private ShotLightSettings shotLight = new();
 
         [SerializeField, Tooltip("The short, shadowless light at the Weapon each time it fires.")]
         private MuzzleFlashSettings muzzleFlash = new();
@@ -41,7 +47,9 @@ namespace DarknessRises.Game.Weapons
         public float ShotSpeed => shotSpeed;
         public int Damage => damage;
         public float Range => range;
+        public float SpreadDegrees => spreadDegrees;
         public ShotSettings Shot => shot;
+        public ShotLightSettings ShotLight => shotLight;
         public MuzzleFlashSettings MuzzleFlash => muzzleFlash;
         public HitSparkSettings HitSpark => hitSpark;
 

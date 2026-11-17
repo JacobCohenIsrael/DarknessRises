@@ -146,6 +146,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
+            PrimaryWeaponsBuilder.WireDebugSwitch(gameRoot);
             SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
             HealthBuilder.Build(gameRoot, character, cameraView);
             return gameRoot;
@@ -163,7 +164,10 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("player").objectReferenceValue = player;
             serialized.FindProperty("fixedAngleCamera").objectReferenceValue = fixedAngleCamera;
             serialized.FindProperty("route").objectReferenceValue = route;
-            serialized.FindProperty("pistol").objectReferenceValue = PistolBuilder.LoadOrCreatePistol();
+            var pistol = PistolBuilder.LoadOrCreatePistol();
+            serialized.FindProperty("pistol").objectReferenceValue = pistol;
+            serialized.FindProperty("machineGun").objectReferenceValue = PrimaryWeaponsBuilder.LoadOrCreateMachineGun(pistol);
+            serialized.FindProperty("flamethrower").objectReferenceValue = PrimaryWeaponsBuilder.LoadOrCreateFlamethrower(pistol);
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
             serialized.FindProperty("flare").objectReferenceValue = SkillsBuilder.LoadOrCreateFlare();
             serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();

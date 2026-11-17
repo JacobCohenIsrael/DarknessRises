@@ -109,6 +109,18 @@ namespace DarknessRises.Game.Player
             animator.SetLayerWeight(upperBodyLayer, 1f);
         }
 
+        /// <summary>Follows the shots of <paramref name="primaryWeapon"/> from now on, after the player switches Primaries.</summary>
+        public void ShowWeapon(PrimaryWeapon primaryWeapon)
+        {
+            if (weapon != null)
+            {
+                weapon.Fired -= OnFired;
+            }
+
+            weapon = primaryWeapon;
+            weapon.Fired += OnFired;
+        }
+
         /// <summary>Starts the Grenade throw. Does nothing while a throw is under way or after death.</summary>
         /// <returns>Whether the throw started; <see cref="GrenadeReleased"/> follows partway through it.</returns>
         [ContextMenu("Throw")]

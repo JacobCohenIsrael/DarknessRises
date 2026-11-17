@@ -18,11 +18,19 @@ MonoBehaviour:
   shotSpeed: 30
   damage: 1
   range: 20
+  spreadDegrees: 0
   shot:
     prefab: {fileID: 7200641279141617022, guid: 688c6b22d6fbcf843b1886d15e51e8d7, type: 3}
     glowColor: {r: 1, g: 0.75, b: 0.35, a: 1}
     size: 0.12
     trailSeconds: 0.06
+    sizeAtRange: 1
+  shotLight:
+    carriesLight: 0
+    color: {r: 1, g: 0.55, b: 0.2, a: 1}
+    intensity: 4
+    range: 4
+    everyNthShot: 1
   muzzleFlash:
     color: {r: 1, g: 0.78, b: 0.45, a: 1}
     intensity: 12

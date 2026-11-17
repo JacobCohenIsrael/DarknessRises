@@ -20,9 +20,13 @@ namespace DarknessRises.Game.Cameras
         [SerializeField, Tooltip("Seconds the camera takes to catch up with the character on each axis.")]
         private Vector3 followDamping = new(0.5f, 0.5f, 0.5f);
 
+        [SerializeField, Tooltip("How far ahead along the Route the camera aims, so it frames more ahead than behind.")]
+        private LookAheadSettings lookAhead = new();
+
         public float PitchDegrees => pitchDegrees;
         public float Distance => distance;
         public float FieldOfView => fieldOfView;
         public Vector3 FollowDamping => followDamping;
+        public LookAheadSettings LookAhead => lookAhead;
     }
 }

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Configuration.GameConfiguration
   player: {fileID: 11400000, guid: 750ee8f562d35a549a4d92f396540f54, type: 2}
   fixedAngleCamera: {fileID: 11400000, guid: b80a23973d8c49a4e8dded9245ce4f0c, type: 2}
+  route: {fileID: 11400000, guid: 5b51c7bb8df5e96449395b992b6e0f37, type: 2}

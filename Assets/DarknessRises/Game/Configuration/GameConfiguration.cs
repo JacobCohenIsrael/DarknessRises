@@ -1,5 +1,6 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Player;
+using DarknessRises.Game.Routes;
 using UnityEngine;
 
 namespace DarknessRises.Game.Configuration
@@ -13,8 +14,10 @@ namespace DarknessRises.Game.Configuration
     {
         [SerializeField] private PlayerDefinition player;
         [SerializeField] private CameraDefinition fixedAngleCamera;
+        [SerializeField] private RouteDefinition route;
 
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
+        public RouteDefinition Route => route;
     }
 }

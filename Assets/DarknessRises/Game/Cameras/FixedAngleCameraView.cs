@@ -5,7 +5,8 @@ using UnityEngine;
 namespace DarknessRises.Game.Cameras
 {
     /// <summary>
-    /// Points a Cinemachine camera at the character from the authored fixed, tilted top-down angle.
+    /// Points a Cinemachine camera at its follow target (the point just ahead of the character) from the authored
+    /// fixed, tilted top-down angle.
     /// Cinemachine owns the camera; this only hands it the framing.
     /// </summary>
     [RequireComponent(typeof(CinemachineCamera), typeof(CinemachineFollow))]
@@ -14,9 +15,9 @@ namespace DarknessRises.Game.Cameras
         [SerializeField] private CinemachineCamera cinemachineCamera;
         [SerializeField] private CinemachineFollow follow;
 
-        public void Frame(CameraDefinition definition, Transform character)
+        public void Frame(CameraDefinition definition, Transform followTarget)
         {
-            cinemachineCamera.Follow = character;
+            cinemachineCamera.Follow = followTarget;
 
             var lens = cinemachineCamera.Lens;
             lens.FieldOfView = definition.FieldOfView;
@@ -27,7 +28,7 @@ namespace DarknessRises.Game.Cameras
             follow.FollowOffset = FixedAngleFraming.FollowOffset(definition.PitchDegrees, definition.Distance);
 
             transform.SetPositionAndRotation(
-                character.position + follow.FollowOffset,
+                followTarget.position + follow.FollowOffset,
                 FixedAngleFraming.Rotation(definition.PitchDegrees));
         }
 

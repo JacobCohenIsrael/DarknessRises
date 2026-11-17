@@ -48,7 +48,10 @@ namespace DarknessRises.Game.Lightning
             fillLight.type = LightType.Directional;
             fillLight.shadows = LightShadows.None;
             fillLight.color = flash.FillColor;
-            fillLight.transform.rotation = Quaternion.Euler(flash.FillElevationDegrees, room.LightningYawDegrees, 0f);
+            fillLight.transform.rotation = Quaternion.Euler(
+                flash.FillElevationDegrees,
+                room.LightningYawDegrees + flash.FillYawOffsetDegrees,
+                0f);
 
             rumbleSource.playOnAwake = false;
             rumbleSource.loop = false;

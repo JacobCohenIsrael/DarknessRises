@@ -100,8 +100,9 @@ MonoBehaviour:
     keyIntensity: 3.2
     shadowStrength: 1
     fillColor: {r: 0.45, g: 0.55, b: 0.85, a: 1}
-    fillIntensity: 0.55
-    fillElevationDegrees: 70
+    fillIntensity: 0.6
+    fillElevationDegrees: 45
+    fillYawOffsetDegrees: 180
     windowGlowColor: {r: 1.4, g: 1.6, b: 2, a: 1}
   rumble:
     clip: {fileID: 8300000, guid: 5ae4d298ed547ba4c88587effb75d7e1, type: 3}

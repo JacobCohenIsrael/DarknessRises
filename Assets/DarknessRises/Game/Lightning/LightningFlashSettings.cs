@@ -32,11 +32,15 @@ namespace DarknessRises.Game.Lightning
         [Header("Fill light (shadowless)")]
         [SerializeField] private Color fillColor = new(0.45f, 0.55f, 0.85f);
 
-        [SerializeField, Min(0f), Tooltip("URP directional light intensity at the peak, lighting the whole Room from above.")]
-        private float fillIntensity = 0.55f;
+        [SerializeField, Min(0f), Tooltip("URP directional light intensity at the peak, lighting the whole Room.")]
+        private float fillIntensity = 0.6f;
 
-        [SerializeField, Range(5f, 90f), Tooltip("Degrees above the horizon the fill comes from, leaning the same way as the key light.")]
-        private float fillElevationDegrees = 70f;
+        [SerializeField, Range(5f, 90f), Tooltip("Degrees above the horizon the fill comes from.")]
+        private float fillElevationDegrees = 45f;
+
+        [SerializeField, Range(-180f, 180f), Tooltip("Degrees the fill turns from the key light's direction. " +
+                                                     "180 is light bouncing back off the far walls, so the faces in shadow aren't pure black.")]
+        private float fillYawOffsetDegrees = 180f;
 
         [Header("Windows")]
         [SerializeField, ColorUsage(false, true), Tooltip("The sky seen through the windows at the peak of the flash.")]
@@ -50,6 +54,7 @@ namespace DarknessRises.Game.Lightning
         public Color FillColor => fillColor;
         public float FillIntensity => fillIntensity;
         public float FillElevationDegrees => fillElevationDegrees;
+        public float FillYawOffsetDegrees => fillYawOffsetDegrees;
         public Color WindowGlowColor => windowGlowColor;
 
         /// <summary>Brightness from 0 to 1, <paramref name="elapsedSeconds"/> after the strike.</summary>

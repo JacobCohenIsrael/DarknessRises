@@ -3,6 +3,7 @@ using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
@@ -40,6 +41,8 @@ namespace DarknessRises.Game
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
+        [SerializeField] private GrenadeThrowerView grenadeThrower;
+        [SerializeField] private GrenadeHudView grenadeHud;
 
         [SerializeField, Tooltip("Debug/ToggleLightning. Only read in the Editor and debug builds.")]
         private InputActionReference toggleLightning;
@@ -92,6 +95,7 @@ namespace DarknessRises.Game
             primaryWeapon.Arm(new[] { configuration.Pistol, configuration.MachineGun, configuration.Flamethrower });
             ammoHud.Show(primaryWeapon.Weapon);
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
+            grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation));
             ShowHealthAndDeath();
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);

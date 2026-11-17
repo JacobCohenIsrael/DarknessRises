@@ -4,6 +4,7 @@ using DarknessRises.Game.Controls;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Enemies;
+using DarknessRises.Game.Editor.Grenades;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
@@ -141,6 +142,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "primaryWeapon", primaryWeapon);
             SetReference(gameRoot, "characterAnimation", CharacterBuilder.Animate(character, primaryWeapon));
             SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
+            GrenadeBuilder.Build(gameRoot, character);
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
@@ -171,6 +173,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();
             var audio = AudioBuilder.LoadOrCreateAudio();
             serialized.FindProperty("audio").objectReferenceValue = audio;
+            serialized.FindProperty("grenade").objectReferenceValue = GrenadeBuilder.LoadOrCreateGrenade();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
             AudioBuilder.RouteEnemyAudio(EnemyBuilder.LoadOrCreateShambler(), audio);

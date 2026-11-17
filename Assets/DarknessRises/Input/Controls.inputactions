@@ -128,6 +128,36 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "PrimaryWeapon1",
+                    "type": "Button",
+                    "id": "69891380-c35a-498c-950f-a9e04ec57c2f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "PrimaryWeapon2",
+                    "type": "Button",
+                    "id": "3abf49c0-5559-4f1e-8269-f9aa1cb73c05",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "PrimaryWeapon3",
+                    "type": "Button",
+                    "id": "215b82e2-d4ea-4cc8-9ceb-0081a2f07452",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -139,6 +169,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "ToggleLightning",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f9c72953-ba6d-4c5d-bf93-2247ba8620ec",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PrimaryWeapon1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4c8655d4-a220-46a7-8703-04d5dc287438",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PrimaryWeapon2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3fe81671-d2ec-469c-9880-acedca75371a",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PrimaryWeapon3",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

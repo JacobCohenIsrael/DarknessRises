@@ -24,7 +24,6 @@ namespace DarknessRises.Game.Editor.Weapons
         private const string FlameShotPrefabPath = WeaponsPrefabsFolder + "/FlameShot.prefab";
 
         // Shared with the Pistol's Shot.
-        private const string ShotGlowMaterialPath = MaterialsFolder + "/ShotGlow.mat";
         private const string ShotTrailMaterialPath = MaterialsFolder + "/ShotTrail.mat";
         private const string FlameParticlesMaterialPath = MaterialsFolder + "/FlameParticles.mat";
         private const string ParticlesUnlitShaderName = "Universal Render Pipeline/Particles/Unlit";
@@ -46,6 +45,9 @@ namespace DarknessRises.Game.Editor.Weapons
         private const float FlameRise = -0.25f;
         private const int FlameMaxParticles = 24;
         private const float ShotTrailMinVertexDistance = 0.05f;
+
+        // The flame's glowing core: a soft disc lying flat, in multiples of the Shot's size.
+        private const float FlameGlowSize = 3f;
 
         /// <summary>Loads the Machine gun definition, creating it from placeholder tuning if it's missing.</summary>
         public static WeaponDefinition LoadOrCreateMachineGun(WeaponDefinition pistol)
@@ -93,7 +95,7 @@ namespace DarknessRises.Game.Editor.Weapons
                 serialized.FindProperty("spreadDegrees").floatValue = 14f;
                 serialized.FindProperty("shot.glowColor").colorValue = new Color(1f, 0.62f, 0.2f);
                 serialized.FindProperty("shot.size").floatValue = 0.2f;
-                serialized.FindProperty("shot.trailSeconds").floatValue = 0.08f;
+                serialized.FindProperty("shot.trailSeconds").floatValue = 0f;
                 serialized.FindProperty("shot.sizeAtRange").floatValue = 3f;
                 serialized.FindProperty("shotLight.carriesLight").boolValue = true;
                 serialized.FindProperty("shotLight.color").colorValue = fire;
@@ -215,8 +217,8 @@ namespace DarknessRises.Game.Editor.Weapons
             }
         }
 
-        // A glowing core with a short trail, a shadowless light the Weapon turns on for some Shots,
-        // and soft additive flames left behind in the air as it flies.
+        // A soft, additive glow lying flat, a shadowless light the Weapon turns on for some Shots,
+        // and soft additive flames left behind in the air as it flies. No solid body, so it reads as fire.
         private static ShotView LoadOrCreateFlameShotPrefab()
         {
             var existing = AssetDatabase.LoadAssetAtPath<ShotView>(FlameShotPrefabPath);
@@ -225,12 +227,16 @@ namespace DarknessRises.Game.Editor.Weapons
                 return existing;
             }
 
-            var shot = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            shot.name = "Flame Shot";
-            Object.DestroyImmediate(shot.GetComponent<Collider>());
+            var shot = new GameObject("Flame Shot");
 
-            var body = shot.GetComponent<MeshRenderer>();
-            body.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(ShotGlowMaterialPath);
+            var glow = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            glow.name = "Glow";
+            Object.DestroyImmediate(glow.GetComponent<Collider>());
+            glow.transform.SetParent(shot.transform, false);
+            glow.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            glow.transform.localScale = Vector3.one * FlameGlowSize;
+            var body = glow.GetComponent<MeshRenderer>();
+            body.sharedMaterial = LoadOrCreateFlameParticlesMaterial();
             body.shadowCastingMode = ShadowCastingMode.Off;
             body.receiveShadows = false;
 
@@ -304,7 +310,7 @@ namespace DarknessRises.Game.Editor.Weapons
                 new[]
                 {
                     new GradientAlphaKey(0f, 0f),
-                    new GradientAlphaKey(0.9f, 0.15f),
+                    new GradientAlphaKey(1f, 0.15f),
                     new GradientAlphaKey(0.5f, 0.6f),
                     new GradientAlphaKey(0f, 1f),
                 });
@@ -341,6 +347,7 @@ namespace DarknessRises.Game.Editor.Weapons
             material.SetFloat("_SrcBlendAlpha", (float)BlendMode.One);
             material.SetFloat("_DstBlendAlpha", (float)BlendMode.One);
             material.SetFloat("_ZWrite", 0f);
+            material.SetFloat("_Cull", (float)CullMode.Off);
             material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             material.SetOverrideTag("RenderType", "Transparent");
             material.renderQueue = (int)RenderQueue.Transparent;

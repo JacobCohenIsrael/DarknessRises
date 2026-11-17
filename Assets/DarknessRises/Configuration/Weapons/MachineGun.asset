@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dffe5275e11559e428e63db9d7e643c8, type: 3}
+  m_Name: MachineGun
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Weapons.WeaponDefinition
+  shotsPerSecond: 10
+  magazineSize: 30
+  reloadSeconds: 2.5
+  shotSpeed: 40
+  damage: 1
+  range: 20
+  spreadDegrees: 4
+  shot:
+    prefab: {fileID: 7200641279141617022, guid: 688c6b22d6fbcf843b1886d15e51e8d7, type: 3}
+    glowColor: {r: 1, g: 0.88, b: 0.55, a: 1}
+    size: 0.09
+    trailSeconds: 0.05
+    sizeAtRange: 1
+  shotLight:
+    carriesLight: 0
+    color: {r: 1, g: 0.55, b: 0.2, a: 1}
+    intensity: 4
+    range: 4
+    everyNthShot: 1
+  muzzleFlash:
+    color: {r: 1, g: 0.78, b: 0.45, a: 1}
+    intensity: 10
+    range: 5
+    seconds: 0.05
+  hitSpark:
+    prefab: {fileID: 3657083395534766733, guid: 4dc8e0d67c65d5247bbf69778eb2f48b, type: 3}
+    color: {r: 1, g: 0.7, b: 0.35, a: 1}
+    intensity: 6
+    range: 2.5
+    seconds: 0.12
+    surfaceOffset: 0.25
+    sparkCount: 8

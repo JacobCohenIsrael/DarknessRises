@@ -1,4 +1,5 @@
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Enemies.Tells;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,7 +9,7 @@ namespace DarknessRises.Game.Editor.Enemies
 {
     /// <summary>
     /// Builds the Shambler: its Enemy definition asset and a placeholder prefab, a hunched figure with reaching arms
-    /// and glowing eyes. Existing assets are kept, so tuning done in the Inspector survives a rebuild.
+    /// and eyes that glint as a Tell. Existing assets are kept, so tuning done in the Inspector survives a rebuild.
     /// </summary>
     public static class EnemyBuilder
     {
@@ -25,6 +26,7 @@ namespace DarknessRises.Game.Editor.Enemies
         private const string DeathClipPath = "Assets/Free Pack/Bloody punch.wav";
         private const string WindUpClipPath = "Assets/Free Pack/Magic Spell_Short Reverse_1.wav";
         private const string AttackClipPath = "Assets/Free Pack/Magic Spell_Simple Swoosh_6.wav";
+        private static readonly string[] TellClipPaths = { "Assets/Free Pack/Monster Bite.wav" };
 
         private const string LitShaderName = "Universal Render Pipeline/Lit";
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
@@ -34,9 +36,12 @@ namespace DarknessRises.Game.Editor.Enemies
         private const float Radius = 0.4f;
         private static readonly Color BodyColor = new(0.2f, 0.24f, 0.19f);
         private const float EyeSize = 0.11f;
-        private static readonly Color EyeColor = new(3f, 0.7f, 0.15f);
+        private static readonly Color EyeColor = new(0.05f, 0.03f, 0.02f);
+        private const float EyeSmoothness = 0.9f;
         private static readonly Color WindUpEyeColor = new(8f, 0.4f, 0.2f);
         private static readonly string[] EyeNames = { "Left Eye", "Right Eye" };
+        private const float TellVoiceHeight = 1.6f;
+        private const string EyeGlintMaterialName = "ShamblerEyeGlint";
 
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
@@ -64,7 +69,20 @@ namespace DarknessRises.Game.Editor.Enemies
 
             SetClipIfEmpty(serialized.FindProperty("audio.windUpClip"), WindUpClipPath);
             SetClipIfEmpty(serialized.FindProperty("audio.attackClip"), AttackClipPath);
+
+            // Tell sounds were added after the Shambler; give an older asset the placeholders once.
+            var tellClips = serialized.FindProperty("tells.sounds.clips");
+            if (tellClips.arraySize == 0)
+            {
+                tellClips.arraySize = TellClipPaths.Length;
+                for (var i = 0; i < TellClipPaths.Length; i++)
+                {
+                    tellClips.GetArrayElementAtIndex(i).objectReferenceValue = LoadMonoClip(TellClipPaths[i]);
+                }
+            }
+
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            AddTells(ShamblerPrefabPath);
             AddWindUpEyes(ShamblerPrefabPath);
 
             // Re-save so fields added since the asset was created are written with their defaults.
@@ -82,7 +100,7 @@ namespace DarknessRises.Game.Editor.Enemies
 
             EnsureFolder(EnemiesPrefabsFolder);
             var bodyMaterial = LoadOrCreateMaterial("ShamblerBody", LitShaderName, BodyColor);
-            var eyeMaterial = LoadOrCreateMaterial("ShamblerEyes", UnlitShaderName, EyeColor);
+            var eyeMaterial = LoadOrCreateGlintMaterial(EyeGlintMaterialName, EyeColor);
             var fadeMaterial = LoadOrCreateFadeMaterial("ShamblerFade", BodyColor);
 
             var shambler = new GameObject("Shambler");
@@ -136,6 +154,54 @@ namespace DarknessRises.Game.Editor.Enemies
             var prefab = PrefabUtility.SaveAsPrefabAsset(shambler, ShamblerPrefabPath);
             Object.DestroyImmediate(shambler);
             return prefab.GetComponent<EnemyView>();
+        }
+
+        /// <summary>
+        /// Gives the Shambler its Tells, if it hasn't got them: glossy eyes whose emission glints near the character,
+        /// and a Tell voice at its head. Works on an existing prefab, so older prefabs are brought up to date in place.
+        /// </summary>
+        private static void AddTells(string prefabPath)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyView>(prefabPath);
+            if (existing == null || existing.GetComponent<EnemyTellView>() != null)
+            {
+                return;
+            }
+
+            var glintMaterial = LoadOrCreateGlintMaterial(EyeGlintMaterialName, EyeColor);
+            var contents = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                var tellVoiceObject = new GameObject("Tell Voice", typeof(AudioSource));
+                tellVoiceObject.transform.SetParent(contents.transform, false);
+                tellVoiceObject.transform.localPosition = Vector3.up * TellVoiceHeight;
+                var tellVoice = tellVoiceObject.GetComponent<AudioSource>();
+                tellVoice.playOnAwake = false;
+                tellVoice.spatialBlend = 1f;
+
+                var tells = contents.AddComponent<EnemyTellView>();
+                var serializedTells = new SerializedObject(tells);
+                serializedTells.FindProperty("tellVoice").objectReferenceValue = tellVoice;
+                var eyes = serializedTells.FindProperty("eyes");
+                eyes.arraySize = EyeNames.Length;
+                for (var i = 0; i < EyeNames.Length; i++)
+                {
+                    var eye = contents.transform.Find(EyeNames[i]).GetComponent<Renderer>();
+                    eye.sharedMaterial = glintMaterial;
+                    eyes.GetArrayElementAtIndex(i).objectReferenceValue = eye;
+                }
+
+                serializedTells.ApplyModifiedPropertiesWithoutUndo();
+
+                var view = new SerializedObject(contents.GetComponent<EnemyView>());
+                view.FindProperty("tells").objectReferenceValue = tells;
+                view.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(contents, prefabPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
         }
 
         /// <summary>
@@ -220,6 +286,48 @@ namespace DarknessRises.Game.Editor.Enemies
 
             AssetDatabase.CreateAsset(material, path);
             return material;
+        }
+
+        // Glossy dark eyes that catch the light, with emission the Enemy's Tell view drives at runtime for the glint.
+        private static Material LoadOrCreateGlintMaterial(string name, Color baseColor)
+        {
+            var path = $"{MaterialsFolder}/{name}.mat";
+            var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material != null)
+            {
+                return material;
+            }
+
+            material = new Material(Shader.Find(LitShaderName)) { name = name };
+            material.SetColor("_BaseColor", baseColor);
+            material.SetFloat("_Smoothness", EyeSmoothness);
+
+            // Rooms have no reflection probes: glossy eyes would mirror the default environment instead of Darkness.
+            // Highlights from real lights, such as Lightning, still catch them.
+            material.SetFloat("_EnvironmentReflections", 0f);
+            material.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            material.SetColor("_EmissionColor", Color.black);
+            AssetDatabase.CreateAsset(material, path);
+
+            // URP turns emission off on import while its colour is black. Turn it back on afterwards, so the asset
+            // keeps the emissive shader variant in builds; the glint sets the colour at runtime.
+            material.EnableKeyword("_EMISSION");
+            material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+            EditorUtility.SetDirty(material);
+            AssetDatabase.SaveAssetIfDirty(material);
+            return material;
+        }
+
+        // Tell sounds are positional, and a mono clip places cleanly in 3D.
+        private static AudioClip LoadMonoClip(string path)
+        {
+            if (AssetImporter.GetAtPath(path) is AudioImporter importer && !importer.forceToMono)
+            {
+                importer.forceToMono = true;
+                importer.SaveAndReimport();
+            }
+
+            return AssetDatabase.LoadAssetAtPath<AudioClip>(path);
         }
 
         // A transparent Lit material, so a dead Enemy can fade out. Kept as an asset so its shader variant ships.

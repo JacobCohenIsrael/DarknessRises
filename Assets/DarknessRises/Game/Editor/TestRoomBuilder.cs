@@ -140,6 +140,7 @@ namespace DarknessRises.Game.Editor
             var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
             var primaryWeapon = PistolBuilder.BuildPrimaryWeapon(character, Camera.main);
             SetReference(gameRoot, "primaryWeapon", primaryWeapon);
+            EarsBuilder.BuildEars(character, Camera.main);
             SetReference(gameRoot, "characterAnimation", CharacterBuilder.Animate(character, primaryWeapon));
             SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
             GrenadeBuilder.Build(gameRoot, character);

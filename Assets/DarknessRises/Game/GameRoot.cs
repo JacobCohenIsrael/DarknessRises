@@ -5,6 +5,7 @@ using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
+using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
@@ -56,12 +57,16 @@ namespace DarknessRises.Game
         private readonly EnemyTime enemyTime = new();
         private EnemyAudioPitch enemyAudioPitch;
 
+        [SerializeField, Tooltip("The Level, in a Level scene. Without one (the Test Room), the Route's Waves run in the one Room.")]
+        private LevelView level;
+
         [Header("Health and death")]
         [SerializeField] private CharacterHealthView characterHealth;
         [SerializeField] private HitPointsHudView hitPointsHud;
         [SerializeField] private DeathFlow deathFlow;
 
         private RunRecord runRecord;
+        private bool countsLevelKills;
 
         private void Awake()
         {
@@ -71,7 +76,15 @@ namespace DarknessRises.Game
                 configuration.FixedAngleCamera.LookAhead,
                 character,
                 cameraTarget);
-            routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime);
+            if (level != null)
+            {
+                level.Run(configuration.Level, routeWalker.Progress, character, enemyTime);
+            }
+            else
+            {
+                routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime);
+            }
+
             ammoHud.Show(primaryWeapon.Equip(configuration.Pistol));
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
             ShowHealthAndDeath();
@@ -85,6 +98,11 @@ namespace DarknessRises.Game
         {
             lightningScheduler.Rumbled += lightning.PlayRumble;
             lightningScheduler.Flashed += lightning.Flash;
+            if (level != null)
+            {
+                level.RoomEntered += EnterRoom;
+            }
+
 #if UNITY_EDITOR || DEBUG
             lightningDebugToggle = new LightningDebugToggle(toggleLightning, lightningScheduler, lightning);
 #endif
@@ -101,7 +119,16 @@ namespace DarknessRises.Game
         private void OnDestroy()
         {
             enemyAudioPitch?.Dispose();
-            routeWaves.EnemyDied -= OnEnemyDied;
+
+            // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
+            if (countsLevelKills)
+            {
+                level.EnemyDied -= OnEnemyDied;
+            }
+            else if (runRecord != null)
+            {
+                routeWaves.EnemyDied -= OnEnemyDied;
+            }
         }
 
         private void ShowHealthAndDeath()
@@ -109,7 +136,18 @@ namespace DarknessRises.Game
             var health = characterHealth.Show(configuration.Player);
             hitPointsHud.Show(health);
             runRecord = new RunRecord();
-            routeWaves.EnemyDied += OnEnemyDied;
+
+            // Kills come from whoever runs the fights: the Level, or the Test Room's Waves.
+            countsLevelKills = level != null;
+            if (countsLevelKills)
+            {
+                level.EnemyDied += OnEnemyDied;
+            }
+            else
+            {
+                routeWaves.EnemyDied += OnEnemyDied;
+            }
+
             deathFlow.Watch(health, runRecord, characterAnimation, routeWalker, primaryWeapon);
         }
 
@@ -122,6 +160,11 @@ namespace DarknessRises.Game
         {
             lightningScheduler.Rumbled -= lightning.PlayRumble;
             lightningScheduler.Flashed -= lightning.Flash;
+            if (level != null)
+            {
+                level.RoomEntered -= EnterRoom;
+            }
+
 #if UNITY_EDITOR || DEBUG
             lightningDebugToggle.Dispose();
             lightningDebugToggle = null;
@@ -131,6 +174,16 @@ namespace DarknessRises.Game
         private void Update()
         {
             lightningScheduler.Tick(Time.deltaTime);
+        }
+
+        // The character walked into another Room of the Level: Lightning comes through its windows, if it has any.
+        private void EnterRoom(Room entered)
+        {
+            // Cut a flash short first, so the last Room's windows go dark too.
+            lightning.StopFlash();
+            room = entered;
+            lightning.Show(configuration.Lightning, room);
+            lightningScheduler.EnterRoom(room.LetsLightningIn);
         }
 
         /// <summary>Pushes the authored configuration into the scene's views.</summary>

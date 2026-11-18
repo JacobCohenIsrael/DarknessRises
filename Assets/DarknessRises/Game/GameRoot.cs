@@ -94,6 +94,10 @@ namespace DarknessRises.Game
         private PrimaryWeaponDebugSwitch primaryWeaponDebugSwitch;
         private RampLevelDebugJump rampLevelDebugJump;
         private BossSkipDebug bossSkipDebug;
+        private DebugMenuView debugMenu;
+
+        // The touch debug menu's labels for the Primaries, in the order of PrimaryWeapons.
+        private static readonly string[] PrimaryWeaponLabels = { "Pistol", "Machine gun", "Flamethrower" };
 #endif
         [SerializeField] private RouteWavesView routeWaves;
         [SerializeField] private CharacterSkillsView characterSkills;
@@ -331,6 +335,17 @@ namespace DarknessRises.Game
             {
                 bossSkipDebug = new BossSkipDebug(skipToBoss, level);
             }
+
+            // Built from code, so no scene references it and release builds have none of it.
+            debugMenu = DebugMenuView.Create(
+                transform,
+                PrimaryWeaponLabels,
+                primaryWeaponDebugSwitch,
+                () => characterHealth.GodMode,
+                lightningDebugToggle,
+                rampLevelDebugJump,
+                bossSkipDebug,
+                pauseFlow.Pause);
 #endif
             primaryWeapon.Switched += OnPrimaryWeaponSwitched;
         }
@@ -483,6 +498,12 @@ namespace DarknessRises.Game
             }
 
 #if UNITY_EDITOR || DEBUG
+            if (debugMenu != null)
+            {
+                Destroy(debugMenu.gameObject);
+                debugMenu = null;
+            }
+
             lightningDebugToggle.Dispose();
             lightningDebugToggle = null;
             primaryWeaponDebugSwitch.Dispose();

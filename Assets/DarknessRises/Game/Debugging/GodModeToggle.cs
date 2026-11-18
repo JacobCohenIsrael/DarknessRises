@@ -32,11 +32,17 @@ namespace DarknessRises.Game.Debugging
             action.Disable();
         }
 
-        private void OnToggle(InputAction.CallbackContext context)
+        /// <summary>Whether god mode is on.</summary>
+        public bool IsOn => health.IsGodMode;
+
+        /// <summary>Switches god mode on or off.</summary>
+        public void Toggle()
         {
             health.IsGodMode = !health.IsGodMode;
             Debug.Log($"[Debug] God mode {(health.IsGodMode ? "on" : "off")}.");
         }
+
+        private void OnToggle(InputAction.CallbackContext context) => Toggle();
     }
 }
 #endif

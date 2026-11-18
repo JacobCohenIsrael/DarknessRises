@@ -39,6 +39,11 @@ namespace DarknessRises.Game.Health
 
         public CharacterHealth Health { get; private set; }
 
+#if UNITY_EDITOR || DEBUG
+        /// <summary>Debug only: the god mode switch of the current <see cref="Health"/>, if shown.</summary>
+        public GodModeToggle GodMode => godModeToggle;
+#endif
+
         public bool CanBeAttacked => Health != null && Health.IsAlive;
 
         /// <summary>

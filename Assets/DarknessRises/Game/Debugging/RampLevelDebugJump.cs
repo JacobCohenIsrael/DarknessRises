@@ -35,14 +35,20 @@ namespace DarknessRises.Game.Debugging
             action.Disable();
         }
 
-        private void OnJump(InputAction.CallbackContext context)
+        /// <summary>Leaves for Ramp level N, or for the next Level once at or past it.</summary>
+        public bool Jump()
         {
             var target = run.LevelIndex < jumpLevel ? jumpLevel : run.LevelIndex + 1;
-            if (run.JumpToLevel(target))
+            if (!run.JumpToLevel(target))
             {
-                Debug.Log($"[Debug] Jumping to Ramp level {target}.");
+                return false;
             }
+
+            Debug.Log($"[Debug] Jumping to Ramp level {target}.");
+            return true;
         }
+
+        private void OnJump(InputAction.CallbackContext context) => Jump();
     }
 }
 #endif

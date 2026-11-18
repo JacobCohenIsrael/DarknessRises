@@ -32,13 +32,19 @@ namespace DarknessRises.Game.Debugging
             action.Disable();
         }
 
-        private void OnSkip(InputAction.CallbackContext context)
+        /// <summary>Drops the current Station's fight and puts the character on the Boss's Station, if it can.</summary>
+        public bool Skip()
         {
-            if (level.SkipToBoss())
+            if (!level.SkipToBoss())
             {
-                Debug.Log("[Debug] Skipping to the Boss.");
+                return false;
             }
+
+            Debug.Log("[Debug] Skipping to the Boss.");
+            return true;
         }
+
+        private void OnSkip(InputAction.CallbackContext context) => Skip();
     }
 }
 #endif

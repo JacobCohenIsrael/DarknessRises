@@ -4,10 +4,14 @@ using UnityEngine;
 namespace DarknessRises.Game.Lightning
 {
     /// <summary>
-    /// Shows Lightning: plays the Rumble, then flashes a cold key light through the Room's windows
+    /// Shows Lightning: plays the Rumble, then flashes an electric-blue key light through the Room's windows
     /// (the only real-time shadow-casting light in the game), a shadowless fill and the window sky,
     /// and fades them back to Darkness. When does the <see cref="LightningScheduler"/>'s job.
     /// </summary>
+    /// <remarks>
+    /// Rumbles alternate between AudioSources, each with its own <see cref="RumbleVoice"/>, so a new Rumble lets a
+    /// fading one roll on, and no Rumble ever stops dead: cutting Lightning short fades them out over a short authored time.
+    /// </remarks>
     public sealed class LightningView : MonoBehaviour
     {
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
@@ -18,23 +22,21 @@ namespace DarknessRises.Game.Lightning
         [SerializeField, Tooltip("Shadowless directional light that lets the whole Room show during the flash.")]
         private Light fillLight;
 
-        [SerializeField] private AudioSource rumbleSource;
+        [SerializeField, Tooltip("Rumble sources. A new Rumble plays on a free one, so it doesn't cut off a fading one.")]
+        private AudioSource[] rumbleSources = new AudioSource[2];
 
         private LightningFlashSettings flash;
         private RumbleSettings rumble;
         private AudioClip rumbleClip;
         private Room room;
         private MaterialPropertyBlock windowProperties;
+        private RumbleVoice[] rumbleVoices;
 
         /// <summary>The directional light that shines through the windows while Lightning flashes.</summary>
         public Light KeyLight => keyLight;
 
         private bool flashing;
         private float flashElapsedSeconds;
-
-        private bool rumbling;
-        private float rumbleElapsedSeconds;
-        private float rumbleFadeStartSeconds;
 
         /// <summary>Sets up the lights for the definition and aims them through the Room's windows. Leaves the Room dark.</summary>
         public void Show(LightningDefinition definition, Room shownRoom)
@@ -57,9 +59,21 @@ namespace DarknessRises.Game.Lightning
                 room.LightningYawDegrees + flash.FillYawOffsetDegrees,
                 0f);
 
-            rumbleSource.playOnAwake = false;
-            rumbleSource.loop = false;
-            rumbleSource.spatialBlend = 0f;
+            if (rumbleVoices == null)
+            {
+                rumbleVoices = new RumbleVoice[rumbleSources.Length];
+                for (var i = 0; i < rumbleSources.Length; i++)
+                {
+                    rumbleVoices[i] = new RumbleVoice();
+                }
+            }
+
+            foreach (var source in rumbleSources)
+            {
+                source.playOnAwake = false;
+                source.loop = false;
+                source.spatialBlend = 0f;
+            }
 
             StopFlash();
         }
@@ -68,7 +82,6 @@ namespace DarknessRises.Game.Lightning
         public void UseRumble(AudioClip clip)
         {
             rumbleClip = clip;
-            rumbleSource.clip = clip;
             if (clip != null)
             {
                 // The Level's content loads it already; this only makes sure, since the Rumble seeks into the clip.
@@ -85,17 +98,18 @@ namespace DarknessRises.Game.Lightning
                 return;
             }
 
-            rumbleSource.volume = rumble.Volume;
-            rumbleSource.Play();
+            var index = RumbleVoice.PickFor(rumbleVoices);
+            var source = rumbleSources[index];
+            rumbleVoices[index].Start(rumble.Volume, Mathf.Max(0f, secondsUntilFlash), rumble.FadeOutSeconds);
+            source.clip = clip;
+            source.volume = rumble.Volume;
+            source.Play();
 
             // Measuring or seeking a clip that hasn't loaded fails (WebGL decodes audio late): it plays from the start instead.
             if (clip.loadState == AudioDataLoadState.Loaded)
             {
-                rumbleSource.time = Mathf.Clamp(rumble.ClipStartSeconds, 0f, clip.length);
+                source.time = Mathf.Clamp(rumble.ClipStartSeconds, 0f, clip.length);
             }
-            rumbling = true;
-            rumbleElapsedSeconds = 0f;
-            rumbleFadeStartSeconds = secondsUntilFlash;
         }
 
         /// <summary>Strikes. A new flash during a fading one starts over from the strike.</summary>
@@ -106,16 +120,15 @@ namespace DarknessRises.Game.Lightning
             SetBrightness(flash.Brightness(0f));
         }
 
-        /// <summary>Cuts the flash and the Rumble short, back to Darkness.</summary>
+        /// <summary>Cuts the flash short, back to Darkness, and fades any Rumble out over the authored cut time.</summary>
         public void StopFlash()
         {
             flashing = false;
             SetBrightness(0f);
 
-            if (rumbling)
+            for (var i = 0; i < rumbleVoices.Length; i++)
             {
-                rumbling = false;
-                rumbleSource.Stop();
+                rumbleVoices[i].FadeOut(rumble.CutFadeSeconds);
             }
         }
 
@@ -130,24 +143,28 @@ namespace DarknessRises.Game.Lightning
                 SetBrightness(flash.Brightness(flashElapsedSeconds));
             }
 
-            if (rumbling)
+            if (rumbleVoices == null)
             {
-                rumbleElapsedSeconds += deltaSeconds;
-                var fadeSeconds = rumbleElapsedSeconds - rumbleFadeStartSeconds;
-                if (fadeSeconds <= 0f)
+                return;
+            }
+
+            // Scaled time: the pause freezes Rumbles (with AudioListener.pause) and they carry on afterwards.
+            for (var i = 0; i < rumbleVoices.Length; i++)
+            {
+                var voice = rumbleVoices[i];
+                if (!voice.IsPlaying)
                 {
-                    return;
+                    continue;
                 }
 
-                var remaining = rumble.FadeOutSeconds > 0f ? 1f - fadeSeconds / rumble.FadeOutSeconds : 0f;
-                if (remaining <= 0f)
+                voice.Tick(deltaSeconds);
+                if (voice.IsPlaying)
                 {
-                    rumbling = false;
-                    rumbleSource.Stop();
+                    rumbleSources[i].volume = voice.Volume;
                 }
                 else
                 {
-                    rumbleSource.volume = rumble.Volume * remaining;
+                    rumbleSources[i].Stop();
                 }
             }
         }

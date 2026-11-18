@@ -96,14 +96,14 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     elevationDegrees: 28
-    keyColor: {r: 0.78, g: 0.87, b: 1, a: 1}
-    keyIntensity: 3.2
+    keyColor: {r: 0.45, g: 0.65, b: 1, a: 1}
+    keyIntensity: 4.5
     shadowStrength: 1
-    fillColor: {r: 0.45, g: 0.55, b: 0.85, a: 1}
+    fillColor: {r: 0.25, g: 0.4, b: 1, a: 1}
     fillIntensity: 0.6
     fillElevationDegrees: 45
     fillYawOffsetDegrees: 180
-    windowGlowColor: {r: 1.4, g: 1.6, b: 2, a: 1}
+    windowGlowColor: {r: 0.6, g: 1, b: 2.6, a: 1}
   rumble:
     clip:
       m_AssetGUID: 5ae4d298ed547ba4c88587effb75d7e1
@@ -113,4 +113,5 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     volume: 0.9
     clipStartSeconds: 8.3
-    fadeOutSeconds: 1.6
+    fadeOutSeconds: 3.5
+    cutFadeSeconds: 0.6

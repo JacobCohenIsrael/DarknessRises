@@ -99,6 +99,36 @@ namespace DarknessRises.Game.EditModeTests.Levels
         }
 
         [Test]
+        public void Tells_when_a_Station_fight_starts_and_when_it_is_cleared()
+        {
+            Station started = null;
+            Station cleared = null;
+            fights.FightStarted += station => started = station;
+            fights.FightCleared += station => cleared = station;
+
+            Run(10f);
+            Assert.That(started, Is.SameAs(fight));
+            Assert.That(cleared, Is.Null);
+
+            waveSpawner.KillAll();
+            Run(1f);
+            Assert.That(cleared, Is.SameAs(fight));
+        }
+
+        [Test]
+        public void The_end_of_the_Level_is_no_Station_fight()
+        {
+            var fightsStarted = 0;
+            fights.FightStarted += _ => fightsStarted++;
+
+            Run(10f);
+            waveSpawner.KillAll();
+            Run(20f);
+
+            Assert.That(fightsStarted, Is.EqualTo(1));
+        }
+
+        [Test]
         public void The_last_Station_is_left_to_the_owner_instead_of_being_cleared()
         {
             Station reached = null;

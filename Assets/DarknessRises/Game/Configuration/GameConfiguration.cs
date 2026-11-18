@@ -5,6 +5,7 @@ using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Runs;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private AudioDefinition audio;
         [SerializeField, Tooltip("The Level the game boots into.")] private LevelDefinition level;
         [SerializeField] private GrenadeDefinition grenade;
+        [SerializeField, Tooltip("How each Level after the first gets harder.")] private RampDefinition ramp;
 
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
@@ -43,5 +45,6 @@ namespace DarknessRises.Game.Configuration
         public AudioDefinition Audio => audio;
         public LevelDefinition Level => level;
         public GrenadeDefinition Grenade => grenade;
+        public RampDefinition Ramp => ramp;
     }
 }

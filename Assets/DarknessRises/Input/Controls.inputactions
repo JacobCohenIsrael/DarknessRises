@@ -189,6 +189,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "JumpToRampLevel",
+                    "type": "Button",
+                    "id": "8915cda2-8a0f-43f5-a706-23745bb03096",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -244,6 +254,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "PrimaryWeapon3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4780ee9e-581e-4e1e-b604-9481db5b4b79",
+                    "path": "<Keyboard>/f2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "JumpToRampLevel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

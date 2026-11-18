@@ -11,11 +11,11 @@ namespace DarknessRises.Game.Levels
     [CreateAssetMenu(menuName = "Darkness Rises/Level Definition", fileName = "LevelDefinition", order = 40)]
     public sealed class LevelDefinition : ScriptableObject
     {
-        [SerializeField, Tooltip("Shown on the title card as the Level starts.")]
-        private string title = "Level 1";
+        [SerializeField, Tooltip("Shown on the title card as the Level starts. {0} is the Level's number in the Run.")]
+        private string titleFormat = "Level {0}";
 
-        [SerializeField, Tooltip("Shown once the character has walked out the far door.")]
-        private string clearedTitle = "Level 1 cleared";
+        [SerializeField, Tooltip("Shown once the character has walked out the far door. {0} is the Level's number in the Run.")]
+        private string clearedTitleFormat = "Level {0} cleared";
 
         [SerializeField, Tooltip(
             "The Level's Rooms, in the order the Route walks through them. " +
@@ -35,8 +35,11 @@ namespace DarknessRises.Game.Levels
         [SerializeField] private LevelStartSettings start = new();
         [SerializeField] private LevelEndSettings end = new();
 
-        public string Title => title;
-        public string ClearedTitle => clearedTitle;
+        /// <summary>The title card of this Level when it is Level <paramref name="levelIndex"/> of the Run.</summary>
+        public string TitleFor(int levelIndex) => string.Format(titleFormat, levelIndex);
+
+        /// <summary>The card once the character has walked out of this Level, as Level <paramref name="levelIndex"/> of the Run.</summary>
+        public string ClearedTitleFor(int levelIndex) => string.Format(clearedTitleFormat, levelIndex);
         public IReadOnlyList<LevelRoomDefinition> Rooms => rooms;
         public float SpawnPointLitIntensity => spawnPointLitIntensity;
         public float StragglerMinMetresAhead => stragglerMinMetresAhead;

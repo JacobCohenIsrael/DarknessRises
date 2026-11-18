@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Runs;
 using UnityEngine;
 
 namespace DarknessRises.Game.Waves
@@ -36,7 +37,8 @@ namespace DarknessRises.Game.Waves
 
             progress = routeProgress;
             hunted = character;
-            pools = new EnemyPools(transform, enemyTime, content);
+            // The Test Room is a sandbox: its Waves and Enemies stay as authored, without the Ramp.
+            pools = new EnemyPools(transform, enemyTime, content, RampStep.First);
             pools.EnemyDied += OnEnemyDied;
             picker = new SpawnPointPicker(spawnPoints.Count, new System.Random());
             lighting = new SceneSpawnPointLighting(spawnPoints, route.SpawnPointLitIntensity);

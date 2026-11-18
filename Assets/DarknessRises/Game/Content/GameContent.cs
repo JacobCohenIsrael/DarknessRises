@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Runs;
 using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
 
@@ -18,7 +19,8 @@ namespace DarknessRises.Game.Content
         /// <param name="runsLevel">
         /// Whether the scene runs the configuration's Level; otherwise it runs the Route's Waves in one Room (the Test Room).
         /// </param>
-        public static ContentList For(GameConfiguration configuration, IReadOnlyList<WeaponDefinition> primaryWeapons, bool runsLevel)
+        /// <param name="rampStep">The Ramp of the Level the scene runs. Its Runner is loaded only once the Ramp brings Runners.</param>
+        public static ContentList For(GameConfiguration configuration, IReadOnlyList<WeaponDefinition> primaryWeapons, bool runsLevel, RampStep rampStep)
         {
             var content = new ContentList();
             for (var i = 0; i < primaryWeapons.Count; i++)
@@ -37,7 +39,7 @@ namespace DarknessRises.Game.Content
             content.Add(hitReaction.DeathClip);
             content.Add(configuration.Lightning.Rumble.Clip);
 
-            foreach (var enemyType in EnemyTypes(configuration, runsLevel))
+            foreach (var enemyType in EnemyTypes(configuration, runsLevel, rampStep))
             {
                 content.Add(enemyType.Prefab);
                 var audio = enemyType.Audio;
@@ -52,7 +54,7 @@ namespace DarknessRises.Game.Content
             return content;
         }
 
-        private static HashSet<EnemyDefinition> EnemyTypes(GameConfiguration configuration, bool runsLevel)
+        private static HashSet<EnemyDefinition> EnemyTypes(GameConfiguration configuration, bool runsLevel, RampStep rampStep)
         {
             var enemyTypes = new HashSet<EnemyDefinition>();
             if (runsLevel)
@@ -64,6 +66,12 @@ namespace DarknessRises.Game.Content
                     {
                         enemyTypes.Add(room.Stragglers.EnemyType);
                     }
+                }
+
+                var runner = configuration.Ramp.Runner;
+                if (rampStep.HasRunners && runner != null)
+                {
+                    enemyTypes.Add(runner);
                 }
             }
             else

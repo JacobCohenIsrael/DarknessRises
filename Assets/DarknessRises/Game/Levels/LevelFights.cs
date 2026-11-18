@@ -17,6 +17,7 @@ namespace DarknessRises.Game.Levels
         private readonly StragglerSchedule<TEnemyType> stragglers;
         private readonly int exitStation;
         private WaveSchedule<TEnemyType> current;
+        private Station currentStation;
 
         /// <param name="progress">The character's walk through the Level.</param>
         /// <param name="stationWaves">
@@ -57,6 +58,12 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised when the character reaches the Route's last Station, the end of the Level. The owner clears it.</summary>
         public event Action<Station> ExitReached;
 
+        /// <summary>Raised when the character reaches a Station with Waves to fight. A Station without Waves raises nothing.</summary>
+        public event Action<Station> FightStarted;
+
+        /// <summary>Raised when a Station's last Wave is dead and the character walks on.</summary>
+        public event Action<Station> FightCleared;
+
         /// <summary>The fight at the Station the character is at, or null while it walks.</summary>
         public WaveSchedule<TEnemyType> Current => current;
 
@@ -76,6 +83,8 @@ namespace DarknessRises.Game.Levels
                 if (current.IsDone)
                 {
                     current = null;
+                    FightCleared?.Invoke(currentStation);
+                    currentStation = null;
                 }
             }
 
@@ -99,7 +108,14 @@ namespace DarknessRises.Game.Levels
 
             var schedule = schedules[station.Index];
             schedule.Begin(station);
-            current = schedule.IsDone ? null : schedule;
+            if (schedule.IsDone)
+            {
+                return;
+            }
+
+            current = schedule;
+            currentStation = station;
+            FightStarted?.Invoke(station);
         }
     }
 }

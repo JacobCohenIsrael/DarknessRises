@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bebe9b6f2db867b43886dc37cb290cff, type: 3}
+  m_Name: RampDefinition
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Runs.RampDefinition
+  waveSizeGrowthPerLevel: 0.25
+  maxWaveSizeMultiplier: 3
+  levelsPerExtraWave: 3
+  maxExtraWaves: 2
+  enemyHitPointsGrowthPerLevel: 0.2
+  maxEnemyHitPointsMultiplier: 4
+  enemySpeedGrowthPerLevel: 0.06
+  maxEnemySpeedMultiplier: 1.4
+  runner: {fileID: 11400000, guid: c6c444a53064eb749819da5bf991b0d7, type: 2}
+  runnersFromLevel: 3
+  firstRunnerShare: 0.2
+  runnerShareGrowthPerLevel: 0.08
+  maxRunnerShare: 0.5
+  bossHitPointsGrowthPerLevel: 0.35
+  debugJumpLevel: 5

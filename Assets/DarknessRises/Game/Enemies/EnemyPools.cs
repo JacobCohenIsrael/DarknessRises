@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Content;
+using DarknessRises.Game.Runs;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -19,14 +20,17 @@ namespace DarknessRises.Game.Enemies
         private readonly Action<Enemy> onEnemyDied;
         private readonly EnemyTime time;
         private readonly ILoadedContent content;
+        private readonly RampStep ramp;
 
         /// <param name="enemyTime">How fast time runs for every pooled Enemy (Slow-mo).</param>
         /// <param name="loadedContent">Where each Enemy type's prefab and sounds are, already loaded. The pools never release it.</param>
-        public EnemyPools(Transform parent, EnemyTime enemyTime, ILoadedContent loadedContent)
+        /// <param name="rampStep">The Ramp of the Level these Enemies fight in: how much tougher and faster than authored they are.</param>
+        public EnemyPools(Transform parent, EnemyTime enemyTime, ILoadedContent loadedContent, RampStep rampStep)
         {
             onEnemyDied = OnEnemyDied;
             time = enemyTime;
             content = loadedContent;
+            ramp = rampStep;
             root = new GameObject("Enemies").transform;
             root.SetParent(parent, false);
 
@@ -109,7 +113,7 @@ namespace DarknessRises.Game.Enemies
             enemy.name = definition.name;
             enemy.gameObject.SetActive(false);
             enemy.transform.SetParent(root, false);
-            enemy.Prepare(pool, definition, time, content);
+            enemy.Prepare(pool, definition, time, content, ramp);
             enemy.Enemy.Died += onEnemyDied;
             return enemy;
         }

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37fbb8ef96c6d0d44a25caca90b164f3, type: 3}
   m_Name: Level1
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Levels.LevelDefinition
-  title: Level 1
-  clearedTitle: Level 1 cleared
+  titleFormat: Level {0}
+  clearedTitleFormat: Level {0} cleared
   rooms:
   - name: Hall
     stations:

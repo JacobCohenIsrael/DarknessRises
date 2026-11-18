@@ -19,6 +19,9 @@ MonoBehaviour:
   damage: 1
   range: 6
   spreadDegrees: 14
+  knockback:
+    metres: 0
+    seconds: 0.1
   shot:
     prefab:
       m_AssetGUID: 95dfef04350f10a4fbdde45823d7ab5c

@@ -10,7 +10,8 @@ namespace DarknessRises.Game.Bosses
     [RequireComponent(typeof(Collider))]
     public sealed class ColossusFoot : MonoBehaviour, IShotTarget
     {
-        public bool TakeShot(int damage)
+        // Bosses take no Knockback.
+        public bool TakeShot(in ShotHit hit)
         {
             return false;
         }

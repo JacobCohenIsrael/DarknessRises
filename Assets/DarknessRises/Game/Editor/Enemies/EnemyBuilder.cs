@@ -96,6 +96,9 @@ namespace DarknessRises.Game.Editor.Enemies
         private const float RunnerTurnSpeed = 420f;
         private const float RunnerPathRefreshSeconds = 0.15f;
 
+        // Light on its feet: hits push it further than a Shambler.
+        private const float RunnerKnockbackMultiplier = 1.3f;
+
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
         {
@@ -113,6 +116,7 @@ namespace DarknessRises.Game.Editor.Enemies
                 created.FindProperty("acceleration").floatValue = RunnerAcceleration;
                 created.FindProperty("turnSpeed").floatValue = RunnerTurnSpeed;
                 created.FindProperty("pathRefreshSeconds").floatValue = RunnerPathRefreshSeconds;
+                created.FindProperty("knockback.multiplier").floatValue = RunnerKnockbackMultiplier;
             });
         }
 

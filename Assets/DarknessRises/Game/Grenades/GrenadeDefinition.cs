@@ -39,6 +39,9 @@ namespace DarknessRises.Game.Grenades
         [SerializeField, Min(0), Tooltip("Damage dealt to every Enemy in the blast radius.")]
         private int damage = 4;
 
+        [SerializeField, Tooltip("How the blast pushes regular Enemies outwards from its centre, falling off toward the edge of the blast radius. Bosses ignore it.")]
+        private GrenadeKnockbackSettings knockback = new();
+
         [SerializeField, Tooltip("The explosion's burst, light, sound and camera shake.")]
         private GrenadeExplosionSettings explosion = new();
 
@@ -49,6 +52,7 @@ namespace DarknessRises.Game.Grenades
         public GrenadeBodySettings Body => body;
         public float BlastRadius => blastRadius;
         public int Damage => damage;
+        public GrenadeKnockbackSettings Knockback => knockback;
         public GrenadeExplosionSettings Explosion => explosion;
 
         /// <summary>A copy of the numbers the charges rule needs.</summary>

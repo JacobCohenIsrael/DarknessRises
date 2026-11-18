@@ -11,13 +11,14 @@ namespace DarknessRises.Game.Enemies
     /// <summary>
     /// A pooled Enemy in the scene. It chases the character with its NavMesh agent, and shows what its
     /// <see cref="EnemyBehaviour"/> decides: a Wind-up (flaring eyes, rearing back, a sound), the attack (a lunge that
-    /// hurts the character if it lands) and a Stagger (knocked back). It forwards Shots to its <see cref="Enemies.Enemy"/>
-    /// rule, and when that dies, lies still, sinks into the floor and fades out, then goes back to its pool.
+    /// hurts the character if it lands) and a Stagger (rearing back). It forwards Shots to its <see cref="Enemies.Enemy"/>
+    /// rule, and when that dies, lies still, sinks into the floor and fades out, then goes back to its pool. A hit that
+    /// damages it also pushes it across the NavMesh (<see cref="EnemyKnockback"/>), on top of whatever it's doing.
     /// </summary>
     /// <remarks>
     /// Everything it does runs on <see cref="EnemyTime"/>, never the global time scale, so Slow-mo slows Enemies
-    /// alone: frame time (including the Wind-up, recovery and Stagger), NavMesh agent speed, and its sounds' pitch
-    /// (<see cref="EnemyVoicePitch"/>).
+    /// alone: frame time (including the Wind-up, recovery, Stagger and Knockback), NavMesh agent speed, and its sounds'
+    /// pitch (<see cref="EnemyVoicePitch"/>).
     /// </remarks>
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyView : MonoBehaviour, IShotTarget
@@ -81,6 +82,8 @@ namespace DarknessRises.Game.Enemies
 
         public EnemyBehaviour Behaviour { get; private set; }
 
+        public EnemyKnockback Knockback { get; private set; }
+
         /// <summary>
         /// Called once, when the pool creates this Enemy. Its sounds come from <paramref name="content"/>, already loaded.
         /// <paramref name="ramp"/> scales its authored hit points and speed for the Level it fights in.
@@ -141,6 +144,9 @@ namespace DarknessRises.Game.Enemies
             Behaviour.AttackLanded += OnAttackLanded;
             Behaviour.AttackMissed += OnAttackMissed;
 
+            var knockback = definition.Knockback;
+            Knockback = new EnemyKnockback(knockback.Multiplier, knockback.MaxMetres, knockback.MaxMetresPerSecond);
+
             Enemy.Hurt += OnHurt;
             Enemy.Died += OnDied;
         }
@@ -176,6 +182,7 @@ namespace DarknessRises.Game.Enemies
             isHoldingStill = false;
             secondsUntilPathRefresh = 0f;
             pushSecondsLeft = 0f;
+            Knockback.Clear();
 
             Enemy.Spawn(hitPoints);
             Behaviour.Begin();
@@ -183,9 +190,15 @@ namespace DarknessRises.Game.Enemies
             Play(spawnClip);
         }
 
-        public bool TakeShot(int damage)
+        public bool TakeShot(in ShotHit hit)
         {
-            Enemy.TakeHit(damage);
+            // Pushed before the hit lands, so a killing Shot's push carries the body too.
+            if (Enemy.IsAlive && hit.Damage > 0)
+            {
+                Knockback.Push(hit.Direction, hit.KnockbackMetres, hit.KnockbackSeconds);
+            }
+
+            Enemy.TakeHit(hit.Damage);
             return true;
         }
 
@@ -234,6 +247,9 @@ namespace DarknessRises.Game.Enemies
             {
                 HoldStill(deltaSeconds);
             }
+
+            // On top of the chase, Wind-up, Stagger or push-back: the hit moves it without changing what it does.
+            BeKnockedBack(deltaSeconds);
         }
 
         private void OnDestroy()
@@ -319,6 +335,23 @@ namespace DarknessRises.Game.Enemies
             }
         }
 
+        // Knockback: the agent carries it, so it slides along walls and never leaves the NavMesh. The hit also takes away
+        // the chase's momentum, so the Enemy picks the hunt up again from a standstill once the push is over.
+        private void BeKnockedBack(float deltaSeconds)
+        {
+            if (!Knockback.IsMoving || !agent.isOnNavMesh)
+            {
+                return;
+            }
+
+            if (!isHoldingStill)
+            {
+                agent.velocity = Vector3.zero;
+            }
+
+            agent.Move(Knockback.Step(deltaSeconds));
+        }
+
         private void StopAgent()
         {
             if (isHoldingStill)
@@ -382,6 +415,21 @@ namespace DarknessRises.Game.Enemies
         {
             secondsDead += deltaSeconds;
             var death = definition.Death;
+            if (agent.enabled)
+            {
+                // The killing hit's push carries the body until it comes to rest, never past the linger.
+                if (secondsDead < death.LingerSeconds && Knockback.IsMoving && agent.isOnNavMesh)
+                {
+                    agent.Move(Knockback.Step(deltaSeconds));
+                    if (Knockback.IsMoving)
+                    {
+                        return;
+                    }
+                }
+
+                LayBodyDown();
+            }
+
             var sinking = (secondsDead - death.LingerSeconds) / death.SinkSeconds;
             if (sinking <= 0f)
             {
@@ -426,17 +474,34 @@ namespace DarknessRises.Game.Enemies
             Play(deathClip);
             tells.Silence();
 
-            // Out of the way of Shots and the living, and free to sink through the floor.
+            // Out of the way of Shots. A body still being pushed by the killing hit keeps its agent until it comes to
+            // rest, so the push stays on the NavMesh; then it lies down out of the way of the living.
             hitbox.enabled = false;
-            agent.enabled = false;
-            deathPosition = transform.position;
             secondsDead = 0f;
+            if (Knockback.IsMoving && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+                agent.updateRotation = false;
+            }
+            else
+            {
+                LayBodyDown();
+            }
 
             fadeInstance.SetColor(BaseColorId, fadeColor);
             for (var i = 0; i < renderers.Length; i++)
             {
                 renderers[i].sharedMaterial = fadeInstance;
             }
+        }
+
+        // Free to sink through the floor from where it came to rest.
+        private void LayBodyDown()
+        {
+            Knockback.Clear();
+            agent.enabled = false;
+            deathPosition = transform.position;
         }
 
         private void OnEnemyTimeScaled(float scale)

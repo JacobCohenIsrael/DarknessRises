@@ -65,6 +65,8 @@ namespace DarknessRises.Game.Editor.Weapons
                 serialized.FindProperty("damage").intValue = 1;
                 serialized.FindProperty("range").floatValue = 20f;
                 serialized.FindProperty("spreadDegrees").floatValue = 4f;
+                serialized.FindProperty("knockback.metres").floatValue = 0.12f;
+                serialized.FindProperty("knockback.seconds").floatValue = 0.1f;
                 serialized.FindProperty("shot.glowColor").colorValue = new Color(1f, 0.88f, 0.55f);
                 serialized.FindProperty("shot.size").floatValue = 0.09f;
                 serialized.FindProperty("shot.trailSeconds").floatValue = 0.05f;
@@ -94,6 +96,8 @@ namespace DarknessRises.Game.Editor.Weapons
                 serialized.FindProperty("damage").intValue = 1;
                 serialized.FindProperty("range").floatValue = 6f;
                 serialized.FindProperty("spreadDegrees").floatValue = 14f;
+                // Fifteen hits a second: any push would pin an Enemy against a wall.
+                serialized.FindProperty("knockback.metres").floatValue = 0f;
                 serialized.FindProperty("shot.glowColor").colorValue = new Color(1f, 0.62f, 0.2f);
                 serialized.FindProperty("shot.size").floatValue = 0.2f;
                 serialized.FindProperty("shot.trailSeconds").floatValue = 0f;

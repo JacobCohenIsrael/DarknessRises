@@ -16,7 +16,7 @@ namespace DarknessRises.Game.Grenades
     /// </summary>
     /// <remarks>
     /// The blast hits each Enemy through <see cref="IShotTarget"/>, the same way a Shot does. It ignores cover:
-    /// an Enemy behind a pillar inside the radius is hit too.
+    /// an Enemy behind a pillar inside the radius is hit too. It pushes each one outwards from its centre (Knockback).
     /// </remarks>
     [DefaultExecutionOrder(AfterCharacterMovement)]
     public sealed class GrenadeThrowerView : MonoBehaviour
@@ -176,7 +176,7 @@ namespace DarknessRises.Game.Grenades
                 if (blastColliders[i].TryGetComponent<IShotTarget>(out var target) && !WasHit(target, hit))
                 {
                     blastTargets[hit++] = target;
-                    target.TakeShot(definition.Damage);
+                    target.TakeShot(BlastHit(position, blastColliders[i].transform.position));
                 }
 
                 blastColliders[i] = null;
@@ -186,6 +186,16 @@ namespace DarknessRises.Game.Grenades
             {
                 blastTargets[i] = null;
             }
+        }
+
+        // Outwards from the blast's centre across the floor, weaker the further out the Enemy stands.
+        private ShotHit BlastHit(Vector3 centre, Vector3 targetPosition)
+        {
+            var outwards = targetPosition - centre;
+            outwards.y = 0f;
+            var knockback = definition.Knockback;
+            var metres = knockback.MetresAt(outwards.magnitude, definition.BlastRadius);
+            return new ShotHit(definition.Damage, outwards, metres, knockback.Seconds);
         }
 
         private bool WasHit(IShotTarget target, int count)

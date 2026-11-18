@@ -18,6 +18,17 @@ namespace DarknessRises.Game.Editor.Builds
     /// <c>unity build . --target Android --execute-method DarknessRises.Game.Editor.Builds.PlayerBuilds.BuildAndroid</c>
     /// <c>unity build . --target WebGL --execute-method DarknessRises.Game.Editor.Builds.PlayerBuilds.BuildWebGL</c>
     /// Outputs: <c>Builds/Android/DarknessRises-{version}.apk</c> and <c>Builds/WebGL/DarknessRises-{version}-webgl.zip</c>.
+    /// <para>
+    /// Dev builds for playtesting: <c>BuildAndroidDev</c> and <c>BuildWebGLDev</c> make a development build of the same
+    /// version, named with a <c>-dev</c> suffix (<c>DarknessRises-{version}-dev.apk</c>,
+    /// <c>DarknessRises-{version}-dev-webgl.zip</c>). Unity defines <c>DEBUG</c> in their player scripts, which compiles in
+    /// the debug commands and the touch debug menu (the DEV button at the top right). No script debugging or profiler
+    /// autoconnect, so a dev build plays like the release. Release builds have none of the debug code.
+    /// <c>unity build . --target Android --execute-method DarknessRises.Game.Editor.Builds.PlayerBuilds.BuildAndroidDev</c>
+    /// <c>unity build . --target WebGL --execute-method DarknessRises.Game.Editor.Builds.PlayerBuilds.BuildWebGLDev</c>
+    /// To rebuild the current version without bumping it, pass
+    /// <c>--versioning-strategy custom --build-version {the current bundleVersion}</c>.
+    /// </para>
     /// </summary>
     public static class PlayerBuilds
     {
@@ -26,8 +37,19 @@ namespace DarknessRises.Game.Editor.Builds
         private const string VersionArgument = "-buildVersion";
         private const string AndroidFolder = "Builds/Android";
         private const string WebGLFolder = "Builds/WebGL";
+        private const string DevSuffix = "-dev";
 
-        public static void BuildAndroid()
+        public static void BuildAndroid() => BuildAndroid(false);
+
+        /// <summary>A development build of the same version, with the debug menu: <c>DarknessRises-{version}-dev.apk</c>.</summary>
+        public static void BuildAndroidDev() => BuildAndroid(true);
+
+        public static void BuildWebGL() => BuildWebGL(false);
+
+        /// <summary>A development build of the same version, with the debug menu: <c>DarknessRises-{version}-dev-webgl.zip</c>.</summary>
+        public static void BuildWebGLDev() => BuildWebGL(true);
+
+        private static void BuildAndroid(bool development)
         {
             var version = ApplyVersion();
             var android = NamedBuildTarget.Android;
@@ -37,18 +59,18 @@ namespace DarknessRises.Game.Editor.Builds
             PlayerSettings.Android.bundleVersionCode = version.ToAndroidVersionCode();
             PlayerSettings.Android.useCustomKeystore = false; // Debug-signed: for side-loading, not the store.
             EditorUserBuildSettings.buildAppBundle = false;
-            Build(BuildTarget.Android, $"{AndroidFolder}/{ProductFileName}-{version}.apk");
+            Build(BuildTarget.Android, $"{AndroidFolder}/{ProductFileName}-{version}{Suffix(development)}.apk", development);
         }
 
-        public static void BuildWebGL()
+        private static void BuildWebGL(bool development)
         {
             var version = ApplyVersion();
 
             // itch.io doesn't send Content-Encoding headers for Unity's files, so the loader decompresses them itself.
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
             PlayerSettings.WebGL.decompressionFallback = true;
-            var folder = $"{WebGLFolder}/{ProductFileName}-{version}";
-            Build(BuildTarget.WebGL, folder);
+            var folder = $"{WebGLFolder}/{ProductFileName}-{version}{Suffix(development)}";
+            Build(BuildTarget.WebGL, folder, development);
 
             var zip = $"{folder}-webgl.zip";
             ZipForItch(folder, zip);
@@ -84,7 +106,9 @@ namespace DarknessRises.Game.Editor.Builds
             return BuildVersion.Parse(PlayerSettings.bundleVersion);
         }
 
-        private static void Build(BuildTarget target, string output)
+        private static string Suffix(bool development) => development ? DevSuffix : string.Empty;
+
+        private static void Build(BuildTarget target, string output, bool development)
         {
             if (EditorUserBuildSettings.activeBuildTarget != target)
             {
@@ -98,12 +122,13 @@ namespace DarknessRises.Game.Editor.Builds
                 scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray(),
                 locationPathName = output,
                 target = target,
-                options = BuildOptions.None,
+                // Development alone: no script debugging or profiler autoconnect, so it plays like the release.
+                options = development ? BuildOptions.Development : BuildOptions.None,
             };
 
             var report = BuildPipeline.BuildPlayer(options);
             var summary = report.summary;
-            Debug.Log($"[PlayerBuilds] {target} {PlayerSettings.bundleVersion}: {summary.result}, " +
+            Debug.Log($"[PlayerBuilds] {target} {PlayerSettings.bundleVersion}{Suffix(development)}: {summary.result}, " +
                       $"{summary.totalSize / (1024f * 1024f):F1} MB, {summary.totalTime.TotalSeconds:F0} s, " +
                       $"{summary.totalErrors} errors -> {output}");
             if (summary.result != BuildResult.Succeeded)

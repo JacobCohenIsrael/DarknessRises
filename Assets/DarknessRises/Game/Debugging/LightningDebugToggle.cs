@@ -35,7 +35,11 @@ namespace DarknessRises.Game.Debugging
             action.Disable();
         }
 
-        private void OnToggle(InputAction.CallbackContext context)
+        /// <summary>Whether Lightning is on.</summary>
+        public bool IsOn => scheduler.IsEnabled;
+
+        /// <summary>Switches Lightning on or off; switched off, a flash in progress stops.</summary>
+        public void Toggle()
         {
             var enabled = !scheduler.IsEnabled;
             scheduler.SetEnabled(enabled);
@@ -46,6 +50,8 @@ namespace DarknessRises.Game.Debugging
 
             Debug.Log($"[Debug] Lightning {(enabled ? "on" : "off")}.");
         }
+
+        private void OnToggle(InputAction.CallbackContext context) => Toggle();
     }
 }
 #endif

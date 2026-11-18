@@ -35,6 +35,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("Coming back after death, once per Run, for watching an ad.")] private ContinueDefinition @continue;
         [SerializeField, Tooltip("Touch Gestures and Aim assist.")] private GestureDefinition gestures;
 
+        [SerializeField, Tooltip("The reload meter and sounds, shared by every Primary weapon.")]
+        private ReloadFeedbackSettings reloadFeedback = new();
+
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
         public RouteDefinition Route => route;
@@ -49,5 +52,6 @@ namespace DarknessRises.Game.Configuration
         public RampDefinition Ramp => ramp;
         public ContinueDefinition Continue => @continue;
         public GestureDefinition Gestures => gestures;
+        public ReloadFeedbackSettings ReloadFeedback => reloadFeedback;
     }
 }

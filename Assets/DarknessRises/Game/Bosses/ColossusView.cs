@@ -20,11 +20,19 @@ namespace DarknessRises.Game.Bosses
     /// impact, and the planted foot with only its weak spot lit. The Boss Room camera frames the fight.
     /// </summary>
     /// <remarks>
-    /// During the fight the character stands where Relocate puts it: this places it after the Route walker each frame.
-    /// The fight's first Position is the Route's Boss Station, so the character walks on from there once it's over.
+    /// During the fight the character stands where Relocate puts it, and this is the only thing that moves it: the Route
+    /// walker hands placement over when the fight starts and takes it back when it ends (see
+    /// <see cref="Routes.RouteWalker.HandOverPlacement"/>). The fight's first Position is the Route's Boss Station, so
+    /// the character walks on from there once it's over.
     /// </remarks>
+    // Runs before everything that reads the character's position in Update (the weapon's muzzle and aim, Enemies'
+    // NavMesh targets and attacks, Grenade throws, Aim assist, the reload meter), so they all see the Relocated
+    // Position in the same frame it's placed. After GestureInput (-100), which feeds Relocate flicks.
+    [DefaultExecutionOrder(BeforeCharacterReaders)]
     public sealed class ColossusView : MonoBehaviour
     {
+        private const int BeforeCharacterReaders = -50;
+
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         [SerializeField, Tooltip("The middle of the Boss Room's floor. The definition's Positions are measured from here.")]
@@ -96,6 +104,15 @@ namespace DarknessRises.Game.Bosses
         /// <summary>The Colossus growls: Lightning should flash this many seconds from now. Its Boss mode does the flashing.</summary>
         public event Action<float> FlashRequested;
 
+        /// <summary>A fight began, run by this pattern. The Boss health bar reads it.</summary>
+        public event Action<ColossusPattern> FightBegan;
+
+        /// <summary>The fight is over: beaten, with the character back on the Boss Station, or cut short.</summary>
+        public event Action FightEnded;
+
+        /// <summary>The Colossus being fought; null before the first fight.</summary>
+        public ColossusDefinition Definition => definition;
+
         /// <summary>The fight's rules while it runs; null before.</summary>
         public ColossusPattern Pattern => pattern;
 
@@ -150,13 +167,17 @@ namespace DarknessRises.Game.Bosses
             }
         }
 
-        /// <summary>A Shot hit the weak spot.</summary>
-        public void HitWeakSpot(int damage)
+        /// <summary>A Shot hit the weak spot. It flashes if the hit hurt.</summary>
+        /// <returns>Whether the hit hurt the Colossus.</returns>
+        public bool HitWeakSpot(int damage)
         {
-            if (pattern != null && pattern.TakeWeakSpotHit(damage))
+            if (pattern == null || !pattern.TakeWeakSpotHit(damage))
             {
-                hitFlashSecondsLeft = look.WeakSpotHitFlashSeconds;
+                return false;
             }
+
+            hitFlashSecondsLeft = look.WeakSpotHitFlash.Seconds;
+            return true;
         }
 
         private void Begin(
@@ -218,12 +239,16 @@ namespace DarknessRises.Game.Bosses
             FrameFight(positions);
             PrepareEffects();
             placesCharacter = true;
+            character.position = relocation.Point;
             defeatLiftElapsedSeconds = float.PositiveInfinity;
+            hitFlashSecondsLeft = 0f;
             pattern.Begin();
+            FightBegan?.Invoke(pattern);
         }
 
         private void End()
         {
+            var wasFighting = placesCharacter;
             placesCharacter = false;
             if (enemyTime != null)
             {
@@ -248,6 +273,10 @@ namespace DarknessRises.Game.Bosses
             }
 
             Hide();
+            if (wasFighting)
+            {
+                FightEnded?.Invoke();
+            }
         }
 
         // The Boss Room camera takes over from the follow camera: Cinemachine blends to the newest live camera.
@@ -345,6 +374,11 @@ namespace DarknessRises.Game.Bosses
 
             // The character dashes at full speed; only the Colossus runs on Enemy time.
             relocation.Tick(deltaSeconds);
+            if (placesCharacter)
+            {
+                character.position = relocation.Point;
+            }
+
             if (pattern.IsDefeated)
             {
                 defeatLiftElapsedSeconds += deltaSeconds;
@@ -356,18 +390,14 @@ namespace DarknessRises.Game.Bosses
 
             ShowFoot();
             ShowEffects(deltaSeconds);
+            if (placesCharacter)
+            {
+                KeepFightFramed();
+            }
         }
 
-        // After the Route walker has placed the character on its Station.
-        private void LateUpdate()
+        private void KeepFightFramed()
         {
-            if (!placesCharacter)
-            {
-                return;
-            }
-
-            character.position = relocation.Point;
-
             // A rotated phone or resized window keeps every Position in view.
             const float aspectTolerance = 0.01f;
             if (Mathf.Abs(ViewAspect() - framedAspect) > aspectTolerance)
@@ -484,8 +514,9 @@ namespace DarknessRises.Game.Bosses
             if (weakSpotGlow.enabled)
             {
                 hitFlashSecondsLeft = Mathf.Max(0f, hitFlashSecondsLeft - deltaSeconds);
-                var boost = hitFlashSecondsLeft > 0f ? look.WeakSpotHitFlashBoost : 1f;
-                SetColor(weakSpotGlow, look.WeakSpotGlow * boost);
+                var boost = look.WeakSpotHitFlash.BrightnessAt(hitFlashSecondsLeft);
+                var glow = look.WeakSpotGlow;
+                SetColor(weakSpotGlow, new Color(glow.r * boost, glow.g * boost, glow.b * boost, glow.a));
                 weakSpotLight.intensity = look.WeakSpotLightIntensity * boost;
             }
 

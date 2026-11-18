@@ -57,6 +57,9 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The magazine-out and magazine-in sounds of a reload.")]
         private ReloadSoundView reloadSound;
 
+        [SerializeField, Tooltip("The Boss's name and hit points across the top of the HUD during a Boss fight.")]
+        private BossHealthBarView bossHealthBar;
+
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
@@ -247,6 +250,11 @@ namespace DarknessRises.Game
             var lightningRandom = new SystemRandom();
             lightning.UseRumble(content.Clip(configuration.Lightning.Rumble.Clip), lightningRandom);
             var boss = level != null ? configuration.Level.Boss : null;
+            if (bossHealthBar != null && level != null && level.Boss != null)
+            {
+                bossHealthBar.Watch(level.Boss, configuration.BossHealthBar);
+            }
+
             if (boss != null)
             {
                 lightning.UseWarning(content.Clip(boss.GrowlClip), boss.GrowlClipStartSeconds);
@@ -416,6 +424,8 @@ namespace DarknessRises.Game
         // In the Boss fight the Boss decides when Lightning flashes, and its growl warns of each flash.
         private void OnBossFightStarted()
         {
+            // The fight places the character (Relocate) until it's back on the Boss Station.
+            routeWalker.HandOverPlacement();
             run.BeginBossFight();
             lightningScheduler.EnterBossDrivenMode();
             level.Boss.FlashRequested += lightningScheduler.RequestFlash;
@@ -424,6 +434,7 @@ namespace DarknessRises.Game
 
         private void OnBossFightEnded()
         {
+            routeWalker.TakeBackPlacement();
             StopBossLightning();
         }
 

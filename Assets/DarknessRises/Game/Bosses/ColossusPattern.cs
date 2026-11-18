@@ -111,6 +111,9 @@ namespace DarknessRises.Game.Bosses
         /// <summary>A hit on the weak spot landed.</summary>
         public event Action Hurt;
 
+        /// <summary>A hit on the weak spot took hit points: the damage dealt, and the hit points left.</summary>
+        public event Action<int, int> Damaged;
+
         /// <summary>The phase changed. Carries the new phase, from 1 to 3.</summary>
         public event Action<int> PhaseChanged;
 
@@ -148,6 +151,9 @@ namespace DarknessRises.Game.Bosses
         public int HitPoints { get; private set; }
 
         public int MaxHitPoints { get; }
+
+        /// <summary>The shares of its hit points where phases 2 and 3 start.</summary>
+        public ColossusPhaseThresholds Phases => phases;
 
         /// <summary>From 1 to 3, by the share of hit points left.</summary>
         public int Phase { get; private set; }
@@ -255,8 +261,10 @@ namespace DarknessRises.Game.Bosses
                 return false;
             }
 
-            HitPoints = Math.Max(0, HitPoints - damage);
+            var dealt = Math.Min(damage, HitPoints);
+            HitPoints -= dealt;
             Hurt?.Invoke();
+            Damaged?.Invoke(dealt, HitPoints);
 
             var phase = phases.PhaseAt(HitPoints, MaxHitPoints);
             if (phase != Phase && HitPoints > 0)

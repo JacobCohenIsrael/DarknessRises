@@ -243,6 +243,7 @@ namespace DarknessRises.Game.Editor.Bosses
             sole.transform.localScale = SoleSize;
             Paint(sole, footMaterial);
             footCollider = sole.GetComponent<Collider>();
+            sole.AddComponent<ColossusFoot>();
 
             var leg = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             leg.name = "Leg";

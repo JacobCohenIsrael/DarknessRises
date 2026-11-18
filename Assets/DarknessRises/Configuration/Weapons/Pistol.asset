@@ -54,3 +54,6 @@ MonoBehaviour:
     seconds: 0.12
     surfaceOffset: 0.25
     sparkCount: 8
+    dullColor: {r: 0.55, g: 0.55, b: 0.6, a: 1}
+    dullIntensityShare: 0.25
+    dullSparkCount: 3

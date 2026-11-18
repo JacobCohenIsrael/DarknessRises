@@ -31,6 +31,16 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Min(0), Tooltip("Sparks thrown off by one hit.")]
         private int sparkCount = 8;
 
+        [Header("Dull spark")]
+        [SerializeField, Tooltip("Colour of the spark when a Shot hits something it can't hurt, such as the Colossus's foot off its weak spot.")]
+        private Color dullColor = new(0.55f, 0.55f, 0.6f);
+
+        [SerializeField, Range(0f, 1f), Tooltip("Share of the normal light intensity a dull spark gets.")]
+        private float dullIntensityShare = 0.25f;
+
+        [SerializeField, Min(0), Tooltip("Sparks thrown off by a hit that doesn't hurt.")]
+        private int dullSparkCount = 3;
+
         public AssetReferenceGameObject Prefab => prefab;
         public Color Color => color;
         public float Intensity => intensity;
@@ -38,5 +48,8 @@ namespace DarknessRises.Game.Weapons
         public float Seconds => seconds;
         public float SurfaceOffset => surfaceOffset;
         public int SparkCount => sparkCount;
+        public Color DullColor => dullColor;
+        public float DullIntensityShare => dullIntensityShare;
+        public int DullSparkCount => dullSparkCount;
     }
 }

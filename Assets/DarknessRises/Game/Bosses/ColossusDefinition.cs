@@ -14,6 +14,9 @@ namespace DarknessRises.Game.Bosses
     [CreateAssetMenu(menuName = "Darkness Rises/Colossus Definition", fileName = "Colossus", order = 45)]
     public sealed class ColossusDefinition : ScriptableObject
     {
+        [SerializeField, Tooltip("Its name, shown over its health bar during the fight.")]
+        private string displayName = "Colossus";
+
         [SerializeField, Min(1), Tooltip("Hit points in Level 1. The Ramp scales them for later Levels.")]
         private int hitPoints = 50;
 
@@ -77,6 +80,7 @@ namespace DarknessRises.Game.Bosses
         [SerializeField, Tooltip("The character's dash to a Position.")]
         private AssetReferenceT<AudioClip> relocateClip;
 
+        public string DisplayName => displayName;
         public int HitPoints => hitPoints;
         public ColossusPhaseThresholds Phases => phases;
         public ColossusStompTiming Stomp => stomp;

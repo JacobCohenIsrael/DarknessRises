@@ -47,3 +47,19 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     magazineInVolume: 0.7
     magazineInPitch: 1.25
+  bossHealthBar:
+    maxWidth: 900
+    sideClearance: 380
+    topMargin: 36
+    barHeight: 22
+    nameFontSize: 34
+    nameGap: 6
+    tickWidth: 4
+    nameColor: {r: 0.9, g: 0.86, b: 0.8, a: 0.95}
+    backgroundColor: {r: 0.08, g: 0.07, b: 0.07, a: 0.75}
+    fillColor: {r: 0.85, g: 0.32, b: 0.1, a: 1}
+    trailColor: {r: 1, g: 0.85, b: 0.6, a: 0.95}
+    tickColor: {r: 0.9, g: 0.86, b: 0.8, a: 0.85}
+    trailHoldSeconds: 0.45
+    trailDrainPerSecond: 0.6
+    slideSeconds: 0.4

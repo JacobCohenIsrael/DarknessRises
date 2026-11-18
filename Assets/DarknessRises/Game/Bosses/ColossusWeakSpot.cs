@@ -9,9 +9,9 @@ namespace DarknessRises.Game.Bosses
     {
         [SerializeField] private ColossusView colossus;
 
-        public void TakeShot(int damage)
+        public bool TakeShot(int damage)
         {
-            colossus.HitWeakSpot(damage);
+            return colossus.HitWeakSpot(damage);
         }
     }
 }

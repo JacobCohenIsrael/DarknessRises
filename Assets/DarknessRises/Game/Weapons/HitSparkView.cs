@@ -15,6 +15,7 @@ namespace DarknessRises.Game.Weapons
         private IObjectPool<HitSparkView> pool;
         private HitSparkSettings settings;
         private float secondsLeft;
+        private float intensity;
         private float lifeSecondsLeft;
 
         /// <summary>Seconds the longest-lived spark lasts.</summary>
@@ -36,17 +37,24 @@ namespace DarknessRises.Game.Weapons
             main.loop = false;
         }
 
-        /// <summary>Shows a hit at <paramref name="point"/> on a surface facing <paramref name="normal"/>.</summary>
-        public void Spark(Vector3 point, Vector3 normal)
+        /// <summary>
+        /// Shows a hit at <paramref name="point"/> on a surface facing <paramref name="normal"/>. A <paramref name="dull"/>
+        /// spark is greyer, dimmer and smaller: the Shot hit something it can't hurt.
+        /// </summary>
+        public void Spark(Vector3 point, Vector3 normal, bool dull = false)
         {
             transform.SetPositionAndRotation(point, Quaternion.LookRotation(normal, Vector3.up));
             sparkLight.transform.position = point + normal * settings.SurfaceOffset;
-            sparkLight.intensity = settings.Intensity;
+            var color = dull ? settings.DullColor : settings.Color;
+            intensity = dull ? settings.Intensity * settings.DullIntensityShare : settings.Intensity;
+            sparkLight.color = color;
+            sparkLight.intensity = intensity;
             sparkLight.enabled = true;
             secondsLeft = settings.Seconds;
 
             sparks.Clear();
-            sparks.Emit(settings.SparkCount);
+            var emit = new ParticleSystem.EmitParams { startColor = color };
+            sparks.Emit(emit, dull ? settings.DullSparkCount : settings.SparkCount);
             lifeSecondsLeft = Mathf.Max(settings.Seconds, LifeSeconds);
         }
 
@@ -58,7 +66,7 @@ namespace DarknessRises.Game.Weapons
 
             if (secondsLeft > 0f)
             {
-                sparkLight.intensity = settings.Intensity * (secondsLeft / settings.Seconds);
+                sparkLight.intensity = intensity * (secondsLeft / settings.Seconds);
             }
             else if (sparkLight.enabled)
             {

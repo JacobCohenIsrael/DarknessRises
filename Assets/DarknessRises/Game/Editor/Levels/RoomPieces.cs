@@ -35,6 +35,18 @@ namespace DarknessRises.Game.Editor.Levels
                 Centre = centre;
                 Width = width;
                 IsWindow = isWindow;
+                Bottom = isWindow ? WindowSillHeight : 0f;
+                Top = isWindow ? WindowTopHeight : DoorHeight;
+            }
+
+            /// <summary>A window with its own sill and top, such as the Boss Room's tall windows.</summary>
+            public Opening(float centre, float width, float sill, float top)
+            {
+                Centre = centre;
+                Width = width;
+                IsWindow = true;
+                Bottom = sill;
+                Top = top;
             }
 
             /// <summary>World coordinate along the wall (x for north and south walls, z for east and west walls).</summary>
@@ -42,8 +54,8 @@ namespace DarknessRises.Game.Editor.Levels
 
             public float Width { get; }
             public bool IsWindow { get; }
-            public float Bottom => IsWindow ? WindowSillHeight : 0f;
-            public float Top => IsWindow ? WindowTopHeight : DoorHeight;
+            public float Bottom { get; }
+            public float Top { get; }
         }
 
         public static GameObject Block(string name, Transform parent, Vector3 centre, Vector3 size, Material material, bool castsShadows)

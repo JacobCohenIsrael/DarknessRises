@@ -8,7 +8,8 @@ namespace DarknessRises.Game.Levels
     /// <summary>
     /// Everything the character fights on a Level's Route: each Station's Waves when it gets there, and Stragglers
     /// while it walks between Stations. The Route's last Station is the Level's end: it is left to the owner,
-    /// who clears it once the end beat has played.
+    /// who clears it once the end beat has played. In a Level with a Boss, the Station before it is the Boss's:
+    /// it too is left to the owner, who clears it once the Boss is beaten.
     /// </summary>
     public sealed class LevelFights<TEnemyType> : IDisposable
     {
@@ -16,6 +17,7 @@ namespace DarknessRises.Game.Levels
         private readonly WaveSchedule<TEnemyType>[] schedules;
         private readonly StragglerSchedule<TEnemyType> stragglers;
         private readonly int exitStation;
+        private readonly int bossStation;
         private WaveSchedule<TEnemyType> current;
         private Station currentStation;
 
@@ -25,11 +27,15 @@ namespace DarknessRises.Game.Levels
         /// </param>
         /// <param name="waveSpawner">Brings the Waves' Enemies in.</param>
         /// <param name="stragglers">Sends Stragglers while the character walks between Stations.</param>
+        /// <param name="hasBoss">
+        /// Whether the Level ends in a Boss fight, at the Station right after the last one in <paramref name="stationWaves"/>.
+        /// </param>
         public LevelFights(
             RouteProgress progress,
             IReadOnlyList<IReadOnlyList<WavePlan<TEnemyType>>> stationWaves,
             IEnemySpawner<TEnemyType> waveSpawner,
-            StragglerSchedule<TEnemyType> stragglers)
+            StragglerSchedule<TEnemyType> stragglers,
+            bool hasBoss = false)
         {
             this.progress = progress ?? throw new ArgumentNullException(nameof(progress));
             this.stragglers = stragglers ?? throw new ArgumentNullException(nameof(stragglers));
@@ -45,7 +51,8 @@ namespace DarknessRises.Game.Levels
             }
 
             // Built up front so reaching a Station allocates nothing.
-            exitStation = stationWaves.Count;
+            bossStation = hasBoss ? stationWaves.Count : -1;
+            exitStation = stationWaves.Count + (hasBoss ? 1 : 0);
             schedules = new WaveSchedule<TEnemyType>[stationWaves.Count];
             for (var i = 0; i < stationWaves.Count; i++)
             {
@@ -57,6 +64,9 @@ namespace DarknessRises.Game.Levels
 
         /// <summary>Raised when the character reaches the Route's last Station, the end of the Level. The owner clears it.</summary>
         public event Action<Station> ExitReached;
+
+        /// <summary>Raised when the character reaches the Boss's Station. The owner runs the Boss fight and clears it.</summary>
+        public event Action<Station> BossReached;
 
         /// <summary>Raised when the character reaches a Station with Waves to fight. A Station without Waves raises nothing.</summary>
         public event Action<Station> FightStarted;
@@ -92,6 +102,22 @@ namespace DarknessRises.Game.Levels
             stragglers.Tick(deltaSeconds, walking);
         }
 
+        /// <summary>
+        /// Debug: gives up on the current Station's fight as if it were cleared, leaving its Enemies to whoever holds them.
+        /// </summary>
+        public void AbandonCurrent()
+        {
+            if (current == null)
+            {
+                return;
+            }
+
+            current = null;
+            var station = currentStation;
+            currentStation = null;
+            FightCleared?.Invoke(station);
+        }
+
         public void Dispose()
         {
             progress.StationReached -= OnStationReached;
@@ -103,6 +129,12 @@ namespace DarknessRises.Game.Levels
             if (station.Index >= exitStation)
             {
                 ExitReached?.Invoke(station);
+                return;
+            }
+
+            if (station.Index == bossStation)
+            {
+                BossReached?.Invoke(station);
                 return;
             }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DarknessRises.Game.Editor.Bosses;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Hud;
@@ -19,8 +20,9 @@ using static DarknessRises.Game.Editor.Levels.RoomPieces;
 namespace DarknessRises.Game.Editor.Levels
 {
     /// <summary>
-    /// Builds the prototype Level scene: three hand-built Rooms in a row, joined by doorways, with the Route walking
-    /// in through the entrance door, past each Room's Stations and out the far door. The game boots into it.
+    /// Builds the prototype Level scene: three hand-built Rooms in a row, joined by doorways, then the Colossus's huge
+    /// Boss Room, with the Route walking in through the entrance door, past each Room's Stations, to the Boss's Station
+    /// and out the far door. The game boots into it.
     /// Also authors the Level definition's Waves and Stragglers when it has none, so tuning survives a rebuild.
     /// </summary>
     /// <remarks>
@@ -43,7 +45,7 @@ namespace DarknessRises.Game.Editor.Levels
         // Where the character starts, outside the entrance door, and where the beats' lights stand.
         private static readonly Vector3 Start = new(-6f, 0f, 5f);
         private static readonly Vector3 EntranceLightPosition = new(-3.5f, 2.4f, 5f);
-        private static readonly Vector3 ExitLightPosition = new(52f, 2.6f, 8f);
+        private static readonly Vector3 ExitLightPosition = new(81f, 2.6f, 8f);
 
         private sealed class RoomPlan
         {
@@ -55,7 +57,10 @@ namespace DarknessRises.Game.Editor.Levels
             public float WestDoorZ = float.NaN;
             public float EastDoorZ = float.NaN;
             public (Vector3 centre, Vector3 size, bool crate)[] Obstacles;
-            public Vector3[] SpawnPoints;
+            public Vector3[] SpawnPoints = System.Array.Empty<Vector3>();
+            public float Height = WallHeight;
+            public float WindowSill = WindowSillHeight;
+            public float WindowTop = WindowTopHeight;
 
             public bool HasWindows => WindowsX.Length > 0;
         }
@@ -151,7 +156,48 @@ namespace DarknessRises.Game.Editor.Levels
             },
         };
 
-        // The Route, west to east. Stations stop the character; the last Station is the end beat's calm by the far door.
+        // The Colossus's Boss Room, east of the last Room: huge, dark and tall, with tall windows in its north wall.
+        // Only a few pillars stand at its edges, out of the way of the Positions in its middle.
+        private const float BossRoomHeight = 7f;
+
+        private static readonly RoomPlan BossRoom = new()
+        {
+            Name = "Boss Room",
+            XMin = 54.4f, ZMin = -4f, XMax = 82.4f, ZMax = 20f,
+            FloorTint = new Color(0.4f, 0.38f, 0.36f),
+            WindowsX = new[] { 58.4f, 63.4f, 68.4f, 73.4f, 78.4f },
+            LightningYaw = 172f,
+            WestDoorZ = 8f,
+            EastDoorZ = 8f,
+            Height = BossRoomHeight,
+            WindowSill = 0.8f,
+            WindowTop = 6f,
+            Obstacles = new[]
+            {
+                (new Vector3(56.6f, BossRoomHeight / 2f, 17.6f), new Vector3(1.2f, BossRoomHeight, 1.2f), false),
+                (new Vector3(80.2f, BossRoomHeight / 2f, 17.6f), new Vector3(1.2f, BossRoomHeight, 1.2f), false),
+                (new Vector3(56.6f, 0.5f, 0.6f), new Vector3(1.6f, 1f, 1.2f), true),
+                (new Vector3(80.2f, 0.45f, 0.4f), new Vector3(1.2f, 0.9f, 1.2f), true),
+            },
+        };
+
+        /// <summary>The middle of the Boss Room's floor. The Colossus's Positions are measured from here.</summary>
+        private static Vector3 BossRoomCentre => new((BossRoom.XMin + BossRoom.XMax) / 2f, 0f, (BossRoom.ZMin + BossRoom.ZMax) / 2f);
+
+        // Every Room the scene builds, the Boss Room last.
+        private static RoomPlan[] AllRooms
+        {
+            get
+            {
+                var all = new RoomPlan[Rooms.Length + 1];
+                Rooms.CopyTo(all, 0);
+                all[Rooms.Length] = BossRoom;
+                return all;
+            }
+        }
+
+        // The Route, west to east. Stations stop the character. The second-last Station is the Boss's, on the Boss Room's
+        // first Position; the last is the end beat's calm by the far door. The last doorway leads into the Boss Room.
         private static readonly (Vector3 point, bool station, bool doorway)[] RoutePoints =
         {
             (Start, false, false),
@@ -171,9 +217,15 @@ namespace DarknessRises.Game.Editor.Levels
             (new Vector3(40f, 0f, 3f), true, false),
             (new Vector3(46f, 0f, 3f), false, false),
             (new Vector3(48f, 0f, 8.5f), true, false),
-            (new Vector3(51.5f, 0f, 8f), true, false),
-            (new Vector3(54f, 0f, 8f), false, false),
-            (new Vector3(61f, 0f, 8f), false, false),
+            (new Vector3(51.5f, 0f, 8f), false, false),
+            (new Vector3(54f, 0f, 8f), false, true),
+            (new Vector3(57f, 0f, 8f), false, false),
+            (new Vector3(62f, 0f, 3.5f), false, false),
+            (new Vector3(68.4f, 0f, 3.5f), true, false),
+            (new Vector3(76f, 0f, 3.5f), false, false),
+            (new Vector3(80.6f, 0f, 8f), true, false),
+            (new Vector3(83.2f, 0f, 8f), false, false),
+            (new Vector3(90f, 0f, 8f), false, false),
         };
 
         // Placeholder fights per Room: (delay seconds, spawn interval seconds, Shamblers) per Wave, per Station.
@@ -227,7 +279,10 @@ namespace DarknessRises.Game.Editor.Levels
             var level = new GameObject("Level", typeof(LevelView));
             var geometry = new GameObject("Rooms").transform;
             geometry.SetParent(level.transform, false);
-            var rooms = BuildRooms(geometry);
+            var builtRooms = BuildRooms(geometry);
+            var rooms = new Room[Rooms.Length];
+            System.Array.Copy(builtRooms, rooms, rooms.Length);
+            var bossRoom = builtRooms[Rooms.Length];
             BuildOutside(geometry);
 
             // Baked before anything else is in the scene, so only the Rooms shape where Enemies can walk.
@@ -236,7 +291,15 @@ namespace DarknessRises.Game.Editor.Levels
             var routeWalker = BuildRoute(level.transform, out var doorways);
             var gameRoot = TestRoomBuilder.BuildGameplay(configuration, rooms[0], routeWalker, Start);
             var levelView = level.GetComponent<LevelView>();
-            WireLevel(levelView, routeWalker.GetComponent<RouteLayout>(), rooms, doorways);
+
+            // The last doorway leads into the Boss Room; the ones before it into the Level's Rooms.
+            var roomDoorways = new Transform[doorways.Length - 1];
+            System.Array.Copy(doorways, roomDoorways, roomDoorways.Length);
+            WireLevel(levelView, routeWalker.GetComponent<RouteLayout>(), rooms, roomDoorways);
+            var colossus = ColossusBuilder.BuildRig(bossRoom.transform, BossRoomCentre, definition.Boss);
+            TestRoomBuilder.SetReference(levelView, "bossRoom", bossRoom);
+            TestRoomBuilder.SetReference(levelView, "bossDoorway", doorways[doorways.Length - 1]);
+            TestRoomBuilder.SetReference(levelView, "boss", colossus);
             TestRoomBuilder.SetReference(gameRoot, "level", levelView);
 
             // Show the authored values in the Scene view too, not only in Play mode.
@@ -257,10 +320,11 @@ namespace DarknessRises.Game.Editor.Levels
             var thresholdMaterial = LevelMaterials.Concrete("Concrete Threshold", new Color(0.38f, 0.38f, 0.38f));
             var skyMaterial = TestRoomBuilder.LoadOrCreateUnlitMaterial("WindowSky", Color.black);
 
-            var rooms = new Room[Rooms.Length];
-            for (var r = 0; r < Rooms.Length; r++)
+            var plans = AllRooms;
+            var rooms = new Room[plans.Length];
+            for (var r = 0; r < plans.Length; r++)
             {
-                var plan = Rooms[r];
+                var plan = plans[r];
                 var floorMaterial = LevelMaterials.TiledFloor(
                     $"Floor {plan.Name}",
                     plan.FloorTint,
@@ -270,14 +334,14 @@ namespace DarknessRises.Game.Editor.Levels
                 rooms[r] = BuildRoom(plan, parent, floorMaterial, wallMaterial, pillarMaterial, crateMaterial, skyMaterial);
 
                 // The doorway's floor between this Room's east wall and the next Room's west wall.
-                if (r + 1 < Rooms.Length)
+                if (r + 1 < plans.Length)
                 {
                     Floor(
-                        $"Threshold {plan.Name} to {Rooms[r + 1].Name}",
+                        $"Threshold {plan.Name} to {plans[r + 1].Name}",
                         parent,
                         plan.XMax,
                         plan.EastDoorZ - DoorWidth / 2f,
-                        Rooms[r + 1].XMin,
+                        plans[r + 1].XMin,
                         plan.EastDoorZ + DoorWidth / 2f,
                         thresholdMaterial);
                 }
@@ -311,13 +375,13 @@ namespace DarknessRises.Game.Editor.Levels
             var northOpenings = new Opening[plan.WindowsX.Length];
             for (var i = 0; i < northOpenings.Length; i++)
             {
-                northOpenings[i] = new Opening(plan.WindowsX[i], WindowWidth, isWindow: true);
+                northOpenings[i] = new Opening(plan.WindowsX[i], WindowWidth, plan.WindowSill, plan.WindowTop);
             }
 
-            WallAlongX("North Wall", walls, plan.ZMax + WallThickness / 2f, xFrom, xTo, WallHeight, 1f, northOpenings, wallMaterial, skyMaterial, windows);
+            WallAlongX("North Wall", walls, plan.ZMax + WallThickness / 2f, xFrom, xTo, plan.Height, 1f, northOpenings, wallMaterial, skyMaterial, windows);
             WallAlongX("South Wall (cut away)", walls, plan.ZMin - WallThickness / 2f, xFrom, xTo, CameraSideWallHeight, -1f, noOpenings, wallMaterial, skyMaterial, windows);
-            WallAlongZ("West Wall", walls, plan.XMin - WallThickness / 2f, plan.ZMin, plan.ZMax, WallHeight, -1f, Doorway(plan.WestDoorZ), wallMaterial, skyMaterial, windows);
-            WallAlongZ("East Wall", walls, plan.XMax + WallThickness / 2f, plan.ZMin, plan.ZMax, WallHeight, 1f, Doorway(plan.EastDoorZ), wallMaterial, skyMaterial, windows);
+            WallAlongZ("West Wall", walls, plan.XMin - WallThickness / 2f, plan.ZMin, plan.ZMax, plan.Height, -1f, Doorway(plan.WestDoorZ), wallMaterial, skyMaterial, windows);
+            WallAlongZ("East Wall", walls, plan.XMax + WallThickness / 2f, plan.ZMin, plan.ZMax, plan.Height, 1f, Doorway(plan.EastDoorZ), wallMaterial, skyMaterial, windows);
 
             var obstacles = new GameObject("Obstacles").transform;
             obstacles.SetParent(room, false);
@@ -337,7 +401,7 @@ namespace DarknessRises.Game.Editor.Levels
                 lightningDirection = new GameObject("Lightning Direction").transform;
                 lightningDirection.SetParent(room, false);
                 lightningDirection.SetLocalPositionAndRotation(
-                    new Vector3((plan.XMin + plan.XMax) / 2f, WallHeight, plan.ZMax),
+                    new Vector3((plan.XMin + plan.XMax) / 2f, plan.Height, plan.ZMax),
                     Quaternion.Euler(0f, plan.LightningYaw, 0f));
             }
 
@@ -399,7 +463,7 @@ namespace DarknessRises.Game.Editor.Levels
             var ground = LevelMaterials.Concrete("Concrete Ground", new Color(0.34f, 0.33f, 0.31f));
             var door = LevelMaterials.Plain("Door", new Color(0.32f, 0.24f, 0.18f));
             var first = Rooms[0];
-            var last = Rooms[Rooms.Length - 1];
+            var last = BossRoom;
 
             Floor("Ground Outside Entrance", parent, first.XMin - 9f, first.WestDoorZ - 3f, first.XMin - WallThickness, first.WestDoorZ + 3f, ground);
             Floor("Ground Outside Exit", parent, last.XMax + WallThickness, last.EastDoorZ - 3f, last.XMax + 9f, last.EastDoorZ + 3f, ground);
@@ -503,7 +567,7 @@ namespace DarknessRises.Game.Editor.Levels
         private static void WarnIfBlocked(Vector3 point, bool isStation)
         {
             const float clearance = 0.9f;
-            foreach (var room in Rooms)
+            foreach (var room in AllRooms)
             {
                 foreach (var (centre, size, _) in room.Obstacles)
                 {
@@ -625,6 +689,16 @@ namespace DarknessRises.Game.Editor.Levels
             TestRoomBuilder.EnsureFolder(System.IO.Path.GetDirectoryName(LevelDefinitionPath).Replace('\\', '/'));
             var definition = TestRoomBuilder.LoadOrCreate<LevelDefinition>(LevelDefinitionPath);
             AuthorPlaceholderFights(definition);
+
+            // The Colossus waits in the Boss Room, unless the Level already names a Boss.
+            var colossus = ColossusBuilder.LoadOrCreateColossus(AddressableContent.LevelGroup(GroupName));
+            var serialized = new SerializedObject(definition);
+            var boss = serialized.FindProperty("boss");
+            if (boss.objectReferenceValue == null)
+            {
+                boss.objectReferenceValue = colossus;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
 
             // Re-saved so fields added since it was created are written to disk with their defaults.
             EditorUtility.SetDirty(definition);

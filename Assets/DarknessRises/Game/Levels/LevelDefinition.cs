@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Bosses;
 using UnityEngine;
 
 namespace DarknessRises.Game.Levels
 {
     /// <summary>
-    /// One hand-built Level: its title, its Rooms in the order the Route walks through them, and its start and end beats.
+    /// One hand-built Level: its title, its Rooms in the order the Route walks through them, the Boss at the end of the
+    /// Route, and its start and end beats.
     /// The Rooms' shapes are built in the Level scene; this holds what is fought in them. Never changed at runtime.
     /// </summary>
     [CreateAssetMenu(menuName = "Darkness Rises/Level Definition", fileName = "LevelDefinition", order = 40)]
@@ -32,6 +34,10 @@ namespace DarknessRises.Game.Levels
             "so they come at it rather than trail behind.")]
         private float stragglerMinMetresAhead = 2f;
 
+        [SerializeField, Tooltip(
+            "The Boss fought in the Level scene's Boss Room, at the Route's second-last Station. None: the Level has no Boss.")]
+        private ColossusDefinition boss;
+
         [SerializeField] private LevelStartSettings start = new();
         [SerializeField] private LevelEndSettings end = new();
 
@@ -43,6 +49,7 @@ namespace DarknessRises.Game.Levels
         public IReadOnlyList<LevelRoomDefinition> Rooms => rooms;
         public float SpawnPointLitIntensity => spawnPointLitIntensity;
         public float StragglerMinMetresAhead => stragglerMinMetresAhead;
+        public ColossusDefinition Boss => boss;
         public LevelStartSettings Start => start;
         public LevelEndSettings End => end;
     }

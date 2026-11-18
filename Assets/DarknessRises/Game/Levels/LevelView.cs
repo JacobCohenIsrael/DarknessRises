@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Bosses;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Hud;
@@ -16,8 +17,9 @@ namespace DarknessRises.Game.Levels
 {
     /// <summary>
     /// Runs a Level in the scene: the start beat as the character walks in, the fights in each Room it walks through,
-    /// and the end beat before it walks out the far door. The rules live in <see cref="RoomSequence"/>,
-    /// <see cref="LevelFights{TEnemyType}"/> and the beat settings; this feeds them frame time and shows the beats.
+    /// the Boss fight in the Boss Room, and the end beat before it walks out the far door. The rules live in
+    /// <see cref="RoomSequence"/>, <see cref="LevelFights{TEnemyType}"/> and the beat settings; this feeds them frame time
+    /// and shows the beats.
     /// The beats are UniTask flows on a cancellation token the Level owns, cancelled when the Level goes away.
     /// </summary>
     public sealed class LevelView : MonoBehaviour
@@ -31,6 +33,17 @@ namespace DarknessRises.Game.Levels
         [SerializeField, Tooltip("The doorway into each Room after the first, in order. Each sits on a point of the Route.")]
         private Transform[] doorways = Array.Empty<Transform>();
 
+        [Header("Boss")]
+        [SerializeField, Tooltip("The Boss Room, after the last of the Rooms above. The Route's second-last Station stands in it.")]
+        private Room bossRoom;
+
+        [SerializeField, Tooltip("The doorway into the Boss Room. It sits on a point of the Route.")]
+        private Transform bossDoorway;
+
+        [SerializeField, Tooltip("The Boss fight in the Boss Room. Without it (or a Boss in the Level definition) the Level has no Boss.")]
+        private ColossusView boss;
+
+        [Header("Beats")]
         [SerializeField, Tooltip("Shadowless light behind the entrance door. It fades to Darkness during the start beat.")]
         private Light entranceLight;
 
@@ -50,6 +63,13 @@ namespace DarknessRises.Game.Levels
         private LevelFights<EnemyDefinition> fights;
         private StragglerPlan<EnemyDefinition>[] roomStragglers;
         private Station exitStation;
+        private Station bossStation;
+        private bool hasBoss;
+        private bool isWalking;
+        private RampStep rampStep;
+        private Transform fightingCharacter;
+        private EnemyTime enemies;
+        private ILoadedContent loadedContent;
         private CancellationTokenSource lifetime;
 
         /// <summary>Raised when the character walks through a doorway into the next Room.</summary>
@@ -64,6 +84,12 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised when the Station's last Wave is dead and the character walks on.</summary>
         public event Action FightCleared;
 
+        /// <summary>Raised when the character reaches the Boss and its fight starts.</summary>
+        public event Action BossFightStarted;
+
+        /// <summary>Raised once the Boss is beaten and the character is back on the Route.</summary>
+        public event Action BossFightEnded;
+
         /// <summary>Raised when the last fight is over and the end beat starts.</summary>
         public event Action EndBeatStarted;
 
@@ -77,6 +103,9 @@ namespace DarknessRises.Game.Levels
         public Room FirstRoom => rooms.Length > 0 ? rooms[0] : null;
 
         public bool IsFinished { get; private set; }
+
+        /// <summary>The Boss of this Level, if it has one.</summary>
+        public ColossusView Boss => hasBoss ? boss : null;
 
         /// <summary>
         /// Starts the Level as Level <paramref name="index"/> of the Run: the start beat plays as the character walks in
@@ -103,7 +132,11 @@ namespace DarknessRises.Game.Levels
             }
 
             levelIndex = index;
-            var rampStep = ramp.StepAt(index);
+            rampStep = ramp.StepAt(index);
+            fightingCharacter = character;
+            enemies = enemyTime;
+            loadedContent = content;
+            hasBoss = boss != null && definition.Boss != null && bossRoom != null && bossDoorway != null;
 
             if (rooms.Length != definition.Rooms.Count)
             {
@@ -112,15 +145,24 @@ namespace DarknessRises.Game.Levels
             }
 
             var stations = route.CreateStations(progress.Path);
-            if (stations.Length == 0)
+            if (stations.Length < (hasBoss ? 2 : 1))
             {
-                throw new InvalidOperationException("A Level's Route needs a last Station for its end beat.");
+                throw new InvalidOperationException(
+                    hasBoss
+                        ? "A Level with a Boss needs a Station for the Boss and a last Station for its end beat."
+                        : "A Level's Route needs a last Station for its end beat.");
             }
 
-            var doorwayPositions = new Vector3[doorways.Length];
+            // The Boss Room comes after the Level's Rooms, through its own doorway.
+            var doorwayPositions = new Vector3[doorways.Length + (hasBoss ? 1 : 0)];
             for (var i = 0; i < doorways.Length; i++)
             {
                 doorwayPositions[i] = doorways[i].position;
+            }
+
+            if (hasBoss)
+            {
+                doorwayPositions[doorways.Length] = bossDoorway.position;
             }
 
             sequence = new RoomSequence(RoomSequence.EntryDistances(progress.Path, doorwayPositions));
@@ -148,14 +190,17 @@ namespace DarknessRises.Game.Levels
 
             // Subscribed before the fights are, so lights created since the last Station count from the first spawn.
             progress.StationReached += OnStationReached;
-            fights = new LevelFights<EnemyDefinition>(progress, stationWaves, spawner.Waves, stragglers);
+            fights = new LevelFights<EnemyDefinition>(progress, stationWaves, spawner.Waves, stragglers, hasBoss);
             fights.ExitReached += OnExitReached;
+            fights.BossReached += OnBossReached;
             fights.FightStarted += OnFightStarted;
             fights.FightCleared += OnFightCleared;
             sequence.RoomEntered += OnRoomEntered;
             Enter(0);
 
             exitStation = null;
+            bossStation = null;
+            isWalking = false;
             IsFinished = false;
             lifetime = new CancellationTokenSource();
             PlayAsync(lifetime.Token).Forget();
@@ -183,6 +228,12 @@ namespace DarknessRises.Game.Levels
             StartBeatFinished?.Invoke();
 
             fights.StragglersAllowed = true;
+            isWalking = true;
+            if (hasBoss)
+            {
+                await FightBossAsync(cancellation);
+            }
+
             await UniTask.WaitUntil(() => exitStation != null, cancellationToken: cancellation);
             fights.StragglersAllowed = false;
 
@@ -193,6 +244,37 @@ namespace DarknessRises.Game.Levels
 
             IsFinished = true;
             Finished?.Invoke();
+        }
+
+        // The Boss Room ends the Level: the character stops at the Boss's Station until the Boss is beaten.
+        private async UniTask FightBossAsync(CancellationToken cancellation)
+        {
+            await UniTask.WaitUntil(() => bossStation != null, cancellationToken: cancellation);
+            fights.StragglersAllowed = false;
+            BossFightStarted?.Invoke();
+
+            await boss.FightAsync(definition.Boss, rampStep, progress.Position, fightingCharacter, enemies, loadedContent, cancellation);
+
+            BossFightEnded?.Invoke();
+            bossStation.Clear();
+        }
+
+        /// <summary>
+        /// Debug: drops the current Station's fight and puts the character straight on the Boss's Station.
+        /// Only once the start beat is over and before the Boss fight. The key that calls it is compiled out of release builds.
+        /// </summary>
+        /// <returns>Whether the character skipped ahead.</returns>
+        public bool SkipToBoss()
+        {
+            if (!hasBoss || fights == null || !isWalking || bossStation != null || exitStation != null)
+            {
+                return false;
+            }
+
+            // The character's own Stations, not the ones made here to plan the fights.
+            var stations = progress.Stations;
+            fights.AbandonCurrent();
+            return progress.SkipTo(stations[stations.Count - 2]);
         }
 
         private async UniTask PlayStartBeatAsync(CancellationToken cancellation)
@@ -261,7 +343,8 @@ namespace DarknessRises.Game.Levels
             RampStep rampStep)
         {
             var assigned = LevelStations.AssignToRooms(stations, sequence);
-            var stationWaves = new IReadOnlyList<WavePlan<EnemyDefinition>>[stations.Count - 1];
+            // Every Station but the end beat's, and but the Boss's in a Level with a Boss.
+            var stationWaves = new IReadOnlyList<WavePlan<EnemyDefinition>>[stations.Count - (hasBoss ? 2 : 1)];
             for (var i = 0; i < stationWaves.Length; i++)
             {
                 var (room, indexInRoom) = assigned[i];
@@ -276,6 +359,14 @@ namespace DarknessRises.Game.Levels
 
         private void OnRoomEntered(int room)
         {
+            if (room >= rooms.Length)
+            {
+                // The Boss Room: no Waves or Stragglers start there.
+                stragglers.Follow(null);
+                RoomEntered?.Invoke(bossRoom);
+                return;
+            }
+
             Enter(room);
             RoomEntered?.Invoke(rooms[room]);
         }
@@ -295,6 +386,11 @@ namespace DarknessRises.Game.Levels
         private void OnExitReached(Station station)
         {
             exitStation = station;
+        }
+
+        private void OnBossReached(Station station)
+        {
+            bossStation = station;
         }
 
         private void OnFightStarted(Station _)
@@ -323,6 +419,7 @@ namespace DarknessRises.Game.Levels
 
             progress.StationReached -= OnStationReached;
             fights.ExitReached -= OnExitReached;
+            fights.BossReached -= OnBossReached;
             fights.FightStarted -= OnFightStarted;
             fights.FightCleared -= OnFightCleared;
             sequence.RoomEntered -= OnRoomEntered;

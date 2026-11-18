@@ -18,10 +18,10 @@ namespace DarknessRises.Game.Gestures
         [SerializeField, Min(0f), Tooltip("Seconds a still finger must stay down to start a Hold. Longer than a Tap.")]
         private float holdSeconds = 0.3f;
 
-        [SerializeField, Min(0f), Tooltip("Seconds at most from lifting the first Tap to touching down for the second.")]
+        [SerializeField, Min(0f), Tooltip("Seconds at most from the last finger of a Two-finger double-tap's first tap lifting to the first finger of its second touching down.")]
         private float doubleTapMaxGapSeconds = 0.3f;
 
-        [SerializeField, Min(0f), Tooltip("How far apart the two Taps of a Double-tap may be, in screen units.")]
+        [SerializeField, Min(0f), Tooltip("How far apart the centroids of a Two-finger double-tap's two taps may be, in screen units.")]
         private float doubleTapMaxDistance = 0.1f;
 
         [SerializeField, Min(0f), Tooltip("How far a Flick's finger must move, in screen units.")]

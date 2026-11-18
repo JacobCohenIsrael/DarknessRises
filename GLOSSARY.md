@@ -139,7 +139,7 @@ _Avoid_: slow, time warp, bullet time
 ## Input
 
 **Gesture**:
-A touch pattern that triggers an action. A tap fires once and a hold keeps firing. A double-tap reloads (its first tap still fires). A one-finger flick in any direction Relocates that way in a Boss fight and does nothing elsewhere. A two-finger flick up triggers the Flare and down triggers Slow-mo. A two-finger tap is recognized but does nothing for now. New Gestures (circles, squares, lines) can be added later for new Skills.
+A touch pattern that triggers an action. A tap fires once and a hold keeps firing. Two quick one-finger taps are just two taps (two Shots). A two-finger double-tap (two quick two-finger taps in the same place) reloads, and neither of its taps fires. A one-finger flick in any direction Relocates that way in a Boss fight and does nothing elsewhere. A two-finger flick up triggers the Flare and down triggers Slow-mo. A two-finger tap alone does nothing. New Gestures (circles, squares, lines) can be added later for new Skills.
 _Avoid_: swipe command, touch combo
 
 **Two-finger flick**:

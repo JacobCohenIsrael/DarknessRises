@@ -27,15 +27,15 @@ namespace DarknessRises.Game.Gestures
     }
 
     /// <summary>
-    /// Which command each Gesture means: Tap or Hold fires, Double-tap reloads, a Two-finger flick up Flares and down
-    /// triggers Slow-mo, and a one-finger Flick in any direction Relocates that way.
+    /// Which command each Gesture means: Tap or Hold fires, Two-finger double-tap reloads, a Two-finger flick up Flares
+    /// and down triggers Slow-mo, and a one-finger Flick in any direction Relocates that way.
     /// </summary>
     /// <remarks>
     /// One-finger Flicks are all Relocate so that flicking toward a Position never triggers a Skill. The mapping never
     /// depends on the fight: outside a Boss fight a Flick still means Relocate, which nothing acts on there.
-    /// A Double-tap's first Tap still fires a shot, because a Tap fires without waiting to see if a second follows.
-    /// A Two-finger flick sideways and a Two-finger tap mean nothing; the Two-finger tap recognizer stays registered
-    /// for future use.
+    /// Reload is two-fingered so that quickly tapping two targets with one finger is two Shots, never a Reload.
+    /// Neither Two-finger tap of a Two-finger double-tap fires: two fingers are never a Tap.
+    /// A Two-finger flick sideways and a single Two-finger tap mean nothing.
     /// </remarks>
     public static class GestureCommands
     {
@@ -49,7 +49,7 @@ namespace DarknessRises.Game.Gestures
                     return GestureCommand.FireHold;
                 case GestureKind.HoldEnded:
                     return GestureCommand.FireRelease;
-                case GestureKind.DoubleTap:
+                case GestureKind.TwoFingerDoubleTap:
                     return GestureCommand.Reload;
                 case GestureKind.Flick:
                     return gesture.Direction == Vector2.zero ? GestureCommand.None : GestureCommand.Relocate;

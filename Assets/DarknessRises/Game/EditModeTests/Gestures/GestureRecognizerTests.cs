@@ -8,7 +8,7 @@ namespace DarknessRises.Game.EditModeTests.Gestures
 {
     public sealed class GestureRecognizerTests
     {
-        // Tap ≤ 0.25 s and ≤ 0.03 moved, Hold after 0.3 s, Double-tap gap ≤ 0.3 s and ≤ 0.1 apart,
+        // Tap ≤ 0.25 s and ≤ 0.03 moved, Hold after 0.3 s, Two-finger double-tap gap ≤ 0.3 s and centroids ≤ 0.1 apart,
         // Flick ≥ 0.08 in ≤ 0.3 s, Two-finger tap second finger within 0.15 s,
         // Two-finger flick each finger ≥ 0.08 in ≤ 0.35 s, at most 35° apart.
         private static readonly GestureThresholds Thresholds =
@@ -21,12 +21,14 @@ namespace DarknessRises.Game.EditModeTests.Gestures
 
         private Recorded recorded;
         private GestureRecognizer recognizer;
+        private int nextFingerId;
 
         [SetUp]
         public void SetUp()
         {
             recorded = new Recorded();
             recognizer = GestureRecognizer.WithCoreGestures(Thresholds, recorded);
+            nextFingerId = 100;
         }
 
         [Test]
@@ -82,40 +84,108 @@ namespace DarknessRises.Game.EditModeTests.Gestures
         }
 
         [Test]
-        public void TwoQuickTapsCloseTogetherAreADoubleTap()
+        public void TwoQuickOneFingerTapsCloseTogetherAreJustTwoTaps()
         {
             Touch(0, Middle, 0f, 0.1f);
             Touch(1, Middle + new Vector2(0.02f, 0f), 0.3f, 0.38f);
-
-            Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.Tap, GestureKind.Tap, GestureKind.DoubleTap }));
-        }
-
-        [Test]
-        public void ASecondTapTooLateIsNoDoubleTap()
-        {
-            Touch(0, Middle, 0f, 0.1f);
-            Touch(1, Middle, 0.45f, 0.5f);
 
             Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.Tap, GestureKind.Tap }));
         }
 
         [Test]
-        public void ASecondTapTooFarAwayIsNoDoubleTap()
+        public void TwoQuickOneFingerTapsOnTwoTargetsAreJustTwoTaps()
         {
-            Touch(0, Middle, 0f, 0.1f);
-            Touch(1, Middle + new Vector2(0.3f, 0f), 0.2f, 0.25f);
+            Touch(0, Left, 0f, 0.08f);
+            Touch(1, Right, 0.15f, 0.22f);
 
-            Assert.That(recorded.Kinds, Has.No.Member(GestureKind.DoubleTap));
+            Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.Tap, GestureKind.Tap }));
         }
 
         [Test]
-        public void ThreeQuickTapsAreOneDoubleTap()
+        public void TwoQuickTwoFingerTapsCloseTogetherAreATwoFingerDoubleTapAndNoTap()
         {
-            Touch(0, Middle, 0f, 0.1f);
-            Touch(1, Middle, 0.2f, 0.3f);
-            Touch(2, Middle, 0.4f, 0.5f);
+            TwoFingerTap(Left, Right, 0f);
+            TwoFingerTap(Left + new Vector2(0.02f, 0.01f), Right + new Vector2(0.03f, -0.01f), 0.3f);
 
-            Assert.That(recorded.Kinds.Count(kind => kind == GestureKind.DoubleTap), Is.EqualTo(1));
+            Assert.That(recorded.Kinds, Is.EqualTo(new[]
+            {
+                GestureKind.TwoFingerTap, GestureKind.TwoFingerTap, GestureKind.TwoFingerDoubleTap,
+            }));
+            Assert.That(recorded.Gestures[2].Position.x, Is.EqualTo(0.525f).Within(1e-5f));
+        }
+
+        [Test]
+        public void TwoFingerTapsLandingInTheSameFrameMakeATwoFingerDoubleTap()
+        {
+            for (var tap = 0; tap < 2; tap++)
+            {
+                var finger = tap * 2;
+                var time = tap * 0.25f;
+                Sample(finger, TouchSamplePhase.Began, Left, time, fingers: 2);
+                Sample(finger + 1, TouchSamplePhase.Began, Right, time, fingers: 2);
+                Sample(finger, TouchSamplePhase.Ended, Left, time + 0.08f, fingers: 2);
+                Sample(finger + 1, TouchSamplePhase.Ended, Right, time + 0.08f, fingers: 2);
+            }
+
+            Assert.That(recorded.Kinds, Has.No.Member(GestureKind.Tap));
+            Assert.That(recorded.Kinds, Has.Member(GestureKind.TwoFingerDoubleTap));
+        }
+
+        [Test]
+        public void OneTwoFingerTapIsNoTwoFingerDoubleTap()
+        {
+            TwoFingerTap(Left, Right, 0f);
+
+            Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.TwoFingerTap }));
+        }
+
+        [Test]
+        public void ASecondTwoFingerTapTooLateIsNoTwoFingerDoubleTap()
+        {
+            // The first tap lifts at 0.14 s; the second lands 0.36 s later, past the 0.3 s gap.
+            TwoFingerTap(Left, Right, 0f);
+            TwoFingerTap(Left, Right, 0.5f);
+
+            Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.TwoFingerTap, GestureKind.TwoFingerTap }));
+        }
+
+        [Test]
+        public void ASecondTwoFingerTapTooFarAwayIsNoTwoFingerDoubleTap()
+        {
+            var away = new Vector2(0f, 0.2f);
+            TwoFingerTap(Left, Right, 0f);
+            TwoFingerTap(Left + away, Right + away, 0.25f);
+
+            Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.TwoFingerTap, GestureKind.TwoFingerTap }));
+        }
+
+        [Test]
+        public void AOneFingerTapBetweenTwoFingerTapsBreaksTheTwoFingerDoubleTap()
+        {
+            TwoFingerTap(Left, Right, 0f);
+            Touch(9, Middle, 0.16f, 0.2f);
+            TwoFingerTap(Left, Right, 0.25f);
+
+            Assert.That(recorded.Kinds, Has.No.Member(GestureKind.TwoFingerDoubleTap));
+        }
+
+        [Test]
+        public void ThreeQuickTwoFingerTapsAreOneTwoFingerDoubleTap()
+        {
+            TwoFingerTap(Left, Right, 0f);
+            TwoFingerTap(Left, Right, 0.25f);
+            TwoFingerTap(Left, Right, 0.5f);
+
+            Assert.That(recorded.Kinds.Count(kind => kind == GestureKind.TwoFingerDoubleTap), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void TwoQuickTwoFingerFlicksAreNoTwoFingerDoubleTap()
+        {
+            TwoFingerFlick(new Vector2(0f, 0.2f), new Vector2(0f, 0.2f), 0.12f, startTime: 0f, firstFinger: 0);
+            TwoFingerFlick(new Vector2(0f, 0.2f), new Vector2(0f, 0.2f), 0.12f, startTime: 0.2f, firstFinger: 2);
+
+            Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.TwoFingerFlick, GestureKind.TwoFingerFlick }));
         }
 
         [Test]
@@ -332,15 +402,29 @@ namespace DarknessRises.Game.EditModeTests.Gestures
             Assert.That(recorded.Kinds, Is.EqualTo(new[] { GestureKind.Tap }));
         }
 
-        // Two fingers land 0.03 s apart at Left and Right, move halfway, then lift at the given time.
-        private void TwoFingerFlick(Vector2 leftTravel, Vector2 rightTravel, float liftTime)
+        // Two fingers land 0.03 s apart at Left and Right, move halfway, then lift the given seconds after the first landed.
+        private void TwoFingerFlick(
+            Vector2 leftTravel, Vector2 rightTravel, float liftTime, float startTime = 0f, int firstFinger = 0)
         {
-            Sample(0, TouchSamplePhase.Began, Left, 0f, fingers: 1);
-            Sample(1, TouchSamplePhase.Began, Right, 0.03f, fingers: 2);
-            Sample(0, TouchSamplePhase.Moved, Left + leftTravel * 0.5f, liftTime * 0.5f, fingers: 2);
-            Sample(1, TouchSamplePhase.Moved, Right + rightTravel * 0.5f, liftTime * 0.5f, fingers: 2);
-            Sample(0, TouchSamplePhase.Ended, Left + leftTravel, liftTime, fingers: 2);
-            Sample(1, TouchSamplePhase.Ended, Right + rightTravel, liftTime, fingers: 1);
+            var second = firstFinger + 1;
+            Sample(firstFinger, TouchSamplePhase.Began, Left, startTime, fingers: 1);
+            Sample(second, TouchSamplePhase.Began, Right, startTime + 0.03f, fingers: 2);
+            Sample(firstFinger, TouchSamplePhase.Moved, Left + leftTravel * 0.5f, startTime + liftTime * 0.5f, fingers: 2);
+            Sample(second, TouchSamplePhase.Moved, Right + rightTravel * 0.5f, startTime + liftTime * 0.5f, fingers: 2);
+            Sample(firstFinger, TouchSamplePhase.Ended, Left + leftTravel, startTime + liftTime, fingers: 2);
+            Sample(second, TouchSamplePhase.Ended, Right + rightTravel, startTime + liftTime, fingers: 1);
+        }
+
+        // Two fingers land 0.03 s apart at the given points and lift 0.12 s and 0.14 s after the first landed, unmoved.
+        // Finger ids are new for every tap, as on a real screen.
+        private void TwoFingerTap(Vector2 first, Vector2 second, float startTime)
+        {
+            var id = nextFingerId;
+            nextFingerId += 2;
+            Sample(id, TouchSamplePhase.Began, first, startTime, fingers: 1);
+            Sample(id + 1, TouchSamplePhase.Began, second, startTime + 0.03f, fingers: 2);
+            Sample(id, TouchSamplePhase.Ended, first, startTime + 0.12f, fingers: 2);
+            Sample(id + 1, TouchSamplePhase.Ended, second, startTime + 0.14f, fingers: 1);
         }
 
         private void Touch(int finger, Vector2 position, float down, float up)

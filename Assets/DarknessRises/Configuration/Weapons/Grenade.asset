@@ -46,11 +46,12 @@ MonoBehaviour:
     fireballCount: 18
     sparkCount: 40
     clip:
-      m_AssetGUID: 986d6b30567e30e428f3f21373fe45ca
+      m_AssetGUID: 8327bacc90a16a441903a18e8fe175b1
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
+    clipStartSeconds: 0.45
     volume: 0.9
     hearingRange: 60
     shakeForce: 0.6

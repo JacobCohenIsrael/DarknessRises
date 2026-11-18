@@ -31,22 +31,15 @@ MonoBehaviour:
     worldOffset: {x: 0, y: 2.4, z: 0}
     fillColor: {r: 1, g: 0.78, b: 0.32, a: 0.95}
     backgroundColor: {r: 1, g: 1, b: 1, a: 0.2}
-    magazineOutClip:
-      m_AssetGUID: e11a5a019377fbd4c81caa0adcb4c236
+    clip:
+      m_AssetGUID: e05478d53ab27f9409619259809c5e6c
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
-    magazineOutVolume: 0.6
-    magazineOutPitch: 1.2
-    magazineInClip:
-      m_AssetGUID: 2e071f5b8b8467d45a5e6e24c23c6ad4
-      m_SubObjectName: 
-      m_SubObjectType: 
-      m_SubObjectGUID: 
-      m_EditorAssetChanged: 0
-    magazineInVolume: 0.7
-    magazineInPitch: 1.25
+    volume: 0.8
+    pitch: 1
+    interruptFadeSeconds: 0.12
   bossHealthBar:
     maxWidth: 900
     sideClearance: 380

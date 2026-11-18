@@ -30,7 +30,11 @@ namespace DarknessRises.Game.Editor.Grenades
         private const string ExplosionPrefabPath = WeaponsPrefabsFolder + "/GrenadeExplosion.prefab";
 
         // Placeholder bang from the old Free Pack sounds (approved as placeholders).
-        private const string ExplosionClipPath = "Assets/Free Pack/Explosion 2.wav";
+        // Grenade3 (Grenade Sound FX, MGWSoundDesign), approved for the game. It builds up for about half a second first.
+        private const string ExplosionClipPath = "Assets/Grenade Sound FX/Grenade/Grenade3.wav";
+
+        // The Free Pack placeholder it replaced. Nothing else uses it.
+        private const string FormerExplosionClipPath = "Assets/Free Pack/Explosion 2.wav";
 
         private const string GrenadeActionPath = "Gameplay/Grenade";
 
@@ -110,10 +114,18 @@ namespace DarknessRises.Game.Editor.Grenades
             const string group = AddressableContent.SharedGroup;
             AddressableContent.ReferenceIfEmpty(serialized.FindProperty("body.prefab"), () => LoadOrCreateGrenadePrefab().gameObject, group);
             AddressableContent.ReferenceIfEmpty(serialized.FindProperty("explosion.prefab"), () => LoadOrCreateExplosionPrefab().gameObject, group);
-            AddressableContent.ReferenceIfEmpty(
-                serialized.FindProperty("explosion.clip"),
-                () => AssetDatabase.LoadAssetAtPath<AudioClip>(ExplosionClipPath),
-                group);
+            var explosionClip = serialized.FindProperty("explosion.clip");
+            var referencedClip = AddressableContent.Referenced<AudioClip>(explosionClip);
+            if (referencedClip != null && AssetDatabase.GetAssetPath(referencedClip) == FormerExplosionClipPath)
+            {
+                // The former placeholder leaves the content too, so no bundle carries it.
+                AddressableContent.Setup().RemoveAssetEntry(AssetDatabase.AssetPathToGUID(FormerExplosionClipPath));
+                AddressableContent.Reference(explosionClip, GameplaySoundImport.Load(ExplosionClipPath), group);
+            }
+            else
+            {
+                AddressableContent.ReferenceIfEmpty(explosionClip, () => GameplaySoundImport.Load(ExplosionClipPath), group);
+            }
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Re-save so fields added since the asset was created are written with their defaults.

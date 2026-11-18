@@ -39,6 +39,11 @@ namespace DarknessRises.Game.Grenades
         [Header("Sound")]
         [SerializeField] private AssetReferenceT<AudioClip> clip = new(string.Empty);
 
+        [SerializeField, Min(0f), Tooltip("Seconds into the clip the bang starts, so its blast lands with the explosion " +
+                                          "instead of a build-up before it. Set from the clip's waveform: Grenade3 builds up " +
+                                          "for about half a second before it hits.")]
+        private float clipStartSeconds = 0.45f;
+
         [SerializeField, Range(0f, 1f)] private float volume = 0.9f;
 
         [SerializeField, Min(1f), Tooltip("Metres the bang carries before it fades to nothing.")]
@@ -60,6 +65,7 @@ namespace DarknessRises.Game.Grenades
         public int FireballCount => fireballCount;
         public int SparkCount => sparkCount;
         public AssetReferenceT<AudioClip> Clip => clip;
+        public float ClipStartSeconds => clipStartSeconds;
         public float Volume => volume;
         public float HearingRange => hearingRange;
         public float ShakeForce => shakeForce;

@@ -54,7 +54,7 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The radial meter by the character while the Primary weapon reloads.")]
         private ReloadMeterView reloadMeter;
 
-        [SerializeField, Tooltip("The magazine-out and magazine-in sounds of a reload.")]
+        [SerializeField, Tooltip("The sound of a reload, ending as the reload finishes.")]
         private ReloadSoundView reloadSound;
 
         [SerializeField, Tooltip("The Boss's name and hit points across the top of the HUD during a Boss fight.")]
@@ -469,7 +469,12 @@ namespace DarknessRises.Game
             lightningScheduler.EnterAmbientMode();
         }
 
-        private void OnEndBeatStarted() => run.BeginLevelEnd();
+        // The Level is over: a reload under way stops being heard, fading out rather than cut dead.
+        private void OnEndBeatStarted()
+        {
+            reloadSound.Interrupt();
+            run.BeginLevelEnd();
+        }
 
         // The character walked out the far door: the Run moves on to the next Level, which the boot loads.
         private void OnLevelFinished() => run.FinishLevel();

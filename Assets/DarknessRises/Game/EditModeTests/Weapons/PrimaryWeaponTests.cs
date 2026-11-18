@@ -160,6 +160,24 @@ namespace DarknessRises.Game.EditModeTests.Weapons
         }
 
         [Test]
+        public void ReloadElapsedSecondsRunsOnTheReloadsClock()
+        {
+            Assert.That(weapon.ReloadSeconds, Is.EqualTo(ReloadSeconds));
+            Assert.That(weapon.ReloadElapsedSeconds, Is.EqualTo(0f));
+
+            EmptyMagazine();
+            Assert.That(weapon.IsReloading, Is.True);
+            Assert.That(weapon.ReloadElapsedSeconds, Is.EqualTo(0f));
+
+            weapon.Tick(0.5f);
+            Assert.That(weapon.ReloadElapsedSeconds, Is.EqualTo(0.5f).Within(1e-5f));
+
+            weapon.Tick(ReloadSeconds);
+            Assert.That(weapon.IsReloading, Is.False);
+            Assert.That(weapon.ReloadElapsedSeconds, Is.EqualTo(0f));
+        }
+
+        [Test]
         public void HoldingTheTriggerThroughAReloadFiresAgainWhenItEnds()
         {
             EmptyMagazine();

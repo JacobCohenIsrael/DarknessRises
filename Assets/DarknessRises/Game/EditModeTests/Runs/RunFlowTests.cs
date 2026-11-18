@@ -116,9 +116,180 @@ namespace DarknessRises.Game.EditModeTests.Runs
             run.Die();
 
             Assert.That(run.ClearStationFight(), Is.False);
-            Assert.That(run.BeginStationFight(), Is.False);
+            Assert.That(run.FinishStartBeat(), Is.False);
             Assert.That(run.FinishLevel(), Is.False);
             Assert.That(run.Phase, Is.EqualTo(RunPhase.Dead));
+        }
+
+        [TestCase(RunPhase.LevelStart)]
+        [TestCase(RunPhase.Walking)]
+        [TestCase(RunPhase.StationFight)]
+        [TestCase(RunPhase.BossFight)]
+        [TestCase(RunPhase.LevelEnd)]
+        public void Continue_goes_back_to_the_phase_the_character_died_in(RunPhase phase)
+        {
+            run.StartNewRun();
+            if (phase != RunPhase.LevelStart)
+            {
+                run.FinishStartBeat();
+            }
+
+            if (phase == RunPhase.StationFight)
+            {
+                run.BeginStationFight();
+            }
+            else if (phase == RunPhase.BossFight)
+            {
+                run.BeginBossFight();
+            }
+            else if (phase == RunPhase.LevelEnd)
+            {
+                run.BeginLevelEnd();
+            }
+
+            run.Die();
+
+            Assert.That(run.CanContinue(1), Is.True);
+            Assert.That(run.Continue(1), Is.True);
+            Assert.That(run.Phase, Is.EqualTo(phase));
+        }
+
+        [Test]
+        public void Continue_stays_in_the_same_Level_with_its_record()
+        {
+            run.StartNewRun();
+            PlayLevel();
+            run.FinishStartBeat();
+            run.CountKill();
+            run.Die();
+            levelsStarted.Clear();
+
+            run.Continue(1);
+
+            Assert.That(run.LevelIndex, Is.EqualTo(2));
+            Assert.That(run.Record.LevelReached, Is.EqualTo(2));
+            Assert.That(run.Record.EnemiesKilled, Is.EqualTo(1));
+            Assert.That(levelsStarted, Is.Empty, "No Level is loaded again.");
+        }
+
+        [Test]
+        public void Continue_is_allowed_once_per_Run()
+        {
+            run.StartNewRun();
+            run.FinishStartBeat();
+            run.Die();
+            run.Continue(1);
+            run.BeginStationFight();
+            run.Die();
+
+            Assert.That(run.CanContinue(1), Is.False);
+            Assert.That(run.Continue(1), Is.False);
+            Assert.That(run.Phase, Is.EqualTo(RunPhase.Dead));
+            Assert.That(run.ContinuesUsed, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void The_authored_allowance_sets_how_many_Continues_a_Run_has()
+        {
+            run.StartNewRun();
+            run.Die();
+            Assert.That(run.CanContinue(0), Is.False, "No Continues at all.");
+
+            Assert.That(run.Continue(2), Is.True);
+            run.Die();
+            Assert.That(run.Continue(2), Is.True);
+            run.Die();
+            Assert.That(run.Continue(2), Is.False);
+        }
+
+        [Test]
+        public void Continue_only_brings_back_a_dead_character()
+        {
+            Assert.That(run.Continue(1), Is.False, "No Run yet.");
+
+            run.StartNewRun();
+            run.FinishStartBeat();
+
+            Assert.That(run.CanContinue(1), Is.False);
+            Assert.That(run.Continue(1), Is.False);
+            Assert.That(run.Phase, Is.EqualTo(RunPhase.Walking));
+            Assert.That(run.ContinuesUsed, Is.Zero);
+        }
+
+        [Test]
+        public void Restart_gives_the_new_Run_its_Continue_back()
+        {
+            run.StartNewRun();
+            run.Die();
+            run.Continue(1);
+            run.Die();
+
+            run.Restart();
+            run.Die();
+
+            Assert.That(run.ContinuesUsed, Is.Zero);
+            Assert.That(run.CanContinue(1), Is.True);
+        }
+
+        [Test]
+        public void A_new_Run_after_Exit_has_its_Continue_back()
+        {
+            run.StartNewRun();
+            run.Die();
+            run.Continue(1);
+            run.Die();
+            run.Exit();
+
+            run.StartNewRun();
+            run.Die();
+
+            Assert.That(run.CanContinue(1), Is.True);
+        }
+
+        [Test]
+        public void The_next_Level_of_the_same_Run_doesnt_give_the_Continue_back()
+        {
+            run.StartNewRun();
+            run.FinishStartBeat();
+            run.Die();
+            run.Continue(1);
+            run.BeginLevelEnd();
+            run.FinishLevel();
+            run.Die();
+
+            Assert.That(run.CanContinue(1), Is.False);
+        }
+
+        [Test]
+        public void While_dead_the_Run_follows_the_Level_so_Continue_goes_back_to_where_it_is_now()
+        {
+            run.StartNewRun();
+            run.FinishStartBeat();
+            run.BeginStationFight();
+            run.Die();
+
+            // A Grenade still in the air kills the Station's last Enemy.
+            Assert.That(run.ClearStationFight(), Is.True);
+            Assert.That(run.Phase, Is.EqualTo(RunPhase.Dead));
+
+            run.Continue(1);
+
+            Assert.That(run.Phase, Is.EqualTo(RunPhase.Walking));
+            Assert.That(run.BeginStationFight(), Is.True, "The next Station fights as usual.");
+        }
+
+        [Test]
+        public void A_Continue_announces_the_phase_it_goes_back_to()
+        {
+            var phases = new List<RunPhase>();
+            run.StartNewRun();
+            run.FinishStartBeat();
+            run.Die();
+            run.PhaseChanged += phases.Add;
+
+            run.Continue(1);
+
+            Assert.That(phases, Is.EqualTo(new[] { RunPhase.Walking }));
         }
 
         [TestCase(RunPhase.LevelStart)]

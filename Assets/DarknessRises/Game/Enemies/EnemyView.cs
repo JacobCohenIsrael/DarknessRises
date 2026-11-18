@@ -69,6 +69,10 @@ namespace DarknessRises.Game.Enemies
         private AudioClip attackClip;
         private float agentTimeScale = EnemyTime.NormalScale;
 
+        // A push-back (Continue's burst): slides at this velocity, in Enemy time, until the seconds run out.
+        private Vector3 pushVelocity;
+        private float pushSecondsLeft;
+
         // Its Enemy type's, scaled by the Ramp of the Level it fights in.
         private int hitPoints;
         private float speed;
@@ -168,6 +172,7 @@ namespace DarknessRises.Game.Enemies
             ScaleAgentTime(time.Scale);
             isHoldingStill = false;
             secondsUntilPathRefresh = 0f;
+            pushSecondsLeft = 0f;
 
             Enemy.Spawn(hitPoints);
             Behaviour.Begin();
@@ -178,6 +183,21 @@ namespace DarknessRises.Game.Enemies
         public void TakeShot(int damage)
         {
             Enemy.TakeHit(damage);
+        }
+
+        /// <summary>
+        /// Shoves the living Enemy across the floor at <paramref name="velocity"/> for <paramref name="seconds"/> of Enemy
+        /// time, staying on the NavMesh. It stops chasing while it slides, then picks the hunt up again.
+        /// </summary>
+        public void PushBack(Vector3 velocity, float seconds)
+        {
+            if (!Enemy.IsAlive || seconds <= 0f)
+            {
+                return;
+            }
+
+            pushVelocity = velocity;
+            pushSecondsLeft = seconds;
         }
 
         private void Update()
@@ -198,7 +218,11 @@ namespace DarknessRises.Game.Enemies
             Behaviour.Tick(deltaSeconds, IsCharacterInRange());
             ShowWindUp(Behaviour.State == EnemyBehaviourState.WindingUp);
 
-            if (Behaviour.IsChasing)
+            if (pushSecondsLeft > 0f)
+            {
+                Slide(deltaSeconds);
+            }
+            else if (Behaviour.IsChasing)
             {
                 Hunt(deltaSeconds);
             }
@@ -260,14 +284,7 @@ namespace DarknessRises.Game.Enemies
         // Winding up, recovering or reeling: stands its ground, turns to the character and leans to show what it's doing.
         private void HoldStill(float deltaSeconds)
         {
-            if (!isHoldingStill)
-            {
-                isHoldingStill = true;
-                agent.isStopped = true;
-                agent.velocity = Vector3.zero;
-                agent.updateRotation = false;
-                facingYaw = transform.eulerAngles.y;
-            }
+            StopAgent();
 
             var toCharacter = target.position - transform.position;
             toCharacter.y = 0f;
@@ -278,6 +295,33 @@ namespace DarknessRises.Game.Enemies
             }
 
             transform.rotation = Quaternion.Euler(Lean(), facingYaw, 0f);
+        }
+
+        // Pushed back: the agent stops steering and the Enemy slides along the NavMesh. Once the push is over it chases
+        // again (Hunt restarts the agent) or carries on with its Wind-up or recovery (HoldStill).
+        private void Slide(float deltaSeconds)
+        {
+            StopAgent();
+            var step = Mathf.Min(deltaSeconds, pushSecondsLeft);
+            pushSecondsLeft -= step;
+            if (agent.isOnNavMesh)
+            {
+                agent.Move(pushVelocity * step);
+            }
+        }
+
+        private void StopAgent()
+        {
+            if (isHoldingStill)
+            {
+                return;
+            }
+
+            isHoldingStill = true;
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+            agent.updateRotation = false;
+            facingYaw = transform.eulerAngles.y;
         }
 
         // Degrees of pitch: positive leans forward, negative rears back.

@@ -1,9 +1,11 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Ads;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Continues;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
@@ -81,6 +83,13 @@ namespace DarknessRises.Game
         [SerializeField] private CharacterHealthView characterHealth;
         [SerializeField] private HitPointsHudView hitPointsHud;
         [SerializeField] private DeathFlow deathFlow;
+
+        [Header("Continue")]
+        [SerializeField, Tooltip("The placeholder ad watched for a Continue. A real ad network replaces it later.")]
+        private FakeAdView continueAd;
+
+        [SerializeField, Tooltip("The burst of light around the character that pushes Enemies back on a Continue.")]
+        private ContinueBurstView continueBurst;
 
         // The Run this scene plays a Level of: handed in by the boot, or the scene's own when it's played on its own.
         private RunFlow run;
@@ -279,7 +288,11 @@ namespace DarknessRises.Game
             var health = characterHealth.Show(configuration.Player, content);
             hitPointsHud.Show(health);
             ReportToRun(true);
-            deathFlow.Watch(health, run, characterAnimation, routeWalker, primaryWeapon);
+            var continueDefinition = configuration.Continue;
+            continueAd.Use(continueDefinition.FakeAdSeconds);
+            continueBurst.Prepare(continueDefinition);
+            deathFlow.Watch(
+                health, run, characterAnimation, routeWalker, primaryWeapon, continueDefinition, continueAd, continueBurst);
         }
 
         // What happens in the Level moves the Run on. Kills come from whoever runs the fights: the Level, or the Test Room's Waves.

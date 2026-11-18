@@ -49,6 +49,10 @@ namespace DarknessRises.Game.Controls
         private readonly UiPointerFilter ui = new();
         private bool isFirePressOnUi;
 
+        // A screen point the next Grenade is thrown at instead of the pointer: a Room tap with the Grenade button armed.
+        private bool hasGrenadeAim;
+        private Vector2 grenadeAim;
+
         private Action<InputAction.CallbackContext> onCommand;
 
         /// <summary>
@@ -109,6 +113,38 @@ namespace DarknessRises.Game.Controls
         }
 
         /// <summary>
+        /// Aims the next Grenade at <paramref name="screenPoint"/> instead of the pointer. The touch Grenade button
+        /// sets it with the tapped point when it presses Grenade, so the throw lands where the player tapped even if
+        /// another finger touches the screen before the Grenade leaves the hand.
+        /// </summary>
+        public void AimGrenadeAt(Vector2 screenPoint)
+        {
+            grenadeAim = screenPoint;
+            hasGrenadeAim = true;
+        }
+
+        /// <summary>Forgets a Grenade aim that no throw used (the Grenade command didn't start a throw).</summary>
+        public void ForgetGrenadeAim()
+        {
+            hasGrenadeAim = false;
+        }
+
+        /// <summary>
+        /// Where a Grenade leaving the hand now lands: the point the Grenade button's tap aimed it at, used once,
+        /// or else the aim point under the pointer (<see cref="TryGetAimPoint"/>), as with a right-click.
+        /// </summary>
+        public bool TryGetGrenadeAimPoint(float height, out Vector3 aimPoint)
+        {
+            if (!hasGrenadeAim)
+            {
+                return TryGetAimPoint(height, out aimPoint);
+            }
+
+            hasGrenadeAim = false;
+            return AimPlane.TryIntersect(viewCamera.ScreenPointToRay(grenadeAim), height, out aimPoint);
+        }
+
+        /// <summary>
         /// Holds the player's commands while the game is paused: the Gameplay actions are disabled, so nothing fires,
         /// reloads, throws or triggers a Skill, and a held trigger counts as released. Releasing turns them back on.
         /// </summary>
@@ -127,6 +163,8 @@ namespace DarknessRises.Game.Controls
 
         private void OnEnable()
         {
+            // Until the first command says otherwise, a device with a touchscreen and no mouse (a phone) is on touch.
+            IsTouchActive |= Touchscreen.current != null && Mouse.current == null;
             if (!isHeld)
             {
                 EnableActions();
@@ -190,6 +228,10 @@ namespace DarknessRises.Game.Controls
         {
             var device = context.control?.device;
             IsTouchActive = device is Touchscreen || device is GestureDevice;
+            if (!IsTouchActive)
+            {
+                hasGrenadeAim = false;
+            }
         }
 
         // Keeps the axes that were just pressed (or flipped), not the ones already held, so letting go never relocates.

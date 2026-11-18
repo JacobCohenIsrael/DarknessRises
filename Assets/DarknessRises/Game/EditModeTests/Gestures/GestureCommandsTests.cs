@@ -11,7 +11,7 @@ namespace DarknessRises.Game.EditModeTests.Gestures
         [TestCase(GestureKind.Tap, GestureCommand.FireOnce)]
         [TestCase(GestureKind.HoldStarted, GestureCommand.FireHold)]
         [TestCase(GestureKind.HoldEnded, GestureCommand.FireRelease)]
-        [TestCase(GestureKind.DoubleTap, GestureCommand.Grenade)]
+        [TestCase(GestureKind.DoubleTap, GestureCommand.None)]
         [TestCase(GestureKind.TwoFingerTap, GestureCommand.SlowMo)]
         public void EachGestureStandsForItsCommand(GestureKind kind, GestureCommand command)
         {

@@ -130,8 +130,12 @@ _Avoid_: slow, time warp, bullet time
 ## Input
 
 **Gesture**:
-A touch pattern that triggers an action, such as a double-tap, a flick or a two-finger tap. New Gestures (circles, squares, lines) can be added later for new Skills.
+A touch pattern that triggers an action, such as a tap, a flick or a two-finger tap. A double-tap is recognized but does nothing for now. New Gestures (circles, squares, lines) can be added later for new Skills.
 _Avoid_: swipe command, touch combo
+
+**Grenade button**:
+On touch only, the on-screen button that throws the Grenade and shows its charges. Tapping it arms the Grenade, and the next tap in the Room throws it at that point instead of firing. Tapping it again cancels. Holding it picks it up so the player can drag it anywhere inside the screen's safe area, and the device remembers where it was dropped. It's greyed out with no charges. On keyboard and mouse it's hidden, and right-click throws.
+_Avoid_: grenade icon, bomb button
 
 **Aim assist**:
 On touch only, Shots bend slightly toward the nearest visible Enemy close to the player's finger. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast.

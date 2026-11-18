@@ -1,4 +1,5 @@
 using DarknessRises.Game.Controls;
+using DarknessRises.Game.Grenades;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -15,6 +16,8 @@ namespace DarknessRises.Game.Gestures
     /// <remarks>
     /// A touch that starts on a UI control (the pause button) is left to the UI and never becomes a Gesture.
     /// One-off commands (a Tap's Fire, Reload, Relocate) are pressed for one frame; a Hold keeps Fire pressed.
+    /// While the Grenade button is armed, a Tap in the Room presses Grenade instead of Fire, with the Grenade aimed at
+    /// the tapped point, so the tap that throws never fires.
     /// Runs early, so the device's state is queued before the rest of the frame reads input.
     /// </remarks>
     [DefaultExecutionOrder(-100)]
@@ -26,7 +29,11 @@ namespace DarknessRises.Game.Gestures
         private readonly int[] uiFingers = new int[MostFingers];
         private int uiFingerCount;
 
+        [SerializeField, Tooltip("Aims a Grenade thrown with the Grenade button at the tapped point.")]
+        private PlayerControls controls;
+
         private GestureDefinition definition;
+        private GrenadeButtonRules grenadeButton;
         private GestureRecognizer recognizer;
         private GestureDevice device;
 
@@ -42,10 +49,21 @@ namespace DarknessRises.Game.Gestures
             recognizer = GestureRecognizer.WithCoreGestures(definition.Thresholds, this);
         }
 
+        /// <summary>Lets an armed <paramref name="button"/> turn the next Room tap into a Grenade throw.</summary>
+        public void UseGrenadeButton(GrenadeButtonRules button)
+        {
+            grenadeButton = button;
+        }
+
         void IGestureSink.OnGesture(in Gesture gesture)
         {
             switch (GestureCommands.For(gesture, definition.FlickAxisHalfAngleDegrees))
             {
+                case GestureCommand.FireOnce when grenadeButton != null && grenadeButton.TapRoom() == RoomTapOutcome.ThrowGrenade:
+                    // Gesture positions are in screen units (the screen's shorter side is 1): back to pixels.
+                    controls.AimGrenadeAt(gesture.Position * ShorterScreenSide());
+                    pulses |= 1u << GestureDeviceState.GrenadeBit;
+                    break;
                 case GestureCommand.FireOnce:
                     pulses |= 1u << GestureDeviceState.FireBit;
                     break;
@@ -122,7 +140,7 @@ namespace DarknessRises.Game.Gestures
             }
 
             var now = Time.unscaledTime;
-            var screenUnit = 1f / Mathf.Max(1, Mathf.Min(Screen.width, Screen.height));
+            var screenUnit = 1f / ShorterScreenSide();
             for (var i = 0; i < touches.Count; i++)
             {
                 var touch = touches[i];
@@ -159,6 +177,11 @@ namespace DarknessRises.Game.Gestures
 
             sent = state;
             InputSystem.QueueStateEvent(device, state);
+        }
+
+        private static int ShorterScreenSide()
+        {
+            return Mathf.Max(1, Mathf.Min(Screen.width, Screen.height));
         }
 
         private static TouchSamplePhase Phase(TouchPhase phase)

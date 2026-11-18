@@ -56,6 +56,9 @@ namespace DarknessRises.Game
         [SerializeField] private GrenadeThrowerView grenadeThrower;
         [SerializeField] private GrenadeHudView grenadeHud;
 
+        [SerializeField, Tooltip("The touch Grenade button: tap to arm, tap the Room to throw. Hidden on keyboard and mouse.")]
+        private GrenadeButtonView grenadeButton;
+
         [Header("Touch")]
         [SerializeField, Tooltip("Turns touches into Gestures that press the Gameplay actions.")]
         private GestureInput gestureInput;
@@ -228,7 +231,12 @@ namespace DarknessRises.Game
             primaryWeapon.Arm(primaryWeapons, content, lights);
             ammoHud.Show(primaryWeapon.Weapon);
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
-            grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation, content, lights));
+            var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, characterAnimation, content, lights);
+            grenadeHud.Show(grenadeCharges);
+            if (grenadeButton != null)
+            {
+                grenadeButton.Show(grenadeCharges, configuration.Gestures.GrenadeButton);
+            }
             ShowHealthAndDeath();
             pauseFlow.Watch(new GamePause(run), run);
             rumbleClip = content.Clip(configuration.Lightning.Rumble.Clip);
@@ -243,6 +251,10 @@ namespace DarknessRises.Game
             if (gestureInput != null)
             {
                 gestureInput.Use(configuration.Gestures);
+                if (grenadeButton != null)
+                {
+                    gestureInput.UseGrenadeButton(grenadeButton.Rules);
+                }
             }
 
             if (aimAssist != null)

@@ -9,6 +9,7 @@ using DarknessRises.Game.Editor.Grenades;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
+using DarknessRises.Game.Editor.Pausing;
 using DarknessRises.Game.Editor.Player;
 using DarknessRises.Game.Editor.Runs;
 using DarknessRises.Game.Editor.Skills;
@@ -154,6 +155,7 @@ namespace DarknessRises.Game.Editor
             RampBuilder.WireDebugJump(gameRoot);
             SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
             HealthBuilder.Build(gameRoot, character, cameraView);
+            PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>());
             return gameRoot;
         }
 

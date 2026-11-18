@@ -12,6 +12,7 @@ using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
+using DarknessRises.Game.Pausing;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
@@ -81,6 +82,9 @@ namespace DarknessRises.Game
         [SerializeField] private CharacterHealthView characterHealth;
         [SerializeField] private HitPointsHudView hitPointsHud;
         [SerializeField] private DeathFlow deathFlow;
+
+        [SerializeField, Tooltip("The pause button and menu. Pausing freezes the whole Level; see PauseFlow.")]
+        private PauseFlow pauseFlow;
 
         // The Run this scene plays a Level of: handed in by the boot, or the scene's own when it's played on its own.
         private RunFlow run;
@@ -190,6 +194,7 @@ namespace DarknessRises.Game
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
             grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation, content));
             ShowHealthAndDeath();
+            pauseFlow.Watch(new GamePause(run), run);
             lightning.UseRumble(content.Clip(configuration.Lightning.Rumble.Clip));
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);

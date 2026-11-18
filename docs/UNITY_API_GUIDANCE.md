@@ -30,7 +30,7 @@ To enumerate Unity-loaded assemblies, use `UnityEngine.Assemblies.CurrentAssembl
 
 ## Managed allocation checks
 
-`System.GC.GetAllocatedBytesForCurrentThread()` always returns 0 on Unity's Mono (Boehm GC), so asserting on its delta passes even when code allocates. Assert a synchronous block with `Assert.That(() => ..., Is.Not.AllocatingGCMemory())`. That needs `using UnityEngine.TestTools.Constraints;` for the extension method and `using Is = UnityEngine.TestTools.Constraints.Is;` to avoid the NUnit `Is` ambiguity. Mono creates a method's string literals when it compiles the method; if a measured lambda contains literals, compile it first with `lambda.Method.MethodHandle.GetFunctionPointer()` instead of adding a warm-up call.
+`System.GC.GetAllocatedBytesForCurrentThread()` always returns 0 on Unity's Mono (Boehm GC), so asserting on its delta passes even when code allocates. In edit-mode tests, assert a synchronous block with `AllocationAssert.DoesNotAllocate(() => ...)` (in `DarknessRises.Game.EditModeTests`), not a bare `Assert.That(() => ..., Is.Not.AllocatingGCMemory())`. That constraint counts the `GC.Alloc` profiler marker, and its filter to the test's thread leaks: while another thread allocates (the Editor's import and compile workers, typically on the first run after a script change), about one measurement in 200 of a delegate that allocates nothing reports an allocation. The helper runs the delegate once to warm it up, then fails only if each of three measurements allocates, so the delegate must be safe to repeat. The warm-up also keeps JIT compilation out of the measurement: Mono creates a method's string literals when it compiles the method.
 
 ## Shader compiler warnings
 

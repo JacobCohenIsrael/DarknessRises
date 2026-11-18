@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Player;
 using NUnit.Framework;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Player
 {
@@ -121,7 +119,7 @@ namespace DarknessRises.Game.EditModeTests.Player
             var motion = new OneShotMotion(ReleaseSeconds, ThrowSeconds);
             motion.TryPlay();
 
-            Assert.That(() => motion.Tick(0.016f), Is.Not.AllocatingGCMemory());
+            AllocationAssert.DoesNotAllocate(() => motion.Tick(0.016f));
         }
     }
 }

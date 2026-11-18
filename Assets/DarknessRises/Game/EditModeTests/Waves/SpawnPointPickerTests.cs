@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Waves;
 using NUnit.Framework;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Waves
 {
@@ -104,7 +102,7 @@ namespace DarknessRises.Game.EditModeTests.Waves
             var lighting = new FakeLighting(2, 5);
             picker.TryPick(lighting, out _);
 
-            Assert.That(() => { picker.TryPick(lighting, out _); }, Is.Not.AllocatingGCMemory());
+            AllocationAssert.DoesNotAllocate(() => { picker.TryPick(lighting, out _); });
         }
     }
 }

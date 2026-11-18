@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Randomness;
 using NUnit.Framework;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Enemies.Tells
 {
@@ -94,7 +92,7 @@ namespace DarknessRises.Game.EditModeTests.Enemies.Tells
             var schedule = new TellSoundSchedule(0.5f, 1f, new SystemRandom(7));
             schedule.Start();
 
-            Assert.That(() =>
+            AllocationAssert.DoesNotAllocate(() =>
             {
                 for (var i = 0; i < 1000; i++)
                 {
@@ -103,7 +101,7 @@ namespace DarknessRises.Game.EditModeTests.Enemies.Tells
                         schedule.PickIndex(2);
                     }
                 }
-            }, Is.Not.AllocatingGCMemory());
+            });
         }
 
         private sealed class ScriptedRandom : IRandom

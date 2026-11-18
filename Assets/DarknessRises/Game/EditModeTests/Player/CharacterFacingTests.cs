@@ -2,8 +2,6 @@ using System;
 using DarknessRises.Game.Player;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Player
 {
@@ -151,11 +149,11 @@ namespace DarknessRises.Game.EditModeTests.Player
         {
             var facing = FacingNorth();
 
-            Assert.That(() =>
+            AllocationAssert.DoesNotAllocate(() =>
             {
                 facing.Tick(0.016f, North, East);
                 facing.ToBodySpace(North);
-            }, Is.Not.AllocatingGCMemory());
+            });
         }
     }
 }

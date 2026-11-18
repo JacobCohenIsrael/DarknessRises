@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87e582f6ddefd5c468812ce57aeb73ab, type: 3}
+  m_Name: GestureDefinition
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Gestures.GestureDefinition
+  thresholds:
+    tapMaxSeconds: 0.25
+    tapMaxMovement: 0.03
+    holdSeconds: 0.3
+    doubleTapMaxGapSeconds: 0.3
+    doubleTapMaxDistance: 0.1
+    flickMinDistance: 0.08
+    flickMaxSeconds: 0.3
+    twoFingerTapWindowSeconds: 0.15
+  flickAxisHalfAngleDegrees: 30
+  aimAssist:
+    radius: 1.5
+    strength: 0.6

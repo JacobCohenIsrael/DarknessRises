@@ -1,6 +1,7 @@
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Player;
+using DarknessRises.Game.Visibility;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -55,17 +56,21 @@ namespace DarknessRises.Game.Grenades
         private GrenadeExplosionView explosionPrefab;
         private AudioClip bangClip;
 
+        private SceneLights sceneLights;
+
         public GrenadeCharges Charges { get; private set; }
 
         /// <summary>
         /// Gives the character a full set of Grenades built from <paramref name="grenadeDefinition"/>,
         /// thrown with <paramref name="animation"/>'s throw. Its prefabs and bang come from
-        /// <paramref name="content"/>, already loaded.
+        /// <paramref name="content"/>, already loaded. Explosion lights are added to <paramref name="lights"/>.
         /// </summary>
-        public GrenadeCharges Equip(GrenadeDefinition grenadeDefinition, CharacterAnimationView animation, ILoadedContent content)
+        public GrenadeCharges Equip(
+            GrenadeDefinition grenadeDefinition, CharacterAnimationView animation, ILoadedContent content, SceneLights lights)
         {
             Unequip();
 
+            sceneLights = lights;
             definition = grenadeDefinition;
             characterAnimation = animation;
             grenadePrefab = content.Prefab<GrenadeView>(grenadeDefinition.Body.Prefab);
@@ -206,6 +211,7 @@ namespace DarknessRises.Game.Grenades
             var explosion = Instantiate(explosionPrefab, effectsRoot);
             explosion.gameObject.SetActive(false);
             explosion.Prepare(explosions, definition.Explosion, bangClip);
+            sceneLights.Add(explosion.GetComponentInChildren<Light>(true));
             return explosion;
         }
 

@@ -14,6 +14,8 @@ namespace DarknessRises.Game.Skills
         private FlareDefinition definition;
         private float shownBrightness = -1f;
 
+        public Light Light => flareLight;
+
         public void Show(FlareDefinition flare)
         {
             definition = flare;

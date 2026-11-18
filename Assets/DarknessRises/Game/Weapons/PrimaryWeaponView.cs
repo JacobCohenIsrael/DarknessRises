@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
+using DarknessRises.Game.Visibility;
 using UnityEngine;
 
 namespace DarknessRises.Game.Weapons
@@ -21,6 +22,9 @@ namespace DarknessRises.Game.Weapons
         private const int AfterCharacterMovement = 100;
 
         [SerializeField] private PlayerControls controls;
+
+        [SerializeField, Tooltip("Bends the aim toward a visible Enemy near the finger, on touch only.")]
+        private AimAssistView aimAssist;
 
         [SerializeField, Tooltip("Turns (yaw only) to face the aim point.")]
         private Transform mount;
@@ -45,8 +49,9 @@ namespace DarknessRises.Game.Weapons
         /// <summary>
         /// Arms the character with a fresh, fully loaded Primary for each of <paramref name="definitions"/>,
         /// in switching order, and equips the first. Their Shots and hit sparks come from <paramref name="content"/>, already loaded.
+        /// Their lights are added to <paramref name="lights"/>, so what Gunfire lights counts as visible.
         /// </summary>
-        public PrimaryWeaponLoadout Arm(IReadOnlyList<WeaponDefinition> definitions, ILoadedContent content)
+        public PrimaryWeaponLoadout Arm(IReadOnlyList<WeaponDefinition> definitions, ILoadedContent content, SceneLights lights)
         {
             Disarm();
 
@@ -56,7 +61,7 @@ namespace DarknessRises.Game.Weapons
             for (var i = 0; i < definitions.Count; i++)
             {
                 stats[i] = definitions[i].PrimaryStats;
-                effects[i] = new PrimaryWeaponEffects(definitions[i], shotHitLayers, content);
+                effects[i] = new PrimaryWeaponEffects(definitions[i], shotHitLayers, content, lights);
             }
 
             Loadout = new PrimaryWeaponLoadout(stats);
@@ -104,10 +109,17 @@ namespace DarknessRises.Game.Weapons
                 return;
             }
 
-            if (controls.TryGetAimPoint(muzzle.position.y, out var aimPoint)
-                && AimPlane.TryGetFlatDirection(mount.position, aimPoint, out var aimDirection))
+            if (controls.TryGetAimPoint(muzzle.position.y, out var aimPoint))
             {
-                mount.rotation = Quaternion.LookRotation(aimDirection, Vector3.up);
+                if (aimAssist != null && controls.IsTouchActive)
+                {
+                    aimPoint = aimAssist.Assist(mount.position, aimPoint);
+                }
+
+                if (AimPlane.TryGetFlatDirection(mount.position, aimPoint, out var aimDirection))
+                {
+                    mount.rotation = Quaternion.LookRotation(aimDirection, Vector3.up);
+                }
             }
 
             var weapon = Loadout.Equipped;

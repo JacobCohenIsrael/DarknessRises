@@ -253,6 +253,83 @@
                     "action": "Relocate",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "b36aefbf-b752-47fc-9160-ba25155b2175",
+                    "path": "<Touchscreen>/primaryTouch/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "215cfd49-b030-46da-a674-73f9764fff45",
+                    "path": "<GestureDevice>/fire",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f935c85f-dae4-4cf8-b1d3-d0772b50ead8",
+                    "path": "<GestureDevice>/reload",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Reload",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c6820f21-2f08-4ea1-97b1-e9e8bc697f2f",
+                    "path": "<GestureDevice>/grenade",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Grenade",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "14a618fe-a676-4263-b7c5-26be10113441",
+                    "path": "<GestureDevice>/flare",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Flare",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "40d440c9-04bc-43d4-9f5c-f091545f01e6",
+                    "path": "<GestureDevice>/slowMo",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "SlowMo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "084c6c18-5def-49e6-8862-a2a9b4e8b96a",
+                    "path": "<GestureDevice>/relocate",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Relocate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -464,6 +541,22 @@
                 },
                 {
                     "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Touch",
+            "bindingGroup": "Touch",
+            "devices": [
+                {
+                    "devicePath": "<Touchscreen>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<GestureDevice>",
                     "isOptional": false,
                     "isOR": false
                 }

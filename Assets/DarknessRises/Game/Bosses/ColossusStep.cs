@@ -9,7 +9,7 @@ namespace DarknessRises.Game.Bosses
         /// <summary>Between stomps.</summary>
         Resting,
 
-        /// <summary>The growl: the Rumble before the flash.</summary>
+        /// <summary>The growl: its warning before the flash.</summary>
         Growling,
 
         /// <summary>The flash showed the raised foot's shadow; the Relocate window is open.</summary>

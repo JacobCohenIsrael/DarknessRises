@@ -18,7 +18,7 @@ namespace DarknessRises.Game.Bosses
             "Kept inside the feint's Relocate window.")]
         private float revealSeconds = 0.9f;
 
-        [SerializeField, Min(0f), Tooltip("Seconds of growl (the Rumble) before the late flash.")]
+        [SerializeField, Min(0f), Tooltip("Seconds of growl before the late flash.")]
         private float revealGrowlSeconds = 0.3f;
 
         [SerializeField, Min(0f), Tooltip("Seconds a feint adds to both its Relocate window and its flash to impact, to read the late flash.")]

@@ -132,9 +132,6 @@ namespace DarknessRises.Game
         // The character's Flare, which shows a Boss's next stomp early.
         private Skill flareSkill;
 
-        // The weather's Rumble, and the Boss's growl that stands in for it during its fight.
-        private AudioClip rumbleClip;
-        private AudioClip bossGrowlClip;
 
         // Owns the scene's lifetime: the content load, and everything loaded for it.
         private CancellationTokenSource lifetime;
@@ -246,11 +243,16 @@ namespace DarknessRises.Game
             }
             ShowHealthAndDeath();
             pauseFlow.Watch(new GamePause(run), run);
-            rumbleClip = content.Clip(configuration.Lightning.Rumble.Clip);
+            // The thunder after every flash, and the Boss's growl that warns of its flashes.
+            var lightningRandom = new SystemRandom();
+            lightning.UseRumble(content.Clip(configuration.Lightning.Rumble.Clip), lightningRandom);
             var boss = level != null ? configuration.Level.Boss : null;
-            bossGrowlClip = boss != null ? content.Clip(boss.GrowlClip) : null;
-            lightning.UseRumble(rumbleClip);
-            lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
+            if (boss != null)
+            {
+                lightning.UseWarning(content.Clip(boss.GrowlClip), boss.GrowlClipStartSeconds);
+            }
+
+            lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, lightningRandom);
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
             flareSkill = skills.Flare.Skill;
             flareHud.Show(skills.Flare.Skill);
@@ -301,8 +303,9 @@ namespace DarknessRises.Game
             }
 
             isSubscribed = true;
-            lightningScheduler.Rumbled += lightning.PlayRumble;
+            lightningScheduler.Warned += lightning.PlayWarning;
             lightningScheduler.Flashed += lightning.Flash;
+            lightningScheduler.Rumbled += lightning.PlayRumble;
             if (level != null)
             {
                 level.RoomEntered += EnterRoom;
@@ -410,14 +413,13 @@ namespace DarknessRises.Game
 
         private void OnFightCleared() => run.ClearStationFight();
 
-        // In the Boss fight the Boss decides when Lightning flashes, and its growl is the Rumble.
+        // In the Boss fight the Boss decides when Lightning flashes, and its growl warns of each flash.
         private void OnBossFightStarted()
         {
             run.BeginBossFight();
             lightningScheduler.EnterBossDrivenMode();
             level.Boss.FlashRequested += lightningScheduler.RequestFlash;
             level.Boss.WatchFlare(flareSkill);
-            lightning.UseRumble(bossGrowlClip != null ? bossGrowlClip : rumbleClip);
         }
 
         private void OnBossFightEnded()
@@ -439,7 +441,6 @@ namespace DarknessRises.Game
             }
 
             lightningScheduler.EnterAmbientMode();
-            lightning.UseRumble(rumbleClip);
         }
 
         private void OnEndBeatStarted() => run.BeginLevelEnd();
@@ -462,8 +463,9 @@ namespace DarknessRises.Game
             }
 
             isSubscribed = false;
-            lightningScheduler.Rumbled -= lightning.PlayRumble;
+            lightningScheduler.Warned -= lightning.PlayWarning;
             lightningScheduler.Flashed -= lightning.Flash;
+            lightningScheduler.Rumbled -= lightning.PlayRumble;
             if (level != null)
             {
                 level.RoomEntered -= EnterRoom;

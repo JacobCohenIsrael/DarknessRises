@@ -4,7 +4,7 @@ using DarknessRises.Game.Randomness;
 namespace DarknessRises.Game.Bosses
 {
     /// <summary>
-    /// The Colossus's attack pattern. It growls (the Rumble), asks Lightning to flash, and the flash shows the shadow of
+    /// The Colossus's attack pattern. It growls (its warning), asks Lightning to flash, and the flash shows the shadow of
     /// its raised foot over one Position. The player has the Relocate window to dash off it; then the foot lands,
     /// stomping the character if it is still on that Position, and a stomped character is knocked out from under it to
     /// the nearest other Position. The planted foot stays down for the damage window, when only its weak spot takes
@@ -87,7 +87,7 @@ namespace DarknessRises.Game.Bosses
             Chain,
         }
 
-        /// <summary>Lightning should flash this many seconds from now; the argument is the Rumble lead (the growl).</summary>
+        /// <summary>Lightning should flash this many seconds from now; the argument is how long it growls first.</summary>
         public event Action<float> FlashRequested;
 
         /// <summary>A foot's shadow shows over this Position: by a flash, or early by Flare.</summary>

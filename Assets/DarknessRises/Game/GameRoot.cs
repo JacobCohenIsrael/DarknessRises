@@ -62,11 +62,15 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("Debug/JumpToRampLevel: jump to the Ramp definition's debug Level. Only read in the Editor and debug builds.")]
         private InputActionReference jumpToRampLevel;
 
+        [SerializeField, Tooltip("Debug/SkipToBoss: put the character straight on the Boss's Station. Only read in the Editor and debug builds.")]
+        private InputActionReference skipToBoss;
+
         private LightningScheduler lightningScheduler;
 #if UNITY_EDITOR || DEBUG
         private LightningDebugToggle lightningDebugToggle;
         private PrimaryWeaponDebugSwitch primaryWeaponDebugSwitch;
         private RampLevelDebugJump rampLevelDebugJump;
+        private BossSkipDebug bossSkipDebug;
 #endif
         [SerializeField] private RouteWavesView routeWaves;
         [SerializeField] private CharacterSkillsView characterSkills;
@@ -102,6 +106,10 @@ namespace DarknessRises.Game
 
         // Whether the scene runs a Level (or the Test Room's Waves). Kept from Awake: on unload the Level may be destroyed first.
         private bool runsLevel;
+
+        // The weather's Rumble, and the Boss's growl that stands in for it during its fight.
+        private AudioClip rumbleClip;
+        private AudioClip bossGrowlClip;
 
         // Owns the scene's lifetime: the content load, and everything loaded for it.
         private CancellationTokenSource lifetime;
@@ -204,7 +212,10 @@ namespace DarknessRises.Game
             grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation, content));
             ShowHealthAndDeath();
             pauseFlow.Watch(new GamePause(run), run);
-            lightning.UseRumble(content.Clip(configuration.Lightning.Rumble.Clip));
+            rumbleClip = content.Clip(configuration.Lightning.Rumble.Clip);
+            var boss = level != null ? configuration.Level.Boss : null;
+            bossGrowlClip = boss != null ? content.Clip(boss.GrowlClip) : null;
+            lightning.UseRumble(rumbleClip);
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
             flareHud.Show(skills.Flare.Skill);
@@ -255,6 +266,11 @@ namespace DarknessRises.Game
             if (jumpToRampLevel != null)
             {
                 rampLevelDebugJump = new RampLevelDebugJump(jumpToRampLevel, run, configuration.Ramp.DebugJumpLevel);
+            }
+
+            if (skipToBoss != null && level != null)
+            {
+                bossSkipDebug = new BossSkipDebug(skipToBoss, level);
             }
 #endif
             primaryWeapon.Switched += OnPrimaryWeaponSwitched;
@@ -312,6 +328,8 @@ namespace DarknessRises.Game
                     level.StartBeatFinished += OnStartBeatFinished;
                     level.FightStarted += OnFightStarted;
                     level.FightCleared += OnFightCleared;
+                    level.BossFightStarted += OnBossFightStarted;
+                    level.BossFightEnded += OnBossFightEnded;
                     level.EndBeatStarted += OnEndBeatStarted;
                     level.Finished += OnLevelFinished;
                 }
@@ -321,6 +339,8 @@ namespace DarknessRises.Game
                     level.StartBeatFinished -= OnStartBeatFinished;
                     level.FightStarted -= OnFightStarted;
                     level.FightCleared -= OnFightCleared;
+                    level.BossFightStarted -= OnBossFightStarted;
+                    level.BossFightEnded -= OnBossFightEnded;
                     level.EndBeatStarted -= OnEndBeatStarted;
                     level.Finished -= OnLevelFinished;
                 }
@@ -342,6 +362,37 @@ namespace DarknessRises.Game
         private void OnFightStarted() => run.BeginStationFight();
 
         private void OnFightCleared() => run.ClearStationFight();
+
+        // In the Boss fight the Boss decides when Lightning flashes, and its growl is the Rumble.
+        private void OnBossFightStarted()
+        {
+            run.BeginBossFight();
+            lightningScheduler.EnterBossDrivenMode();
+            level.Boss.FlashRequested += lightningScheduler.RequestFlash;
+            lightning.UseRumble(bossGrowlClip != null ? bossGrowlClip : rumbleClip);
+        }
+
+        private void OnBossFightEnded()
+        {
+            StopBossLightning();
+        }
+
+        // Back to the weather, if the Boss had Lightning.
+        private void StopBossLightning()
+        {
+            if (lightningScheduler == null || lightningScheduler.Mode != LightningMode.BossDriven)
+            {
+                return;
+            }
+
+            if (level != null && level.Boss != null)
+            {
+                level.Boss.FlashRequested -= lightningScheduler.RequestFlash;
+            }
+
+            lightningScheduler.EnterAmbientMode();
+            lightning.UseRumble(rumbleClip);
+        }
 
         private void OnEndBeatStarted() => run.BeginLevelEnd();
 
@@ -377,13 +428,22 @@ namespace DarknessRises.Game
             primaryWeaponDebugSwitch = null;
             rampLevelDebugJump?.Dispose();
             rampLevelDebugJump = null;
+            bossSkipDebug?.Dispose();
+            bossSkipDebug = null;
 #endif
             primaryWeapon.Switched -= OnPrimaryWeaponSwitched;
         }
 
         private void Update()
         {
-            lightningScheduler?.Tick(Time.deltaTime);
+            if (lightningScheduler == null)
+            {
+                return;
+            }
+
+            // The Boss runs on Enemy time, so a flash it asks for is timed on it too: Slow-mo stretches both alike.
+            var deltaSeconds = Time.deltaTime;
+            lightningScheduler.Tick(lightningScheduler.Mode == LightningMode.BossDriven ? enemyTime.Scaled(deltaSeconds) : deltaSeconds);
         }
 
         private void OnPrimaryWeaponSwitched(PrimaryWeapon equipped)

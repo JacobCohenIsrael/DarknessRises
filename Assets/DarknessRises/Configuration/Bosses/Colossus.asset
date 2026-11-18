@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1efde9e43313af943bbd15b3e8d3078e, type: 3}
+  m_Name: Colossus
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Bosses.ColossusDefinition
+  hitPoints: 50
+  phases:
+    phase2Below: 0.5
+    phase3Below: 0.15
+  stomp:
+    firstStompDelaySeconds: 2
+    growlSeconds: 1.2
+    flashToImpactSeconds: 1.9
+    relocateWindowSeconds: 1.5
+    plantedSeconds: 3.5
+    liftSeconds: 0.6
+    restSeconds: 1.5
+  stompDamage: 2
+  characterTargetChance: 0.75
+  positions:
+  - {x: 0, y: -4.5}
+  - {x: 0, y: 1}
+  - {x: -7.5, y: 1}
+  - {x: 7.5, y: 1}
+  - {x: 0, y: 6.5}
+  relocate:
+    dashSeconds: 0.25
+    maxAngleDegrees: 60
+  camera:
+    pitchDegrees: 62
+    fieldOfView: 40
+    marginMetres: 3
+    minDistance: 16
+    fallbackAspect: 1.7777778
+  look:
+    raisedHeight: 14
+    fallSeconds: 0.3
+    shadowRadius: 2.2
+    shadowOpacity: 0.85
+    shockwaveRadius: 6
+    shockwaveSeconds: 0.5
+    impactLightColor: {r: 1, g: 0.78, b: 0.55, a: 1}
+    impactLightIntensity: 12
+    impactLightRange: 12
+    impactLightSeconds: 0.4
+    impactShakeForce: 1.6
+    impactShakeSeconds: 0.45
+    weakSpotGlow: {r: 2.4, g: 0.55, b: 0.15, a: 1}
+    weakSpotLightIntensity: 3
+    weakSpotLightRange: 3.5
+    weakSpotHitFlashSeconds: 0.12
+    weakSpotHitFlashBoost: 2.5
+    volume: 1
+  growlClip:
+    m_AssetGUID: 618be86712ffac947997f96463301683
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  stompClip:
+    m_AssetGUID: 5ff823f546b52574a931e1d9b44290a6
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  hurtClip:
+    m_AssetGUID: 958408b32ccf3714ea02821877b0870c
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  defeatClip:
+    m_AssetGUID: 40ab3a7e4e36423488e589303d63346f
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  relocateClip:
+    m_AssetGUID: e1a75776f005439469f89a17a986c567
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0

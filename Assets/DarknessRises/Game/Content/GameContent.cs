@@ -9,8 +9,8 @@ namespace DarknessRises.Game.Content
 {
     /// <summary>
     /// The content a playable scene loads before it starts, read from the definitions' Addressables references:
-    /// the Primary weapons' Shots and hit sparks, the Grenade, the character's sounds, the Rumble, and the prefab and
-    /// sounds of every Enemy type its fights use.
+    /// the Primary weapons' Shots and hit sparks, the Grenade, the character's sounds, the Rumble, the prefab and
+    /// sounds of every Enemy type its fights use, and its Boss's sounds.
     /// </summary>
     public static class GameContent
     {
@@ -38,6 +38,16 @@ namespace DarknessRises.Game.Content
             content.Add(hitReaction.HurtClip);
             content.Add(hitReaction.DeathClip);
             content.Add(configuration.Lightning.Rumble.Clip);
+
+            var boss = runsLevel ? configuration.Level.Boss : null;
+            if (boss != null)
+            {
+                content.Add(boss.GrowlClip);
+                content.Add(boss.StompClip);
+                content.Add(boss.HurtClip);
+                content.Add(boss.DefeatClip);
+                content.Add(boss.RelocateClip);
+            }
 
             foreach (var enemyType in EnemyTypes(configuration, runsLevel, rampStep))
             {

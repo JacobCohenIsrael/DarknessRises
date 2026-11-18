@@ -195,5 +195,42 @@ namespace DarknessRises.Game.EditModeTests.Routes
 
             Assert.That(walk, Is.Not.AllocatingGCMemory());
         }
+    
+
+        [Test]
+        public void Skipping_to_a_Station_ahead_puts_the_character_there_past_the_ones_before()
+        {
+            var first = new Station(0, 2f);
+            var second = new Station(1, 6f);
+            var progress = new RouteProgress(Straight(), new[] { first, second }, WalkingSpeed);
+            var reached = new List<Station>();
+            progress.StationReached += reached.Add;
+            progress.Tick(1f);
+            Assert.That(progress.CurrentStation, Is.SameAs(first));
+
+            Assert.That(progress.SkipTo(second), Is.True);
+
+            Assert.That(progress.CurrentStation, Is.SameAs(second));
+            Assert.That(progress.Distance, Is.EqualTo(6f).Within(Tolerance));
+            Assert.That(reached, Is.EqualTo(new[] { first, second }));
+
+            second.Clear();
+            progress.Tick(1f);
+            Assert.That(progress.Distance, Is.EqualTo(8f).Within(Tolerance));
+        }
+
+        [Test]
+        public void Skipping_back_to_a_Station_already_passed_does_nothing()
+        {
+            var first = new Station(0, 2f);
+            var progress = new RouteProgress(Straight(), new[] { first }, WalkingSpeed);
+            first.Clear();
+            progress.Tick(2f);
+            progress.Tick(1f);
+            var before = progress.Distance;
+
+            Assert.That(progress.SkipTo(first), Is.False);
+            Assert.That(progress.Distance, Is.EqualTo(before));
+        }
     }
 }

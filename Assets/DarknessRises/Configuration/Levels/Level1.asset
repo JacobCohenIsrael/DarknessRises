@@ -99,6 +99,7 @@ MonoBehaviour:
       maxAlive: 2
   spawnPointLitIntensity: 0.05
   stragglerMinMetresAhead: 2
+  boss: {fileID: 11400000, guid: aa02f79950575bb42815dc4f322aaedd, type: 2}
   start:
     durationSeconds: 4
     titleFadeInSeconds: 0.6

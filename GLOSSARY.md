@@ -24,6 +24,10 @@ _Avoid_: checkpoint, encounter, arena
 An authored place in a Room where Enemies enter, such as a dark doorway, gap or vent. A Spawn point that is lit at that moment is skipped, so Enemies never appear in view.
 _Avoid_: spawner, portal
 
+**Boss Room**:
+The last Room of a Level, where its Boss is fought. The Route stops there until the Boss is beaten, the camera pulls back to frame the whole fight, and the Level's end beat follows.
+_Avoid_: arena, boss arena
+
 **Position**:
 A marked spot in a Boss Room that the character can Relocate to.
 _Avoid_: spot, node, waypoint

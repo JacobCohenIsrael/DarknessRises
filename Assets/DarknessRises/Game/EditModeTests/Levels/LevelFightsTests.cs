@@ -147,5 +147,52 @@ namespace DarknessRises.Game.EditModeTests.Levels
             Run(3f);
             Assert.That(progress.IsFinished, Is.True);
         }
+    
+
+        [Test]
+        public void In_a_Level_with_a_Boss_the_Station_before_the_end_is_the_Boss_and_left_to_the_owner()
+        {
+            fights.Dispose();
+            var boss = new Station(1, 14f);
+            var end = new Station(2, 18f);
+            progress = new RouteProgress(
+                new RoutePath(new[] { Vector3.zero, new Vector3(20f, 0f, 0f) }),
+                new[] { fight, boss, end },
+                1f);
+            var stationWaves = new IReadOnlyList<WavePlan<string>>[]
+            {
+                new[] { new WavePlan<string>(0f, 0f, new[] { Shambler }) },
+            };
+            fights = new LevelFights<string>(progress, stationWaves, waveSpawner, new StragglerSchedule<string>(stragglerSpawner, random), hasBoss: true);
+            Station bossReached = null;
+            Station exitReached = null;
+            fights.BossReached += station => bossReached = station;
+            fights.ExitReached += station => exitReached = station;
+
+            Run(10f);
+            waveSpawner.KillAll();
+            Run(10f);
+
+            Assert.That(bossReached, Is.SameAs(boss));
+            Assert.That(progress.CurrentStation, Is.SameAs(boss), "The Boss fight holds the character until it's beaten.");
+            Assert.That(exitReached, Is.Null);
+
+            boss.Clear();
+            Run(5f);
+            Assert.That(exitReached, Is.SameAs(end));
+        }
+
+        [Test]
+        public void An_abandoned_fight_counts_as_cleared()
+        {
+            Station cleared = null;
+            fights.FightCleared += station => cleared = station;
+            Run(10f);
+
+            fights.AbandonCurrent();
+
+            Assert.That(cleared, Is.SameAs(fight));
+            Assert.That(fights.Current, Is.Null);
+        }
     }
 }

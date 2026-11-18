@@ -3,6 +3,7 @@ using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Audio;
+using DarknessRises.Game.Editor.Bosses;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Continues;
 using DarknessRises.Game.Editor.Enemies;
@@ -154,6 +155,8 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
             PrimaryWeaponsBuilder.WireDebugSwitch(gameRoot);
             RampBuilder.WireDebugJump(gameRoot);
+            ColossusBuilder.WireDebugSkip(gameRoot);
+            ColossusBuilder.WireRelocateInput(character.GetComponent<PlayerControls>());
             SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
             HealthBuilder.Build(gameRoot, character, cameraView);
             ContinueBuilder.Build(gameRoot, character);

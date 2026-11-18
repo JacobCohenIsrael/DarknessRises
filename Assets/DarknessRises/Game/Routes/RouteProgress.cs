@@ -62,6 +62,9 @@ namespace DarknessRises.Game.Routes
 
         public RoutePath Path { get; }
 
+        /// <summary>The Route's Stations, in the order the character reaches them.</summary>
+        public IReadOnlyList<Station> Stations => stations;
+
         /// <summary>Metres walked from the start of the Route.</summary>
         public float Distance { get; private set; }
 
@@ -109,6 +112,30 @@ namespace DarknessRises.Game.Routes
                 IsFinished = true;
                 Finished?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// Debug: puts the character straight on <paramref name="station"/>, past every Station before it, as if it had
+        /// just walked there. It leaves the Station it was stopped at, if any. Only a Station still ahead counts.
+        /// </summary>
+        /// <returns>Whether the character moved.</returns>
+        public bool SkipTo(Station station)
+        {
+            var index = Array.IndexOf(stations, station);
+            if (index < 0 || index < nextStation - (IsAtStation ? 1 : 0) || station == CurrentStation || IsFinished)
+            {
+                return false;
+            }
+
+            if (IsAtStation)
+            {
+                Leave();
+            }
+
+            nextStation = index + 1;
+            Distance = station.Distance;
+            Arrive(station);
+            return true;
         }
 
         private void Arrive(Station station)

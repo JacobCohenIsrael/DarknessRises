@@ -6,7 +6,7 @@ namespace DarknessRises.Game.Grenades
 {
     /// <summary>
     /// A pooled Grenade explosion: throws out a burst of fire and sparks, flashes a shadowless point light that
-    /// lights the area up and fades out, plays the bang and shakes the camera through a Cinemachine impulse,
+    /// lights the area up and fades out, plays the bang from just before its blast and shakes the camera through a Cinemachine impulse,
     /// then goes back to its pool once the burst is gone. Only Lightning casts real-time shadows.
     /// </summary>
     public sealed class GrenadeExplosionView : MonoBehaviour
@@ -22,6 +22,9 @@ namespace DarknessRises.Game.Grenades
         private AudioClip bangClip;
         private float lightSecondsLeft;
         private float lifeSecondsLeft;
+
+        /// <summary>Where in the clip the last bang started, in seconds.</summary>
+        public float LastBangClipStartSeconds { get; private set; }
 
         /// <summary>Seconds until the longest-lived part of the burst is gone.</summary>
         public float LifeSeconds => Mathf.Max(
@@ -73,10 +76,7 @@ namespace DarknessRises.Game.Grenades
             sparks.Emit(settings.SparkCount);
             lifeSecondsLeft = LifeSeconds;
 
-            if (bangClip != null)
-            {
-                bang.PlayOneShot(bangClip);
-            }
+            PlayBang();
 
             if (settings.ShakeForce > 0f)
             {
@@ -104,6 +104,25 @@ namespace DarknessRises.Game.Grenades
             if (lifeSecondsLeft <= 0f)
             {
                 pool.Release(this);
+            }
+        }
+
+        // From the authored point in the clip, just before its blast, so the bang lands with the explosion.
+        private void PlayBang()
+        {
+            if (bangClip == null)
+            {
+                return;
+            }
+
+            bang.clip = bangClip;
+            bang.Play();
+            LastBangClipStartSeconds = 0f;
+
+            // Measuring or seeking a clip that hasn't loaded fails (WebGL decodes audio late): it plays from the start instead.
+            if (bangClip.loadState == AudioDataLoadState.Loaded)
+            {
+                bang.time = LastBangClipStartSeconds = Mathf.Clamp(settings.ClipStartSeconds, 0f, bangClip.length);
             }
         }
 

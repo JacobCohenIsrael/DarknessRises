@@ -10,14 +10,20 @@ namespace DarknessRises.Game.Editor.Hud
 {
     /// <summary>
     /// Builds the reload feedback: the radial meter on the HUD that follows the character, and the 2D source on the
-    /// character that plays the magazine-out and magazine-in sounds. Authors the placeholder sounds if none are set.
+    /// character that plays the reload sequence. Authors the sound if none is set.
     /// Call it once the character, the camera and the HUD are built.
     /// </summary>
     public static class ReloadFeedbackBuilder
     {
-        // Approved Free Pack placeholders, until a proper reload sound is approved. Short, sharp click out; ringing clack in.
-        private const string MagazineOutClipPath = "Assets/Free Pack/Bullet Impact 21.wav";
-        private const string MagazineInClipPath = "Assets/Free Pack/Metal Impact 7.wav";
+        // A whole reload sequence in one clip (Weapons of Choice - FREE, Komposite Sound), approved for the game.
+        private const string ClipPath = "Assets/Weapons of Choice FREE - Komposite Sound/GUN/Handling_Gun_01_Reload_Sq_SFX.wav";
+
+        // The Free Pack placeholders it replaced, a magazine-out and a magazine-in sound. Nothing else uses them.
+        private static readonly string[] FormerClipPaths =
+        {
+            "Assets/Free Pack/Bullet Impact 21.wav",
+            "Assets/Free Pack/Metal Impact 7.wav",
+        };
 
         private const string DiscSpritePath = "UI/Skin/Knob.psd";
 
@@ -27,27 +33,32 @@ namespace DarknessRises.Game.Editor.Hud
             var configuration = (GameConfiguration)serializedRoot.FindProperty("configuration").objectReferenceValue;
             var hud = ((Component)serializedRoot.FindProperty("ammoHud").objectReferenceValue).transform.parent;
 
-            AuthorPlaceholderSounds(configuration);
+            AuthorSound(configuration);
             serializedRoot.FindProperty("reloadMeter").objectReferenceValue = BuildMeter(hud, worldCamera);
             serializedRoot.FindProperty("reloadSound").objectReferenceValue = BuildSound(character);
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void AuthorPlaceholderSounds(GameConfiguration configuration)
+        /// <summary>
+        /// Points the reload sound at the reload sequence, unless another clip was chosen in the Inspector, with its
+        /// import settings, and takes the former placeholders out of the content so no bundle carries them.
+        /// </summary>
+        public static void AuthorSound(GameConfiguration configuration)
         {
+            var settings = AddressableContent.Setup();
+            foreach (var path in FormerClipPaths)
+            {
+                settings.RemoveAssetEntry(AssetDatabase.AssetPathToGUID(path));
+            }
+
             var serialized = new SerializedObject(configuration);
-            ReferenceIfEmpty(serialized.FindProperty("reloadFeedback.magazineOutClip"), MagazineOutClipPath);
-            ReferenceIfEmpty(serialized.FindProperty("reloadFeedback.magazineInClip"), MagazineInClipPath);
+            // Loaded through Addressables with the Level's other content.
+            AddressableContent.ReferenceIfEmpty(
+                serialized.FindProperty("reloadFeedback.clip"), () => GameplaySoundImport.Load(ClipPath), AddressableContent.SharedGroup);
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
-            // Written to disk with the settings' defaults, even when the clips were already set.
+            // Written to disk with the settings' defaults, even when the clip was already set.
             EditorUtility.SetDirty(configuration);
-        }
-
-        // Loaded through Addressables with the Level's other content.
-        private static void ReferenceIfEmpty(SerializedProperty clip, string path)
-        {
-            AddressableContent.ReferenceIfEmpty(clip, () => AssetDatabase.LoadAssetAtPath<AudioClip>(path), AddressableContent.SharedGroup);
         }
 
         private static ReloadMeterView BuildMeter(Transform hud, Camera worldCamera)

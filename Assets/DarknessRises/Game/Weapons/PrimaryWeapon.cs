@@ -44,6 +44,12 @@ namespace DarknessRises.Game.Weapons
             : stats.ReloadSeconds <= 0f ? 1f
             : 1f - reloadSecondsLeft / stats.ReloadSeconds;
 
+        /// <summary>Seconds a reload of this Weapon takes.</summary>
+        public float ReloadSeconds => stats.ReloadSeconds;
+
+        /// <summary>Seconds since the current reload started. 0 when not reloading.</summary>
+        public float ReloadElapsedSeconds => IsReloading ? stats.ReloadSeconds - reloadSecondsLeft : 0f;
+
         public void PullTrigger()
         {
             IsTriggerHeld = true;

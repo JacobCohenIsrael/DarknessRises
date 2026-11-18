@@ -29,9 +29,7 @@ namespace DarknessRises.Game.Content
                 content.Add(primaryWeapons[i].HitSpark.Prefab);
             }
 
-            var reloadFeedback = configuration.ReloadFeedback;
-            content.Add(reloadFeedback.MagazineOutClip);
-            content.Add(reloadFeedback.MagazineInClip);
+            content.Add(configuration.ReloadFeedback.Clip);
 
             var grenade = configuration.Grenade;
             content.Add(grenade.Body.Prefab);

@@ -15,12 +15,6 @@ MonoBehaviour:
   m_GroupName: Shared
   m_GUID: 8f91c16ef0d1a07498feef7f3fd9df66
   m_SerializeEntries:
-  - m_GUID: 2e071f5b8b8467d45a5e6e24c23c6ad4
-    m_Address: Metal Impact 7
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
   - m_GUID: 373932479250b134c9289d6a734cf6e2
     m_Address: GrenadeExplosion
     m_ReadOnly: 0
@@ -51,14 +45,14 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: 95dfef04350f10a4fbdde45823d7ab5c
-    m_Address: FlameShot
+  - m_GUID: 8327bacc90a16a441903a18e8fe175b1
+    m_Address: Grenade3
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: 986d6b30567e30e428f3f21373fe45ca
-    m_Address: Explosion 2
+  - m_GUID: 95dfef04350f10a4fbdde45823d7ab5c
+    m_Address: FlameShot
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -81,8 +75,8 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: e11a5a019377fbd4c81caa0adcb4c236
-    m_Address: Bullet Impact 21
+  - m_GUID: e05478d53ab27f9409619259809c5e6c
+    m_Address: Handling_Gun_01_Reload_Sq_SFX
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

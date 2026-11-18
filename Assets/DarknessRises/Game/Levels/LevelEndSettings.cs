@@ -32,7 +32,11 @@ namespace DarknessRises.Game.Levels
         [Header("Card")]
         [SerializeField, Min(0f)] private float cardFadeInSeconds = 0.6f;
 
+        [SerializeField, Min(0f), Tooltip("Seconds the closing card stays on the black screen before the next Level starts.")]
+        private float cardHoldSeconds = 1.2f;
+
         public float CalmSeconds => calmSeconds;
+        public float CardHoldSeconds => cardHoldSeconds;
         public float FadeOutSeconds => fadeOutSeconds;
         public Color CalmLightColor => calmLightColor;
         public float CalmLightRange => calmLightRange;

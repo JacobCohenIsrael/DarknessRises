@@ -293,7 +293,7 @@ namespace DarknessRises.Game.Editor.Health
         /// A Debug-map action in the game's input actions, added with <paramref name="binding"/> if it's missing.
         /// Every other action is kept as it is.
         /// </summary>
-        private static InputActionReference LoadOrAddDebugAction(string actionName, string binding)
+        internal static InputActionReference LoadOrAddDebugAction(string actionName, string binding)
         {
             const string controlsPath = PistolBuilder.ControlsPath;
             var actionPath = $"{LightningDebugToggle.MapName}/{actionName}";

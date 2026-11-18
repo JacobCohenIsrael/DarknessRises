@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bf92052dfaea4f4ea84805deeacc5e8, type: 3}
+  m_Name: Runner
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Enemies.EnemyDefinition
+  hitPoints: 2
+  speed: 4.2
+  acceleration: 14
+  turnSpeed: 420
+  pathRefreshSeconds: 0.15
+  prefab:
+    m_AssetGUID: 5d95d9259c4fa7149a89303883d61e97
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  audio:
+    spawnClip:
+      m_AssetGUID: 
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    hurtClip:
+      m_AssetGUID: 75adfe9a619833445a701305b983e548
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    deathClip:
+      m_AssetGUID: a37f44cbf8c2a7443a3c361efa2f233a
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    windUpClip:
+      m_AssetGUID: 7f4aa26d5b55226409cda231ffaf869b
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    attackClip:
+      m_AssetGUID: cc6699269b4c1d44ea1e860518b9bb73
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    outputGroup: {fileID: 1199663272804557088, guid: 0fc8da764e90fb94287f053470bdf171, type: 2}
+    volume: 0.8
+    hearingRange: 25
+  death:
+    lingerSeconds: 0.5
+    sinkSeconds: 1.6
+    sinkDepth: 1.2
+  attack:
+    range: 1.3
+    windUpSeconds: 0.8
+    damage: 1
+    cooldownSeconds: 1.5
+    staggerSeconds: 0.6
+    windUpLeanDegrees: 22
+    attackLungeDegrees: 28
+    staggerLeanDegrees: 35
+  tells:
+    eyeGlint:
+      range: 7
+      fadeDistance: 1.5
+      color: {r: 3, g: 0.7, b: 0.15, a: 1}
+    sounds:
+      clips:
+      - m_AssetGUID: ac6034ade498bb94b87620cdf6eac48b
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      minIntervalSeconds: 2.5
+      maxIntervalSeconds: 6
+      minPitch: 0.6
+      maxPitch: 0.8
+      volume: 0.7

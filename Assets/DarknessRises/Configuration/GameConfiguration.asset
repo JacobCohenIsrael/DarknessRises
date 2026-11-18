@@ -24,3 +24,4 @@ MonoBehaviour:
   audio: {fileID: 11400000, guid: ed90ce422743a74448cdad453d5dabb7, type: 2}
   level: {fileID: 11400000, guid: 2a7141503a82c65408294f9dbf8d31f5, type: 2}
   grenade: {fileID: 11400000, guid: 30dde1c9375512b469def22f100c7f4a, type: 2}
+  ramp: {fileID: 11400000, guid: 101d8620b1c986c4993ae486ef081b81, type: 2}

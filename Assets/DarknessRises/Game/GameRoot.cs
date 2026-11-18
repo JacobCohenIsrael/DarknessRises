@@ -56,10 +56,14 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("Debug/PrimaryWeapon1-3: equip the Nth Primary. Only read in the Editor and debug builds.")]
         private InputActionReference[] switchPrimaryWeapon;
 
+        [SerializeField, Tooltip("Debug/JumpToRampLevel: jump to the Ramp definition's debug Level. Only read in the Editor and debug builds.")]
+        private InputActionReference jumpToRampLevel;
+
         private LightningScheduler lightningScheduler;
 #if UNITY_EDITOR || DEBUG
         private LightningDebugToggle lightningDebugToggle;
         private PrimaryWeaponDebugSwitch primaryWeaponDebugSwitch;
+        private RampLevelDebugJump rampLevelDebugJump;
 #endif
         [SerializeField] private RouteWavesView routeWaves;
         [SerializeField] private CharacterSkillsView characterSkills;
@@ -78,8 +82,13 @@ namespace DarknessRises.Game
         [SerializeField] private HitPointsHudView hitPointsHud;
         [SerializeField] private DeathFlow deathFlow;
 
-        private RunRecord runRecord;
-        private bool countsLevelKills;
+        // The Run this scene plays a Level of: handed in by the boot, or the scene's own when it's played on its own.
+        private RunFlow run;
+        private bool ownsRun;
+        private bool reportsToRun;
+
+        // Whether the scene runs a Level (or the Test Room's Waves). Kept from Awake: on unload the Level may be destroyed first.
+        private bool runsLevel;
 
         // Owns the scene's lifetime: the content load, and everything loaded for it.
         private CancellationTokenSource lifetime;
@@ -87,33 +96,58 @@ namespace DarknessRises.Game
         private bool isStarted;
         private bool isSubscribed;
 
-        /// <summary>Raised once the Level is over and the character has walked out the far door.</summary>
-        public event Action LevelFinished;
-
-        /// <summary>
-        /// Raised when the player asks for a new Run after dying. Whoever loaded this scene starts it; with no one
-        /// listening (the scene was played on its own in the Editor), the game goes back through the boot scene.
-        /// </summary>
-        public event Action NewRunRequested;
-
         /// <summary>Whether the scene's content has loaded and its gameplay has started.</summary>
         public bool IsStarted => isStarted;
+
+        /// <summary>The Run this scene plays a Level of, once it has one.</summary>
+        public RunFlow Run => run;
+
+        // The boot scene is the only scene in Build Settings. While it's loaded, it loaded this scene and hands it the Run.
+        private const int BootSceneBuildIndex = 0;
+
+        private static bool IsBooted => SceneManager.GetSceneByBuildIndex(BootSceneBuildIndex).isLoaded;
 
         private WeaponDefinition[] PrimaryWeapons => new[] { configuration.Pistol, configuration.MachineGun, configuration.Flamethrower };
 
         private void Awake()
         {
+            runsLevel = level != null;
             Apply();
             lifetime = new CancellationTokenSource();
             content = new ContentScope(new AddressablesContentSource());
             StartAsync(lifetime.Token).Forget();
         }
 
-        // Loads the scene's content, then starts the gameplay. Views stay idle until they're handed what they show.
+        /// <summary>
+        /// Plays the current Level of <paramref name="runFlow"/> in this scene, with the Ramp at its Level index.
+        /// Called by the boot right after it loads the scene.
+        /// </summary>
+        public void Play(RunFlow runFlow)
+        {
+            if (run != null)
+            {
+                throw new InvalidOperationException("This scene already plays a Level of a Run.");
+            }
+
+            run = runFlow ?? throw new ArgumentNullException(nameof(runFlow));
+        }
+
+        // Waits for the Run, loads the content of its current Level, then starts the gameplay.
+        // Views stay idle until they're handed what they show.
         private async UniTaskVoid StartAsync(CancellationToken cancellationToken)
         {
+            if (run == null && !IsBooted)
+            {
+                // Played on its own in the Editor: a Run of its own, from Level 1.
+                PlayOwnRun();
+            }
+
+            await UniTask.WaitUntil(this, root => root.run != null, cancellationToken: cancellationToken);
+
+            var ramp = configuration.Ramp.ToRamp();
+            var rampStep = ramp.StepAt(run.LevelIndex);
             var primaryWeapons = PrimaryWeapons;
-            await GameContent.For(configuration, primaryWeapons, level != null).LoadAsync(content, cancellationToken);
+            await GameContent.For(configuration, primaryWeapons, level != null, rampStep).LoadAsync(content, cancellationToken);
 
             // At least a frame after Awake: a mixer parameter set before the mixer's first update can be overwritten by its snapshot.
             await UniTask.NextFrame(cancellationToken);
@@ -124,10 +158,18 @@ namespace DarknessRises.Game
                 SceneManager.SetActiveScene(gameObject.scene);
             }
 
-            Begin(primaryWeapons);
+            Begin(primaryWeapons, ramp);
         }
 
-        private void Begin(WeaponDefinition[] primaryWeapons)
+        private void PlayOwnRun()
+        {
+            run = new RunFlow();
+            ownsRun = true;
+            run.StartNewRun();
+            run.LevelStarted += OnOwnRunLevelStarted;
+        }
+
+        private void Begin(WeaponDefinition[] primaryWeapons, Ramp<EnemyDefinition> ramp)
         {
             routeWalker.Walk(
                 configuration.Player,
@@ -136,7 +178,7 @@ namespace DarknessRises.Game
                 cameraTarget);
             if (level != null)
             {
-                level.Run(configuration.Level, routeWalker.Progress, character, enemyTime, content);
+                level.Run(configuration.Level, run.LevelIndex, ramp, routeWalker.Progress, character, enemyTime, content);
             }
             else
             {
@@ -162,6 +204,12 @@ namespace DarknessRises.Game
 
             lightningScheduler.EnterRoom(room.LetsLightningIn);
             enemyAudioPitch = new EnemyAudioPitch(configuration.Audio, enemyTime);
+
+            // The Test Room has no beats: it starts walking at once.
+            if (level == null)
+            {
+                run.FinishStartBeat();
+            }
         }
 
         private void OnEnable()
@@ -190,78 +238,103 @@ namespace DarknessRises.Game
 #if UNITY_EDITOR || DEBUG
             lightningDebugToggle = new LightningDebugToggle(toggleLightning, lightningScheduler, lightning);
             primaryWeaponDebugSwitch = new PrimaryWeaponDebugSwitch(switchPrimaryWeapon, primaryWeapon);
+            if (jumpToRampLevel != null)
+            {
+                rampLevelDebugJump = new RampLevelDebugJump(jumpToRampLevel, run, configuration.Ramp.DebugJumpLevel);
+            }
 #endif
             primaryWeapon.Switched += OnPrimaryWeaponSwitched;
         }
 
         private void OnDestroy()
         {
-            lifetime.Cancel();
-            lifetime.Dispose();
-            enemyAudioPitch?.Dispose();
-
-            // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
-            if (countsLevelKills)
+            try
             {
-                level.EnemyDied -= OnEnemyDied;
-                level.Finished -= OnLevelFinished;
-            }
-            else if (runRecord != null)
-            {
-                routeWaves.EnemyDied -= OnEnemyDied;
-            }
+                lifetime.Cancel();
+                lifetime.Dispose();
+                enemyAudioPitch?.Dispose();
 
-            if (runRecord != null)
-            {
-                deathFlow.NewRunRequested -= OnNewRunRequested;
-            }
+                // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
+                if (reportsToRun)
+                {
+                    ReportToRun(false);
+                }
 
-            // Last: the scene's objects made from this content are gone or going with it.
-            content.Dispose();
+                // The Run outlives this scene when the boot owns it.
+                if (ownsRun)
+                {
+                    run.LevelStarted -= OnOwnRunLevelStarted;
+                }
+            }
+            finally
+            {
+                // Last, and always, so the Level's memory is released: the scene's objects made from this content
+                // are gone or going with it.
+                content.Dispose();
+            }
         }
 
         private void ShowHealthAndDeath()
         {
             var health = characterHealth.Show(configuration.Player, content);
             hitPointsHud.Show(health);
-            runRecord = new RunRecord();
+            ReportToRun(true);
+            deathFlow.Watch(health, run, characterAnimation, routeWalker, primaryWeapon);
+        }
 
-            // Kills come from whoever runs the fights: the Level, or the Test Room's Waves.
-            countsLevelKills = level != null;
-            if (countsLevelKills)
+        // What happens in the Level moves the Run on. Kills come from whoever runs the fights: the Level, or the Test Room's Waves.
+        private void ReportToRun(bool report)
+        {
+            reportsToRun = report;
+            if (runsLevel)
             {
-                level.EnemyDied += OnEnemyDied;
-                level.Finished += OnLevelFinished;
+                if (report)
+                {
+                    level.EnemyDied += OnEnemyDied;
+                    level.StartBeatFinished += OnStartBeatFinished;
+                    level.FightStarted += OnFightStarted;
+                    level.FightCleared += OnFightCleared;
+                    level.EndBeatStarted += OnEndBeatStarted;
+                    level.Finished += OnLevelFinished;
+                }
+                else
+                {
+                    level.EnemyDied -= OnEnemyDied;
+                    level.StartBeatFinished -= OnStartBeatFinished;
+                    level.FightStarted -= OnFightStarted;
+                    level.FightCleared -= OnFightCleared;
+                    level.EndBeatStarted -= OnEndBeatStarted;
+                    level.Finished -= OnLevelFinished;
+                }
             }
-            else
+            else if (report)
             {
                 routeWaves.EnemyDied += OnEnemyDied;
             }
-
-            deathFlow.Watch(health, runRecord, characterAnimation, routeWalker, primaryWeapon);
-            deathFlow.NewRunRequested += OnNewRunRequested;
-        }
-
-        private void OnEnemyDied(Enemy _)
-        {
-            runRecord.CountKill();
-        }
-
-        private void OnLevelFinished()
-        {
-            LevelFinished?.Invoke();
-        }
-
-        private void OnNewRunRequested()
-        {
-            if (NewRunRequested != null)
+            else
             {
-                NewRunRequested.Invoke();
-                return;
+                routeWaves.EnemyDied -= OnEnemyDied;
             }
+        }
 
-            // Played on its own: the boot scene (the only one in Build Settings) loads the game afresh.
-            SceneManager.LoadScene(0);
+        private void OnEnemyDied(Enemy _) => run.CountKill();
+
+        private void OnStartBeatFinished() => run.FinishStartBeat();
+
+        private void OnFightStarted() => run.BeginStationFight();
+
+        private void OnFightCleared() => run.ClearStationFight();
+
+        private void OnEndBeatStarted() => run.BeginLevelEnd();
+
+        // The character walked out the far door: the Run moves on to the next Level, which the boot loads.
+        private void OnLevelFinished() => run.FinishLevel();
+
+        // Played on its own, nobody loads the next Level or a new Run: the boot scene (the only one in Build Settings)
+        // starts the game afresh instead.
+        private void OnOwnRunLevelStarted(int _)
+        {
+            SceneManager.LoadScene(BootSceneBuildIndex);
         }
 
         private void OnDisable()
@@ -284,6 +357,8 @@ namespace DarknessRises.Game
             lightningDebugToggle = null;
             primaryWeaponDebugSwitch.Dispose();
             primaryWeaponDebugSwitch = null;
+            rampLevelDebugJump?.Dispose();
+            rampLevelDebugJump = null;
 #endif
             primaryWeapon.Switched -= OnPrimaryWeaponSwitched;
         }

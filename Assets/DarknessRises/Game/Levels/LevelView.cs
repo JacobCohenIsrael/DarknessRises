@@ -8,6 +8,7 @@ using DarknessRises.Game.Hud;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
+using DarknessRises.Game.Runs;
 using DarknessRises.Game.Waves;
 using UnityEngine;
 
@@ -40,6 +41,7 @@ namespace DarknessRises.Game.Levels
         [SerializeField] private ScreenFadeView screenFade;
 
         private LevelDefinition definition;
+        private int levelIndex;
         private RouteProgress progress;
         private RoomSequence sequence;
         private EnemyPools pools;
@@ -53,6 +55,18 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised when the character walks through a doorway into the next Room.</summary>
         public event Action<Room> RoomEntered;
 
+        /// <summary>Raised once the start beat is over and the character walks the Route.</summary>
+        public event Action StartBeatFinished;
+
+        /// <summary>Raised when the character reaches a Station with Waves to fight.</summary>
+        public event Action FightStarted;
+
+        /// <summary>Raised when the Station's last Wave is dead and the character walks on.</summary>
+        public event Action FightCleared;
+
+        /// <summary>Raised when the last fight is over and the end beat starts.</summary>
+        public event Action EndBeatStarted;
+
         /// <summary>Raised once the character has walked out the far door and the Level is over.</summary>
         public event Action Finished;
 
@@ -65,12 +79,15 @@ namespace DarknessRises.Game.Levels
         public bool IsFinished { get; private set; }
 
         /// <summary>
-        /// Starts the Level: the start beat plays as the character walks in along <paramref name="routeProgress"/>,
-        /// then each Room's fights run as the character reaches them. Its Enemies run on <paramref name="enemyTime"/>,
-        /// built from the prefabs and sounds already loaded in <paramref name="content"/>.
+        /// Starts the Level as Level <paramref name="index"/> of the Run: the start beat plays as the character walks in
+        /// along <paramref name="routeProgress"/>, then each Room's fights run as the character reaches them, with their
+        /// Waves and Enemies scaled by the <paramref name="ramp"/> at that index. Its Enemies run on
+        /// <paramref name="enemyTime"/>, built from the prefabs and sounds already loaded in <paramref name="content"/>.
         /// </summary>
         public void Run(
             LevelDefinition levelDefinition,
+            int index,
+            Ramp<EnemyDefinition> ramp,
             RouteProgress routeProgress,
             Transform character,
             EnemyTime enemyTime,
@@ -80,6 +97,13 @@ namespace DarknessRises.Game.Levels
 
             definition = levelDefinition ? levelDefinition : throw new ArgumentNullException(nameof(levelDefinition));
             progress = routeProgress ?? throw new ArgumentNullException(nameof(routeProgress));
+            if (ramp == null)
+            {
+                throw new ArgumentNullException(nameof(ramp));
+            }
+
+            levelIndex = index;
+            var rampStep = ramp.StepAt(index);
 
             if (rooms.Length != definition.Rooms.Count)
             {
@@ -100,7 +124,7 @@ namespace DarknessRises.Game.Levels
             }
 
             sequence = new RoomSequence(RoomSequence.EntryDistances(progress.Path, doorwayPositions));
-            var stationWaves = WavesByStation(stations);
+            var stationWaves = WavesByStation(stations, ramp, rampStep);
 
             roomStragglers = new StragglerPlan<EnemyDefinition>[rooms.Length];
             var roomSpawnPoints = new RoomSpawnPoints[rooms.Length];
@@ -110,7 +134,7 @@ namespace DarknessRises.Game.Levels
                 roomSpawnPoints[i] = rooms[i].SpawnPoints;
             }
 
-            pools = new EnemyPools(transform, enemyTime, content);
+            pools = new EnemyPools(transform, enemyTime, content, rampStep);
             pools.EnemyDied += OnEnemyDied;
             Prewarm(stationWaves, roomStragglers);
             spawner = new LevelSpawner(
@@ -126,6 +150,8 @@ namespace DarknessRises.Game.Levels
             progress.StationReached += OnStationReached;
             fights = new LevelFights<EnemyDefinition>(progress, stationWaves, spawner.Waves, stragglers);
             fights.ExitReached += OnExitReached;
+            fights.FightStarted += OnFightStarted;
+            fights.FightCleared += OnFightCleared;
             sequence.RoomEntered += OnRoomEntered;
             Enter(0);
 
@@ -154,6 +180,7 @@ namespace DarknessRises.Game.Levels
         private async UniTask PlayAsync(CancellationToken cancellation)
         {
             await PlayStartBeatAsync(cancellation);
+            StartBeatFinished?.Invoke();
 
             fights.StragglersAllowed = true;
             await UniTask.WaitUntil(() => exitStation != null, cancellationToken: cancellation);
@@ -161,6 +188,7 @@ namespace DarknessRises.Game.Levels
 
             // The calm only comes once nothing is left hunting the character.
             await UniTask.WaitUntil(() => fights.AliveCount == 0, cancellationToken: cancellation);
+            EndBeatStarted?.Invoke();
             await PlayEndBeatAsync(cancellation);
 
             IsFinished = true;
@@ -170,7 +198,7 @@ namespace DarknessRises.Game.Levels
         private async UniTask PlayStartBeatAsync(CancellationToken cancellation)
         {
             var start = definition.Start;
-            titleCard.Show(definition.Title);
+            titleCard.Show(definition.TitleFor(levelIndex));
             entranceLight.color = start.DoorLightColor;
             entranceLight.range = start.DoorLightRange;
             entranceLight.enabled = true;
@@ -209,7 +237,7 @@ namespace DarknessRises.Game.Levels
             }
 
             screenFade.Alpha = 1f;
-            titleCard.Show(definition.ClearedTitle);
+            titleCard.Show(definition.ClearedTitleFor(levelIndex));
             for (var elapsed = 0f; elapsed <= 0f || end.CardAlphaAt(elapsed) < 1f; elapsed += Time.deltaTime)
             {
                 titleCard.Alpha = end.CardAlphaAt(elapsed);
@@ -217,10 +245,20 @@ namespace DarknessRises.Game.Levels
             }
 
             titleCard.Alpha = 1f;
+
+            // A moment to read it before the next Level starts.
+            for (var elapsed = 0f; elapsed < end.CardHoldSeconds; elapsed += Time.deltaTime)
+            {
+                await UniTask.NextFrame(cancellation);
+            }
         }
 
-        // Each Station's Waves, from the definition of the Room it stands in. The last Station is the end beat's.
-        private IReadOnlyList<WavePlan<EnemyDefinition>>[] WavesByStation(IReadOnlyList<Station> stations)
+        // Each Station's Waves, from the definition of the Room it stands in, scaled by the Ramp.
+        // The last Station is the end beat's.
+        private IReadOnlyList<WavePlan<EnemyDefinition>>[] WavesByStation(
+            IReadOnlyList<Station> stations,
+            Ramp<EnemyDefinition> ramp,
+            RampStep rampStep)
         {
             var assigned = LevelStations.AssignToRooms(stations, sequence);
             var stationWaves = new IReadOnlyList<WavePlan<EnemyDefinition>>[stations.Count - 1];
@@ -229,7 +267,7 @@ namespace DarknessRises.Game.Levels
                 var (room, indexInRoom) = assigned[i];
                 var authored = definition.Rooms[room].Stations;
                 stationWaves[i] = indexInRoom < authored.Count
-                    ? authored[indexInRoom].ToPlans()
+                    ? ramp.ScaleStation(authored[indexInRoom].ToPlans(), rampStep)
                     : Array.Empty<WavePlan<EnemyDefinition>>();
             }
 
@@ -259,6 +297,16 @@ namespace DarknessRises.Game.Levels
             exitStation = station;
         }
 
+        private void OnFightStarted(Station _)
+        {
+            FightStarted?.Invoke();
+        }
+
+        private void OnFightCleared(Station _)
+        {
+            FightCleared?.Invoke();
+        }
+
         private void Stop()
         {
             if (lifetime != null)
@@ -275,6 +323,8 @@ namespace DarknessRises.Game.Levels
 
             progress.StationReached -= OnStationReached;
             fights.ExitReached -= OnExitReached;
+            fights.FightStarted -= OnFightStarted;
+            fights.FightCleared -= OnFightCleared;
             sequence.RoomEntered -= OnRoomEntered;
             fights.Dispose();
             pools.EnemyDied -= OnEnemyDied;

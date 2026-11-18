@@ -12,8 +12,9 @@ namespace DarknessRises.Game.Death
 {
     /// <summary>
     /// What happens when the character dies: it stops walking and shooting, plays its death, and the death screen
-    /// offers Restart or Exit. Exit shows the end screen first. Both ask for a new Run through
-    /// <see cref="NewRunRequested"/>; whoever runs the Level (the boot, for now) starts it.
+    /// offers Restart or Exit. Both go through the <see cref="RunFlow"/>: Restart starts a new Run at once; Exit ends
+    /// the Run and shows the end screen, which then starts a new Run. Whoever runs the Levels (the boot) loads it.
+    /// Continue (a later ticket) is a third choice here, back into the same Run.
     /// </summary>
     public sealed class DeathFlow : MonoBehaviour
     {
@@ -23,20 +24,17 @@ namespace DarknessRises.Game.Death
         // Owns the death flow's lifetime: the scene's.
         private CancellationTokenSource lifetime;
         private CharacterHealth health;
-        private RunRecord record;
+        private RunFlow run;
         private CharacterAnimationView characterAnimation;
         private RouteWalker routeWalker;
         private PrimaryWeaponView primaryWeapon;
         private bool isDeathFinished;
         private Action onDeathFinished;
 
-        /// <summary>Raised once the player has picked Restart or Exit and a new Run should start.</summary>
-        public event Action NewRunRequested;
-
         /// <summary>Waits for the character's death, then runs the death and end screens.</summary>
         public void Watch(
             CharacterHealth characterHealth,
-            RunRecord runRecord,
+            RunFlow runFlow,
             CharacterAnimationView animationView,
             RouteWalker walker,
             PrimaryWeaponView weapon)
@@ -44,7 +42,7 @@ namespace DarknessRises.Game.Death
             Unbind();
 
             health = characterHealth;
-            record = runRecord;
+            run = runFlow;
             characterAnimation = animationView;
             routeWalker = walker;
             primaryWeapon = weapon;
@@ -77,6 +75,7 @@ namespace DarknessRises.Game.Death
 
         private void OnDied()
         {
+            run.Die();
             PlayAsync(lifetime.Token).Forget();
         }
 
@@ -92,12 +91,15 @@ namespace DarknessRises.Game.Death
             characterAnimation.DeathFinished -= onDeathFinished;
 
             var choice = await deathScreen.ChooseAsync(cancellationToken);
-            if (choice == DeathChoice.Exit)
+            if (choice == DeathChoice.Restart)
             {
-                await endScreen.ShowAsync(record, cancellationToken);
+                run.Restart();
+                return;
             }
 
-            NewRunRequested?.Invoke();
+            run.Exit();
+            await endScreen.ShowAsync(run.Record, cancellationToken);
+            run.StartNewRun();
         }
 
         private void OnDeathFinished()

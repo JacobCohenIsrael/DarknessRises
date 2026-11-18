@@ -9,8 +9,9 @@ using UnityEngine.Rendering;
 namespace DarknessRises.Game.Editor.Enemies
 {
     /// <summary>
-    /// Builds the Shambler: its Enemy definition asset and a placeholder prefab, a hunched figure with reaching arms
-    /// and eyes that glint as a Tell. Existing assets are kept, so tuning done in the Inspector survives a rebuild.
+    /// Builds the Enemy types: each one's Enemy definition asset and a placeholder prefab with eyes that glint as a Tell.
+    /// The Shambler is a hunched figure with reaching arms; the Runner a smaller, paler figure leaning into a sprint.
+    /// Existing assets are kept, so tuning done in the Inspector survives a rebuild.
     /// </summary>
     public static class EnemyBuilder
     {
@@ -22,6 +23,9 @@ namespace DarknessRises.Game.Editor.Enemies
         public const string ShamblerDefinitionPath = EnemiesConfigurationFolder + "/Shambler.asset";
         private const string ShamblerPrefabPath = EnemiesPrefabsFolder + "/Shambler.prefab";
 
+        public const string RunnerDefinitionPath = EnemiesConfigurationFolder + "/Runner.asset";
+        private const string RunnerPrefabPath = EnemiesPrefabsFolder + "/Runner.prefab";
+
         // Approved Free Pack placeholders.
         private const string HurtClipPath = "Assets/Free Pack/Bullet Impact 14.wav";
         private const string DeathClipPath = "Assets/Free Pack/Bloody punch.wav";
@@ -32,36 +36,106 @@ namespace DarknessRises.Game.Editor.Enemies
         private const string LitShaderName = "Universal Render Pipeline/Lit";
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
 
-        // Placeholder Shambler shape, in metres.
-        private const float Height = 1.8f;
-        private const float Radius = 0.4f;
-        private static readonly Color BodyColor = new(0.2f, 0.24f, 0.19f);
         private const float EyeSize = 0.11f;
         private static readonly Color EyeColor = new(0.05f, 0.03f, 0.02f);
         private const float EyeSmoothness = 0.9f;
         private static readonly Color WindUpEyeColor = new(8f, 0.4f, 0.2f);
         private static readonly string[] EyeNames = { "Left Eye", "Right Eye" };
-        private const float TellVoiceHeight = 1.6f;
         private const string EyeGlintMaterialName = "ShamblerEyeGlint";
+
+        // Placeholder Shambler: hunched, with reaching arms. In metres and degrees.
+        private static readonly Figure Shambler = new(
+            "Shambler",
+            ShamblerPrefabPath,
+            height: 1.8f,
+            radius: 0.4f,
+            bodyColor: new Color(0.2f, 0.24f, 0.19f),
+            tellVoiceHeight: 1.6f,
+            new[]
+            {
+                new Part("Body", PrimitiveType.Capsule, new Vector3(0f, 0.85f, 0f), new Vector3(12f, 0f, 0f), new Vector3(0.72f, 0.85f, 0.55f)),
+                new Part("Head", PrimitiveType.Sphere, new Vector3(0f, 1.58f, 0.2f), Vector3.zero, new Vector3(0.42f, 0.44f, 0.42f)),
+                new Part("Left Arm", PrimitiveType.Capsule, new Vector3(-0.36f, 1.22f, 0.32f), new Vector3(75f, 0f, 0f), new Vector3(0.15f, 0.34f, 0.15f)),
+                new Part("Right Arm", PrimitiveType.Capsule, new Vector3(0.36f, 1.18f, 0.3f), new Vector3(85f, 0f, 0f), new Vector3(0.15f, 0.34f, 0.15f)),
+            },
+            new[]
+            {
+                new Vector3(-0.1f, 1.64f, 0.38f),
+                new Vector3(0.1f, 1.64f, 0.38f),
+            },
+            EyeSize);
+
+        // Placeholder Runner: smaller and paler than the Shambler, leaning into a sprint with its arms swept back.
+        private static readonly Figure Runner = new(
+            "Runner",
+            RunnerPrefabPath,
+            height: 1.55f,
+            radius: 0.3f,
+            bodyColor: new Color(0.36f, 0.31f, 0.27f),
+            tellVoiceHeight: 1.4f,
+            new[]
+            {
+                new Part("Body", PrimitiveType.Capsule, new Vector3(0f, 0.98f, 0.08f), new Vector3(32f, 0f, 0f), new Vector3(0.46f, 0.52f, 0.36f)),
+                new Part("Head", PrimitiveType.Sphere, new Vector3(0f, 1.38f, 0.4f), Vector3.zero, new Vector3(0.3f, 0.32f, 0.32f)),
+                new Part("Left Arm", PrimitiveType.Capsule, new Vector3(-0.26f, 1.02f, -0.1f), new Vector3(-40f, 0f, 0f), new Vector3(0.1f, 0.3f, 0.1f)),
+                new Part("Right Arm", PrimitiveType.Capsule, new Vector3(0.26f, 1.02f, -0.08f), new Vector3(-50f, 0f, 0f), new Vector3(0.1f, 0.3f, 0.1f)),
+                new Part("Left Leg", PrimitiveType.Capsule, new Vector3(-0.12f, 0.38f, 0.1f), new Vector3(25f, 0f, 0f), new Vector3(0.13f, 0.38f, 0.13f)),
+                new Part("Right Leg", PrimitiveType.Capsule, new Vector3(0.12f, 0.38f, -0.08f), new Vector3(-20f, 0f, 0f), new Vector3(0.13f, 0.38f, 0.13f)),
+            },
+            new[]
+            {
+                new Vector3(-0.07f, 1.42f, 0.54f),
+                new Vector3(0.07f, 1.42f, 0.54f),
+            },
+            eyeSize: 0.09f);
+
+        // The Runner's tuning, set once when its definition is created: fast and fragile, faster than the character walks.
+        private const int RunnerHitPoints = 2;
+        private const float RunnerSpeed = 4.2f;
+        private const float RunnerAcceleration = 14f;
+        private const float RunnerTurnSpeed = 420f;
+        private const float RunnerPathRefreshSeconds = 0.15f;
 
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
         {
-            EnsureFolder(EnemiesConfigurationFolder);
-            var shambler = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(ShamblerDefinitionPath);
-            if (shambler == null)
+            // The definition's defaults are the Shambler: slow and tough, slower than the character walks.
+            return LoadOrCreateEnemy(ShamblerDefinitionPath, Shambler, _ => { });
+        }
+
+        /// <summary>Loads the Runner definition, creating it and its prefab if they're missing.</summary>
+        public static EnemyDefinition LoadOrCreateRunner()
+        {
+            return LoadOrCreateEnemy(RunnerDefinitionPath, Runner, created =>
             {
-                // The definition's defaults are the Shambler: slow and tough, slower than the character walks.
-                shambler = ScriptableObject.CreateInstance<EnemyDefinition>();
-                AssetDatabase.CreateAsset(shambler, ShamblerDefinitionPath);
+                created.FindProperty("hitPoints").intValue = RunnerHitPoints;
+                created.FindProperty("speed").floatValue = RunnerSpeed;
+                created.FindProperty("acceleration").floatValue = RunnerAcceleration;
+                created.FindProperty("turnSpeed").floatValue = RunnerTurnSpeed;
+                created.FindProperty("pathRefreshSeconds").floatValue = RunnerPathRefreshSeconds;
+            });
+        }
+
+        // Loads an Enemy type's definition, creating it (tuned by <paramref name="tuneCreated"/>) and its prefab if missing.
+        private static EnemyDefinition LoadOrCreateEnemy(string definitionPath, Figure figure, System.Action<SerializedObject> tuneCreated)
+        {
+            EnsureFolder(EnemiesConfigurationFolder);
+            var enemyType = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(definitionPath);
+            var serialized = default(SerializedObject);
+            if (enemyType == null)
+            {
+                enemyType = ScriptableObject.CreateInstance<EnemyDefinition>();
+                AssetDatabase.CreateAsset(enemyType, definitionPath);
+                serialized = new SerializedObject(enemyType);
+                tuneCreated(serialized);
             }
 
-            var serialized = new SerializedObject(shambler);
+            serialized ??= new SerializedObject(enemyType);
 
             // Loaded through Addressables, so each Level loads only the Enemy types it uses.
             AddressableContent.ReferenceIfEmpty(
                 serialized.FindProperty("prefab"),
-                () => LoadOrCreateShamblerPrefab().gameObject,
+                () => LoadOrCreatePrefab(figure).gameObject,
                 AddressableContent.EnemiesGroup);
             ReferenceClipIfEmpty(serialized.FindProperty("audio.spawnClip"), null);
             ReferenceClipIfEmpty(serialized.FindProperty("audio.hurtClip"), HurtClipPath);
@@ -86,61 +160,60 @@ namespace DarknessRises.Game.Editor.Enemies
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
-            AddTells(ShamblerPrefabPath);
-            AddWindUpEyes(ShamblerPrefabPath);
+            AddTells(figure.PrefabPath, figure.TellVoiceHeight);
+            AddWindUpEyes(figure.PrefabPath);
 
             // Re-save so fields added since the asset was created are written with their defaults.
-            EditorUtility.SetDirty(shambler);
-            return shambler;
+            EditorUtility.SetDirty(enemyType);
+            return enemyType;
         }
 
-        private static EnemyView LoadOrCreateShamblerPrefab()
+        private static EnemyView LoadOrCreatePrefab(Figure figure)
         {
-            var existing = AssetDatabase.LoadAssetAtPath<EnemyView>(ShamblerPrefabPath);
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyView>(figure.PrefabPath);
             if (existing != null)
             {
                 return existing;
             }
 
             EnsureFolder(EnemiesPrefabsFolder);
-            var bodyMaterial = LoadOrCreateMaterial("ShamblerBody", LitShaderName, BodyColor);
+            var bodyMaterial = LoadOrCreateMaterial($"{figure.Name}Body", LitShaderName, figure.BodyColor);
             var eyeMaterial = LoadOrCreateGlintMaterial(EyeGlintMaterialName, EyeColor);
-            var fadeMaterial = LoadOrCreateFadeMaterial("ShamblerFade", BodyColor);
+            var fadeMaterial = LoadOrCreateFadeMaterial($"{figure.Name}Fade", figure.BodyColor);
 
-            var shambler = new GameObject("Shambler");
+            var root = new GameObject(figure.Name);
 
-            var agent = shambler.AddComponent<NavMeshAgent>();
-            agent.radius = Radius;
-            agent.height = Height;
+            var agent = root.AddComponent<NavMeshAgent>();
+            agent.radius = figure.Radius;
+            agent.height = figure.Height;
             agent.baseOffset = 0f;
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
 
-            var hitbox = shambler.AddComponent<CapsuleCollider>();
-            hitbox.radius = Radius;
-            hitbox.height = Height;
-            hitbox.center = Vector3.up * (Height / 2f);
+            var hitbox = root.AddComponent<CapsuleCollider>();
+            hitbox.radius = figure.Radius;
+            hitbox.height = figure.Height;
+            hitbox.center = Vector3.up * (figure.Height / 2f);
 
-            var voice = shambler.AddComponent<AudioSource>();
+            var voice = root.AddComponent<AudioSource>();
             voice.playOnAwake = false;
             voice.spatialBlend = 1f;
 
-            var renderers = new[]
+            var renderers = new MeshRenderer[figure.Parts.Length + EyeNames.Length];
+            for (var i = 0; i < figure.Parts.Length; i++)
             {
-                AddPart("Body", PrimitiveType.Capsule, shambler.transform, new Vector3(0f, 0.85f, 0f), new Vector3(12f, 0f, 0f), new Vector3(0.72f, 0.85f, 0.55f), bodyMaterial),
-                AddPart("Head", PrimitiveType.Sphere, shambler.transform, new Vector3(0f, 1.58f, 0.2f), Vector3.zero, new Vector3(0.42f, 0.44f, 0.42f), bodyMaterial),
-                AddPart("Left Arm", PrimitiveType.Capsule, shambler.transform, new Vector3(-0.36f, 1.22f, 0.32f), new Vector3(75f, 0f, 0f), new Vector3(0.15f, 0.34f, 0.15f), bodyMaterial),
-                AddPart("Right Arm", PrimitiveType.Capsule, shambler.transform, new Vector3(0.36f, 1.18f, 0.3f), new Vector3(85f, 0f, 0f), new Vector3(0.15f, 0.34f, 0.15f), bodyMaterial),
-                AddPart("Left Eye", PrimitiveType.Sphere, shambler.transform, new Vector3(-0.1f, 1.64f, 0.38f), Vector3.zero, Vector3.one * EyeSize, eyeMaterial),
-                AddPart("Right Eye", PrimitiveType.Sphere, shambler.transform, new Vector3(0.1f, 1.64f, 0.38f), Vector3.zero, Vector3.one * EyeSize, eyeMaterial),
-            };
-
-            foreach (var eye in new[] { renderers[4], renderers[5] })
-            {
-                eye.shadowCastingMode = ShadowCastingMode.Off;
-                eye.receiveShadows = false;
+                var part = figure.Parts[i];
+                renderers[i] = AddPart(part.Name, part.Shape, root.transform, part.Position, part.Rotation, part.Scale, bodyMaterial);
             }
 
-            var view = shambler.AddComponent<EnemyView>();
+            for (var i = 0; i < EyeNames.Length; i++)
+            {
+                var eye = AddPart(EyeNames[i], PrimitiveType.Sphere, root.transform, figure.Eyes[i], Vector3.zero, Vector3.one * figure.EyeSize, eyeMaterial);
+                eye.shadowCastingMode = ShadowCastingMode.Off;
+                eye.receiveShadows = false;
+                renderers[figure.Parts.Length + i] = eye;
+            }
+
+            var view = root.AddComponent<EnemyView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("agent").objectReferenceValue = agent;
             serialized.FindProperty("hitbox").objectReferenceValue = hitbox;
@@ -155,16 +228,72 @@ namespace DarknessRises.Game.Editor.Enemies
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
-            var prefab = PrefabUtility.SaveAsPrefabAsset(shambler, ShamblerPrefabPath);
-            Object.DestroyImmediate(shambler);
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, figure.PrefabPath);
+            Object.DestroyImmediate(root);
             return prefab.GetComponent<EnemyView>();
         }
 
+        // One primitive of a placeholder figure, in metres and degrees.
+        private readonly struct Part
+        {
+            public Part(string name, PrimitiveType shape, Vector3 position, Vector3 rotation, Vector3 scale)
+            {
+                Name = name;
+                Shape = shape;
+                Position = position;
+                Rotation = rotation;
+                Scale = scale;
+            }
+
+            public string Name { get; }
+            public PrimitiveType Shape { get; }
+            public Vector3 Position { get; }
+            public Vector3 Rotation { get; }
+            public Vector3 Scale { get; }
+        }
+
+        // An Enemy type's placeholder figure: its body parts, then its two eyes.
+        private sealed class Figure
+        {
+            public Figure(
+                string name,
+                string prefabPath,
+                float height,
+                float radius,
+                Color bodyColor,
+                float tellVoiceHeight,
+                Part[] parts,
+                Vector3[] eyes,
+                float eyeSize)
+            {
+                Name = name;
+                PrefabPath = prefabPath;
+                Height = height;
+                Radius = radius;
+                BodyColor = bodyColor;
+                TellVoiceHeight = tellVoiceHeight;
+                Parts = parts;
+                Eyes = eyes;
+                EyeSize = eyeSize;
+            }
+
+            public string Name { get; }
+            public string PrefabPath { get; }
+            public float Height { get; }
+            public float Radius { get; }
+            public Color BodyColor { get; }
+            public float TellVoiceHeight { get; }
+            public Part[] Parts { get; }
+            public Vector3[] Eyes { get; }
+            public float EyeSize { get; }
+        }
+
+
         /// <summary>
-        /// Gives the Shambler its Tells, if it hasn't got them: glossy eyes whose emission glints near the character,
+        /// Gives an Enemy type its Tells, if it hasn't got them: glossy eyes whose emission glints near the character,
         /// and a Tell voice at its head. Works on an existing prefab, so older prefabs are brought up to date in place.
         /// </summary>
-        private static void AddTells(string prefabPath)
+        private static void AddTells(string prefabPath, float tellVoiceHeight)
         {
             var existing = AssetDatabase.LoadAssetAtPath<EnemyView>(prefabPath);
             if (existing == null || existing.GetComponent<EnemyTellView>() != null)
@@ -178,7 +307,7 @@ namespace DarknessRises.Game.Editor.Enemies
             {
                 var tellVoiceObject = new GameObject("Tell Voice", typeof(AudioSource));
                 tellVoiceObject.transform.SetParent(contents.transform, false);
-                tellVoiceObject.transform.localPosition = Vector3.up * TellVoiceHeight;
+                tellVoiceObject.transform.localPosition = Vector3.up * tellVoiceHeight;
                 var tellVoice = tellVoiceObject.GetComponent<AudioSource>();
                 tellVoice.playOnAwake = false;
                 tellVoice.spatialBlend = 1f;
@@ -209,7 +338,7 @@ namespace DarknessRises.Game.Editor.Enemies
         }
 
         /// <summary>
-        /// Wires the Shambler's eyes to flare during its Wind-up, if they aren't already. Works on an existing prefab,
+        /// Wires an Enemy type's eyes to flare during its Wind-up, if they aren't already. Works on an existing prefab,
         /// so prefabs built before Wind-ups existed are brought up to date in place.
         /// </summary>
         private static void AddWindUpEyes(string prefabPath)

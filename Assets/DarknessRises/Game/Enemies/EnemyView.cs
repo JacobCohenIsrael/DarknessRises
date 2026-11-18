@@ -1,5 +1,6 @@
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies.Tells;
+using DarknessRises.Game.Runs;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
 using UnityEngine.AI;
@@ -68,16 +69,30 @@ namespace DarknessRises.Game.Enemies
         private AudioClip attackClip;
         private float agentTimeScale = EnemyTime.NormalScale;
 
+        // Its Enemy type's, scaled by the Ramp of the Level it fights in.
+        private int hitPoints;
+        private float speed;
+
         public Enemy Enemy { get; } = new();
 
         public EnemyBehaviour Behaviour { get; private set; }
 
-        /// <summary>Called once, when the pool creates this Enemy. Its sounds come from <paramref name="content"/>, already loaded.</summary>
-        public void Prepare(IObjectPool<EnemyView> owner, EnemyDefinition enemyDefinition, EnemyTime enemyTime, ILoadedContent content)
+        /// <summary>
+        /// Called once, when the pool creates this Enemy. Its sounds come from <paramref name="content"/>, already loaded.
+        /// <paramref name="ramp"/> scales its authored hit points and speed for the Level it fights in.
+        /// </summary>
+        public void Prepare(
+            IObjectPool<EnemyView> owner,
+            EnemyDefinition enemyDefinition,
+            EnemyTime enemyTime,
+            ILoadedContent content,
+            RampStep ramp)
         {
             pool = owner;
             definition = enemyDefinition;
             time = enemyTime;
+            hitPoints = ramp.EnemyHitPoints(definition.HitPoints);
+            speed = ramp.EnemySpeed(definition.Speed);
 
             ScaleAgentTime(EnemyTime.NormalScale);
             agent.stoppingDistance = definition.Attack.Range;
@@ -154,7 +169,7 @@ namespace DarknessRises.Game.Enemies
             isHoldingStill = false;
             secondsUntilPathRefresh = 0f;
 
-            Enemy.Spawn(definition.HitPoints);
+            Enemy.Spawn(hitPoints);
             Behaviour.Begin();
             tells.Wake(target);
             Play(spawnClip);
@@ -291,7 +306,7 @@ namespace DarknessRises.Game.Enemies
             }
 
             agentTimeScale = scale;
-            agent.speed = definition.Speed * scale;
+            agent.speed = speed * scale;
             agent.acceleration = definition.Acceleration * scale * scale;
             agent.angularSpeed = definition.TurnSpeed * scale;
         }

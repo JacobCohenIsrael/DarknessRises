@@ -69,6 +69,10 @@ MonoBehaviour:
     windUpLeanDegrees: 22
     attackLungeDegrees: 28
     staggerLeanDegrees: 35
+  knockback:
+    multiplier: 1.3
+    maxMetres: 1
+    maxMetresPerSecond: 8
   tells:
     eyeGlint:
       range: 7

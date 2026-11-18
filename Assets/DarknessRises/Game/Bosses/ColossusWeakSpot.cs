@@ -9,9 +9,10 @@ namespace DarknessRises.Game.Bosses
     {
         [SerializeField] private ColossusView colossus;
 
-        public bool TakeShot(int damage)
+        // Bosses take no Knockback.
+        public bool TakeShot(in ShotHit hit)
         {
-            return colossus.HitWeakSpot(damage);
+            return colossus.HitWeakSpot(hit.Damage);
         }
     }
 }

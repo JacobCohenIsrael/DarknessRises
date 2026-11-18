@@ -35,6 +35,9 @@ namespace DarknessRises.Game.Enemies
 
         [SerializeField] private EnemyAttackSettings attack = new();
 
+        [SerializeField, Tooltip("How far hits push it: its weight, and the cap on repeated hits.")]
+        private EnemyKnockbackSettings knockback = new();
+
         [SerializeField, Tooltip("What gives it away in Darkness without lighting it: glinting eyes and positional sounds.")]
         private EnemyTellSettings tells = new();
 
@@ -47,6 +50,7 @@ namespace DarknessRises.Game.Enemies
         public EnemyAudioSettings Audio => audio;
         public EnemyDeathSettings Death => death;
         public EnemyAttackSettings Attack => attack;
+        public EnemyKnockbackSettings Knockback => knockback;
         public EnemyTellSettings Tells => tells;
     }
 }

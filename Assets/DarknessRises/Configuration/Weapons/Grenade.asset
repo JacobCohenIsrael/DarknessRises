@@ -31,6 +31,10 @@ MonoBehaviour:
     tumbleSpeed: 540
   blastRadius: 3.5
   damage: 4
+  knockback:
+    centreMetres: 0.8
+    edgeMetres: 0.2
+    seconds: 0.25
   explosion:
     prefab:
       m_AssetGUID: 373932479250b134c9289d6a734cf6e2

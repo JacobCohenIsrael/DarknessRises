@@ -6,7 +6,8 @@ namespace DarknessRises.Game.Weapons
 {
     /// <summary>
     /// A pooled Shot: a glowing, unlit body with a short trail that flies straight until it hits something
-    /// or uses up its range, then goes back to its pool. What a hit does is up to whoever fired it.
+    /// or uses up its range, then goes back to its pool. What a hit does is up to whoever fired it, told where it hit
+    /// and which way the Shot was flying.
     /// </summary>
     /// <remarks>
     /// A Shot can also grow as it flies, carry a shadowless point light that dims toward the end of its range,
@@ -28,7 +29,7 @@ namespace DarknessRises.Game.Weapons
         private ShotLightSettings lightSettings;
         private ShotFlight flight;
         private LayerMask hitLayers;
-        private Action<RaycastHit> onHit;
+        private Action<RaycastHit, Vector3> onHit;
         private bool isLit;
 
         public Material BodyMaterial => body.sharedMaterial;
@@ -40,7 +41,7 @@ namespace DarknessRises.Game.Weapons
             ShotLightSettings shotLightSettings,
             Material glowMaterial,
             LayerMask layers,
-            Action<RaycastHit> hit)
+            Action<RaycastHit, Vector3> hit)
         {
             pool = owner;
             settings = shotSettings;
@@ -96,7 +97,7 @@ namespace DarknessRises.Game.Weapons
             if (Physics.Raycast(flight.Position, flight.Direction, out var hit, step, hitLayers, QueryTriggerInteraction.Ignore))
             {
                 flight.Stop(hit.point);
-                onHit(hit);
+                onHit(hit, flight.Direction);
             }
             else
             {

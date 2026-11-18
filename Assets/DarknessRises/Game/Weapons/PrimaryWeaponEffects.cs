@@ -10,7 +10,7 @@ namespace DarknessRises.Game.Weapons
 {
     /// <summary>
     /// What one Primary weapon's shots look like in the scene: its pooled Shots, Muzzle flashes and hit sparks,
-    /// all built from its definition. A Shot that hits something throws a hit spark and damages it if it's an
+    /// all built from its definition. A Shot that hits something throws a hit spark and damages and pushes it (Knockback) if it's an
     /// <see cref="IShotTarget"/>. Each Primary in the loadout has its own, so switching Weapons never rebuilds pools
     /// and Shots already flying finish their flight.
     /// </summary>
@@ -27,7 +27,7 @@ namespace DarknessRises.Game.Weapons
         private readonly ObjectPool<ShotView> shots;
         private readonly ObjectPool<MuzzleFlashView> muzzleFlashes;
         private readonly ObjectPool<HitSparkView> hitSparks;
-        private readonly Action<RaycastHit> onShotHit;
+        private readonly Action<RaycastHit, Vector3> onShotHit;
         private readonly SceneLights lights;
         private int shotsUntilLit;
 
@@ -104,12 +104,14 @@ namespace DarknessRises.Game.Weapons
 
         // Something that can't be hurt by this Shot (the Colossus's foot off its weak spot or outside the damage
         // window) gets a dull spark, so the player can tell what does and doesn't hurt. Walls keep the normal spark.
-        private void OnShotHit(RaycastHit hit)
+        // The hit carries the Weapon's Knockback along the Shot's flight; only regular Enemies are pushed by it.
+        private void OnShotHit(RaycastHit hit, Vector3 direction)
         {
             var hurt = true;
             if (hit.collider.TryGetComponent<IShotTarget>(out var target))
             {
-                hurt = target.TakeShot(definition.Damage);
+                var knockback = definition.Knockback;
+                hurt = target.TakeShot(new ShotHit(definition.Damage, direction, knockback.Metres, knockback.Seconds));
             }
 
             hitSparks.Get().Spark(hit.point, hit.normal, dull: !hurt);

@@ -110,6 +110,10 @@ _Avoid_: telegraph, tell (a Tell is something else)
 What happens when an Enemy is hit during its Wind-up: the attack is cancelled and the Enemy reels for a moment.
 _Avoid_: interrupt, stun
 
+**Knockback**:
+The short push a Shot or a Grenade's blast gives a regular Enemy it damages: along the Shot's direction, or outwards from the blast. It eases out over a moment, stays on the NavMesh, and repeated hits add up only to a cap. Each Weapon sets how hard it pushes and each Enemy type how heavy it is. Bosses take none. Unlike a Stagger it never changes what the Enemy is doing: it happens on any damaging hit, and a hit during a Wind-up both Staggers and pushes.
+_Avoid_: recoil, impact, push-back (that is the Continue's burst)
+
 **Wave**:
 A group of Enemies spawned together, usually when the character reaches a Station.
 _Avoid_: spawn, batch, horde

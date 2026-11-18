@@ -5,11 +5,13 @@ using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Bosses;
 using DarknessRises.Game.Editor.Content;
+using DarknessRises.Game.Editor.Continues;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Grenades;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
+using DarknessRises.Game.Editor.Pausing;
 using DarknessRises.Game.Editor.Player;
 using DarknessRises.Game.Editor.Runs;
 using DarknessRises.Game.Editor.Skills;
@@ -157,6 +159,8 @@ namespace DarknessRises.Game.Editor
             ColossusBuilder.WireRelocateInput(character.GetComponent<PlayerControls>());
             SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
             HealthBuilder.Build(gameRoot, character, cameraView);
+            ContinueBuilder.Build(gameRoot, character);
+            PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>());
             return gameRoot;
         }
 
@@ -183,6 +187,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("audio").objectReferenceValue = audio;
             serialized.FindProperty("grenade").objectReferenceValue = GrenadeBuilder.LoadOrCreateGrenade();
             serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp(audio);
+            serialized.FindProperty("continue").objectReferenceValue = ContinueBuilder.LoadOrCreateContinue();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
             AudioBuilder.RouteEnemyAudio(EnemyBuilder.LoadOrCreateShambler(), audio);

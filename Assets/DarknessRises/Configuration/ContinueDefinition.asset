@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0aad922e21fe98d4d8bbef46e07841bc, type: 3}
+  m_Name: ContinueDefinition
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Continues.ContinueDefinition
+  usesPerRun: 1
+  fakeAdSeconds: 5
+  invulnerabilitySeconds: 2
+  pushBackRadius: 5
+  pushBackForce: 14
+  lightColor: {r: 0.85, g: 0.92, b: 1, a: 1}
+  lightIntensity: 120
+  lightRange: 12
+  lightSeconds: 1.4
+  lightHeight: 1.5

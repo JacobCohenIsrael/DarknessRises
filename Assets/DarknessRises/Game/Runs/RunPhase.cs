@@ -21,7 +21,7 @@ namespace DarknessRises.Game.Runs
         /// <summary>The Level's end beat: the calm after the last fight, then the walk out the far door.</summary>
         LevelEnd,
 
-        /// <summary>The character has died. The player picks Restart or Exit (or, later, Continue).</summary>
+        /// <summary>The character has died. The player picks Continue (once per Run), Restart or Exit.</summary>
         Dead,
 
         /// <summary>The Run is over after Exit: the end screen shows the Level reached and the Enemies killed.</summary>

@@ -119,6 +119,55 @@ namespace DarknessRises.Game.EditModeTests.Health
             Assert.Throws<ArgumentOutOfRangeException>(() => new CharacterHealth(5, -1f));
             Assert.Throws<ArgumentOutOfRangeException>(() => new CharacterHealth(5, 1f).TakeHit(-1));
             Assert.Throws<ArgumentOutOfRangeException>(() => new CharacterHealth(5, 1f).Tick(-1f));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new CharacterHealth(5, 1f).Restore(-1f));
+        }
+
+        [Test]
+        public void Continue_restores_full_hit_points_with_a_moment_of_invulnerability()
+        {
+            var health = new CharacterHealth(5, 1f);
+            health.TakeHit(5);
+            var restored = 0;
+            health.Restored += () => restored++;
+
+            Assert.That(health.Restore(2.5f), Is.True);
+
+            Assert.That(health.IsAlive, Is.True);
+            Assert.That(health.HitPoints, Is.EqualTo(5));
+            Assert.That(health.InvulnerableSecondsLeft, Is.EqualTo(2.5f));
+            Assert.That(restored, Is.EqualTo(1));
+            Assert.That(health.TakeHit(1), Is.False, "Still invulnerable.");
+
+            health.Tick(2.5f);
+            Assert.That(health.TakeHit(1), Is.True);
+        }
+
+        [Test]
+        public void Only_a_dead_character_is_restored()
+        {
+            var health = new CharacterHealth(5, 1f);
+            health.TakeHit(2);
+            var restored = 0;
+            health.Restored += () => restored++;
+
+            Assert.That(health.Restore(2f), Is.False);
+            Assert.That(health.HitPoints, Is.EqualTo(3), "Hit points never regenerate.");
+            Assert.That(restored, Is.Zero);
+        }
+
+        [Test]
+        public void A_restored_character_can_die_again()
+        {
+            var health = new CharacterHealth(2, 0f);
+            var deaths = 0;
+            health.Died += () => deaths++;
+            health.TakeHit(2);
+            health.Restore(0f);
+
+            health.TakeHit(2);
+
+            Assert.That(deaths, Is.EqualTo(2));
+            Assert.That(health.IsAlive, Is.False);
         }
     }
 }

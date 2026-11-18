@@ -1,9 +1,11 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Ads;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Continues;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
@@ -12,6 +14,7 @@ using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
+using DarknessRises.Game.Pausing;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
@@ -85,6 +88,16 @@ namespace DarknessRises.Game
         [SerializeField] private CharacterHealthView characterHealth;
         [SerializeField] private HitPointsHudView hitPointsHud;
         [SerializeField] private DeathFlow deathFlow;
+
+        [SerializeField, Tooltip("The pause button and menu. Pausing freezes the whole Level; see PauseFlow.")]
+        private PauseFlow pauseFlow;
+
+        [Header("Continue")]
+        [SerializeField, Tooltip("The placeholder ad watched for a Continue. A real ad network replaces it later.")]
+        private FakeAdView continueAd;
+
+        [SerializeField, Tooltip("The burst of light around the character that pushes Enemies back on a Continue.")]
+        private ContinueBurstView continueBurst;
 
         // The Run this scene plays a Level of: handed in by the boot, or the scene's own when it's played on its own.
         private RunFlow run;
@@ -198,6 +211,7 @@ namespace DarknessRises.Game
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
             grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation, content));
             ShowHealthAndDeath();
+            pauseFlow.Watch(new GamePause(run), run);
             rumbleClip = content.Clip(configuration.Lightning.Rumble.Clip);
             var boss = level != null ? configuration.Level.Boss : null;
             bossGrowlClip = boss != null ? content.Clip(boss.GrowlClip) : null;
@@ -295,7 +309,11 @@ namespace DarknessRises.Game
             var health = characterHealth.Show(configuration.Player, content);
             hitPointsHud.Show(health);
             ReportToRun(true);
-            deathFlow.Watch(health, run, characterAnimation, routeWalker, primaryWeapon);
+            var continueDefinition = configuration.Continue;
+            continueAd.Use(continueDefinition.FakeAdSeconds);
+            continueBurst.Prepare(continueDefinition);
+            deathFlow.Watch(
+                health, run, characterAnimation, routeWalker, primaryWeapon, continueDefinition, continueAd, continueBurst);
         }
 
         // What happens in the Level moves the Run on. Kills come from whoever runs the fights: the Level, or the Test Room's Waves.

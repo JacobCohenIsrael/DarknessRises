@@ -172,8 +172,12 @@ Ending the current Run and starting a new one from the first Level.
 _Avoid_: retry
 
 **Exit**:
-Ending the Run after dying. It leads to the Shop once the Shop exists.
+Ending the Run, after dying or from the pause menu. The end screen shows the Level reached and Enemies killed; it leads to the Shop once the Shop exists.
 _Avoid_: quit, give up
+
+**Pause**:
+Freezing the Level while the character is alive in it: Enemies, Lightning, Skill cooldowns, Grenade refill and sound all stop, and the pause menu offers Resume, Restart and Exit. The player pauses, or the game does when the app loses focus; only the player resumes.
+_Avoid_: stop, break
 
 **Credits**:
 Currency earned by killing Enemies during a Run and spent in the Shop.

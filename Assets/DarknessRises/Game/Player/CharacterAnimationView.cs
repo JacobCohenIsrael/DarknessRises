@@ -12,7 +12,7 @@ namespace DarknessRises.Game.Player
     /// body and puts the hands on the Weapon's grips.
     /// </summary>
     /// <remarks>
-    /// The Grenade and death tickets call <see cref="Throw"/> and <see cref="Die"/>, and listen to
+    /// The Grenade and death tickets call <see cref="Throw"/>, <see cref="Die"/> and <see cref="Revive"/>, and listen to
     /// <see cref="GrenadeReleased"/> and <see cref="DeathFinished"/> for the moments gameplay waits on.
     ///
     /// Runs after the Primary weapon, so it reads this frame's aim and shots.
@@ -150,6 +150,27 @@ namespace DarknessRises.Game.Player
             animator.SetBool(DeadId, true);
             animator.SetLayerWeight(upperBodyLayer, 0f);
             deathMotion.TryPlay();
+        }
+
+        /// <summary>
+        /// Continue: the dead character is back on its feet at once, where it fell (the burst of light hides the snap),
+        /// walking, aiming and shooting again.
+        /// </summary>
+        public void Revive()
+        {
+            if (!IsDead)
+            {
+                return;
+            }
+
+            IsDead = false;
+            deadSeconds = 0f;
+            isFalling = false;
+            recoilSecondsLeft = 0f;
+
+            // Back to the walk, with nothing queued from before the death.
+            animator.Rebind();
+            animator.SetLayerWeight(upperBodyLayer, 1f);
         }
 
         private void Update()

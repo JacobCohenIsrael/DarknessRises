@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Randomness;
 using NUnit.Framework;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Lightning
 {
@@ -295,13 +293,13 @@ namespace DarknessRises.Game.EditModeTests.Lightning
             quietScheduler.EnterRoom(letsLightningIn: true);
             quietScheduler.Tick(1f / 30f);
 
-            Assert.That(() =>
+            AllocationAssert.DoesNotAllocate(() =>
             {
                 for (var i = 0; i < 1000; i++)
                 {
                     quietScheduler.Tick(1f / 30f);
                 }
-            }, Is.Not.AllocatingGCMemory());
+            });
         }
 
         private sealed class ScriptedRandom : IRandom

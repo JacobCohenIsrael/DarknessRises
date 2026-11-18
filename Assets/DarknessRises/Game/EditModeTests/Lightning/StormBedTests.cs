@@ -2,8 +2,6 @@ using System;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Randomness;
 using NUnit.Framework;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Lightning
 {
@@ -184,7 +182,7 @@ namespace DarknessRises.Game.EditModeTests.Lightning
             bed.Rumble(random);
             bed.Tick(Frame);
 
-            Assert.That(() =>
+            AllocationAssert.DoesNotAllocate(() =>
             {
                 for (var i = 0; i < 1000; i++)
                 {
@@ -196,7 +194,7 @@ namespace DarknessRises.Game.EditModeTests.Lightning
                     bed.SetAudible(i < 500);
                     bed.Tick(Frame);
                 }
-            }, Is.Not.AllocatingGCMemory());
+            });
         }
 
         private sealed class FixedRandom : IRandom

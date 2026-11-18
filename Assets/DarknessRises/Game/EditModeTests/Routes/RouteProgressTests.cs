@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using DarknessRises.Game.Routes;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Routes
 {
@@ -189,11 +187,7 @@ namespace DarknessRises.Game.EditModeTests.Routes
                 _ = progress.Direction;
             };
 
-            // Run the exact measured step once first, so JIT compilation and first-call setup (of this lambda and
-            // everything it calls) happen outside the measurement whatever tests ran before. It stays far from the Station.
-            walk();
-
-            Assert.That(walk, Is.Not.AllocatingGCMemory());
+            AllocationAssert.DoesNotAllocate(walk);
         }
     
 

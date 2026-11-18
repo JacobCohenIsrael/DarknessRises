@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Skills;
 using NUnit.Framework;
-using UnityEngine.TestTools.Constraints;
-using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace DarknessRises.Game.EditModeTests.Skills
 {
@@ -145,7 +143,7 @@ namespace DarknessRises.Game.EditModeTests.Skills
             var quiet = new Skill(new SkillTiming(Duration, Cooldown));
             quiet.TryActivate();
 
-            Assert.That(() => quiet.Tick(0.016f), Is.Not.AllocatingGCMemory());
+            AllocationAssert.DoesNotAllocate(() => quiet.Tick(0.016f));
         }
     }
 }

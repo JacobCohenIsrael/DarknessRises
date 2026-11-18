@@ -12,7 +12,8 @@ namespace DarknessRises.Game.EditModeTests.Lightning
     {
         private const float MinInterval = 4f;
         private const float MaxInterval = 6f;
-        private const float RumbleLead = 1f;
+        private const float MinRumbleDelay = 0.2f;
+        private const float MaxRumbleDelay = 1f;
         private const float Tolerance = 1e-4f;
 
         private ScriptedRandom random;
@@ -23,14 +24,17 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         public void SetUp()
         {
             random = new ScriptedRandom();
-            scheduler = new LightningScheduler(new LightningTiming(MinInterval, MaxInterval, RumbleLead), random);
+            scheduler = new LightningScheduler(Timing(), random);
             events = new List<string>();
-            scheduler.Rumbled += secondsUntilFlash => events.Add($"rumble {secondsUntilFlash:0.##}");
+            scheduler.Warned += secondsUntilFlash => events.Add($"warning {secondsUntilFlash:0.##}");
             scheduler.Flashed += () => events.Add("flash");
+            scheduler.Rumbled += () => events.Add("rumble");
         }
 
+        private static LightningTiming Timing() => new(MinInterval, MaxInterval, MinRumbleDelay, MaxRumbleDelay);
+
         [Test]
-        public void AmbientFlashComesAfterARandomIntervalFromTheConfiguredRange()
+        public void AmbientFlashComesAfterARandomIntervalWithNothingBeforeIt()
         {
             random.Next(5f);
 
@@ -38,56 +42,84 @@ namespace DarknessRises.Game.EditModeTests.Lightning
 
             Assert.That(random.LastRange, NUnit.Framework.Is.EqualTo((MinInterval, MaxInterval)));
             scheduler.Tick(4.75f);
-            Assert.That(events, Has.No.Member("flash"));
+            Assert.That(events, NUnit.Framework.Is.Empty);
             scheduler.Tick(0.25f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 0.25", "flash" }));
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "flash" }));
         }
 
         [Test]
-        public void TheRumbleStartsTheConfiguredLeadBeforeTheFlash()
+        public void TheRumbleFollowsTheFlashAfterARandomDelayFromTheConfiguredRange()
         {
-            random.Next(5f);
+            random.Next(5f, 0.75f);
             scheduler.EnterRoom(letsLightningIn: true);
 
-            scheduler.Tick(3.75f);
-            Assert.That(events, NUnit.Framework.Is.Empty);
+            scheduler.Tick(5f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "flash" }));
+            Assert.That(scheduler.SecondsUntilRumble, NUnit.Framework.Is.EqualTo(0.75f).Within(Tolerance));
+
+            scheduler.Tick(0.5f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "flash" }));
 
             scheduler.Tick(0.25f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1" }));
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "flash", "rumble" }));
+        }
 
-            scheduler.Tick(0.75f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1" }));
+        [Test]
+        public void ForManySeededStrikesEveryRumbleComesAfterItsFlashWithinTheDelayRange()
+        {
+            var seeded = new LightningScheduler(Timing(), new SystemRandom(54));
+            var now = 0f;
+            var lastFlash = float.NaN;
+            var delays = new List<float>();
+            seeded.Flashed += () =>
+            {
+                Assert.That(float.IsNaN(lastFlash), NUnit.Framework.Is.True, "A flash came before the last one's Rumble.");
+                lastFlash = now;
+            };
+            seeded.Rumbled += () =>
+            {
+                Assert.That(float.IsNaN(lastFlash), NUnit.Framework.Is.False, "A Rumble came without a flash before it.");
+                delays.Add(now - lastFlash);
+                lastFlash = float.NaN;
+            };
 
-            scheduler.Tick(0.25f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1", "flash" }));
+            seeded.EnterRoom(letsLightningIn: true);
+            const float frame = 1f / 60f;
+            for (var i = 0; i < 60 * 60 * 10; i++)
+            {
+                now += frame;
+                seeded.Tick(frame);
+            }
+
+            Assert.That(delays.Count, NUnit.Framework.Is.GreaterThan(100));
+            foreach (var delay in delays)
+            {
+                // Rounded up to whole frames.
+                Assert.That(delay, NUnit.Framework.Is.InRange(MinRumbleDelay - Tolerance, MaxRumbleDelay + frame + Tolerance));
+            }
         }
 
         [Test]
         public void EachFlashSchedulesTheNextFromWhenItWasDue()
         {
-            random.Next(5f, 4.5f);
+            random.Next(5f, 0.5f, 4.5f);
             scheduler.EnterRoom(letsLightningIn: true);
 
             // Overshoot the first flash by half a second: the next is due 4 seconds later, not 4.5.
             scheduler.Tick(5.5f);
-            events.Clear();
 
             Assert.That(scheduler.SecondsUntilFlash, NUnit.Framework.Is.EqualTo(4f).Within(Tolerance));
-            scheduler.Tick(3f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1" }));
-            scheduler.Tick(1f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1", "flash" }));
         }
 
         [Test]
-        public void ALongFrameStillRumblesBeforeEveryFlashItCovers()
+        public void ALongFrameKeepsEveryFlashAndRumbleInOrder()
         {
-            random.Next(4f, 4f, 4f);
+            random.Next(4f, 0.5f, 4f, 0.5f, 4f);
             scheduler.EnterRoom(letsLightningIn: true);
 
-            scheduler.Tick(8f);
+            scheduler.Tick(9f);
 
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 0", "flash", "rumble 0", "flash" }));
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "flash", "rumble", "flash", "rumble" }));
         }
 
         [Test]
@@ -103,11 +135,11 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         }
 
         [Test]
-        public void LeavingForARoomWithoutWindowsCancelsTheComingFlash()
+        public void LeavingForARoomWithoutWindowsCancelsTheComingFlashAndRumble()
         {
-            random.Next(5f);
+            random.Next(5f, 0.8f);
             scheduler.EnterRoom(letsLightningIn: true);
-            scheduler.Tick(4.5f);
+            scheduler.Tick(5.2f);
             events.Clear();
 
             scheduler.EnterRoom(letsLightningIn: false);
@@ -129,9 +161,9 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         }
 
         [Test]
-        public void SwitchedOffLightningNeitherRumblesNorFlashesUntilSwitchedBackOn()
+        public void SwitchedOffLightningNeitherFlashesNorRumblesUntilSwitchedBackOn()
         {
-            random.Next(5f, 4f);
+            random.Next(5f, 4f, 0.5f);
             scheduler.EnterRoom(letsLightningIn: true);
 
             scheduler.SetEnabled(false);
@@ -139,8 +171,8 @@ namespace DarknessRises.Game.EditModeTests.Lightning
             Assert.That(events, NUnit.Framework.Is.Empty);
 
             scheduler.SetEnabled(true);
-            scheduler.Tick(4f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 0", "flash" }));
+            scheduler.Tick(4.5f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "flash", "rumble" }));
         }
 
         [Test]
@@ -156,83 +188,92 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         }
 
         [Test]
-        public void ABossRequestRumblesAtOnceAndFlashesAfterTheConfiguredLead()
+        public void ABossRequestWarnsAtOnceThenFlashesThenRumbles()
         {
             scheduler.EnterRoom(letsLightningIn: true);
             scheduler.EnterBossDrivenMode();
+            random.Next(0.5f);
 
-            scheduler.RequestFlash();
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1" }));
+            scheduler.RequestFlash(1.25f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 1.25" }));
 
-            scheduler.Tick(0.75f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1" }));
+            scheduler.Tick(1f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 1.25" }));
 
             scheduler.Tick(0.25f);
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 1", "flash" }));
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 1.25", "flash" }));
             Assert.That(scheduler.IsFlashPending, NUnit.Framework.Is.False);
+
+            scheduler.Tick(0.25f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 1.25", "flash" }));
+
+            scheduler.Tick(0.25f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 1.25", "flash", "rumble" }));
         }
 
         [Test]
-        public void ABossRequestCanSetItsOwnLeadOrFlashAtOnce()
+        public void ABossRequestWithNoWarningFlashesAtOnceAndStillRumblesAfter()
         {
             scheduler.EnterBossDrivenMode();
+            random.Next(0.3f);
 
-            scheduler.RequestFlash(2.5f);
-            scheduler.Tick(2.5f);
             scheduler.RequestFlash(0f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 0", "flash" }));
 
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 2.5", "flash", "rumble 0", "flash" }));
+            scheduler.Tick(0.3f);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 0", "flash", "rumble" }));
+        }
+
+        [Test]
+        public void ASecondFlashBeforeTheFirstRumbleSharesIt()
+        {
+            scheduler.EnterBossDrivenMode();
+            random.Next(1f, 0.2f);
+
+            scheduler.RequestFlash(0f);
+            scheduler.Tick(0.5f);
+            scheduler.RequestFlash(0f);
+            scheduler.Tick(0.5f);
+
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "warning 0", "flash", "warning 0", "flash", "rumble" }));
         }
 
         [Test]
         public void OnlyTheBossCanRequestAFlash()
         {
-            Assert.Throws<InvalidOperationException>(() => scheduler.RequestFlash());
+            Assert.Throws<InvalidOperationException>(() => scheduler.RequestFlash(1f));
         }
 
         [Test]
-        public void ReturningToAmbientModeResumesTheWeather()
+        public void ReturningToAmbientModeResumesTheWeatherAndKeepsTheLastRumble()
         {
-            random.Next(5f, 5f);
+            random.Next(5f, 0.5f, 5f, 0.5f);
             scheduler.EnterRoom(letsLightningIn: true);
             scheduler.EnterBossDrivenMode();
-            scheduler.RequestFlash();
+            scheduler.RequestFlash(0f);
             events.Clear();
 
             scheduler.EnterAmbientMode();
             scheduler.Tick(5f);
 
-            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble 0", "flash" }));
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble", "flash" }));
         }
 
-        [Test]
-        public void ALeadLongerThanTheIntervalRumblesAsSoonAsTheFlashIsScheduled()
+        [TestCase(0f, 5f, 0.1f, 1f)]
+        [TestCase(5f, 4f, 0.1f, 1f)]
+        [TestCase(4f, 5f, -0.1f, 1f)]
+        [TestCase(4f, 5f, 1f, 0.5f)]
+        public void TimingRejectsImpossibleValues(float min, float max, float minDelay, float maxDelay)
         {
-            var shortScheduler = new LightningScheduler(new LightningTiming(0.5f, 0.5f, 2f), random);
-            var rumbles = 0;
-            shortScheduler.Rumbled += _ => rumbles++;
-            random.Next(0.5f);
-
-            shortScheduler.EnterRoom(letsLightningIn: true);
-            shortScheduler.Tick(0f);
-
-            Assert.That(rumbles, NUnit.Framework.Is.EqualTo(1));
-        }
-
-        [TestCase(0f, 5f, 1f)]
-        [TestCase(5f, 4f, 1f)]
-        [TestCase(4f, 5f, -1f)]
-        public void TimingRejectsImpossibleValues(float min, float max, float lead)
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _ = new LightningTiming(min, max, lead));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _ = new LightningTiming(min, max, minDelay, maxDelay));
         }
 
         [Test]
         public void TickingDoesNotAllocate()
         {
-            var quietScheduler = new LightningScheduler(new LightningTiming(MinInterval, MaxInterval, RumbleLead), new SystemRandom(7));
-            quietScheduler.Rumbled += _ => { };
+            var quietScheduler = new LightningScheduler(Timing(), new SystemRandom(7));
             quietScheduler.Flashed += () => { };
+            quietScheduler.Rumbled += () => { };
             quietScheduler.EnterRoom(letsLightningIn: true);
             quietScheduler.Tick(1f / 30f);
 

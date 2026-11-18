@@ -4,7 +4,7 @@ using UnityEngine;
 namespace DarknessRises.Game.Bosses
 {
     /// <summary>
-    /// The rhythm of one Colossus stomp: its growl (the Rumble), the Lightning flash that shows the raised foot's
+    /// The rhythm of one Colossus stomp: its growl (its warning), the Lightning flash that shows the raised foot's
     /// shadow, the Relocate window, the impact, and how long the planted foot stays down as the damage window.
     /// All in Enemy time, so Slow-mo stretches them.
     /// </summary>
@@ -14,7 +14,7 @@ namespace DarknessRises.Game.Bosses
         [SerializeField, Min(0f), Tooltip("Seconds from the start of the fight to the first growl.")]
         private float firstStompDelaySeconds = 2f;
 
-        [SerializeField, Min(0f), Tooltip("Seconds of the growl (the Rumble) before Lightning flashes and shows where the foot will land.")]
+        [SerializeField, Min(0f), Tooltip("Seconds of the growl before Lightning flashes and shows where the foot will land.")]
         private float growlSeconds = 1.2f;
 
         [SerializeField, Min(0.01f), Tooltip("Seconds from the flash to the impact.")]

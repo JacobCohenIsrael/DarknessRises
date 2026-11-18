@@ -59,8 +59,11 @@ namespace DarknessRises.Game.Bosses
         [SerializeField] private ColossusLookSettings look = new();
 
         [Header("Sounds")]
-        [SerializeField, Tooltip("Its growl: the Rumble before each flash in its fight.")]
+        [SerializeField, Tooltip("Its growl: its warning before each flash in its fight.")]
         private AssetReferenceT<AudioClip> growlClip;
+
+        [SerializeField, Min(0f), Tooltip("Seconds into the growl clip where each growl starts.")]
+        private float growlClipStartSeconds = 8.3f;
 
         [SerializeField, Tooltip("The foot landing.")]
         private AssetReferenceT<AudioClip> stompClip;
@@ -91,6 +94,7 @@ namespace DarknessRises.Game.Bosses
         public BossCameraSettings Camera => camera;
         public ColossusLookSettings Look => look;
         public AssetReferenceT<AudioClip> GrowlClip => growlClip;
+        public float GrowlClipStartSeconds => growlClipStartSeconds;
         public AssetReferenceT<AudioClip> StompClip => stompClip;
         public AssetReferenceT<AudioClip> HurtClip => hurtClip;
         public AssetReferenceT<AudioClip> DefeatClip => defeatClip;

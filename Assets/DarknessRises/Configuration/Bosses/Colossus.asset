@@ -80,6 +80,7 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  growlClipStartSeconds: 8.3
   stompClip:
     m_AssetGUID: 5ff823f546b52574a931e1d9b44290a6
     m_SubObjectName: 

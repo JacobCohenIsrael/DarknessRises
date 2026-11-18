@@ -36,6 +36,9 @@ namespace DarknessRises.Game.Enemies.Tells
         private Material eyeInstance;
         private Transform watcher;
         private float glint = -1f;
+
+        // The current Tell sound's own random pitch, before Enemy time slows it.
+        private float tellPitch = 1f;
         private bool awake;
 
         /// <summary>
@@ -61,8 +64,9 @@ namespace DarknessRises.Game.Enemies.Tells
             tellVoice.maxDistance = audio.HearingRange;
             tellVoice.volume = sounds.Volume;
 
-            // Through the Enemies mixer group, so Slow-mo slows Tell sounds with the Enemy's other sounds.
-            tellVoice.outputAudioMixerGroup = audio.OutputGroup;
+            // Slow-mo slows Tell sounds with the Enemy's other sounds, on top of each sound's random pitch.
+            time.ScaleChanged += OnEnemyTimeScaled;
+            OnEnemyTimeScaled(time.Scale);
 
             if (eyes.Length == 0)
             {
@@ -118,6 +122,11 @@ namespace DarknessRises.Game.Enemies.Tells
 
         private void OnDestroy()
         {
+            if (time != null)
+            {
+                time.ScaleChanged -= OnEnemyTimeScaled;
+            }
+
             Destroy(eyeInstance);
         }
 
@@ -151,9 +160,15 @@ namespace DarknessRises.Game.Enemies.Tells
                 return;
             }
 
-            tellVoice.pitch = random.Range(sounds.MinPitch, sounds.MaxPitch);
+            tellPitch = random.Range(sounds.MinPitch, sounds.MaxPitch);
+            OnEnemyTimeScaled(time.Scale);
             tellVoice.clip = clip;
             tellVoice.Play();
+        }
+
+        private void OnEnemyTimeScaled(float scale)
+        {
+            tellVoice.pitch = EnemyVoicePitch.For(tellPitch, scale);
         }
 
         private void Reset()

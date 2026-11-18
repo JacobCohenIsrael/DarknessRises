@@ -225,6 +225,11 @@ namespace DarknessRises.Game.Bosses
         private void End()
         {
             placesCharacter = false;
+            if (enemyTime != null)
+            {
+                enemyTime.ScaleChanged -= OnEnemyTimeScaled;
+            }
+
             if (pattern != null)
             {
                 pattern.FlashRequested -= OnFlashRequested;
@@ -301,6 +306,10 @@ namespace DarknessRises.Game.Bosses
 
             voice.playOnAwake = false;
             voice.volume = look.Volume;
+
+            // Its sounds run on Enemy time too, so Slow-mo slows them.
+            enemyTime.ScaleChanged += OnEnemyTimeScaled;
+            OnEnemyTimeScaled(enemyTime.Scale);
         }
 
         private void Update()
@@ -548,6 +557,11 @@ namespace DarknessRises.Game.Bosses
         private void OnDashStarted(int from, int to)
         {
             Play(relocateClip);
+        }
+
+        private void OnEnemyTimeScaled(float scale)
+        {
+            voice.pitch = EnemyVoicePitch.For(1f, scale);
         }
 
         private void Play(AudioClip clip)

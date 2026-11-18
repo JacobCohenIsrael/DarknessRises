@@ -185,15 +185,12 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
             serialized.FindProperty("flare").objectReferenceValue = SkillsBuilder.LoadOrCreateFlare();
             serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();
-            var audio = AudioBuilder.LoadOrCreateAudio();
-            serialized.FindProperty("audio").objectReferenceValue = audio;
             serialized.FindProperty("grenade").objectReferenceValue = GrenadeBuilder.LoadOrCreateGrenade();
-            serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp(audio);
+            serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp();
             serialized.FindProperty("continue").objectReferenceValue = ContinueBuilder.LoadOrCreateContinue();
             serialized.FindProperty("gestures").objectReferenceValue = GestureBuilder.LoadOrCreateGestures();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
-            AudioBuilder.RouteEnemyAudio(EnemyBuilder.LoadOrCreateShambler(), audio);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
             EditorUtility.SetDirty(player);

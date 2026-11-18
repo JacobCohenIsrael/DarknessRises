@@ -69,6 +69,11 @@ namespace DarknessRises.Game.Lightning
         {
             rumbleClip = clip;
             rumbleSource.clip = clip;
+            if (clip != null)
+            {
+                // The Level's content loads it already; this only makes sure, since the Rumble seeks into the clip.
+                clip.LoadAudioData();
+            }
         }
 
         /// <summary>Starts the Rumble. It fades out once the flash is due, <paramref name="secondsUntilFlash"/> from now.</summary>
@@ -82,7 +87,12 @@ namespace DarknessRises.Game.Lightning
 
             rumbleSource.volume = rumble.Volume;
             rumbleSource.Play();
-            rumbleSource.time = Mathf.Clamp(rumble.ClipStartSeconds, 0f, clip.length);
+
+            // Measuring or seeking a clip that hasn't loaded fails (WebGL decodes audio late): it plays from the start instead.
+            if (clip.loadState == AudioDataLoadState.Loaded)
+            {
+                rumbleSource.time = Mathf.Clamp(rumble.ClipStartSeconds, 0f, clip.length);
+            }
             rumbling = true;
             rumbleElapsedSeconds = 0f;
             rumbleFadeStartSeconds = secondsUntilFlash;

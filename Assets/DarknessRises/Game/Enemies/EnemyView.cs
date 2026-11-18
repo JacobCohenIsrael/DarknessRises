@@ -16,8 +16,8 @@ namespace DarknessRises.Game.Enemies
     /// </summary>
     /// <remarks>
     /// Everything it does runs on <see cref="EnemyTime"/>, never the global time scale, so Slow-mo slows Enemies
-    /// alone: frame time (including the Wind-up, recovery and Stagger), NavMesh agent speed, and its sounds through
-    /// the Enemy mixer group.
+    /// alone: frame time (including the Wind-up, recovery and Stagger), NavMesh agent speed, and its sounds' pitch
+    /// (<see cref="EnemyVoicePitch"/>).
     /// </remarks>
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class EnemyView : MonoBehaviour, IShotTarget
@@ -108,7 +108,9 @@ namespace DarknessRises.Game.Enemies
             voice.rolloffMode = AudioRolloffMode.Linear;
             voice.maxDistance = audio.HearingRange;
             voice.volume = audio.Volume;
-            voice.outputAudioMixerGroup = audio.OutputGroup;
+            // Pitch follows Enemy time from now on, pooled or not, so a reused Enemy never comes back out of step.
+            time.ScaleChanged += OnEnemyTimeScaled;
+            OnEnemyTimeScaled(time.Scale);
             spawnClip = content.Clip(audio.SpawnClip);
             hurtClip = content.Clip(audio.HurtClip);
             deathClip = content.Clip(audio.DeathClip);
@@ -170,6 +172,7 @@ namespace DarknessRises.Game.Enemies
             agent.isStopped = false;
             agent.updateRotation = true;
             ScaleAgentTime(time.Scale);
+            OnEnemyTimeScaled(time.Scale);
             isHoldingStill = false;
             secondsUntilPathRefresh = 0f;
             pushSecondsLeft = 0f;
@@ -236,6 +239,11 @@ namespace DarknessRises.Game.Enemies
         {
             Enemy.Hurt -= OnHurt;
             Enemy.Died -= OnDied;
+            if (time != null)
+            {
+                time.ScaleChanged -= OnEnemyTimeScaled;
+            }
+
             if (Behaviour != null)
             {
                 Behaviour.WindUpStarted -= OnWindUpStarted;
@@ -428,6 +436,11 @@ namespace DarknessRises.Game.Enemies
             {
                 renderers[i].sharedMaterial = fadeInstance;
             }
+        }
+
+        private void OnEnemyTimeScaled(float scale)
+        {
+            voice.pitch = EnemyVoicePitch.For(1f, scale);
         }
 
         private void Play(AudioClip clip)

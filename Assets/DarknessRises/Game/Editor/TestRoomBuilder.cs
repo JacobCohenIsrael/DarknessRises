@@ -52,8 +52,10 @@ namespace DarknessRises.Game.Editor
         private const string LightingSettingsPath = LightingFolder + "/Darkness.lighting";
         private const string LightningDefinitionPath = ConfigurationFolder + "/LightningDefinition.asset";
 
-        // Placeholder Rumble from the old Free Pack sounds (approved as placeholders).
-        private const string RumbleClipPath = "Assets/Free Pack/Earthquake 3 - Big.wav";
+        // Placeholder Rumble from the old Free Pack sounds (approved as placeholders): real thunder, with distinct strikes
+        // from 0.6 s to 30.5 s. It replaces the earlier placeholder, an earthquake's steady roar.
+        private const string RumbleClipPath = "Assets/Free Pack/Thunder strikes 30 second- Loop.wav";
+        private const string FormerRumbleClipPath = "Assets/Free Pack/Earthquake 3 - Big.wav";
 
         private const string LitShaderName = "Universal Render Pipeline/Lit";
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
@@ -206,13 +208,41 @@ namespace DarknessRises.Game.Editor
         {
             var lightning = LoadOrCreate<LightningDefinition>(LightningDefinitionPath);
             var serialized = new SerializedObject(lightning);
-            AddressableContent.ReferenceIfEmpty(
-                serialized.FindProperty("rumble.clip"),
-                () => AssetDatabase.LoadAssetAtPath<AudioClip>(RumbleClipPath),
-                AddressableContent.SharedGroup);
+            var rumbleClip = serialized.FindProperty("rumble.clip");
+            var referenced = AddressableContent.Referenced<AudioClip>(rumbleClip);
+            if (referenced != null && AssetDatabase.GetAssetPath(referenced) == FormerRumbleClipPath)
+            {
+                // The former placeholder leaves the content too, so no bundle carries it.
+                AddressableContent.Setup().RemoveAssetEntry(AssetDatabase.AssetPathToGUID(FormerRumbleClipPath));
+                AddressableContent.Reference(rumbleClip, LoadRumbleClip(), AddressableContent.SharedGroup);
+            }
+            else
+            {
+                AddressableContent.ReferenceIfEmpty(rumbleClip, LoadRumbleClip, AddressableContent.SharedGroup);
+            }
+
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             return lightning;
+        }
+
+        // The Rumble plays in 2D, so mono loses nothing and halves its memory; it's long and plays every few seconds,
+        // so it stays compressed in memory and decodes as it plays rather than taking its full PCM size.
+        private static AudioClip LoadRumbleClip()
+        {
+            if (AssetImporter.GetAtPath(RumbleClipPath) is AudioImporter importer)
+            {
+                var settings = importer.defaultSampleSettings;
+                if (!importer.forceToMono || settings.loadType != AudioClipLoadType.CompressedInMemory)
+                {
+                    importer.forceToMono = true;
+                    settings.loadType = AudioClipLoadType.CompressedInMemory;
+                    importer.defaultSampleSettings = settings;
+                    importer.SaveAndReimport();
+                }
+            }
+
+            return AssetDatabase.LoadAssetAtPath<AudioClip>(RumbleClipPath);
         }
 
         /// <summary>
@@ -424,8 +454,8 @@ namespace DarknessRises.Game.Editor
             fillLight.type = LightType.Directional;
             fillLight.GetUniversalAdditionalLightData();
 
-            // Two Rumble sources, so a new Rumble lets a fading one roll on.
-            var rumbles = new AudioSource[2];
+            // Three sources for the Rumbles and the Boss's warning, so a new one lets the fading ones roll on.
+            var rumbles = new AudioSource[3];
             for (var i = 0; i < rumbles.Length; i++)
             {
                 rumbles[i] = new GameObject($"Rumble {i + 1}", typeof(AudioSource)).GetComponent<AudioSource>();

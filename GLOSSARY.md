@@ -46,11 +46,12 @@ _Avoid_: prop, cover
 The default state of a Room: no light at all except what the light sources below make.
 
 **Lightning**:
-A brief flash that lights a whole Room, in Rooms that let it in. It comes roughly every five seconds, announced by a Rumble. In a Boss fight, the Boss decides when it flashes.
-_Avoid_: strike, flash, thunder
+A brief flash that lights a whole Room, in Rooms that let it in. It comes roughly every five seconds, with nothing to announce it, and its Rumble follows. In a Boss fight, the Boss decides when it flashes, and the Boss's own warning (the Colossus's growl) comes before it.
+_Avoid_: strike, flash
 
 **Rumble**:
-The sound that warns that Lightning is about to flash.
+The thunder after Lightning: it follows each flash after a short random delay, as from a strike at a varying distance, and no two sound quite alike. It never warns of a flash.
+_Avoid_: thunder (as a name in code)
 
 **Gunfire**:
 The light made by the player's Weapon: always its Muzzle flash, and for some Weapons its Shots too.

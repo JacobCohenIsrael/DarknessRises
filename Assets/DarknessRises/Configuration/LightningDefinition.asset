@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Lightning.LightningDefinition
   minIntervalSeconds: 4
   maxIntervalSeconds: 6.5
-  rumbleLeadSeconds: 1.2
+  minRumbleDelaySeconds: 0.15
+  maxRumbleDelaySeconds: 1.2
   flash:
     durationSeconds: 1.1
     shape:
@@ -106,12 +107,16 @@ MonoBehaviour:
     windowGlowColor: {r: 0.6, g: 1, b: 2.6, a: 1}
   rumble:
     clip:
-      m_AssetGUID: 5ae4d298ed547ba4c88587effb75d7e1
+      m_AssetGUID: 7dc48ac47b618424f8d032a339525809
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
     volume: 0.9
-    clipStartSeconds: 8.3
+    minPitch: 0.85
+    maxPitch: 1.15
+    minClipStartSeconds: 0.4
+    maxClipStartSeconds: 24
+    holdSeconds: 1
     fadeOutSeconds: 3.5
     cutFadeSeconds: 0.6

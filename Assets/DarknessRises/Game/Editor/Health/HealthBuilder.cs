@@ -228,7 +228,7 @@ namespace DarknessRises.Game.Editor.Health
             return view;
         }
 
-        private static RectTransform AddPanel(Transform parent, string name, Color shade)
+        internal static RectTransform AddPanel(Transform parent, string name, Color shade)
         {
             var panel = new GameObject(name, typeof(RectTransform), typeof(Image));
             var rect = panel.GetComponent<RectTransform>();
@@ -248,7 +248,7 @@ namespace DarknessRises.Game.Editor.Health
             value.alignment = TextAlignmentOptions.Left;
         }
 
-        private static Button AddButton(RectTransform panel, string label, Vector2 position)
+        internal static Button AddButton(RectTransform panel, string label, Vector2 position)
         {
             var buttonObject = new GameObject($"{label} Button", typeof(RectTransform), typeof(Image), typeof(Button));
             var rect = buttonObject.GetComponent<RectTransform>();
@@ -265,7 +265,7 @@ namespace DarknessRises.Game.Editor.Health
             return button;
         }
 
-        private static TextMeshProUGUI AddText(
+        internal static TextMeshProUGUI AddText(
             RectTransform parent,
             string name,
             string text,

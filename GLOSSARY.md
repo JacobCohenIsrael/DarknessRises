@@ -93,6 +93,10 @@ _Avoid_: miniboss, champion
 **Colossus**:
 The first Boss: a giant too tall to see whole, whose feet stomp down into its Room. Lightning reveals the shadow of where the next stomp will land, and the glowing weak spot on a planted foot is where it takes damage.
 
+**Feint**:
+A Boss stomp that shows two shadows but brings down only one foot; a second, late flash of Lightning reveals which. The Colossus feints from its second phase.
+_Avoid_: fake, decoy
+
 **Wind-up**:
 The visible and audible warning an Enemy gives just before it attacks.
 _Avoid_: telegraph, tell (a Tell is something else)

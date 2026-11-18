@@ -7,6 +7,7 @@ using DarknessRises.Game.Controls;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Runs;
+using DarknessRises.Game.Skills;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -40,6 +41,12 @@ namespace DarknessRises.Game.Bosses
 
         [SerializeField, Tooltip("The raised foot's shadow on the floor. Black, so it only shows where the floor is lit.")]
         private Renderer shadow;
+
+        [SerializeField, Tooltip("The second shadow: a feint's false one, or the second foot of a chain.")]
+        private Renderer secondShadow;
+
+        [SerializeField, Tooltip("Where Shamblers drop from its back, around the Boss Room's edges.")]
+        private Transform[] addDropPoints = Array.Empty<Transform>();
 
         [SerializeField] private Collider weakSpotCollider;
         [SerializeField] private Renderer weakSpotGlow;
@@ -80,6 +87,12 @@ namespace DarknessRises.Game.Bosses
         private float framedAspect;
         private Vector3 impactPoint;
 
+        private Skill flare;
+        private EnemyPools enemies;
+        private SystemRandom random;
+        private Vector3[] dropPoints;
+        private Action<Enemy> onAddDied;
+
         /// <summary>The Colossus growls: Lightning should flash this many seconds from now. Its Boss mode does the flashing.</summary>
         public event Action<float> FlashRequested;
 
@@ -89,6 +102,15 @@ namespace DarknessRises.Game.Bosses
         /// <summary>The character's Relocate while the fight runs; null before.</summary>
         public Relocation Relocation => relocation;
 
+        /// <summary>Shamblers that dropped from its back and are still alive. They outlive the Colossus.</summary>
+        public int AddsAlive => pattern != null ? pattern.AddsAlive : 0;
+
+        /// <summary>The character's Flare. While it burns, it shows the next stomp's shadows before any Lightning.</summary>
+        public void WatchFlare(Skill flareSkill)
+        {
+            flare = flareSkill;
+        }
+
         private void Awake()
         {
             Hide();
@@ -97,7 +119,7 @@ namespace DarknessRises.Game.Bosses
         /// <summary>
         /// Fights the Colossus with the character standing on the Route's Boss Station at <paramref name="bossStation"/>,
         /// until it is beaten and the character is back on that Station. Its hit points are scaled by
-        /// <paramref name="rampStep"/>.
+        /// <paramref name="rampStep"/>. From phase 2 its Shamblers come from <paramref name="pools"/>.
         /// </summary>
         public async UniTask FightAsync(
             ColossusDefinition colossus,
@@ -105,9 +127,11 @@ namespace DarknessRises.Game.Bosses
             Vector3 bossStation,
             Transform fightingCharacter,
             EnemyTime time,
+            EnemyPools pools,
             ILoadedContent content,
             CancellationToken cancellation)
         {
+            enemies = pools;
             Begin(colossus, rampStep, bossStation, fightingCharacter, time, content);
             try
             {
@@ -163,18 +187,28 @@ namespace DarknessRises.Game.Bosses
 
             relocation = new Relocation(positions, 0, definition.Relocate);
             relocation.DashStarted += OnDashStarted;
+            random ??= new SystemRandom();
             pattern = new ColossusPattern(
                 definition.Stomp,
                 definition.Phases,
+                definition.Phase2,
+                definition.Phase3,
                 definition.CharacterTargetChance,
                 rampStep.BossHitPoints(definition.HitPoints),
                 relocation,
-                new SystemRandom());
+                random);
             pattern.FlashRequested += OnFlashRequested;
             pattern.ShadowShown += OnShadowShown;
             pattern.Landed += OnLanded;
             pattern.Hurt += OnHurt;
             pattern.Defeated += OnDefeated;
+            pattern.AddsDue += OnAddsDue;
+            onAddDied ??= OnAddDied;
+            dropPoints = new Vector3[addDropPoints.Length];
+            for (var i = 0; i < dropPoints.Length; i++)
+            {
+                dropPoints[i] = addDropPoints[i].position;
+            }
 
             if (controls != null)
             {
@@ -198,6 +232,7 @@ namespace DarknessRises.Game.Bosses
                 pattern.Landed -= OnLanded;
                 pattern.Hurt -= OnHurt;
                 pattern.Defeated -= OnDefeated;
+                pattern.AddsDue -= OnAddsDue;
                 relocation.DashStarted -= OnDashStarted;
             }
 
@@ -245,8 +280,10 @@ namespace DarknessRises.Game.Bosses
         private void PrepareEffects()
         {
             shadow.transform.localScale = new Vector3(look.ShadowRadius * 2f, shadow.transform.localScale.y, look.ShadowRadius * 2f);
+            secondShadow.transform.localScale = shadow.transform.localScale;
             shadowColor = new Color(0f, 0f, 0f, look.ShadowOpacity);
             SetColor(shadow, shadowColor);
+            SetColor(secondShadow, shadowColor);
             shockwaveColor = shockwave.sharedMaterial.GetColor(BaseColorId);
 
             impactLight.shadows = LightShadows.None;
@@ -284,6 +321,12 @@ namespace DarknessRises.Game.Bosses
             else
             {
                 // Back from a Continue in the middle of a Relocate window: the window is still open.
+                // Flare lights the floor: the next stomp's shadows show before any Lightning.
+                if (flare != null && flare.IsActive && pattern.CanRevealEarly)
+                {
+                    pattern.RevealEarly();
+                }
+
                 relocation.IsEnabled = pattern.IsRelocateWindowOpen;
                 if (controls != null && controls.TryGetRelocateDirection(out var direction))
                 {
@@ -340,8 +383,18 @@ namespace DarknessRises.Game.Bosses
             switch (step)
             {
                 case ColossusStep.Falling:
-                    var fall = Mathf.Min(look.FallSeconds, stomp.FlashToImpactSeconds - stomp.RelocateWindowSeconds);
+                    var fall = Mathf.Min(look.FallSeconds, pattern.StepSeconds);
                     height = fall > 0f ? raised * Mathf.Clamp01(pattern.StepSecondsLeft / fall) : 0f;
+                    break;
+                case ColossusStep.Chaining:
+                    // Up off the first Position and down onto the second.
+                    var chain = pattern.StepSeconds > 0f ? 1f - pattern.StepSecondsLeft / pattern.StepSeconds : 1f;
+                    height = raised * (1f - Mathf.Abs(2f * chain - 1f));
+                    if (chain >= 0.5f)
+                    {
+                        target = pattern.SecondTarget;
+                    }
+
                     break;
                 case ColossusStep.Planted:
                     height = 0f;
@@ -374,13 +427,42 @@ namespace DarknessRises.Game.Bosses
             weakSpotGlow.enabled = planted;
             weakSpotLight.enabled = planted;
 
-            var showShadow = step == ColossusStep.Raised || step == ColossusStep.Falling;
-            shadow.enabled = showShadow;
-            if (showShadow)
+            ShowShadow(shadow, pattern.ShownShadow);
+            ShowShadow(secondShadow, pattern.ShownSecondShadow);
+        }
+
+        private void ShowShadow(Renderer shown, int position)
+        {
+            shown.enabled = position >= 0;
+            if (position >= 0)
             {
                 // Just above the floor and the Position's marker.
-                shadow.transform.position = relocation.Positions[target] + Vector3.up * (shadow.transform.localScale.y * 2f);
+                shown.transform.position = relocation.Positions[position] + Vector3.up * (shown.transform.localScale.y * 2f);
             }
+        }
+
+        // Shamblers drop from its back between stomps, away from the character.
+        private void OnAddsDue(int count)
+        {
+            if (enemies == null || definition.AddType == null || dropPoints.Length == 0)
+            {
+                return;
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                var drop = ColossusAddDrops.Pick(dropPoints, character.position, definition.AddDropMinMetres, random);
+                var add = enemies.Take(definition.AddType);
+                add.Spawn(dropPoints[drop], character);
+                add.Enemy.Died += onAddDied;
+                pattern.AddSpawned();
+            }
+        }
+
+        private void OnAddDied(Enemy add)
+        {
+            add.Died -= onAddDied;
+            pattern.AddDied();
         }
 
         private static float Lift(float elapsedSeconds, float liftSeconds)
@@ -492,6 +574,7 @@ namespace DarknessRises.Game.Bosses
             SetEnabled(footCollider, false);
             SetEnabled(weakSpotCollider, false);
             SetEnabled(shadow, false);
+            SetEnabled(secondShadow, false);
             SetEnabled(weakSpotGlow, false);
             SetEnabled(weakSpotLight, false);
             SetEnabled(impactLight, false);

@@ -107,6 +107,9 @@ namespace DarknessRises.Game
         // Whether the scene runs a Level (or the Test Room's Waves). Kept from Awake: on unload the Level may be destroyed first.
         private bool runsLevel;
 
+        // The character's Flare, which shows a Boss's next stomp early.
+        private Skill flareSkill;
+
         // The weather's Rumble, and the Boss's growl that stands in for it during its fight.
         private AudioClip rumbleClip;
         private AudioClip bossGrowlClip;
@@ -218,6 +221,7 @@ namespace DarknessRises.Game
             lightning.UseRumble(rumbleClip);
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
+            flareSkill = skills.Flare.Skill;
             flareHud.Show(skills.Flare.Skill);
             slowMoHud.Show(skills.SlowMo.Skill);
             isStarted = true;
@@ -369,6 +373,7 @@ namespace DarknessRises.Game
             run.BeginBossFight();
             lightningScheduler.EnterBossDrivenMode();
             level.Boss.FlashRequested += lightningScheduler.RequestFlash;
+            level.Boss.WatchFlare(flareSkill);
             lightning.UseRumble(bossGrowlClip != null ? bossGrowlClip : rumbleClip);
         }
 

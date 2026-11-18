@@ -78,6 +78,12 @@ namespace DarknessRises.Game.Content
                     }
                 }
 
+                var boss = configuration.Level.Boss;
+                if (boss != null && boss.AddType != null)
+                {
+                    enemyTypes.Add(boss.AddType);
+                }
+
                 var runner = configuration.Ramp.Runner;
                 if (rampStep.HasRunners && runner != null)
                 {

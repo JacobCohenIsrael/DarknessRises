@@ -2,6 +2,7 @@ using DarknessRises.Game.Bosses;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Content;
+using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Weapons;
 using Unity.Cinemachine;
@@ -56,6 +57,18 @@ namespace DarknessRises.Game.Editor.Bosses
         private static readonly Color MarkerColor = new(0.2f, 0.26f, 0.3f);
         private static readonly Color ShockwaveColor = new(0.55f, 0.5f, 0.42f, 0.55f);
 
+        // Where Shamblers drop from its back: around the Boss Room's edges, clear of its pillars, in metres from its centre.
+        private static readonly Vector2[] AddDropPoints =
+        {
+            new(-10f, 8f),
+            new(10f, 8f),
+            new(-10f, -8f),
+            new(10f, -8f),
+            new(0f, 10f),
+            new(-12.5f, 1f),
+            new(12.5f, 1f),
+        };
+
         public static ColossusDefinition LoadOrCreateColossus(string contentGroup)
         {
             TestRoomBuilder.EnsureFolder(System.IO.Path.GetDirectoryName(DefinitionPath).Replace('\\', '/'));
@@ -66,6 +79,14 @@ namespace DarknessRises.Game.Editor.Bosses
             Reference(serialized, "hurtClip", HurtClipPath, contentGroup);
             Reference(serialized, "defeatClip", DefeatClipPath, contentGroup);
             Reference(serialized, "relocateClip", RelocateClipPath, contentGroup);
+
+            // From phase 2, Shamblers drop from its back.
+            var addType = serialized.FindProperty("addType");
+            if (addType.objectReferenceValue == null)
+            {
+                addType.objectReferenceValue = EnemyBuilder.LoadOrCreateShambler();
+            }
+
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Re-saved so fields added since it was created are written to disk with their defaults.
@@ -95,7 +116,10 @@ namespace DarknessRises.Game.Editor.Bosses
             BuildPositionMarkers(root.transform, colossus.PositionsAround(roomCentre));
             var bossCamera = BuildBossCamera(root.transform);
             var foot = BuildFoot(root.transform, out var footCollider, out var weakSpotCollider, out var weakSpotGlow, out var weakSpotLight);
-            var shadow = Flat("Stomp Shadow", root.transform, LoadOrCreateTransparentUnlit("Stomp Shadow", Color.black));
+            var shadowMaterial = LoadOrCreateTransparentUnlit("Stomp Shadow", Color.black);
+            var shadow = Flat("Stomp Shadow", root.transform, shadowMaterial);
+            var secondShadow = Flat("Second Stomp Shadow", root.transform, shadowMaterial);
+            var drops = BuildAddDropPoints(root.transform, roomCentre);
             var shockwave = Flat("Shockwave", root.transform, LoadOrCreateTransparentUnlit("Shockwave", ShockwaveColor));
             var impactLight = ShadowlessLight("Impact Light", root.transform);
 
@@ -113,6 +137,14 @@ namespace DarknessRises.Game.Editor.Bosses
             serialized.FindProperty("foot").objectReferenceValue = foot;
             serialized.FindProperty("footCollider").objectReferenceValue = footCollider;
             serialized.FindProperty("shadow").objectReferenceValue = shadow;
+            serialized.FindProperty("secondShadow").objectReferenceValue = secondShadow;
+            var dropsProperty = serialized.FindProperty("addDropPoints");
+            dropsProperty.arraySize = drops.Length;
+            for (var i = 0; i < drops.Length; i++)
+            {
+                dropsProperty.GetArrayElementAtIndex(i).objectReferenceValue = drops[i];
+            }
+
             serialized.FindProperty("weakSpotCollider").objectReferenceValue = weakSpotCollider;
             serialized.FindProperty("weakSpotGlow").objectReferenceValue = weakSpotGlow;
             serialized.FindProperty("weakSpotLight").objectReferenceValue = weakSpotLight;
@@ -154,6 +186,21 @@ namespace DarknessRises.Game.Editor.Bosses
                 marker.enabled = true;
                 GameObjectUtility.SetStaticEditorFlags(marker.gameObject, StaticEditorFlags.BatchingStatic);
             }
+        }
+
+        private static Transform[] BuildAddDropPoints(Transform parent, Vector3 roomCentre)
+        {
+            var drops = new GameObject("Add Drop Points").transform;
+            drops.SetParent(parent, false);
+            var points = new Transform[AddDropPoints.Length];
+            for (var i = 0; i < points.Length; i++)
+            {
+                points[i] = new GameObject($"Add Drop Point {i + 1}").transform;
+                points[i].SetParent(drops, false);
+                points[i].position = roomCentre + new Vector3(AddDropPoints[i].x, 0f, AddDropPoints[i].y);
+            }
+
+            return points;
         }
 
         // Off until the fight starts. It has no follow target: the fight frames it once, over every Position.

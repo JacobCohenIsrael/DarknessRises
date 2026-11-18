@@ -142,14 +142,17 @@ namespace DarknessRises.Game.Bosses
             return best;
         }
 
-        /// <summary>The Position nearest to <paramref name="position"/>, other than itself, or -1 when there is none.</summary>
-        public int NearestOther(int position)
+        /// <summary>
+        /// The Position nearest to <paramref name="position"/>, other than itself and <paramref name="alsoAvoid"/>,
+        /// or -1 when there is none.
+        /// </summary>
+        public int NearestOther(int position, int alsoAvoid = -1)
         {
             var best = -1;
             var bestSqr = float.PositiveInfinity;
             for (var i = 0; i < positions.Length; i++)
             {
-                if (i == position)
+                if (i == position || i == alsoAvoid)
                 {
                     continue;
                 }

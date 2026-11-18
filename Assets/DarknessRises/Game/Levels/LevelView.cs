@@ -179,6 +179,11 @@ namespace DarknessRises.Game.Levels
             pools = new EnemyPools(transform, enemyTime, content, rampStep);
             pools.EnemyDied += OnEnemyDied;
             Prewarm(stationWaves, roomStragglers);
+            if (hasBoss && definition.Boss.AddType != null)
+            {
+                pools.Prewarm(definition.Boss.AddType, definition.Boss.Phase2.MaxAddsAlive);
+            }
+
             spawner = new LevelSpawner(
                 pools,
                 roomSpawnPoints,
@@ -237,8 +242,8 @@ namespace DarknessRises.Game.Levels
             await UniTask.WaitUntil(() => exitStation != null, cancellationToken: cancellation);
             fights.StragglersAllowed = false;
 
-            // The calm only comes once nothing is left hunting the character.
-            await UniTask.WaitUntil(() => fights.AliveCount == 0, cancellationToken: cancellation);
+            // The calm only comes once nothing is left hunting the character, Shamblers from the Boss's back included.
+            await UniTask.WaitUntil(() => fights.AliveCount + (hasBoss ? boss.AddsAlive : 0) == 0, cancellationToken: cancellation);
             EndBeatStarted?.Invoke();
             await PlayEndBeatAsync(cancellation);
 
@@ -253,7 +258,8 @@ namespace DarknessRises.Game.Levels
             fights.StragglersAllowed = false;
             BossFightStarted?.Invoke();
 
-            await boss.FightAsync(definition.Boss, rampStep, progress.Position, fightingCharacter, enemies, loadedContent, cancellation);
+            await boss.FightAsync(
+                definition.Boss, rampStep, progress.Position, fightingCharacter, enemies, pools, loadedContent, cancellation);
 
             BossFightEnded?.Invoke();
             bossStation.Clear();

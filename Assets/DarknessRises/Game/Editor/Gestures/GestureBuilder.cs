@@ -29,6 +29,7 @@ namespace DarknessRises.Game.Editor.Gestures
         internal static void Build(GameRoot gameRoot, Transform character)
         {
             var gestureInput = character.gameObject.AddComponent<GestureInput>();
+            TestRoomBuilder.SetReference(gestureInput, "controls", character.GetComponent<PlayerControls>());
             var aimAssist = character.gameObject.AddComponent<AimAssistView>();
             TestRoomBuilder.SetReference(gameRoot, "gestureInput", gestureInput);
             TestRoomBuilder.SetReference(gameRoot, "aimAssist", aimAssist);

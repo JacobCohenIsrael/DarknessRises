@@ -124,9 +124,18 @@ namespace DarknessRises.Game.Grenades
             Charges.Tick(Time.deltaTime);
 
             // The charge is spent when the throw starts, so a throw already under way can't be doubled up.
-            if (controls.WasGrenadePressedThisFrame && Charges.CanThrow && characterAnimation.Throw())
+            if (!controls.WasGrenadePressedThisFrame)
+            {
+                return;
+            }
+
+            if (Charges.CanThrow && characterAnimation.Throw())
             {
                 Charges.TrySpend();
+            }
+            else
+            {
+                controls.ForgetGrenadeAim();
             }
         }
 
@@ -143,7 +152,7 @@ namespace DarknessRises.Game.Grenades
             }
 
             var origin = hand.position;
-            if (!controls.TryGetAimPoint(floor.position.y, out var aimPoint))
+            if (!controls.TryGetGrenadeAimPoint(floor.position.y, out var aimPoint))
             {
                 // No aim point (pointer above the horizon): throw as far as it goes, straight ahead.
                 aimPoint = origin + hand.forward * definition.MaxThrowRange;

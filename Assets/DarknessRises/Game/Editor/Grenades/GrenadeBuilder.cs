@@ -1,5 +1,6 @@
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Editor.Content;
+using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Hud;
 using Unity.Cinemachine;
@@ -79,6 +80,19 @@ namespace DarknessRises.Game.Editor.Grenades
         private static readonly Color PipEmptyColor = new(0.85f, 0.85f, 0.85f, 0.22f);
         private static readonly Color PipFullColor = new(1f, 0.6f, 0.25f, 0.9f);
 
+        // The touch Grenade button's contents, in HUD reference pixels. Its size, place and colours at runtime come
+        // from the Grenade button settings; these only lay out the label and pips inside it.
+        private const float ButtonPlaceholderSize = 150f;
+        private static readonly Color ButtonFaceColor = new(0.16f, 0.16f, 0.17f, 0.6f);
+        private const float ButtonLabelFontSize = 22f;
+        private static readonly Color ButtonLabelColor = new(0.9f, 0.9f, 0.9f, 0.9f);
+        private static readonly Vector2 ButtonLabelOffset = new(0f, 18f);
+        private static readonly Vector2 ButtonLabelSize = new(140f, 30f);
+        private static readonly Vector2 ButtonPipsSize = new(110f, 26f);
+        private static readonly Vector2 ButtonPipsOffset = new(0f, -20f);
+        private const float ButtonPipSize = 24f;
+        private const float ButtonPipSpacing = 8f;
+
         /// <summary>Loads the Grenade definition, creating it and its prefabs if they're missing.</summary>
         public static GrenadeDefinition LoadOrCreateGrenade()
         {
@@ -133,7 +147,9 @@ namespace DarknessRises.Game.Editor.Grenades
 
             var serializedRoot = new SerializedObject(gameRoot);
             serializedRoot.FindProperty("grenadeThrower").objectReferenceValue = thrower;
-            serializedRoot.FindProperty("grenadeHud").objectReferenceValue = BuildGrenadeHud();
+            var cornerCharges = BuildGrenadeHud(GrenadesMargin, GrenadesSize, PipSize, PipSpacing, TextAnchor.LowerRight);
+            serializedRoot.FindProperty("grenadeHud").objectReferenceValue = cornerCharges;
+            serializedRoot.FindProperty("grenadeButton").objectReferenceValue = BuildGrenadeButton(controls, cornerCharges.gameObject);
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -161,19 +177,82 @@ namespace DarknessRises.Game.Editor.Grenades
             EditorUtility.SetDirty(listener);
         }
 
-        private static GrenadeHudView BuildGrenadeHud()
+        // The touch Grenade button: a round, interactable face with a label and its own row of charge pips.
+        // The view sits on the button itself: its Selectable takes the pointer events, which never bubble past it.
+        private static GrenadeButtonView BuildGrenadeButton(PlayerControls controls, GameObject cornerCharges)
+        {
+            var hud = GameObject.Find("HUD");
+            if (!hud.TryGetComponent<GraphicRaycaster>(out _))
+            {
+                // The button is the HUD's first control: the UI and the Gesture input's UI filter must be able to hit it.
+                hud.AddComponent<GraphicRaycaster>();
+            }
+
+            // Covers the canvas, so the button's anchored position is its screen position over the canvas scale.
+            var root = new GameObject("Grenade Button Area", typeof(RectTransform));
+            var rootRect = root.GetComponent<RectTransform>();
+            rootRect.SetParent(hud.transform, false);
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
+
+            var buttonObject = new GameObject(
+                "Grenade Button", typeof(RectTransform), typeof(CanvasGroup), typeof(Image), typeof(Selectable), typeof(GrenadeButtonView));
+            var buttonRect = buttonObject.GetComponent<RectTransform>();
+            buttonRect.SetParent(rootRect, false);
+            buttonRect.anchorMin = buttonRect.anchorMax = Vector2.zero;
+            buttonRect.pivot = new Vector2(0.5f, 0.5f);
+            buttonRect.sizeDelta = Vector2.one * ButtonPlaceholderSize;
+            var face = buttonObject.GetComponent<Image>();
+            face.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(PipSpritePath);
+            face.color = ButtonFaceColor;
+
+            // Interactable, so presses on it belong to the UI, with no transition: the view colours the face.
+            var selectable = buttonObject.GetComponent<Selectable>();
+            selectable.transition = Selectable.Transition.None;
+            selectable.navigation = new Navigation { mode = Navigation.Mode.None };
+
+            var label = HealthBuilder.AddText(
+                buttonRect, "Label", "GRENADE", ButtonLabelFontSize, ButtonLabelColor, ButtonLabelOffset, ButtonLabelSize);
+            label.raycastTarget = false;
+
+            var pips = BuildGrenadeHud(Vector2.zero, ButtonPipsSize, ButtonPipSize, ButtonPipSpacing, TextAnchor.MiddleCenter);
+            var pipsRect = (RectTransform)pips.transform;
+            pipsRect.SetParent(buttonRect, false);
+            pipsRect.anchorMin = pipsRect.anchorMax = pipsRect.pivot = new Vector2(0.5f, 0.5f);
+            pipsRect.anchoredPosition = ButtonPipsOffset;
+
+            var view = buttonObject.GetComponent<GrenadeButtonView>();
+            var serialized = new SerializedObject(view);
+            serialized.FindProperty("controls").objectReferenceValue = controls;
+            serialized.FindProperty("canvas").objectReferenceValue = hud.GetComponent<Canvas>();
+            serialized.FindProperty("button").objectReferenceValue = buttonRect;
+            serialized.FindProperty("visibility").objectReferenceValue = buttonObject.GetComponent<CanvasGroup>();
+            serialized.FindProperty("face").objectReferenceValue = face;
+            serialized.FindProperty("charges").objectReferenceValue = pips;
+            serialized.FindProperty("cornerCharges").objectReferenceValue = cornerCharges;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            // Hidden until the player is on touch.
+            var visibility = buttonObject.GetComponent<CanvasGroup>();
+            visibility.alpha = 0f;
+            visibility.blocksRaycasts = visibility.interactable = false;
+            return view;
+        }
+
+        private static GrenadeHudView BuildGrenadeHud(Vector2 margin, Vector2 size, float pipSize, float pipSpacing, TextAnchor alignment)
         {
             var hud = GameObject.Find("HUD");
             var grenades = new GameObject("Grenades", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(GrenadeHudView));
             var rect = grenades.GetComponent<RectTransform>();
             rect.SetParent(hud.transform, false);
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 0f);
-            rect.anchoredPosition = new Vector2(-GrenadesMargin.x, GrenadesMargin.y);
-            rect.sizeDelta = GrenadesSize;
+            rect.anchoredPosition = new Vector2(-margin.x, margin.y);
+            rect.sizeDelta = size;
 
             var layout = grenades.GetComponent<HorizontalLayoutGroup>();
-            layout.childAlignment = TextAnchor.LowerRight;
-            layout.spacing = PipSpacing;
+            layout.childAlignment = alignment;
+            layout.spacing = pipSpacing;
             layout.childControlWidth = layout.childControlHeight = false;
             layout.childForceExpandWidth = layout.childForceExpandHeight = false;
 
@@ -181,7 +260,7 @@ namespace DarknessRises.Game.Editor.Grenades
             var pip = new GameObject("Grenade Pip", typeof(RectTransform), typeof(Image));
             var pipRect = pip.GetComponent<RectTransform>();
             pipRect.SetParent(rect, false);
-            pipRect.sizeDelta = new Vector2(PipSize, PipSize);
+            pipRect.sizeDelta = new Vector2(pipSize, pipSize);
             var empty = pip.GetComponent<Image>();
             empty.sprite = sprite;
             empty.color = PipEmptyColor;

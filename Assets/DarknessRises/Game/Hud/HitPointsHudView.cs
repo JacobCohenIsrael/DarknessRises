@@ -27,6 +27,7 @@ namespace DarknessRises.Game.Hud
             health = characterHealth;
             health.Hurt += Refresh;
             health.Died += Refresh;
+            health.Restored += Refresh;
             MakePips(health.MaxHitPoints);
             Refresh();
         }
@@ -45,6 +46,7 @@ namespace DarknessRises.Game.Hud
 
             health.Hurt -= Refresh;
             health.Died -= Refresh;
+            health.Restored -= Refresh;
             health = null;
         }
 

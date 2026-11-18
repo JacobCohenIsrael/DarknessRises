@@ -44,14 +44,16 @@ namespace DarknessRises.Game.Editor.Health
         // Death and end screens.
         private static readonly Color DeathShadeColor = new(0f, 0f, 0f, 0.6f);
         private static readonly Color EndShadeColor = new(0f, 0f, 0f, 0.92f);
-        private static readonly Color TitleColor = new(0.8f, 0.12f, 0.1f, 1f);
-        private static readonly Color TextColor = new(0.85f, 0.85f, 0.85f, 1f);
+        internal static readonly Color TitleColor = new(0.8f, 0.12f, 0.1f, 1f);
+        internal static readonly Color TextColor = new(0.85f, 0.85f, 0.85f, 1f);
         private static readonly Color ButtonColor = new(0.16f, 0.16f, 0.17f, 0.95f);
         private static readonly Color ButtonTextColor = new(0.9f, 0.9f, 0.9f, 1f);
-        private const float TitleFontSize = 110f;
-        private const float StatFontSize = 48f;
+        internal const float TitleFontSize = 110f;
+        internal const float StatFontSize = 48f;
         private const float ButtonFontSize = 44f;
         private static readonly Vector2 ButtonSize = new(380f, 100f);
+        private const float HintFontSize = 28f;
+        private const float HintGap = 6f;
 
         // Each end-screen stat is a right-aligned label and a left-aligned value, with a gap between them.
         private static readonly Vector2 StatLabelOffset = new(-200f, 0f);
@@ -197,12 +199,21 @@ namespace DarknessRises.Game.Editor.Health
         private static DeathScreenView BuildDeathScreen(Transform screens)
         {
             var panel = AddPanel(screens, "Death Screen", DeathShadeColor);
-            AddText(panel, "Title", "YOU DIED", TitleFontSize, TitleColor, new Vector2(0f, 180f), new Vector2(1200f, 160f));
-            var restart = AddButton(panel, "Restart", new Vector2(0f, -10f));
-            var exit = AddButton(panel, "Exit", new Vector2(0f, -140f));
+            AddText(panel, "Title", "YOU DIED", TitleFontSize, TitleColor, new Vector2(0f, 220f), new Vector2(1200f, 160f));
+
+            // Continue is offered once per Run, so it goes away with its hint under it.
+            var continueButton = AddButton(panel, "Continue", new Vector2(0f, 70f));
+            var hintHeight = HintFontSize * 1.5f;
+            var hint = AddText(
+                (RectTransform)continueButton.transform, "Hint", "Watch an ad, once per Run", HintFontSize, TextColor,
+                new Vector2(0f, -(ButtonSize.y + hintHeight) / 2f - HintGap), new Vector2(ButtonSize.x * 2f, hintHeight));
+            hint.alignment = TextAlignmentOptions.Center;
+            var restart = AddButton(panel, "Restart", new Vector2(0f, -120f));
+            var exit = AddButton(panel, "Exit", new Vector2(0f, -250f));
 
             var view = panel.gameObject.AddComponent<DeathScreenView>();
             var serialized = new SerializedObject(view);
+            serialized.FindProperty("continueButton").objectReferenceValue = continueButton;
             serialized.FindProperty("restartButton").objectReferenceValue = restart;
             serialized.FindProperty("exitButton").objectReferenceValue = exit;
             serialized.ApplyModifiedPropertiesWithoutUndo();

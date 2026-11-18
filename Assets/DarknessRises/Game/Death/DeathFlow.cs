@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Ads;
+using DarknessRises.Game.Continues;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
@@ -12,32 +14,42 @@ namespace DarknessRises.Game.Death
 {
     /// <summary>
     /// What happens when the character dies: it stops walking and shooting, plays its death, and the death screen
-    /// offers Restart or Exit. Both go through the <see cref="RunFlow"/>: Restart starts a new Run at once; Exit ends
-    /// the Run and shows the end screen, which then starts a new Run. Whoever runs the Levels (the boot) loads it.
-    /// Continue (a later ticket) is a third choice here, back into the same Run.
+    /// offers Continue (while the Run allows it), Restart or Exit. All three go through the <see cref="RunFlow"/>.
+    /// Continue shows a rewarded ad; once it's watched, the character comes back where it died with full hit points
+    /// and a burst of light that pushes nearby Enemies back, and the Level carries on. Restart starts a new Run at once;
+    /// Exit ends the Run and shows the end screen, which then starts a new Run. Whoever runs the Levels (the boot) loads it.
     /// </summary>
     public sealed class DeathFlow : MonoBehaviour
     {
         [SerializeField] private DeathScreenView deathScreen;
         [SerializeField] private EndScreenView endScreen;
 
-        // Owns the death flow's lifetime: the scene's.
+        // Owns the death flow's lifetime: the scene's. Each death gets a scope of its own inside it.
         private CancellationTokenSource lifetime;
         private CharacterHealth health;
         private RunFlow run;
         private CharacterAnimationView characterAnimation;
         private RouteWalker routeWalker;
         private PrimaryWeaponView primaryWeapon;
+        private ContinueDefinition continueDefinition;
+        private IRewardedAd continueAd;
+        private ContinueBurstView continueBurst;
         private bool isDeathFinished;
         private Action onDeathFinished;
 
-        /// <summary>Waits for the character's death, then runs the death and end screens.</summary>
+        /// <summary>
+        /// Waits for the character's death, then runs the death and end screens. A Continue costs
+        /// <paramref name="ad"/>, and comes back with <paramref name="burst"/>, as <paramref name="continueSettings"/> says.
+        /// </summary>
         public void Watch(
             CharacterHealth characterHealth,
             RunFlow runFlow,
             CharacterAnimationView animationView,
             RouteWalker walker,
-            PrimaryWeaponView weapon)
+            PrimaryWeaponView weapon,
+            ContinueDefinition continueSettings,
+            IRewardedAd ad,
+            ContinueBurstView burst)
         {
             Unbind();
 
@@ -46,6 +58,9 @@ namespace DarknessRises.Game.Death
             characterAnimation = animationView;
             routeWalker = walker;
             primaryWeapon = weapon;
+            continueDefinition = continueSettings;
+            continueAd = ad;
+            continueBurst = burst;
             lifetime ??= new CancellationTokenSource();
             onDeathFinished ??= OnDeathFinished;
             health.Died += OnDied;
@@ -79,8 +94,12 @@ namespace DarknessRises.Game.Death
             PlayAsync(lifetime.Token).Forget();
         }
 
-        private async UniTaskVoid PlayAsync(CancellationToken cancellationToken)
+        private async UniTaskVoid PlayAsync(CancellationToken sceneToken)
         {
+            // The death screen's scope: the screen, the ad and the Continue that follows all end with it, or with the scene.
+            using var deathScope = CancellationTokenSource.CreateLinkedTokenSource(sceneToken);
+            var cancellationToken = deathScope.Token;
+
             routeWalker.enabled = false;
             primaryWeapon.enabled = false;
 
@@ -90,16 +109,48 @@ namespace DarknessRises.Game.Death
             await UniTask.WaitUntil(this, flow => flow.isDeathFinished, cancellationToken: cancellationToken);
             characterAnimation.DeathFinished -= onDeathFinished;
 
-            var choice = await deathScreen.ChooseAsync(cancellationToken);
-            if (choice == DeathChoice.Restart)
+            while (true)
             {
-                run.Restart();
+                var choice = await deathScreen.ChooseAsync(run.CanContinue(continueDefinition.UsesPerRun), cancellationToken);
+                switch (choice)
+                {
+                    case DeathChoice.Continue:
+                        // An ad that wasn't watched earns nothing: back to the death screen, Continue still on offer.
+                        if (await continueAd.ShowAsync(cancellationToken) != AdOutcome.Watched)
+                        {
+                            continue;
+                        }
+
+                        await ContinueAsync(cancellationToken);
+                        return;
+
+                    case DeathChoice.Restart:
+                        run.Restart();
+                        return;
+
+                    default:
+                        run.Exit();
+                        await endScreen.ShowAsync(run.Record, cancellationToken);
+                        run.StartNewRun();
+                        return;
+                }
+            }
+        }
+
+        // Back where the character died, with full hit points, while the burst pushes the Enemies around it back.
+        private async UniTask ContinueAsync(CancellationToken cancellationToken)
+        {
+            if (!run.Continue(continueDefinition.UsesPerRun))
+            {
                 return;
             }
 
-            run.Exit();
-            await endScreen.ShowAsync(run.Record, cancellationToken);
-            run.StartNewRun();
+            health.Restore(continueDefinition.InvulnerabilitySeconds);
+            characterAnimation.Revive();
+            routeWalker.enabled = true;
+            primaryWeapon.enabled = true;
+            await continueBurst.BurstAsync(
+                continueBurst.transform.position, routeWalker.Progress.Direction, cancellationToken);
         }
 
         private void OnDeathFinished()

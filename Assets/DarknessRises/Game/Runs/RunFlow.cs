@@ -4,15 +4,16 @@ namespace DarknessRises.Game.Runs
 {
     /// <summary>
     /// The state machine of a Run (ADR 0005): each Level's start beat, walking, Station fights, the Boss fight and the
-    /// end beat, then straight into the next Level, endlessly, until the character dies. Death leads to Restart
-    /// (a new Run from Level 1) or Exit (the end screen). It tracks the Level index, which drives the Ramp, and the
-    /// Run's <see cref="RunRecord"/>. Plain C# (ADR 0003): whoever shows the Level reports what happens there.
+    /// end beat, then straight into the next Level, endlessly, until the character dies. Death leads to Continue
+    /// (back into the same Level, a limited number of times per Run), Restart (a new Run from Level 1) or Exit (the end
+    /// screen). It tracks the Level index, which drives the Ramp, and the Run's <see cref="RunRecord"/>.
+    /// Plain C# (ADR 0003): whoever shows the Level reports what happens there.
     /// </summary>
     /// <remarks>
-    /// A report that doesn't fit the current phase is ignored and returns false, so late news (a Station cleared by a
-    /// Grenade after the character died, say) never breaks the flow.
-    /// Seams for later tickets: Continue goes from <see cref="RunPhase.Dead"/> back to the phase the character died in;
-    /// the pause menu calls <see cref="Restart"/> and <see cref="Exit"/>, which already work from any phase of a Level.
+    /// A report that doesn't fit the current phase is ignored and returns false, so late news never breaks the flow.
+    /// While the character is dead the Run still follows the Level's own steps (a Station cleared by a Grenade still in
+    /// the air, say), so a Continue goes back to where the Level is by then.
+    /// The pause menu calls <see cref="Restart"/> and <see cref="Exit"/>, which work from any phase of a Level.
     /// </remarks>
     public sealed class RunFlow
     {
@@ -32,6 +33,12 @@ namespace DarknessRises.Game.Runs
 
         /// <summary>The current Run's Level reached and Enemies killed. A new one for every Run.</summary>
         public RunRecord Record { get; private set; } = new();
+
+        /// <summary>How many times the character has Continued in this Run. Back to 0 with every new Run.</summary>
+        public int ContinuesUsed { get; private set; }
+
+        // The phase of the Level the character is dead in: where a Continue goes back to.
+        private RunPhase resumePhase;
 
         /// <summary>Whether a Level of the Run is in play: from its start beat to its end beat, alive or dead.</summary>
         public bool IsInRun => Phase != RunPhase.NotStarted && Phase != RunPhase.Ended;
@@ -111,7 +118,38 @@ namespace DarknessRises.Game.Runs
                 return false;
             }
 
+            resumePhase = Phase;
             Enter(RunPhase.Dead);
+            return true;
+        }
+
+        /// <summary>
+        /// Whether the dead character may Continue: it's dead and the Run has used fewer than
+        /// <paramref name="continuesPerRun"/> Continues (the authored allowance).
+        /// </summary>
+        public bool CanContinue(int continuesPerRun)
+        {
+            if (continuesPerRun < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(continuesPerRun), continuesPerRun, "A Run can't allow fewer than no Continues.");
+            }
+
+            return Phase == RunPhase.Dead && ContinuesUsed < continuesPerRun;
+        }
+
+        /// <summary>
+        /// The character comes back to life where it died: the Run goes back to the phase of the Level it died in and
+        /// uses up one of its <paramref name="continuesPerRun"/> Continues. Only while <see cref="CanContinue"/>.
+        /// </summary>
+        public bool Continue(int continuesPerRun)
+        {
+            if (!CanContinue(continuesPerRun))
+            {
+                return false;
+            }
+
+            ContinuesUsed++;
+            Enter(resumePhase);
             return true;
         }
 
@@ -150,6 +188,7 @@ namespace DarknessRises.Game.Runs
         private void BeginRun()
         {
             Record = new RunRecord();
+            ContinuesUsed = 0;
             StartLevel(RunRecord.FirstLevel);
         }
 
@@ -163,6 +202,13 @@ namespace DarknessRises.Game.Runs
 
         private bool Move(RunPhase from, RunPhase to)
         {
+            // Dead, the Run keeps up with the Level, for a Continue to go back to.
+            if (Phase == RunPhase.Dead && resumePhase == from)
+            {
+                resumePhase = to;
+                return true;
+            }
+
             if (Phase != from)
             {
                 return false;

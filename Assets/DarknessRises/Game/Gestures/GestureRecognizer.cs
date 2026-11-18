@@ -16,7 +16,7 @@ namespace DarknessRises.Game.Gestures
             this.sink = sink;
         }
 
-        /// <summary>The recognizers for the core Gestures: Tap, Hold, Double-tap, Flick and Two-finger tap.</summary>
+        /// <summary>The recognizers for the core Gestures: Tap, Hold, Double-tap, Flick, Two-finger tap and Two-finger flick.</summary>
         public static GestureRecognizer WithCoreGestures(GestureThresholds thresholds, IGestureSink sink)
         {
             var recognizer = new GestureRecognizer(sink);
@@ -25,6 +25,7 @@ namespace DarknessRises.Game.Gestures
             recognizer.Register(new DoubleTapRecognizer(thresholds));
             recognizer.Register(new FlickRecognizer(thresholds));
             recognizer.Register(new TwoFingerTapRecognizer(thresholds));
+            recognizer.Register(new TwoFingerFlickRecognizer(thresholds));
             return recognizer;
         }
 

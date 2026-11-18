@@ -130,8 +130,12 @@ _Avoid_: slow, time warp, bullet time
 ## Input
 
 **Gesture**:
-A touch pattern that triggers an action, such as a tap, a flick or a two-finger tap. A double-tap is recognized but does nothing for now. New Gestures (circles, squares, lines) can be added later for new Skills.
+A touch pattern that triggers an action. A tap fires once and a hold keeps firing. A double-tap reloads (its first tap still fires). A one-finger flick in any direction Relocates that way in a Boss fight and does nothing elsewhere. A two-finger flick up triggers the Flare and down triggers Slow-mo. A two-finger tap is recognized but does nothing for now. New Gestures (circles, squares, lines) can be added later for new Skills.
 _Avoid_: swipe command, touch combo
+
+**Two-finger flick**:
+A Gesture: two fingers touch down together and flick the same way, far and fast, then lift. Its direction is the average of the two fingers'. Up triggers the Flare, down triggers Slow-mo, sideways does nothing.
+_Avoid_: two-finger swipe, double flick
 
 **Grenade button**:
 On touch only, the on-screen button that throws the Grenade and shows its charges. Tapping it arms the Grenade, and the next tap in the Room throws it at that point instead of firing. Tapping it again cancels. Holding it picks it up so the player can drag it anywhere inside the screen's safe area, and the device remembers where it was dropped. It's greyed out with no charges. On keyboard and mouse it's hidden, and right-click throws.

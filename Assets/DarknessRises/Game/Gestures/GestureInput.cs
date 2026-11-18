@@ -57,7 +57,7 @@ namespace DarknessRises.Game.Gestures
 
         void IGestureSink.OnGesture(in Gesture gesture)
         {
-            switch (GestureCommands.For(gesture, definition.FlickAxisHalfAngleDegrees))
+            switch (GestureCommands.For(gesture, definition.TwoFingerFlickAxisHalfAngleDegrees))
             {
                 case GestureCommand.FireOnce when grenadeButton != null && grenadeButton.TapRoom() == RoomTapOutcome.ThrowGrenade:
                     // Gesture positions are in screen units (the screen's shorter side is 1): back to pixels.

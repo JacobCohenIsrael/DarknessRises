@@ -21,7 +21,10 @@ MonoBehaviour:
     flickMinDistance: 0.08
     flickMaxSeconds: 0.3
     twoFingerTapWindowSeconds: 0.15
-  flickAxisHalfAngleDegrees: 30
+    twoFingerFlickMinDistance: 0.08
+    twoFingerFlickMaxSeconds: 0.35
+    twoFingerFlickMaxAngleDegrees: 35
+  twoFingerFlickAxisHalfAngleDegrees: 45
   aimAssist:
     radius: 1.5
     strength: 0.6

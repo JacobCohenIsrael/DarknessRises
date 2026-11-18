@@ -30,6 +30,10 @@ namespace DarknessRises.Game.Controls
         [SerializeField, Tooltip("The camera the player sees the Room through, used to turn the pointer into an aim point.")]
         private Camera viewCamera;
 
+        // While held (the game is paused) every command reads as none, and aiming stays where the pointer last was.
+        private bool isHeld;
+        private Vector2 lastPointer;
+
         public bool IsFireHeld => fire.action.IsPressed();
         public bool WasReloadPressedThisFrame => reload.action.WasPressedThisFrame();
         public bool WasFlarePressedThisFrame => flare.action.WasPressedThisFrame();
@@ -39,11 +43,46 @@ namespace DarknessRises.Game.Controls
         /// <summary>The point in the Room under the pointer, on the horizontal plane at <paramref name="height"/>.</summary>
         public bool TryGetAimPoint(float height, out Vector3 aimPoint)
         {
-            var ray = viewCamera.ScreenPointToRay(aim.action.ReadValue<Vector2>());
+            if (aim.action.enabled)
+            {
+                lastPointer = aim.action.ReadValue<Vector2>();
+            }
+
+            var ray = viewCamera.ScreenPointToRay(lastPointer);
             return AimPlane.TryIntersect(ray, height, out aimPoint);
         }
 
+        /// <summary>
+        /// Holds the player's commands while the game is paused: the Gameplay actions are disabled, so nothing fires,
+        /// reloads, throws or triggers a Skill, and a held trigger counts as released. Releasing turns them back on.
+        /// </summary>
+        public void Hold(bool held)
+        {
+            isHeld = held;
+            if (held)
+            {
+                DisableActions();
+            }
+            else if (isActiveAndEnabled)
+            {
+                EnableActions();
+            }
+        }
+
         private void OnEnable()
+        {
+            if (!isHeld)
+            {
+                EnableActions();
+            }
+        }
+
+        private void OnDisable()
+        {
+            DisableActions();
+        }
+
+        private void EnableActions()
         {
             aim.action.Enable();
             fire.action.Enable();
@@ -53,7 +92,7 @@ namespace DarknessRises.Game.Controls
             grenade.action.Enable();
         }
 
-        private void OnDisable()
+        private void DisableActions()
         {
             aim.action.Disable();
             fire.action.Disable();

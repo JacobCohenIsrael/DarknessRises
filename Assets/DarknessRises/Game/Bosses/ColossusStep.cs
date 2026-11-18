@@ -18,6 +18,9 @@ namespace DarknessRises.Game.Bosses
         /// <summary>The Relocate window has closed; the foot comes down.</summary>
         Falling,
 
+        /// <summary>Phase 3: the first foot has landed and the second comes down after it.</summary>
+        Chaining,
+
         /// <summary>The foot is down with its weak spot lit: the damage window.</summary>
         Planted,
 

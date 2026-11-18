@@ -24,6 +24,20 @@ MonoBehaviour:
     plantedSeconds: 3.5
     liftSeconds: 0.6
     restSeconds: 1.5
+  phase2:
+    feintChance: 0.6
+    revealSeconds: 0.9
+    revealGrowlSeconds: 0.3
+    extraWindowSeconds: 0.6
+    addsPerDrop: 2
+    maxAddsAlive: 4
+  phase3:
+    doubleFlashGapSeconds: 0.3
+    chainSeconds: 0.7
+    plantedSeconds: 2.5
+    restSeconds: 0.8
+  addType: {fileID: 11400000, guid: d9321ff8ce678dc41829ea2af314f6ad, type: 2}
+  addDropMinMetres: 6
   stompDamage: 2
   characterTargetChance: 0.75
   positions:

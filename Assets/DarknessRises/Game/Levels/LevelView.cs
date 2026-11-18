@@ -245,6 +245,12 @@ namespace DarknessRises.Game.Levels
             }
 
             titleCard.Alpha = 1f;
+
+            // A moment to read it before the next Level starts.
+            for (var elapsed = 0f; elapsed < end.CardHoldSeconds; elapsed += Time.deltaTime)
+            {
+                await UniTask.NextFrame(cancellation);
+            }
         }
 
         // Each Station's Waves, from the definition of the Room it stands in, scaled by the Ramp.

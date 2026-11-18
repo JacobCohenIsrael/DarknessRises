@@ -87,6 +87,9 @@ namespace DarknessRises.Game
         private bool ownsRun;
         private bool reportsToRun;
 
+        // Whether the scene runs a Level (or the Test Room's Waves). Kept from Awake: on unload the Level may be destroyed first.
+        private bool runsLevel;
+
         // Owns the scene's lifetime: the content load, and everything loaded for it.
         private CancellationTokenSource lifetime;
         private ContentScope content;
@@ -108,6 +111,7 @@ namespace DarknessRises.Game
 
         private void Awake()
         {
+            runsLevel = level != null;
             Apply();
             lifetime = new CancellationTokenSource();
             content = new ContentScope(new AddressablesContentSource());
@@ -244,24 +248,30 @@ namespace DarknessRises.Game
 
         private void OnDestroy()
         {
-            lifetime.Cancel();
-            lifetime.Dispose();
-            enemyAudioPitch?.Dispose();
-
-            // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
-            if (reportsToRun)
+            try
             {
-                ReportToRun(false);
-            }
+                lifetime.Cancel();
+                lifetime.Dispose();
+                enemyAudioPitch?.Dispose();
 
-            // The Run outlives this scene when the boot owns it.
-            if (ownsRun)
+                // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
+                if (reportsToRun)
+                {
+                    ReportToRun(false);
+                }
+
+                // The Run outlives this scene when the boot owns it.
+                if (ownsRun)
+                {
+                    run.LevelStarted -= OnOwnRunLevelStarted;
+                }
+            }
+            finally
             {
-                run.LevelStarted -= OnOwnRunLevelStarted;
+                // Last, and always, so the Level's memory is released: the scene's objects made from this content
+                // are gone or going with it.
+                content.Dispose();
             }
-
-            // Last: the scene's objects made from this content are gone or going with it.
-            content.Dispose();
         }
 
         private void ShowHealthAndDeath()
@@ -276,7 +286,7 @@ namespace DarknessRises.Game
         private void ReportToRun(bool report)
         {
             reportsToRun = report;
-            if (level != null)
+            if (runsLevel)
             {
                 if (report)
                 {

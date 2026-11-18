@@ -13,14 +13,14 @@ namespace DarknessRises.Game.Gestures
         /// <summary>The held finger lifted.</summary>
         HoldEnded,
 
-        /// <summary>A second Tap soon after and close to the first.</summary>
-        DoubleTap,
-
         /// <summary>One finger moved far and fast, then lifted. Has a direction.</summary>
         Flick,
 
         /// <summary>Two fingers down together, briefly, barely moved.</summary>
         TwoFingerTap,
+
+        /// <summary>A second Two-finger tap soon after and close to the first (judged by the fingers' centroids).</summary>
+        TwoFingerDoubleTap,
 
         /// <summary>Two fingers down together moved far and fast the same way, then lifted. Has their average direction.</summary>
         TwoFingerFlick,

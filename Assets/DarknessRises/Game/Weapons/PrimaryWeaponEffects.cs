@@ -1,5 +1,6 @@
 using System;
 using DarknessRises.Game.Content;
+using DarknessRises.Game.Visibility;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -27,11 +28,14 @@ namespace DarknessRises.Game.Weapons
         private readonly ObjectPool<MuzzleFlashView> muzzleFlashes;
         private readonly ObjectPool<HitSparkView> hitSparks;
         private readonly Action<RaycastHit> onShotHit;
+        private readonly SceneLights lights;
         private int shotsUntilLit;
 
         /// <param name="content">Where the Shot and hit spark prefabs are, already loaded. The effects never release them.</param>
-        public PrimaryWeaponEffects(WeaponDefinition weaponDefinition, LayerMask hitLayers, ILoadedContent content)
+        /// <param name="sceneLights">Where every Muzzle flash, lit Shot and hit spark light is registered as it's created.</param>
+        public PrimaryWeaponEffects(WeaponDefinition weaponDefinition, LayerMask hitLayers, ILoadedContent content, SceneLights sceneLights)
         {
+            lights = sceneLights;
             definition = weaponDefinition;
             shotHitLayers = hitLayers;
             onShotHit = OnShotHit;
@@ -131,6 +135,7 @@ namespace DarknessRises.Game.Weapons
             var shot = Object.Instantiate(shotPrefab, effectsRoot);
             shot.Prepare(shots, definition.Shot, definition.ShotLight, shotGlowMaterial, shotHitLayers, onShotHit);
             shot.gameObject.SetActive(false);
+            lights.Add(shot.GetComponentInChildren<Light>(true));
             return shot;
         }
 
@@ -141,6 +146,7 @@ namespace DarknessRises.Game.Weapons
             flashObject.SetActive(false);
             var flash = flashObject.GetComponent<MuzzleFlashView>();
             flash.Prepare(muzzleFlashes, definition.MuzzleFlash);
+            lights.Add(flashObject.GetComponent<Light>());
             return flash;
         }
 
@@ -149,6 +155,7 @@ namespace DarknessRises.Game.Weapons
             var spark = Object.Instantiate(hitSparkPrefab, effectsRoot);
             spark.gameObject.SetActive(false);
             spark.Prepare(hitSparks, definition.HitSpark);
+            lights.Add(spark.GetComponentInChildren<Light>(true));
             return spark;
         }
 

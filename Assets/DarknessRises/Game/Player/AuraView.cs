@@ -10,6 +10,8 @@ namespace DarknessRises.Game.Player
     {
         [SerializeField] private Light auraLight;
 
+        public Light Light => auraLight;
+
         public void Show(AuraSettings settings)
         {
             auraLight.type = LightType.Point;

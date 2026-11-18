@@ -26,6 +26,9 @@ namespace DarknessRises.Game.Lightning
         private Room room;
         private MaterialPropertyBlock windowProperties;
 
+        /// <summary>The directional light that shines through the windows while Lightning flashes.</summary>
+        public Light KeyLight => keyLight;
+
         private bool flashing;
         private float flashElapsedSeconds;
 

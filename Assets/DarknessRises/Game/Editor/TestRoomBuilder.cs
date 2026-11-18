@@ -7,6 +7,7 @@ using DarknessRises.Game.Editor.Bosses;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Continues;
 using DarknessRises.Game.Editor.Enemies;
+using DarknessRises.Game.Editor.Gestures;
 using DarknessRises.Game.Editor.Grenades;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
@@ -161,6 +162,7 @@ namespace DarknessRises.Game.Editor
             HealthBuilder.Build(gameRoot, character, cameraView);
             ContinueBuilder.Build(gameRoot, character);
             PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>());
+            GestureBuilder.Build(gameRoot, character);
             return gameRoot;
         }
 
@@ -188,6 +190,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("grenade").objectReferenceValue = GrenadeBuilder.LoadOrCreateGrenade();
             serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp(audio);
             serialized.FindProperty("continue").objectReferenceValue = ContinueBuilder.LoadOrCreateContinue();
+            serialized.FindProperty("gestures").objectReferenceValue = GestureBuilder.LoadOrCreateGestures();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
             AudioBuilder.RouteEnemyAudio(EnemyBuilder.LoadOrCreateShambler(), audio);

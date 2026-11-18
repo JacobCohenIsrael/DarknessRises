@@ -1,6 +1,7 @@
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
+using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
@@ -34,6 +35,7 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private GrenadeDefinition grenade;
         [SerializeField, Tooltip("How each Level after the first gets harder.")] private RampDefinition ramp;
         [SerializeField, Tooltip("Coming back after death, once per Run, for watching an ad.")] private ContinueDefinition @continue;
+        [SerializeField, Tooltip("Touch Gestures and Aim assist.")] private GestureDefinition gestures;
 
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
@@ -49,5 +51,6 @@ namespace DarknessRises.Game.Configuration
         public GrenadeDefinition Grenade => grenade;
         public RampDefinition Ramp => ramp;
         public ContinueDefinition Continue => @continue;
+        public GestureDefinition Gestures => gestures;
     }
 }

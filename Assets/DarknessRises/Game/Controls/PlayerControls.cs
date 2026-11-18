@@ -1,3 +1,5 @@
+using System;
+using DarknessRises.Game.Gestures;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -43,7 +45,35 @@ namespace DarknessRises.Game.Controls
         private Vector2 relocatePressed;
         private int relocatePressedFrame = -1;
 
-        public bool IsFireHeld => fire.action.IsPressed();
+        // A press of Fire that started on a UI control (the pause button) is the UI's, until it's let go.
+        private readonly UiPointerFilter ui = new();
+        private bool isFirePressOnUi;
+
+        private Action<InputAction.CallbackContext> onCommand;
+
+        /// <summary>
+        /// Whether Fire is held. A click or tap that starts on a UI control (the pause button) never counts.
+        /// </summary>
+        public bool IsFireHeld
+        {
+            get
+            {
+                var action = fire.action;
+                if (action.WasPressedThisFrame())
+                {
+                    isFirePressOnUi = ui.IsOverControl(lastPointer);
+                }
+
+                return action.IsPressed() && !isFirePressOnUi;
+            }
+        }
+
+        /// <summary>
+        /// Whether the player's last command or aim came from touch (the Touch control scheme) rather than keyboard and mouse.
+        /// Aim assist only helps on touch.
+        /// </summary>
+        public bool IsTouchActive { get; private set; }
+
         public bool WasReloadPressedThisFrame => reload.action.WasPressedThisFrame();
         public bool WasFlarePressedThisFrame => flare.action.WasPressedThisFrame();
         public bool WasSlowMoPressedThisFrame => slowMo.action.WasPressedThisFrame();
@@ -110,6 +140,11 @@ namespace DarknessRises.Game.Controls
 
         private void EnableActions()
         {
+            onCommand ??= OnCommand;
+            aim.action.performed -= onCommand;
+            fire.action.started -= onCommand;
+            aim.action.performed += onCommand;
+            fire.action.started += onCommand;
             aim.action.Enable();
             fire.action.Enable();
             reload.action.Enable();
@@ -129,6 +164,12 @@ namespace DarknessRises.Game.Controls
 
         private void DisableActions()
         {
+            if (onCommand != null)
+            {
+                aim.action.performed -= onCommand;
+                fire.action.started -= onCommand;
+            }
+
             aim.action.Disable();
             fire.action.Disable();
             reload.action.Disable();
@@ -145,10 +186,29 @@ namespace DarknessRises.Game.Controls
             }
         }
 
+        private void OnCommand(InputAction.CallbackContext context)
+        {
+            var device = context.control?.device;
+            IsTouchActive = device is Touchscreen || device is GestureDevice;
+        }
+
         // Keeps the axes that were just pressed (or flipped), not the ones already held, so letting go never relocates.
+        // A Flick's direction is taken whole: it's already a single, fresh press.
         private void OnRelocateChanged(InputAction.CallbackContext context)
         {
             var value = context.ReadValue<Vector2>();
+            if (context.control?.device is GestureDevice)
+            {
+                IsTouchActive = true;
+                if (value != Vector2.zero)
+                {
+                    relocatePressed = value;
+                    relocatePressedFrame = Time.frameCount;
+                }
+
+                return;
+            }
+
             var pressed = new Vector2(NewlyPressed(value.x, relocateHeld.x), NewlyPressed(value.y, relocateHeld.y));
             relocateHeld = value;
             if (pressed != Vector2.zero)

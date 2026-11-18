@@ -134,7 +134,7 @@ A touch pattern that triggers an action, such as a double-tap, a flick or a two-
 _Avoid_: swipe command, touch combo
 
 **Aim assist**:
-On touch only, Shots bend slightly toward the nearest visible Enemy close to the player's finger.
+On touch only, Shots bend slightly toward the nearest visible Enemy close to the player's finger. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast.
 
 ## Weapons
 

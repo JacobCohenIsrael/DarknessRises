@@ -7,8 +7,10 @@ using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Content;
+using DarknessRises.Game.Controls;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
@@ -21,6 +23,7 @@ using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Skills;
+using DarknessRises.Game.Visibility;
 using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
@@ -53,6 +56,13 @@ namespace DarknessRises.Game
         [SerializeField] private GrenadeThrowerView grenadeThrower;
         [SerializeField] private GrenadeHudView grenadeHud;
 
+        [Header("Touch")]
+        [SerializeField, Tooltip("Turns touches into Gestures that press the Gameplay actions.")]
+        private GestureInput gestureInput;
+
+        [SerializeField, Tooltip("Bends Shots toward a visible Enemy near the finger, on touch only.")]
+        private AimAssistView aimAssist;
+
         [SerializeField, Tooltip("Debug/ToggleLightning. Only read in the Editor and debug builds.")]
         private InputActionReference toggleLightning;
 
@@ -79,6 +89,9 @@ namespace DarknessRises.Game
 
         // How fast time runs for Enemies. Slow-mo slows it; the global time scale is never touched.
         private readonly EnemyTime enemyTime = new();
+
+        // The lights that can reveal an Enemy, for Aim assist's idea of a visible Enemy.
+        private readonly SceneLights lights = new();
         private EnemyAudioPitch enemyAudioPitch;
 
         [SerializeField, Tooltip("The Level, in a Level scene. Without one (the Test Room), the Route's Waves run in the one Room.")]
@@ -209,10 +222,13 @@ namespace DarknessRises.Game
                 routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime, content);
             }
 
-            primaryWeapon.Arm(primaryWeapons, content);
+            lights.Add(aura.Light);
+            lights.Add(lightning.KeyLight);
+            lights.Add(characterSkills.FlareLight);
+            primaryWeapon.Arm(primaryWeapons, content, lights);
             ammoHud.Show(primaryWeapon.Weapon);
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
-            grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation, content));
+            grenadeHud.Show(grenadeThrower.Equip(configuration.Grenade, characterAnimation, content, lights));
             ShowHealthAndDeath();
             pauseFlow.Watch(new GamePause(run), run);
             rumbleClip = content.Clip(configuration.Lightning.Rumble.Clip);
@@ -224,6 +240,16 @@ namespace DarknessRises.Game
             flareSkill = skills.Flare.Skill;
             flareHud.Show(skills.Flare.Skill);
             slowMoHud.Show(skills.SlowMo.Skill);
+            if (gestureInput != null)
+            {
+                gestureInput.Use(configuration.Gestures);
+            }
+
+            if (aimAssist != null)
+            {
+                aimAssist.Use(configuration.Gestures.AimAssist, lights);
+            }
+
             isStarted = true;
 
             if (isActiveAndEnabled)

@@ -20,11 +20,19 @@ namespace DarknessRises.Game.Bosses
     /// impact, and the planted foot with only its weak spot lit. The Boss Room camera frames the fight.
     /// </summary>
     /// <remarks>
-    /// During the fight the character stands where Relocate puts it: this places it after the Route walker each frame.
-    /// The fight's first Position is the Route's Boss Station, so the character walks on from there once it's over.
+    /// During the fight the character stands where Relocate puts it, and this is the only thing that moves it: the Route
+    /// walker hands placement over when the fight starts and takes it back when it ends (see
+    /// <see cref="Routes.RouteWalker.HandOverPlacement"/>). The fight's first Position is the Route's Boss Station, so
+    /// the character walks on from there once it's over.
     /// </remarks>
+    // Runs before everything that reads the character's position in Update (the weapon's muzzle and aim, Enemies'
+    // NavMesh targets and attacks, Grenade throws, Aim assist, the reload meter), so they all see the Relocated
+    // Position in the same frame it's placed. After GestureInput (-100), which feeds Relocate flicks.
+    [DefaultExecutionOrder(BeforeCharacterReaders)]
     public sealed class ColossusView : MonoBehaviour
     {
+        private const int BeforeCharacterReaders = -50;
+
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         [SerializeField, Tooltip("The middle of the Boss Room's floor. The definition's Positions are measured from here.")]
@@ -218,6 +226,7 @@ namespace DarknessRises.Game.Bosses
             FrameFight(positions);
             PrepareEffects();
             placesCharacter = true;
+            character.position = relocation.Point;
             defeatLiftElapsedSeconds = float.PositiveInfinity;
             pattern.Begin();
         }
@@ -345,6 +354,11 @@ namespace DarknessRises.Game.Bosses
 
             // The character dashes at full speed; only the Colossus runs on Enemy time.
             relocation.Tick(deltaSeconds);
+            if (placesCharacter)
+            {
+                character.position = relocation.Point;
+            }
+
             if (pattern.IsDefeated)
             {
                 defeatLiftElapsedSeconds += deltaSeconds;
@@ -356,18 +370,14 @@ namespace DarknessRises.Game.Bosses
 
             ShowFoot();
             ShowEffects(deltaSeconds);
+            if (placesCharacter)
+            {
+                KeepFightFramed();
+            }
         }
 
-        // After the Route walker has placed the character on its Station.
-        private void LateUpdate()
+        private void KeepFightFramed()
         {
-            if (!placesCharacter)
-            {
-                return;
-            }
-
-            character.position = relocation.Point;
-
             // A rotated phone or resized window keeps every Position in view.
             const float aspectTolerance = 0.01f;
             if (Mathf.Abs(ViewAspect() - framedAspect) > aspectTolerance)

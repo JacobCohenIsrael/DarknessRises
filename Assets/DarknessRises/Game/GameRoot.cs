@@ -413,6 +413,8 @@ namespace DarknessRises.Game
         // In the Boss fight the Boss decides when Lightning flashes, and its growl is the Rumble.
         private void OnBossFightStarted()
         {
+            // The fight places the character (Relocate) until it's back on the Boss Station.
+            routeWalker.HandOverPlacement();
             run.BeginBossFight();
             lightningScheduler.EnterBossDrivenMode();
             level.Boss.FlashRequested += lightningScheduler.RequestFlash;
@@ -422,6 +424,7 @@ namespace DarknessRises.Game
 
         private void OnBossFightEnded()
         {
+            routeWalker.TakeBackPlacement();
             StopBossLightning();
         }
 

@@ -97,6 +97,9 @@ namespace DarknessRises.Game.Bosses
 
         public bool IsDefeated => Step == ColossusStep.Defeated;
 
+        /// <summary>Whether the Relocate window is open: from the flash until the foot starts to fall.</summary>
+        public bool IsRelocateWindowOpen => Step == ColossusStep.Raised;
+
         /// <summary>Whether the weak spot is lit and takes damage: only while the foot is planted.</summary>
         public bool IsWeakSpotExposed => Step == ColossusStep.Planted;
 

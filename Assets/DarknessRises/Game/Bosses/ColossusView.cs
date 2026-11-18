@@ -281,9 +281,14 @@ namespace DarknessRises.Game.Bosses
             {
                 relocation.IsEnabled = false;
             }
-            else if (controls != null && controls.TryGetRelocateDirection(out var direction))
+            else
             {
-                relocation.TryRelocate(direction);
+                // Back from a Continue in the middle of a Relocate window: the window is still open.
+                relocation.IsEnabled = pattern.IsRelocateWindowOpen;
+                if (controls != null && controls.TryGetRelocateDirection(out var direction))
+                {
+                    relocation.TryRelocate(direction);
+                }
             }
 
             // The character dashes at full speed; only the Colossus runs on Enemy time.

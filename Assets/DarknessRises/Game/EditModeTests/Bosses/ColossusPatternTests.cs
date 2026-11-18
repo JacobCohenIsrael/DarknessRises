@@ -77,9 +77,11 @@ namespace DarknessRises.Game.EditModeTests.Bosses
 
             Run(0.2f);
             Assert.That(relocation.IsEnabled, Is.True, "Open after the flash.");
+            Assert.That(pattern.IsRelocateWindowOpen, Is.True);
 
             Run(1.5f);
             Assert.That(relocation.IsEnabled, Is.False, "Closed once the window is over, before the impact.");
+            Assert.That(pattern.IsRelocateWindowOpen, Is.False);
             Assert.That(pattern.Step, Is.EqualTo(ColossusStep.Falling));
         }
 

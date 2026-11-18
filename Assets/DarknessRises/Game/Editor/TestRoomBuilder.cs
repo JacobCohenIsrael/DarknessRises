@@ -150,6 +150,7 @@ namespace DarknessRises.Game.Editor
             EarsBuilder.BuildEars(character, Camera.main);
             SetReference(gameRoot, "characterAnimation", CharacterBuilder.Animate(character, primaryWeapon));
             SetReference(gameRoot, "ammoHud", HudBuilder.BuildAmmoHud());
+            ReloadFeedbackBuilder.Build(gameRoot, character, Camera.main);
             GrenadeBuilder.Build(gameRoot, character);
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);

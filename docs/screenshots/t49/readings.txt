@@ -1,0 +1,35 @@
+== Setup 
+result: started=True god=True equipped=0 reloading=False progress=0.000 meterActive=False fill=0.000 meterPos=(0.00, 0.00) sound.isPlaying=False sound.clip=none sound.clip.loadState=- timeScale=1
+== AutoReload [0.3]
+result: auto: fired until empty (12 shots counted) | start: equipped=0 reloading=True progress=0.049 meterActive=True fill=0.036 meterPos=(-332.35, 264.64) sound.isPlaying=True sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1 || at 0.30: equipped=0 reloading=True progress=0.305 meterActive=True fill=0.295 meterPos=(-264.09, 236.55) sound.isPlaying=False sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1
+== ContinueTo [0.8]
+result: at 0.80: equipped=0 reloading=True progress=0.810 meterActive=True fill=0.795 meterPos=(-103.19, 170.34) sound.isPlaying=False sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1
+== Finish 
+result: finished: equipped=0 reloading=False progress=0.000 meterActive=False fill=0.978 meterPos=(-38.17, 143.59) sound.isPlaying=True sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1 rounds=12/12
+== ManualReload [0.3]
+result: manual: Reload() started=True rounds=11 | start: equipped=0 reloading=True progress=0.310 meterActive=True fill=0.297 meterPos=(0.00, 127.89) sound.isPlaying=True sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1 || at 0.30: equipped=0 reloading=True progress=0.310 meterActive=True fill=0.297 meterPos=(0.00, 127.89) sound.isPlaying=False sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1
+== Finish 
+result: finished: equipped=0 reloading=False progress=0.000 meterActive=False fill=0.999 meterPos=(0.00, 127.89) sound.isPlaying=True sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1 rounds=12/12
+== Switch [2]
+result: switched by key: equipped=1 reloading=False progress=0.000 meterActive=False fill=0.994 meterPos=(0.00, 127.89) sound.isPlaying=False sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1
+== ManualReload [0.8]
+result: manual: Reload() started=True rounds=29 | start: equipped=1 reloading=True progress=0.149 meterActive=True fill=0.145 meterPos=(0.00, 127.89) sound.isPlaying=True sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1 || at 0.80: equipped=1 reloading=True progress=0.802 meterActive=True fill=0.798 meterPos=(0.00, 127.89) sound.isPlaying=False sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1
+== Finish 
+result: finished: equipped=1 reloading=False progress=0.000 meterActive=False fill=0.998 meterPos=(0.00, 127.89) sound.isPlaying=True sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1 rounds=30/30
+== Switch [3]
+result: switched by key: equipped=2 reloading=False progress=0.000 meterActive=False fill=0.998 meterPos=(0.00, 127.89) sound.isPlaying=False sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1
+== AutoReload [0.3]
+result: auto: fired until empty (60 shots counted) | start: equipped=2 reloading=True progress=0.017 meterActive=True fill=0.013 meterPos=(0.00, 127.89) sound.isPlaying=True sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1 || at 0.30: equipped=2 reloading=True progress=0.300 meterActive=True fill=0.296 meterPos=(0.00, 127.89) sound.isPlaying=False sound.clip=Bullet Impact 21 sound.clip.loadState=Loaded timeScale=1
+== Finish 
+result: finished: equipped=2 reloading=False progress=0.000 meterActive=False fill=0.996 meterPos=(0.00, 127.89) sound.isPlaying=True sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1 rounds=60/60
+== Switch [1]
+result: switched by key: equipped=0 reloading=False progress=0.000 meterActive=False fill=0.996 meterPos=(0.00, 127.89) sound.isPlaying=False sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1
+== PauseMidReload 
+result: paused by Esc: isPaused=True timeScale=0 progress 0.557->0.557 fill 0.557->0.557 over 1.5 s | resumed: progress=0.810
+== Finish 
+result: finished: equipped=0 reloading=False progress=0.000 meterActive=False fill=0.994 meterPos=(0.00, 127.89) sound.isPlaying=False sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1 rounds=12/12
+counts: {"error":0,"warn":0,"log":3}
+# The last Finish above found the clip already over: the reload ended in the ~1-2 s between CLI calls (script compile),
+# longer than the 1.6 s magazine-in. A repeat right after (AudioListener.pause=False, timeScale=1):
+== ManualReload [0.1] / Finish (after pause and resume)
+result: finished: equipped=0 reloading=False progress=0.000 meterActive=False sound.isPlaying=True sound.clip=Metal Impact 7 sound.clip.loadState=Loaded timeScale=1 rounds=12/12

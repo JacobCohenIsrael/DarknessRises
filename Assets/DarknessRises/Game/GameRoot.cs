@@ -50,6 +50,13 @@ namespace DarknessRises.Game
         [SerializeField] private RouteWalker routeWalker;
         [SerializeField] private PrimaryWeaponView primaryWeapon;
         [SerializeField] private AmmoHudView ammoHud;
+
+        [SerializeField, Tooltip("The radial meter by the character while the Primary weapon reloads.")]
+        private ReloadMeterView reloadMeter;
+
+        [SerializeField, Tooltip("The magazine-out and magazine-in sounds of a reload.")]
+        private ReloadSoundView reloadSound;
+
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
@@ -226,6 +233,10 @@ namespace DarknessRises.Game
             lights.Add(characterSkills.FlareLight);
             primaryWeapon.Arm(primaryWeapons, content, lights);
             ammoHud.Show(primaryWeapon.Weapon);
+            reloadMeter.Use(configuration.ReloadFeedback, character);
+            reloadMeter.Show(primaryWeapon.Weapon);
+            reloadSound.Use(configuration.ReloadFeedback, content);
+            reloadSound.Show(primaryWeapon.Weapon);
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
             var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, characterAnimation, content, lights);
             grenadeHud.Show(grenadeCharges);
@@ -486,6 +497,8 @@ namespace DarknessRises.Game
         private void OnPrimaryWeaponSwitched(PrimaryWeapon equipped)
         {
             ammoHud.Show(equipped);
+            reloadMeter.Show(equipped);
+            reloadSound.Show(equipped);
             characterAnimation.ShowWeapon(equipped);
         }
 

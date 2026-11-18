@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Shared
   m_GUID: 8f91c16ef0d1a07498feef7f3fd9df66
   m_SerializeEntries:
+  - m_GUID: 2e071f5b8b8467d45a5e6e24c23c6ad4
+    m_Address: Metal Impact 7
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 373932479250b134c9289d6a734cf6e2
     m_Address: GrenadeExplosion
     m_ReadOnly: 0
@@ -71,6 +77,12 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: ac6034ade498bb94b87620cdf6eac48b
     m_Address: Monster Bite
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: e11a5a019377fbd4c81caa0adcb4c236
+    m_Address: Bullet Impact 21
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e03e7897b8f0a546b662f1353961ca9, type: 3}
   m_Name: LightningDefinition
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Lightning.LightningDefinition
-  minIntervalSeconds: 4
-  maxIntervalSeconds: 6.5
+  minIntervalSeconds: 1.5
+  maxIntervalSeconds: 3.5
   minRumbleDelaySeconds: 0.15
   maxRumbleDelaySeconds: 1.2
   flash:
-    durationSeconds: 1.1
+    durationSeconds: 0.42
     shape:
       serializedVersion: 2
       m_Curve:
@@ -25,61 +25,16 @@ MonoBehaviour:
         time: 0
         value: 0
         inSlope: 0
-        outSlope: 50
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.02
-        value: 1
-        inSlope: 50
-        outSlope: -17.6
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.07
-        value: 0.12
-        inSlope: -17.6
-        outSlope: 14.600001
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.12
-        value: 0.85
-        inSlope: 14.600001
-        outSlope: -4.375
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.2
-        value: 0.5
-        inSlope: -4.375
-        outSlope: -1.4
+        outSlope: 2.5
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
         time: 0.4
-        value: 0.22
-        inSlope: -1.4
-        outSlope: -0.53333336
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.7
-        value: 0.06
-        inSlope: -0.53333336
-        outSlope: -0.19999999
+        value: 1
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
@@ -87,7 +42,7 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 1
         value: 0
-        inSlope: -0.19999999
+        inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
@@ -96,7 +51,9 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    elevationDegrees: 28
+    minElevationDegrees: 23
+    maxElevationDegrees: 33
+    yawJitterDegrees: 10
     keyColor: {r: 0.45, g: 0.65, b: 1, a: 1}
     keyIntensity: 4.5
     shadowStrength: 1
@@ -105,18 +62,23 @@ MonoBehaviour:
     fillElevationDegrees: 45
     fillYawOffsetDegrees: 180
     windowGlowColor: {r: 0.6, g: 1, b: 2.6, a: 1}
-  rumble:
+  storm:
     clip:
       m_AssetGUID: 7dc48ac47b618424f8d032a339525809
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
+    baseVolume: 0.5
+    fadeInSeconds: 1.5
+    fadeOutSeconds: 1.5
+    swellPeakVolume: 0.95
+    swellAttackSeconds: 0.25
+    swellHoldSeconds: 0.5
+    swellReleaseSeconds: 1.8
+    minSwellPitch: 0.94
+    maxSwellPitch: 1.06
+  bossWarning:
     volume: 0.9
-    minPitch: 0.85
-    maxPitch: 1.15
-    minClipStartSeconds: 0.4
-    maxClipStartSeconds: 24
-    holdSeconds: 1
     fadeOutSeconds: 3.5
     cutFadeSeconds: 0.6

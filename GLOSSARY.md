@@ -46,11 +46,11 @@ _Avoid_: prop, cover
 The default state of a Room: no light at all except what the light sources below make.
 
 **Lightning**:
-A brief flash that lights a whole Room, in Rooms that let it in. It comes roughly every five seconds, with nothing to announce it, and its Rumble follows. In a Boss fight, the Boss decides when it flashes, and the Boss's own warning (the Colossus's growl) comes before it.
+A brief flash that lights a whole Room, in Rooms that let it in, from a slightly different angle each time. It comes every few seconds, with nothing to announce it, and its Rumble follows. Under it the storm bed, a thunder loop, plays all the time Lightning reaches the character, fading out in Rooms without windows and back in Rooms with them. In a Boss fight, the Boss decides when it flashes, the storm bed keeps playing, and the Boss's own warning (the Colossus's growl) comes before each flash.
 _Avoid_: strike, flash
 
 **Rumble**:
-The thunder after Lightning: it follows each flash after a short random delay, as from a strike at a varying distance, and no two sound quite alike. It never warns of a flash.
+The swell of the storm after Lightning: the storm bed rises, holds and settles back, a short random delay after each flash, as from a strike at a varying distance, with a small pitch change so no two sound quite alike. It never warns of a flash.
 _Avoid_: thunder (as a name in code)
 
 **Gunfire**:

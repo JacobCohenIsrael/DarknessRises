@@ -16,7 +16,7 @@ namespace DarknessRises.Game.Editor.Content
     /// Groups:
     /// <list type="bullet">
     /// <item><b>Shared</b>: what every Level needs, shipped with the build: the definitions, the character's
-    /// Weapons, Grenade and sounds, and Lightning's Rumble.</item>
+    /// Weapons, Grenade and sounds, and Lightning's storm loop.</item>
     /// <item><b>Enemies</b>: each Enemy type's prefab and sounds, packed one asset per bundle so a Level loads only the
     /// Enemy types it uses. Can change after release.</item>
     /// <item><b>Level 1</b> (one group per Level): the Level's scene. Can change after release.</item>

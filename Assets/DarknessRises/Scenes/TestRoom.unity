@@ -6144,8 +6144,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Lightning.LightningView
   keyLight: {fileID: 403342603}
   fillLight: {fileID: 719579027}
-  rumbleSources:
-  - {fileID: 1171489189}
+  stormSource: {fileID: 1171489189}
+  warningSources:
   - {fileID: 1663483982}
   - {fileID: 1899527289}
 --- !u!4 &899869323
@@ -7351,7 +7351,7 @@ GameObject:
   - component: {fileID: 1171489188}
   - component: {fileID: 1171489189}
   m_Layer: 0
-  m_Name: Rumble 1
+  m_Name: Storm Bed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7387,7 +7387,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -10021,7 +10021,7 @@ GameObject:
   - component: {fileID: 1663483981}
   - component: {fileID: 1663483982}
   m_Layer: 0
-  m_Name: Rumble 2
+  m_Name: Warning 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11779,7 +11779,7 @@ GameObject:
   - component: {fileID: 1899527290}
   - component: {fileID: 1899527289}
   m_Layer: 0
-  m_Name: Rumble 3
+  m_Name: Warning 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

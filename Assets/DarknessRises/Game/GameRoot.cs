@@ -250,9 +250,9 @@ namespace DarknessRises.Game
             }
             ShowHealthAndDeath();
             pauseFlow.Watch(new GamePause(run), run);
-            // The thunder after every flash, and the Boss's growl that warns of its flashes.
+            // The storm that swells after every flash, and the Boss's growl that warns of its flashes.
             var lightningRandom = new SystemRandom();
-            lightning.UseRumble(content.Clip(configuration.Lightning.Rumble.Clip), lightningRandom);
+            lightning.UseStorm(content.Clip(configuration.Lightning.Storm.Clip), lightningRandom, enemyTime);
             var boss = level != null ? configuration.Level.Boss : null;
             if (bossHealthBar != null && level != null && level.Boss != null)
             {
@@ -526,6 +526,7 @@ namespace DarknessRises.Game
             // The Boss runs on Enemy time, so a flash it asks for is timed on it too: Slow-mo stretches both alike.
             var deltaSeconds = Time.deltaTime;
             lightningScheduler.Tick(lightningScheduler.Mode == LightningMode.BossDriven ? enemyTime.Scaled(deltaSeconds) : deltaSeconds);
+            lightning.SetStormAudible(lightningScheduler.IsStormRunning);
         }
 
         private void OnPrimaryWeaponSwitched(PrimaryWeapon equipped)

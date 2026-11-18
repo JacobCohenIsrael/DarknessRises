@@ -58,6 +58,12 @@ namespace DarknessRises.Game.Lightning
         /// <summary>Seconds until the Rumble of the last flash, or infinity when none is coming.</summary>
         public float SecondsUntilRumble => rumblePending ? secondsUntilRumble : float.PositiveInfinity;
 
+        /// <summary>
+        /// Whether the storm reaches the character, so its bed should be heard: Lightning switched on, and either a Room
+        /// that lets it in or a Boss fight.
+        /// </summary>
+        public bool IsStormRunning => IsEnabled && (Mode == LightningMode.BossDriven || RoomLetsLightningIn);
+
         private bool AmbientActive => Mode == LightningMode.Ambient && IsEnabled && RoomLetsLightningIn;
 
         /// <summary>

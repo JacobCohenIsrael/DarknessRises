@@ -4,21 +4,29 @@ using UnityEngine;
 namespace DarknessRises.Game.Lightning
 {
     /// <summary>
-    /// How one Lightning flash looks: an electric-blue key light through the windows that throws long, sharp shadows,
-    /// a shadowless fill so the whole Room shows, and the windows themselves lighting up.
+    /// How one Lightning flash looks: an electric-blue key light through the windows that throws long, sharp shadows
+    /// from a slightly different angle each strike, a shadowless fill so the whole Room shows, and the windows
+    /// themselves lighting up.
     /// </summary>
     [Serializable]
     public sealed class LightningFlashSettings
     {
         [SerializeField, Min(0.05f), Tooltip("Seconds from the strike until the Room is back to Darkness.")]
-        private float durationSeconds = 1.1f;
+        private float durationSeconds = 0.42f;
 
         [SerializeField, Tooltip("Brightness over the flash, from 0 (dark) to 1 (peak), over normalized time 0 to 1. " +
-                                 "The default strikes, flickers once and fades.")]
+                                 "The default is a single smooth spike that peaks 40% of the way through.")]
         private AnimationCurve shape = DefaultShape();
 
-        [SerializeField, Range(5f, 85f), Tooltip("Degrees above the horizon the Lightning comes in at. Lower throws longer shadows.")]
-        private float elevationDegrees = 28f;
+        [Header("Angle (varies with every flash)")]
+        [SerializeField, Range(5f, 85f), Tooltip("Lowest degrees above the horizon a strike comes in at. Lower throws longer shadows.")]
+        private float minElevationDegrees = 23f;
+
+        [SerializeField, Range(5f, 85f), Tooltip("Highest degrees above the horizon a strike comes in at.")]
+        private float maxElevationDegrees = 33f;
+
+        [SerializeField, Range(0f, 45f), Tooltip("Degrees a strike's direction may turn either way from the Room's Lightning direction.")]
+        private float yawJitterDegrees = 10f;
 
         [Header("Key light (the only shadow-casting light)")]
         [SerializeField] private Color keyColor = new(0.45f, 0.65f, 1f);
@@ -47,7 +55,7 @@ namespace DarknessRises.Game.Lightning
         private Color windowGlowColor = new(0.6f, 1f, 2.6f);
 
         public float DurationSeconds => durationSeconds;
-        public float ElevationDegrees => elevationDegrees;
+        public LightningAngles Angles => new(minElevationDegrees, maxElevationDegrees, yawJitterDegrees);
         public Color KeyColor => keyColor;
         public float KeyIntensity => keyIntensity;
         public float ShadowStrength => shadowStrength;
@@ -68,36 +76,22 @@ namespace DarknessRises.Game.Lightning
             return Mathf.Clamp01(shape.Evaluate(elapsedSeconds / durationSeconds));
         }
 
+        /// <summary>Keeps the elevation range the right way round while it's edited.</summary>
+        public void Validate()
+        {
+            maxElevationDegrees = Mathf.Max(maxElevationDegrees, minElevationDegrees);
+        }
+
         private static AnimationCurve DefaultShape()
         {
-            // Strike, a quick dip, a second flicker, then a long fade back to Darkness.
-            return Linear(
-                new Vector2(0f, 0f),
-                new Vector2(0.02f, 1f),
-                new Vector2(0.07f, 0.12f),
-                new Vector2(0.12f, 0.85f),
-                new Vector2(0.2f, 0.5f),
-                new Vector2(0.4f, 0.22f),
-                new Vector2(0.7f, 0.06f),
-                new Vector2(1f, 0f));
-        }
-
-        private static AnimationCurve Linear(params Vector2[] points)
-        {
-            var keys = new Keyframe[points.Length];
-            for (var i = 0; i < points.Length; i++)
-            {
-                var inTangent = i > 0 ? Slope(points[i - 1], points[i]) : 0f;
-                var outTangent = i < points.Length - 1 ? Slope(points[i], points[i + 1]) : 0f;
-                keys[i] = new Keyframe(points[i].x, points[i].y, inTangent, outTangent);
-            }
-
-            return new AnimationCurve(keys);
-        }
-
-        private static float Slope(Vector2 from, Vector2 to)
-        {
-            return (to.y - from.y) / (to.x - from.x);
+            // One smooth spike, like the 2019 strike: up to the peak 40% of the way through, eased back to Darkness.
+            // Default curve shape only; the authored curve on the asset is what plays.
+            const float peakTime = 0.4f;
+            const float riseSlope = 1f / peakTime;
+            return new AnimationCurve(
+                new Keyframe(0f, 0f, 0f, riseSlope),
+                new Keyframe(peakTime, 1f, 0f, 0f),
+                new Keyframe(1f, 0f, 0f, 0f));
         }
     }
 }

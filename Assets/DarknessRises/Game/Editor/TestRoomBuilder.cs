@@ -52,10 +52,10 @@ namespace DarknessRises.Game.Editor
         private const string LightingSettingsPath = LightingFolder + "/Darkness.lighting";
         private const string LightningDefinitionPath = ConfigurationFolder + "/LightningDefinition.asset";
 
-        // Placeholder Rumble from the old Free Pack sounds (approved as placeholders): real thunder, with distinct strikes
-        // from 0.6 s to 30.5 s. It replaces the earlier placeholder, an earthquake's steady roar.
-        private const string RumbleClipPath = "Assets/Free Pack/Thunder strikes 30 second- Loop.wav";
-        private const string FormerRumbleClipPath = "Assets/Free Pack/Earthquake 3 - Big.wav";
+        // Placeholder storm loop from the old Free Pack sounds (approved as placeholders): real thunder, with distinct
+        // strikes from 0.6 s to 30.5 s, looped as in 2019. It replaces the earlier placeholder, an earthquake's steady roar.
+        private const string StormClipPath = "Assets/Free Pack/Thunder strikes 30 second- Loop.wav";
+        private const string FormerStormClipPath = "Assets/Free Pack/Earthquake 3 - Big.wav";
 
         private const string LitShaderName = "Universal Render Pipeline/Lit";
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
@@ -208,17 +208,17 @@ namespace DarknessRises.Game.Editor
         {
             var lightning = LoadOrCreate<LightningDefinition>(LightningDefinitionPath);
             var serialized = new SerializedObject(lightning);
-            var rumbleClip = serialized.FindProperty("rumble.clip");
-            var referenced = AddressableContent.Referenced<AudioClip>(rumbleClip);
-            if (referenced != null && AssetDatabase.GetAssetPath(referenced) == FormerRumbleClipPath)
+            var stormClip = serialized.FindProperty("storm.clip");
+            var referenced = AddressableContent.Referenced<AudioClip>(stormClip);
+            if (referenced != null && AssetDatabase.GetAssetPath(referenced) == FormerStormClipPath)
             {
                 // The former placeholder leaves the content too, so no bundle carries it.
-                AddressableContent.Setup().RemoveAssetEntry(AssetDatabase.AssetPathToGUID(FormerRumbleClipPath));
-                AddressableContent.Reference(rumbleClip, LoadRumbleClip(), AddressableContent.SharedGroup);
+                AddressableContent.Setup().RemoveAssetEntry(AssetDatabase.AssetPathToGUID(FormerStormClipPath));
+                AddressableContent.Reference(stormClip, LoadStormClip(), AddressableContent.SharedGroup);
             }
             else
             {
-                AddressableContent.ReferenceIfEmpty(rumbleClip, LoadRumbleClip, AddressableContent.SharedGroup);
+                AddressableContent.ReferenceIfEmpty(stormClip, LoadStormClip, AddressableContent.SharedGroup);
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
@@ -226,11 +226,11 @@ namespace DarknessRises.Game.Editor
             return lightning;
         }
 
-        // The Rumble plays in 2D, so mono loses nothing and halves its memory; it's long and plays every few seconds,
+        // The storm plays in 2D, so mono loses nothing and halves its memory; it's long and loops all the time,
         // so it stays compressed in memory and decodes as it plays rather than taking its full PCM size.
-        private static AudioClip LoadRumbleClip()
+        private static AudioClip LoadStormClip()
         {
-            if (AssetImporter.GetAtPath(RumbleClipPath) is AudioImporter importer)
+            if (AssetImporter.GetAtPath(StormClipPath) is AudioImporter importer)
             {
                 var settings = importer.defaultSampleSettings;
                 if (!importer.forceToMono || settings.loadType != AudioClipLoadType.CompressedInMemory)
@@ -242,7 +242,7 @@ namespace DarknessRises.Game.Editor
                 }
             }
 
-            return AssetDatabase.LoadAssetAtPath<AudioClip>(RumbleClipPath);
+            return AssetDatabase.LoadAssetAtPath<AudioClip>(StormClipPath);
         }
 
         /// <summary>
@@ -454,13 +454,18 @@ namespace DarknessRises.Game.Editor
             fillLight.type = LightType.Directional;
             fillLight.GetUniversalAdditionalLightData();
 
-            // Three sources for the Rumbles and the Boss's warning, so a new one lets the fading ones roll on.
-            var rumbles = new AudioSource[3];
-            for (var i = 0; i < rumbles.Length; i++)
+            // The storm bed loops on its own source; two more for the Boss's warning, so a new one lets a fading one roll on.
+            var storm = new GameObject("Storm Bed", typeof(AudioSource)).GetComponent<AudioSource>();
+            storm.transform.SetParent(lightning.transform);
+            storm.playOnAwake = false;
+            storm.loop = true;
+
+            var warnings = new AudioSource[2];
+            for (var i = 0; i < warnings.Length; i++)
             {
-                rumbles[i] = new GameObject($"Rumble {i + 1}", typeof(AudioSource)).GetComponent<AudioSource>();
-                rumbles[i].transform.SetParent(lightning.transform);
-                rumbles[i].playOnAwake = false;
+                warnings[i] = new GameObject($"Warning {i + 1}", typeof(AudioSource)).GetComponent<AudioSource>();
+                warnings[i].transform.SetParent(lightning.transform);
+                warnings[i].playOnAwake = false;
             }
 
             // Lightning is the main light: the one light URP renders real-time shadows for.
@@ -469,12 +474,13 @@ namespace DarknessRises.Game.Editor
             var view = lightning.GetComponent<LightningView>();
             SetReference(view, "keyLight", keyLight);
             SetReference(view, "fillLight", fillLight);
+            SetReference(view, "stormSource", storm);
             var serialized = new SerializedObject(view);
-            var sources = serialized.FindProperty("rumbleSources");
-            sources.arraySize = rumbles.Length;
-            for (var i = 0; i < rumbles.Length; i++)
+            var sources = serialized.FindProperty("warningSources");
+            sources.arraySize = warnings.Length;
+            for (var i = 0; i < warnings.Length; i++)
             {
-                sources.GetArrayElementAtIndex(i).objectReferenceValue = rumbles[i];
+                sources.GetArrayElementAtIndex(i).objectReferenceValue = warnings[i];
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();

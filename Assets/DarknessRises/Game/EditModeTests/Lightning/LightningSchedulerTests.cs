@@ -259,6 +259,24 @@ namespace DarknessRises.Game.EditModeTests.Lightning
             Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "rumble", "flash" }));
         }
 
+        [Test]
+        public void TheStormRunsInRoomsWithWindowsAndThroughoutABossFight_ButNotWithLightningOff()
+        {
+            Assert.That(scheduler.IsStormRunning, NUnit.Framework.Is.False);
+
+            scheduler.EnterRoom(letsLightningIn: true);
+            Assert.That(scheduler.IsStormRunning, NUnit.Framework.Is.True);
+
+            scheduler.EnterRoom(letsLightningIn: false);
+            Assert.That(scheduler.IsStormRunning, NUnit.Framework.Is.False);
+
+            scheduler.EnterBossDrivenMode();
+            Assert.That(scheduler.IsStormRunning, NUnit.Framework.Is.True);
+
+            scheduler.SetEnabled(false);
+            Assert.That(scheduler.IsStormRunning, NUnit.Framework.Is.False);
+        }
+
         [TestCase(0f, 5f, 0.1f, 1f)]
         [TestCase(5f, 4f, 0.1f, 1f)]
         [TestCase(4f, 5f, -0.1f, 1f)]

@@ -4,11 +4,11 @@ using System.Collections.Generic;
 namespace DarknessRises.Game.Lightning
 {
     /// <summary>
-    /// The volume of one playing Rumble over time: full until the flash, then fading out. It can be told to fade out
-    /// sooner (leaving the Room), but it never stops dead. Plain C# (ADR 0003); <see cref="LightningView"/> keeps one
-    /// per Rumble AudioSource and applies <see cref="Volume"/> to it.
+    /// The volume of one playing Boss warning (the growl) over time: full until the flash, then fading out. It can be
+    /// told to fade out sooner (leaving the Room), but it never stops dead. Plain C# (ADR 0003); <see cref="LightningView"/>
+    /// keeps one per warning AudioSource and applies <see cref="Volume"/> to it.
     /// </summary>
-    public sealed class RumbleVoice
+    public sealed class WarningVoice
     {
         private float peakVolume;
         private float elapsedSeconds;
@@ -29,7 +29,7 @@ namespace DarknessRises.Game.Lightning
         {
             if (volume < 0f || secondsUntilFade < 0f || fadeSeconds < 0f)
             {
-                throw new ArgumentOutOfRangeException(nameof(volume), "A Rumble's volume and times can't be negative.");
+                throw new ArgumentOutOfRangeException(nameof(volume), "A warning's volume and times can't be negative.");
             }
 
             peakVolume = volume;
@@ -94,14 +94,14 @@ namespace DarknessRises.Game.Lightning
         }
 
         /// <summary>
-        /// Which of <paramref name="voices"/> a new Rumble should play on: a silent one if there is one, otherwise the
-        /// quietest, so a new Rumble cuts off as little as possible.
+        /// Which of <paramref name="voices"/> a new warning should play on: a silent one if there is one, otherwise the
+        /// quietest, so a new warning cuts off as little as possible.
         /// </summary>
-        public static int PickFor(IReadOnlyList<RumbleVoice> voices)
+        public static int PickFor(IReadOnlyList<WarningVoice> voices)
         {
             if (voices == null || voices.Count == 0)
             {
-                throw new ArgumentException("There's no Rumble voice to pick.", nameof(voices));
+                throw new ArgumentException("There's no warning voice to pick.", nameof(voices));
             }
 
             var picked = 0;

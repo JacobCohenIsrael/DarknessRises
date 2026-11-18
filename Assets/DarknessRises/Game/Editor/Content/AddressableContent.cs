@@ -76,7 +76,7 @@ namespace DarknessRises.Game.Editor.Content
         /// <summary>
         /// Marks what every scene shares as Shared content, so each scene's bundle depends on one copy of it instead of
         /// carrying its own: the definitions under <paramref name="configurationFolder"/> (new ones join by being put
-        /// there), the input actions and the audio mixer, whose exposed parameters must be the ones the game sets.
+        /// there) and the input actions.
         /// </summary>
         public static void MarkShared(string configurationFolder, params string[] assetPaths)
         {

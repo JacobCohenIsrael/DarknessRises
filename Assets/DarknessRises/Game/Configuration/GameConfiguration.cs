@@ -1,4 +1,3 @@
-using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Gestures;
@@ -30,7 +29,6 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private LightningDefinition lightning;
         [SerializeField] private FlareDefinition flare;
         [SerializeField] private SlowMoDefinition slowMo;
-        [SerializeField] private AudioDefinition audio;
         [SerializeField, Tooltip("The Level the game boots into.")] private LevelDefinition level;
         [SerializeField] private GrenadeDefinition grenade;
         [SerializeField, Tooltip("How each Level after the first gets harder.")] private RampDefinition ramp;
@@ -46,7 +44,6 @@ namespace DarknessRises.Game.Configuration
         public LightningDefinition Lightning => lightning;
         public FlareDefinition Flare => flare;
         public SlowMoDefinition SlowMo => slowMo;
-        public AudioDefinition Audio => audio;
         public LevelDefinition Level => level;
         public GrenadeDefinition Grenade => grenade;
         public RampDefinition Ramp => ramp;

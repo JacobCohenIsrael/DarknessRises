@@ -1,6 +1,4 @@
-using DarknessRises.Game.Audio;
 using DarknessRises.Game.Debugging;
-using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Runs;
@@ -18,10 +16,9 @@ namespace DarknessRises.Game.Editor.Runs
         private const string JumpToRampLevelBinding = "<Keyboard>/f2";
 
         /// <summary>Loads the Ramp definition, creating it, the Runner and its prefab if they're missing.</summary>
-        public static RampDefinition LoadOrCreateRamp(AudioDefinition audio)
+        public static RampDefinition LoadOrCreateRamp()
         {
             var runner = EnemyBuilder.LoadOrCreateRunner();
-            AudioBuilder.RouteEnemyAudio(runner, audio);
 
             var ramp = TestRoomBuilder.LoadOrCreate<RampDefinition>(RampDefinitionPath);
             var serialized = new SerializedObject(ramp);

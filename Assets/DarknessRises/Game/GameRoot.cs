@@ -95,7 +95,6 @@ namespace DarknessRises.Game
 
         // The lights that can reveal an Enemy, for Aim assist's idea of a visible Enemy.
         private readonly SceneLights lights = new();
-        private EnemyAudioPitch enemyAudioPitch;
 
         [SerializeField, Tooltip("The Level, in a Level scene. Without one (the Test Room), the Route's Waves run in the one Room.")]
         private LevelView level;
@@ -189,9 +188,6 @@ namespace DarknessRises.Game
             var primaryWeapons = PrimaryWeapons;
             await GameContent.For(configuration, primaryWeapons, level != null, rampStep).LoadAsync(content, cancellationToken);
 
-            // At least a frame after Awake: a mixer parameter set before the mixer's first update can be overwritten by its snapshot.
-            await UniTask.NextFrame(cancellationToken);
-
             // Runtime objects (pools, effects) are created in the active scene, so they go when this scene does.
             if (gameObject.scene.isLoaded && SceneManager.GetActiveScene() != gameObject.scene)
             {
@@ -270,7 +266,6 @@ namespace DarknessRises.Game
             }
 
             lightningScheduler.EnterRoom(room.LetsLightningIn);
-            enemyAudioPitch = new EnemyAudioPitch(configuration.Audio, enemyTime);
 
             // The Test Room has no beats: it starts walking at once.
             if (level == null)
@@ -324,7 +319,6 @@ namespace DarknessRises.Game
             {
                 lifetime.Cancel();
                 lifetime.Dispose();
-                enemyAudioPitch?.Dispose();
 
                 // By the subscription made, not by Unity's null check: on scene unload the source may already be destroyed.
                 if (reportsToRun)

@@ -17,12 +17,17 @@ namespace DarknessRises.Game.Lightning
         [SerializeField, Min(0f), Tooltip("Seconds into the clip where the Rumble starts. Pick a spot that swells into the flash.")]
         private float clipStartSeconds = 8.3f;
 
-        [SerializeField, Min(0f), Tooltip("Seconds the Rumble takes to fade out once the flash has struck.")]
-        private float fadeOutSeconds = 1.6f;
+        [SerializeField, Min(0f), Tooltip("Seconds the thunder rolls on, fading out, once the flash has struck.")]
+        private float fadeOutSeconds = 3.5f;
+
+        [SerializeField, Min(0f), Tooltip("Seconds a Rumble takes to fade out when it's cut short (leaving the Room, " +
+                                          "Lightning switched off), so it never stops dead.")]
+        private float cutFadeSeconds = 0.6f;
 
         public AssetReferenceT<AudioClip> Clip => clip;
         public float Volume => volume;
         public float ClipStartSeconds => clipStartSeconds;
         public float FadeOutSeconds => fadeOutSeconds;
+        public float CutFadeSeconds => cutFadeSeconds;
     }
 }

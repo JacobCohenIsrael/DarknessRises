@@ -15,12 +15,6 @@ MonoBehaviour:
   m_GroupName: Shared
   m_GUID: 8f91c16ef0d1a07498feef7f3fd9df66
   m_SerializeEntries:
-  - m_GUID: 0fc8da764e90fb94287f053470bdf171
-    m_Address: GameMixer
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
   - m_GUID: 373932479250b134c9289d6a734cf6e2
     m_Address: GrenadeExplosion
     m_ReadOnly: 0

@@ -45,7 +45,7 @@ namespace DarknessRises.Game.Editor
         /// <summary>Marks the content every scene shares, once the builders have made it.</summary>
         private static void MarkSharedContent()
         {
-            AddressableContent.MarkShared(ConfigurationFolder, Weapons.PistolBuilder.ControlsPath, Audio.AudioBuilder.MixerPath);
+            AddressableContent.MarkShared(ConfigurationFolder, Weapons.PistolBuilder.ControlsPath);
         }
 
         /// <summary>

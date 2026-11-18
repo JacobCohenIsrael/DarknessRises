@@ -185,15 +185,12 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
             serialized.FindProperty("flare").objectReferenceValue = SkillsBuilder.LoadOrCreateFlare();
             serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();
-            var audio = AudioBuilder.LoadOrCreateAudio();
-            serialized.FindProperty("audio").objectReferenceValue = audio;
             serialized.FindProperty("grenade").objectReferenceValue = GrenadeBuilder.LoadOrCreateGrenade();
-            serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp(audio);
+            serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp();
             serialized.FindProperty("continue").objectReferenceValue = ContinueBuilder.LoadOrCreateContinue();
             serialized.FindProperty("gestures").objectReferenceValue = GestureBuilder.LoadOrCreateGestures();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
-            AudioBuilder.RouteEnemyAudio(EnemyBuilder.LoadOrCreateShambler(), audio);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
             EditorUtility.SetDirty(player);
@@ -425,9 +422,14 @@ namespace DarknessRises.Game.Editor
             fillLight.type = LightType.Directional;
             fillLight.GetUniversalAdditionalLightData();
 
-            var rumble = new GameObject("Rumble", typeof(AudioSource)).GetComponent<AudioSource>();
-            rumble.transform.SetParent(lightning.transform);
-            rumble.playOnAwake = false;
+            // Two Rumble sources, so a new Rumble lets a fading one roll on.
+            var rumbles = new AudioSource[2];
+            for (var i = 0; i < rumbles.Length; i++)
+            {
+                rumbles[i] = new GameObject($"Rumble {i + 1}", typeof(AudioSource)).GetComponent<AudioSource>();
+                rumbles[i].transform.SetParent(lightning.transform);
+                rumbles[i].playOnAwake = false;
+            }
 
             // Lightning is the main light: the one light URP renders real-time shadows for.
             RenderSettings.sun = keyLight;
@@ -435,7 +437,15 @@ namespace DarknessRises.Game.Editor
             var view = lightning.GetComponent<LightningView>();
             SetReference(view, "keyLight", keyLight);
             SetReference(view, "fillLight", fillLight);
-            SetReference(view, "rumbleSource", rumble);
+            var serialized = new SerializedObject(view);
+            var sources = serialized.FindProperty("rumbleSources");
+            sources.arraySize = rumbles.Length;
+            for (var i = 0; i < rumbles.Length; i++)
+            {
+                sources.GetArrayElementAtIndex(i).objectReferenceValue = rumbles[i];
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
         }
 

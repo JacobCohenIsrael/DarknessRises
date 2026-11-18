@@ -54,7 +54,6 @@ MonoBehaviour:
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
-    outputGroup: {fileID: 1199663272804557088, guid: 0fc8da764e90fb94287f053470bdf171, type: 2}
     volume: 0.8
     hearingRange: 25
   death:

@@ -36,12 +36,37 @@ namespace DarknessRises.Game.Content
             }
         }
 
-        /// <summary>Loads everything listed into <paramref name="scope"/>, all at once.</summary>
+        /// <summary>
+        /// Loads everything listed into <paramref name="scope"/>, all at once. Clips come with their audio data loaded, so
+        /// no sound is decoded lazily on first play or measured before it's ready (on WebGL the browser decodes audio
+        /// asynchronously, after the clip asset itself has arrived).
+        /// </summary>
         public UniTask LoadAsync(ContentScope scope, CancellationToken cancellationToken)
         {
-            return UniTask.WhenAll(
-                scope.LoadAssetsAsync<GameObject>(prefabs, cancellationToken),
-                scope.LoadAssetsAsync<AudioClip>(clips, cancellationToken));
+            var loads = new UniTask[clips.Count + 1];
+            loads[0] = scope.LoadAssetsAsync<GameObject>(prefabs, cancellationToken);
+            for (var i = 0; i < clips.Count; i++)
+            {
+                loads[i + 1] = LoadClipAsync(scope, clips[i], cancellationToken);
+            }
+
+            return UniTask.WhenAll(loads);
+        }
+
+        private static async UniTask LoadClipAsync(ContentScope scope, object key, CancellationToken cancellationToken)
+        {
+            var clip = await scope.LoadAssetAsync<AudioClip>(key, cancellationToken);
+            if (clip == null || clip.loadState == AudioDataLoadState.Loaded)
+            {
+                return;
+            }
+
+            clip.LoadAudioData();
+            await UniTask.WaitWhile(clip, loading => loading.loadState == AudioDataLoadState.Loading, cancellationToken: cancellationToken);
+            if (clip.loadState == AudioDataLoadState.Failed)
+            {
+                Debug.LogWarning($"[Content] Couldn't load the audio data of {clip.name}; it plays silently.", clip);
+            }
         }
 
         private static void AddKey(List<object> keys, AssetReference reference)

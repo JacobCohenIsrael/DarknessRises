@@ -4,7 +4,7 @@ using UnityEngine;
 namespace DarknessRises.Game.Lightning
 {
     /// <summary>
-    /// How one Lightning flash looks: a cold key light through the windows that throws long, sharp shadows,
+    /// How one Lightning flash looks: an electric-blue key light through the windows that throws long, sharp shadows,
     /// a shadowless fill so the whole Room shows, and the windows themselves lighting up.
     /// </summary>
     [Serializable]
@@ -21,16 +21,16 @@ namespace DarknessRises.Game.Lightning
         private float elevationDegrees = 28f;
 
         [Header("Key light (the only shadow-casting light)")]
-        [SerializeField] private Color keyColor = new(0.78f, 0.87f, 1f);
+        [SerializeField] private Color keyColor = new(0.45f, 0.65f, 1f);
 
         [SerializeField, Min(0f), Tooltip("URP directional light intensity at the peak of the flash.")]
-        private float keyIntensity = 3.2f;
+        private float keyIntensity = 4.5f;
 
         [SerializeField, Range(0f, 1f), Tooltip("How dark the shadows are. 1 is fully black.")]
         private float shadowStrength = 1f;
 
         [Header("Fill light (shadowless)")]
-        [SerializeField] private Color fillColor = new(0.45f, 0.55f, 0.85f);
+        [SerializeField] private Color fillColor = new(0.25f, 0.4f, 1f);
 
         [SerializeField, Min(0f), Tooltip("URP directional light intensity at the peak, lighting the whole Room.")]
         private float fillIntensity = 0.6f;
@@ -44,7 +44,7 @@ namespace DarknessRises.Game.Lightning
 
         [Header("Windows")]
         [SerializeField, ColorUsage(false, true), Tooltip("The sky seen through the windows at the peak of the flash.")]
-        private Color windowGlowColor = new(1.4f, 1.6f, 2f);
+        private Color windowGlowColor = new(0.6f, 1f, 2.6f);
 
         public float DurationSeconds => durationSeconds;
         public float ElevationDegrees => elevationDegrees;

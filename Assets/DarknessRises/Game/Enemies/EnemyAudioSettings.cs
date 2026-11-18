@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Audio;
 
 namespace DarknessRises.Game.Enemies
 {
@@ -24,9 +23,6 @@ namespace DarknessRises.Game.Enemies
         [SerializeField, Tooltip("Played when the Wind-up ends and the Enemy strikes, whether or not it lands.")]
         private AssetReferenceT<AudioClip> attackClip = new(string.Empty);
 
-        [SerializeField, Tooltip("Mixer group the Enemy's sounds go through. Its pitch follows the Enemy time scale, so Slow-mo slows them.")]
-        private AudioMixerGroup outputGroup;
-
         [SerializeField, Range(0f, 1f)]
         private float volume = 0.8f;
 
@@ -38,7 +34,6 @@ namespace DarknessRises.Game.Enemies
         public AssetReferenceT<AudioClip> DeathClip => deathClip;
         public AssetReferenceT<AudioClip> WindUpClip => windUpClip;
         public AssetReferenceT<AudioClip> AttackClip => attackClip;
-        public AudioMixerGroup OutputGroup => outputGroup;
         public float Volume => volume;
         public float HearingRange => hearingRange;
     }

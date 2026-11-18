@@ -21,9 +21,12 @@ namespace DarknessRises.Game.Gestures
 
         /// <summary>Two fingers down together, briefly, barely moved.</summary>
         TwoFingerTap,
+
+        /// <summary>Two fingers down together moved far and fast the same way, then lifted. Has their average direction.</summary>
+        TwoFingerFlick,
     }
 
-    /// <summary>A recognized Gesture: what it was, where, and for a Flick which way (screen space, x right, y up).</summary>
+    /// <summary>A recognized Gesture: what it was, where, and for a Flick or Two-finger flick which way (screen space, x right, y up).</summary>
     public readonly struct Gesture
     {
         public Gesture(GestureKind kind, Vector2 position, float time, Vector2 direction = default)
@@ -38,7 +41,7 @@ namespace DarknessRises.Game.Gestures
         public Vector2 Position { get; }
         public float Time { get; }
 
-        /// <summary>A Flick's unit direction. Zero for the other Gestures.</summary>
+        /// <summary>A Flick's or Two-finger flick's unit direction. Zero for the other Gestures.</summary>
         public Vector2 Direction { get; }
     }
 }

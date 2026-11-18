@@ -30,8 +30,17 @@ namespace DarknessRises.Game.Gestures
         [SerializeField, Min(0f), Tooltip("Seconds a Flick may take at most, from touching down to lifting.")]
         private float flickMaxSeconds = 0.3f;
 
-        [SerializeField, Min(0f), Tooltip("Seconds at most between the two fingers of a Two-finger tap touching down.")]
+        [SerializeField, Min(0f), Tooltip("Seconds at most between the two fingers of a Two-finger tap or Two-finger flick touching down.")]
         private float twoFingerTapWindowSeconds = 0.15f;
+
+        [SerializeField, Min(0f), Tooltip("How far each finger of a Two-finger flick must move, in screen units.")]
+        private float twoFingerFlickMinDistance = 0.08f;
+
+        [SerializeField, Min(0f), Tooltip("Seconds a Two-finger flick may take at most, from the first finger touching down to the last lifting.")]
+        private float twoFingerFlickMaxSeconds = 0.35f;
+
+        [SerializeField, Range(0f, 180f), Tooltip("Degrees at most between the two fingers' movements: how parallel a Two-finger flick must be.")]
+        private float twoFingerFlickMaxAngleDegrees = 35f;
 
         public GestureThresholds()
         {
@@ -45,7 +54,10 @@ namespace DarknessRises.Game.Gestures
             float doubleTapMaxDistance,
             float flickMinDistance,
             float flickMaxSeconds,
-            float twoFingerTapWindowSeconds)
+            float twoFingerTapWindowSeconds,
+            float twoFingerFlickMinDistance = 0.08f,
+            float twoFingerFlickMaxSeconds = 0.35f,
+            float twoFingerFlickMaxAngleDegrees = 35f)
         {
             this.tapMaxSeconds = tapMaxSeconds;
             this.tapMaxMovement = tapMaxMovement;
@@ -55,6 +67,9 @@ namespace DarknessRises.Game.Gestures
             this.flickMinDistance = flickMinDistance;
             this.flickMaxSeconds = flickMaxSeconds;
             this.twoFingerTapWindowSeconds = twoFingerTapWindowSeconds;
+            this.twoFingerFlickMinDistance = twoFingerFlickMinDistance;
+            this.twoFingerFlickMaxSeconds = twoFingerFlickMaxSeconds;
+            this.twoFingerFlickMaxAngleDegrees = twoFingerFlickMaxAngleDegrees;
         }
 
         public float TapMaxSeconds => tapMaxSeconds;
@@ -65,5 +80,8 @@ namespace DarknessRises.Game.Gestures
         public float FlickMinDistance => flickMinDistance;
         public float FlickMaxSeconds => flickMaxSeconds;
         public float TwoFingerTapWindowSeconds => twoFingerTapWindowSeconds;
+        public float TwoFingerFlickMinDistance => twoFingerFlickMinDistance;
+        public float TwoFingerFlickMaxSeconds => twoFingerFlickMaxSeconds;
+        public float TwoFingerFlickMaxAngleDegrees => twoFingerFlickMaxAngleDegrees;
     }
 }

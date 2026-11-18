@@ -2,6 +2,7 @@ using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
+using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
@@ -38,6 +39,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The reload meter and sounds, shared by every Primary weapon.")]
         private ReloadFeedbackSettings reloadFeedback = new();
 
+        [SerializeField, Tooltip("The health bar across the top of the HUD during a Boss fight, shared by every Boss.")]
+        private BossHealthBarSettings bossHealthBar = new();
+
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
         public RouteDefinition Route => route;
@@ -53,5 +57,6 @@ namespace DarknessRises.Game.Configuration
         public ContinueDefinition Continue => @continue;
         public GestureDefinition Gestures => gestures;
         public ReloadFeedbackSettings ReloadFeedback => reloadFeedback;
+        public BossHealthBarSettings BossHealthBar => bossHealthBar;
     }
 }

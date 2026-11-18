@@ -102,13 +102,17 @@ namespace DarknessRises.Game.Weapons
             return true;
         }
 
+        // Something that can't be hurt by this Shot (the Colossus's foot off its weak spot or outside the damage
+        // window) gets a dull spark, so the player can tell what does and doesn't hurt. Walls keep the normal spark.
         private void OnShotHit(RaycastHit hit)
         {
-            hitSparks.Get().Spark(hit.point, hit.normal);
+            var hurt = true;
             if (hit.collider.TryGetComponent<IShotTarget>(out var target))
             {
-                target.TakeShot(definition.Damage);
+                hurt = target.TakeShot(definition.Damage);
             }
+
+            hitSparks.Get().Spark(hit.point, hit.normal, dull: !hurt);
         }
 
         // Enough pooled Shots for a held trigger with every Shot flying its full range.

@@ -57,6 +57,9 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The magazine-out and magazine-in sounds of a reload.")]
         private ReloadSoundView reloadSound;
 
+        [SerializeField, Tooltip("The Boss's name and hit points across the top of the HUD during a Boss fight.")]
+        private BossHealthBarView bossHealthBar;
+
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
@@ -248,6 +251,11 @@ namespace DarknessRises.Game
             pauseFlow.Watch(new GamePause(run), run);
             rumbleClip = content.Clip(configuration.Lightning.Rumble.Clip);
             var boss = level != null ? configuration.Level.Boss : null;
+            if (bossHealthBar != null && level != null && level.Boss != null)
+            {
+                bossHealthBar.Watch(level.Boss, configuration.BossHealthBar);
+            }
+
             bossGrowlClip = boss != null ? content.Clip(boss.GrowlClip) : null;
             lightning.UseRumble(rumbleClip);
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, new SystemRandom());

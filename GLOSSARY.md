@@ -59,7 +59,7 @@ The light made by the player's Weapon: always its Muzzle flash, and for some Wea
 The short burst of light at the Weapon each time it fires. It lights only the area close to the character.
 
 **Hit spark**:
-The small burst of sparks and light where a Shot hits something. It lights whatever was hit for a moment.
+The small burst of sparks and light where a Shot hits something. It lights whatever was hit for a moment. A Shot that hits something it can't hurt, such as the Colossus's foot off its weak spot, gives a dull Hit spark: greyer, dimmer and smaller.
 _Avoid_: impact, hit effect
 
 **Aura**:
@@ -89,6 +89,10 @@ A fast, fragile Enemy type, faster than the character's walking pace. It starts 
 **Boss**:
 A unique, far tougher Enemy that waits at the end of a Level. Every Boss fight makes Lightning a central part of how it's fought.
 _Avoid_: miniboss, champion
+
+**Boss health bar**:
+The Boss's name and hit points across the top of the HUD, shown only during a Boss fight. The hit points just lost show as a lighter trail that drains after a moment, and ticks mark where its phases start.
+_Avoid_: boss HP, life bar
 
 **Colossus**:
 The first Boss: a giant too tall to see whole, whose feet stomp down into its Room. Lightning reveals the shadow of where the next stomp will land, and the glowing weak spot on a planted foot is where it takes damage.

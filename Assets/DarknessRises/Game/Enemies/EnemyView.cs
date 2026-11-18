@@ -183,9 +183,10 @@ namespace DarknessRises.Game.Enemies
             Play(spawnClip);
         }
 
-        public void TakeShot(int damage)
+        public bool TakeShot(int damage)
         {
             Enemy.TakeHit(damage);
+            return true;
         }
 
         /// <summary>

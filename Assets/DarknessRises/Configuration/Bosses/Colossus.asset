@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1efde9e43313af943bbd15b3e8d3078e, type: 3}
   m_Name: Colossus
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Bosses.ColossusDefinition
+  displayName: Colossus
   hitPoints: 50
   phases:
     phase2Below: 0.5
@@ -71,8 +72,9 @@ MonoBehaviour:
     weakSpotGlow: {r: 2.4, g: 0.55, b: 0.15, a: 1}
     weakSpotLightIntensity: 3
     weakSpotLightRange: 3.5
-    weakSpotHitFlashSeconds: 0.12
-    weakSpotHitFlashBoost: 2.5
+    weakSpotHitFlash:
+      seconds: 0.2
+      brightness: 4
     volume: 1
   growlClip:
     m_AssetGUID: 618be86712ffac947997f96463301683

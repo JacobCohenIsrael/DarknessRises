@@ -104,6 +104,15 @@ namespace DarknessRises.Game.Bosses
         /// <summary>The Colossus growls: Lightning should flash this many seconds from now. Its Boss mode does the flashing.</summary>
         public event Action<float> FlashRequested;
 
+        /// <summary>A fight began, run by this pattern. The Boss health bar reads it.</summary>
+        public event Action<ColossusPattern> FightBegan;
+
+        /// <summary>The fight is over: beaten, with the character back on the Boss Station, or cut short.</summary>
+        public event Action FightEnded;
+
+        /// <summary>The Colossus being fought; null before the first fight.</summary>
+        public ColossusDefinition Definition => definition;
+
         /// <summary>The fight's rules while it runs; null before.</summary>
         public ColossusPattern Pattern => pattern;
 
@@ -158,13 +167,17 @@ namespace DarknessRises.Game.Bosses
             }
         }
 
-        /// <summary>A Shot hit the weak spot.</summary>
-        public void HitWeakSpot(int damage)
+        /// <summary>A Shot hit the weak spot. It flashes if the hit hurt.</summary>
+        /// <returns>Whether the hit hurt the Colossus.</returns>
+        public bool HitWeakSpot(int damage)
         {
-            if (pattern != null && pattern.TakeWeakSpotHit(damage))
+            if (pattern == null || !pattern.TakeWeakSpotHit(damage))
             {
-                hitFlashSecondsLeft = look.WeakSpotHitFlashSeconds;
+                return false;
             }
+
+            hitFlashSecondsLeft = look.WeakSpotHitFlash.Seconds;
+            return true;
         }
 
         private void Begin(
@@ -228,11 +241,14 @@ namespace DarknessRises.Game.Bosses
             placesCharacter = true;
             character.position = relocation.Point;
             defeatLiftElapsedSeconds = float.PositiveInfinity;
+            hitFlashSecondsLeft = 0f;
             pattern.Begin();
+            FightBegan?.Invoke(pattern);
         }
 
         private void End()
         {
+            var wasFighting = placesCharacter;
             placesCharacter = false;
             if (enemyTime != null)
             {
@@ -257,6 +273,10 @@ namespace DarknessRises.Game.Bosses
             }
 
             Hide();
+            if (wasFighting)
+            {
+                FightEnded?.Invoke();
+            }
         }
 
         // The Boss Room camera takes over from the follow camera: Cinemachine blends to the newest live camera.
@@ -494,8 +514,9 @@ namespace DarknessRises.Game.Bosses
             if (weakSpotGlow.enabled)
             {
                 hitFlashSecondsLeft = Mathf.Max(0f, hitFlashSecondsLeft - deltaSeconds);
-                var boost = hitFlashSecondsLeft > 0f ? look.WeakSpotHitFlashBoost : 1f;
-                SetColor(weakSpotGlow, look.WeakSpotGlow * boost);
+                var boost = look.WeakSpotHitFlash.BrightnessAt(hitFlashSecondsLeft);
+                var glow = look.WeakSpotGlow;
+                SetColor(weakSpotGlow, new Color(glow.r * boost, glow.g * boost, glow.b * boost, glow.a));
                 weakSpotLight.intensity = look.WeakSpotLightIntensity * boost;
             }
 

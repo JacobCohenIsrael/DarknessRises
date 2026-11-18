@@ -232,6 +232,24 @@ namespace DarknessRises.Game.EditModeTests.Bosses
         }
 
         [Test]
+        public void Each_weak_spot_hit_reports_the_damage_dealt_and_the_hit_points_left()
+        {
+            var damaged = new List<string>();
+            pattern.Damaged += (dealt, left) => damaged.Add($"{dealt} dealt, {left} left");
+            AimAtCharacter();
+
+            Run(4.9f);
+            pattern.TakeWeakSpotHit(10);
+            Run(0.2f);
+            pattern.TakeWeakSpotHit(10);
+            pattern.TakeWeakSpotHit(0);
+            pattern.TakeWeakSpotHit(95);
+
+            Assert.That(damaged, Is.EqualTo(new[] { "10 dealt, 90 left", "90 dealt, 0 left" }),
+                "Nothing in the air or for no damage, and never more than it has left.");
+        }
+
+        [Test]
         public void Losing_its_last_hit_point_defeats_it_and_stops_the_pattern()
         {
             var defeated = 0;

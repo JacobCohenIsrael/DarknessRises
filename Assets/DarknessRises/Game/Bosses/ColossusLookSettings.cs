@@ -55,11 +55,8 @@ namespace DarknessRises.Game.Bosses
 
         [SerializeField, Min(0f)] private float weakSpotLightRange = 3.5f;
 
-        [SerializeField, Min(0.01f), Tooltip("Seconds the weak spot flares brighter after a hit.")]
-        private float weakSpotHitFlashSeconds = 0.12f;
-
-        [SerializeField, Min(1f), Tooltip("How much brighter the weak spot flares after a hit.")]
-        private float weakSpotHitFlashBoost = 2.5f;
+        [SerializeField, Tooltip("The weak spot flaring brighter when a Shot hurts it.")]
+        private WeakSpotFlashSettings weakSpotHitFlash = new();
 
         [Header("Sound")]
         [SerializeField, Range(0f, 1f)] private float volume = 1f;
@@ -79,8 +76,7 @@ namespace DarknessRises.Game.Bosses
         public Color WeakSpotGlow => weakSpotGlow;
         public float WeakSpotLightIntensity => weakSpotLightIntensity;
         public float WeakSpotLightRange => weakSpotLightRange;
-        public float WeakSpotHitFlashSeconds => weakSpotHitFlashSeconds;
-        public float WeakSpotHitFlashBoost => weakSpotHitFlashBoost;
+        public WeakSpotFlashSettings WeakSpotHitFlash => weakSpotHitFlash;
         public float Volume => volume;
     }
 }

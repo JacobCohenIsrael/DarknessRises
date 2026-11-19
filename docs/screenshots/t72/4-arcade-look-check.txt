@@ -1,0 +1,19 @@
+The arcade look (headless Play Mode in Level.unity, 60 fps, 2400x1079, simulated touch taps on Enemies).
+
+Score, Combo, points and hit markers (read from the HUD and the Run):
+  4 taps on a Shambler (4 hit points)   score 0 -> 100, HUD "100", "+100" up over it, streak 4, Combo "x2" shown
+  4 more hits and a second kill         score 200, a hit marker up where the last Shot hurt, Combo still x2
+  one tap on empty floor                streak 4 -> 0 once the Shot ran out of range, Combo gone
+
+Result cards under CLEAR (three Stations of one Run):
+  KILLS 3,  ACCURACY 85%, TIME 17.5s, +300,  grade S   (85 % at 5.8 s a kill, no hit taken)
+  KILLS 9,  ACCURACY 0%,  TIME 16.1s, +900,  grade C   (every tap of that fight hit a pillar; the kills came from the test hook)
+  KILLS 12, ACCURACY 67%, TIME 30.0s, +1200, grade A   (67 % at 2.5 s a kill, no hit taken)
+
+CONTINUE countdown (god mode off, the character died at a Station):
+  death screen up: title "CONTINUE?", countdown shown, Continue offered, Run phase Dead
+  left alone: the count ran 10 .. 0, then Run phase Ended, end screen up with Score 3200 (the Run's Score)
+New Run, died again, Continue clicked at 9:
+  the count stopped at 7 while the fake ad showed; after the ad Run phase StationFight, Continues used 1
+Died a third time (no Continue left):
+  title "GAME OVER", no countdown, no Continue button; Exit -> Run phase Ended, end screen up

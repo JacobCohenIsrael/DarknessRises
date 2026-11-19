@@ -212,7 +212,7 @@ The rise in difficulty along a Level and from each Level to the next.
 _Avoid_: stage, difficulty curve
 
 **Continue**:
-Coming back to life where the character died, with full hit points and a burst of light that pushes nearby Enemies back, in exchange for watching an ad. Allowed once per Run.
+Coming back to life where the character died, with full hit points and a burst of light that pushes nearby Enemies back, in exchange for watching an ad. Allowed once per Run. The death screen offers it arcade-style, as "CONTINUE?" over a countdown; when the countdown runs out, the Run ends as if the player took Exit. With no Continue left the screen says "GAME OVER".
 _Avoid_: revive, respawn, second chance
 
 **Restart**:
@@ -220,15 +220,35 @@ Ending the current Run and starting a new one from the first Level.
 _Avoid_: retry
 
 **Exit**:
-Ending the Run, after dying or from the pause menu. The end screen shows the Level reached and Enemies killed; it leads to the Shop once the Shop exists.
+Ending the Run, after dying or from the pause menu. The end screen shows the Run's Score, the Level reached and Enemies killed; it leads to the Shop once the Shop exists.
 _Avoid_: quit, give up
 
 **Pause**:
 Freezing the Level while the character is alive in it: Enemies, Lightning, Skill cooldowns, Grenade refill and sound all stop, and the pause menu offers Resume, Restart and Exit. The player pauses, or the game does when the app loses focus; only the player resumes.
 _Avoid_: stop, break
 
+**Score**:
+The points a Run earns for its kills. Each Enemy type and Boss is worth its own points, multiplied by the Combo at the moment it dies. It shows on the HUD, pops up over every kill, and ends up on the end screen. It's kept per Run and buys nothing: it isn't Credits.
+_Avoid_: points (for the Run's total), credits
+
+**Combo**:
+A streak of consecutive Shots that each hurt an Enemy. Every few hits in a row its multiplier steps up, to a cap; a Shot that hurts nothing ends it, and so does going too long without a hit.
+_Avoid_: streak, chain, multiplier (that's the Combo's number)
+
+**Grade**:
+The mark a Station's fight earns: S, A, B or C, from its accuracy, its time per kill and the hits the character took, against authored requirements.
+_Avoid_: rank, rating, stars
+
+**Result card**:
+The card under the Clear banner: the Station's kills, accuracy and time, the Score it earned and its Grade.
+_Avoid_: scoreboard, summary
+
+**Hit marker**:
+The red mark that flashes where a Shot hurts an Enemy: the hit confirmation. Not the Hit spark, which is light in the Room and shows for any hit, walls included.
+_Avoid_: hit indicator, crosshair
+
 **Credits**:
-Currency earned by killing Enemies during a Run and spent in the Shop.
+Currency earned by killing Enemies during a Run and spent in the Shop. Not the Score.
 _Avoid_: coins, gold, money, score
 
 **Shop**:

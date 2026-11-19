@@ -15,6 +15,20 @@ namespace DarknessRises.Game.Continues
         [SerializeField, Min(0.1f), Tooltip("Seconds the fake ad's placeholder screen shows before it reports the ad as watched.")]
         private float fakeAdSeconds = 5f;
 
+        [Header("Death screen")]
+        [SerializeField, Tooltip("The death screen's title while a Continue is on offer, arcade style.")]
+        private string continueTitle = "CONTINUE?";
+
+        [SerializeField, Tooltip("The death screen's title once the Run has no Continue left.")]
+        private string gameOverTitle = "GAME OVER";
+
+        [SerializeField, Min(0), Tooltip(
+            "The number the Continue countdown starts at. It counts down to 0, and when 0 has had its turn the Run ends as if the player took Exit.")]
+        private int countdownFrom = 10;
+
+        [SerializeField, Min(0.1f), Tooltip("Seconds each number of the countdown stays up.")]
+        private float countdownSecondsPerCount = 1f;
+
         [SerializeField, Min(0f), Tooltip("Seconds the character can't be hit after it comes back.")]
         private float invulnerabilitySeconds = 2f;
 
@@ -42,6 +56,10 @@ namespace DarknessRises.Game.Continues
 
         public int UsesPerRun => usesPerRun;
         public float FakeAdSeconds => fakeAdSeconds;
+        public string ContinueTitle => continueTitle;
+        public string GameOverTitle => gameOverTitle;
+        public int CountdownFrom => countdownFrom;
+        public float CountdownSecondsPerCount => countdownSecondsPerCount;
         public float InvulnerabilitySeconds => invulnerabilitySeconds;
         public float PushBackRadius => pushBackRadius;
         public float PushBackForce => pushBackForce;

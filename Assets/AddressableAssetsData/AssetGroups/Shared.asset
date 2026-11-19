@@ -87,6 +87,12 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 84063d6a64a5ffe4298638d5ec0392f6
+    m_Address: HitMarker
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 94268e2739cefc84a87017dc59f3a0e1
     m_Address: GoArrow
     m_ReadOnly: 0

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Death
 {
     /// <summary>
-    /// The end screen after Exit: the Level reached and the Enemies killed, with no score. It leads to a new Run
+    /// The end screen after Exit: the Run's Score, the Level reached and the Enemies killed. It leads to a new Run
     /// for now, and to the Shop once the Shop exists.
     /// </summary>
     public sealed class EndScreenView : MonoBehaviour
@@ -17,6 +17,7 @@ namespace DarknessRises.Game.Death
 
         [SerializeField] private TMP_Text levelReached;
         [SerializeField] private TMP_Text enemiesKilled;
+        [SerializeField] private TMP_Text score;
         [SerializeField] private Button newRunButton;
 
         /// <summary>Shows <paramref name="record"/> until the player moves on.</summary>
@@ -25,6 +26,7 @@ namespace DarknessRises.Game.Death
             // TMP's numeric SetText formats without allocating; {0} prints no decimals.
             levelReached.SetText(NumberFormat, (float)record.LevelReached);
             enemiesKilled.SetText(NumberFormat, (float)record.EnemiesKilled);
+            score.SetText(NumberFormat, (float)record.Score);
             gameObject.SetActive(true);
             await newRunButton.OnClickAsync(cancellationToken);
         }

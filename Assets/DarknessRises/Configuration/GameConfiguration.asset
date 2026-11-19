@@ -135,3 +135,49 @@ MonoBehaviour:
     bobDistance: 18
     bobsPerSecond: 2
     fadeSeconds: 0.25
+  score:
+    comboHitsPerStep: 4
+    comboMaxMultiplier: 5
+    comboTimeoutSeconds: 3
+    grades:
+    - grade: 3
+      minAccuracy: 0.8
+      maxSecondsPerKill: 6
+      maxHitsTaken: 0
+    - grade: 2
+      minAccuracy: 0.65
+      maxSecondsPerKill: 9
+      maxHitsTaken: 1
+    - grade: 1
+      minAccuracy: 0.45
+      maxSecondsPerKill: 0
+      maxHitsTaken: -1
+    lowestGrade: 0
+  scoreHud:
+    scoreCaption: SCORE
+    scoreColor: {r: 0.95, g: 0.92, b: 0.8, a: 0.95}
+    comboCaption: COMBO
+    comboColor: {r: 1, g: 0.72, b: 0.2, a: 1}
+    comboKickScale: 1.6
+    comboKickSeconds: 0.2
+    popupFontSize: 46
+    popupColor: {r: 1, g: 1, b: 1, a: 1}
+    popupComboColor: {r: 1, g: 0.72, b: 0.2, a: 1}
+    popupSeconds: 0.9
+    popupRise: 90
+    popupWorldOffset: {x: 0, y: 2.2, z: 0}
+    hitMarkerSize: 70
+    hitMarkerColor: {r: 1, g: 0.25, b: 0.2, a: 1}
+    hitMarkerSeconds: 0.18
+    hitMarkerStartScale: 1.5
+    killsCaption: KILLS
+    accuracyCaption: ACCURACY
+    timeCaption: TIME
+    cardPosition: {x: 0, y: 20}
+    cardTextColor: {r: 0.92, g: 0.92, b: 0.92, a: 1}
+    cardBandColor: {r: 0, g: 0, b: 0, a: 0.45}
+    gradeColors:
+    - {r: 0.7, g: 0.7, b: 0.7, a: 1}
+    - {r: 0.45, g: 0.75, b: 1, a: 1}
+    - {r: 0.55, g: 1, b: 0.6, a: 1}
+    - {r: 1, g: 0.85, b: 0.2, a: 1}

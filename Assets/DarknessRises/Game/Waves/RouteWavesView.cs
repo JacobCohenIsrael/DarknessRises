@@ -30,6 +30,9 @@ namespace DarknessRises.Game.Waves
         /// <summary>Raised when any Enemy of these Waves comes in at a Spawn point.</summary>
         public event Action<EnemyView> EnemySpawned;
 
+        /// <summary>Raised when any Enemy of these Waves dies, with the Enemy as it stands in the scene.</summary>
+        public event Action<EnemyView> EnemyKilled;
+
         /// <summary>
         /// Starts running each Station's authored Waves as the character reaches it, to the beats of
         /// <paramref name="rhythm"/>. Spawned Enemies run on <paramref name="enemyTime"/>, built from the prefabs and
@@ -51,6 +54,7 @@ namespace DarknessRises.Game.Waves
             pools = new EnemyPools(transform, enemyTime, content, RampStep.First);
             pools.EnemyDied += OnEnemyDied;
             pools.EnemySpawned += OnEnemySpawned;
+            pools.EnemyKilled += OnEnemyKilled;
             picker = new SpawnPointPicker(spawnPoints.Count, new System.Random());
             lighting = new SceneSpawnPointLighting(spawnPoints, route.SpawnPointLitIntensity);
 
@@ -98,6 +102,7 @@ namespace DarknessRises.Game.Waves
             waves.Dispose();
             pools.EnemyDied -= OnEnemyDied;
             pools.EnemySpawned -= OnEnemySpawned;
+            pools.EnemyKilled -= OnEnemyKilled;
             pools.Dispose();
             waves = null;
         }
@@ -110,6 +115,11 @@ namespace DarknessRises.Game.Waves
         private void OnEnemySpawned(EnemyView enemy)
         {
             EnemySpawned?.Invoke(enemy);
+        }
+
+        private void OnEnemyKilled(EnemyView enemy)
+        {
+            EnemyKilled?.Invoke(enemy);
         }
 
         // Subscribed before the Waves are, so lights created since the last Station count from the first spawn.

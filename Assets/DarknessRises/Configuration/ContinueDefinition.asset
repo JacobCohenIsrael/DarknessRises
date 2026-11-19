@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Continues.ContinueDefinition
   usesPerRun: 1
   fakeAdSeconds: 5
+  continueTitle: CONTINUE?
+  gameOverTitle: GAME OVER
+  countdownFrom: 10
+  countdownSecondsPerCount: 1
   invulnerabilitySeconds: 2
   pushBackRadius: 5
   pushBackForce: 14

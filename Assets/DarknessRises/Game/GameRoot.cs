@@ -22,6 +22,7 @@ using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
+using DarknessRises.Game.Scoring;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Visibility;
 using DarknessRises.Game.Waves;
@@ -72,6 +73,16 @@ namespace DarknessRises.Game
 
         [SerializeField, Tooltip("The first-run hint over the first Enemy.")]
         private ShootHintView shootHint;
+
+        [Header("Score")]
+        [SerializeField, Tooltip("The Run's Score and the Combo.")]
+        private ScoreHudView scoreHud;
+
+        [SerializeField, Tooltip("The points that pop up over a kill and the hit marker where a Shot hurts an Enemy.")]
+        private ScorePopupsView scorePopups;
+
+        [SerializeField, Tooltip("The result card under the Clear banner.")]
+        private StationResultView stationResult;
 
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
@@ -154,6 +165,10 @@ namespace DarknessRises.Game
 
         // The beats of each stop at a Station. Whoever runs the fights drives it; the banner and the character show it.
         private StationRhythm stationRhythm;
+
+        // Keeps the Level's Score: the Combo, what each kill earns and each Station's tally. The Run keeps the total.
+        private ScoreKeeper scoreKeeper;
+        private CharacterHealth scoredHealth;
 
 
         // Owns the scene's lifetime: the content load, and everything loaded for it.
@@ -282,6 +297,7 @@ namespace DarknessRises.Game
                 grenadeButton.Show(grenadeCharges, configuration.Gestures.GrenadeButton);
             }
             ShowHealthAndDeath();
+            KeepScore();
             pauseFlow.Watch(new GamePause(run), run);
             // The storm that swells after every flash, and the Boss's growl that warns of its flashes.
             var lightningRandom = new SystemRandom();
@@ -396,6 +412,8 @@ namespace DarknessRises.Game
                     ReportToRun(false);
                 }
 
+                StopKeepingScore();
+
                 // The Run outlives this scene when the boot owns it.
                 if (ownsRun)
                 {
@@ -422,6 +440,120 @@ namespace DarknessRises.Game
                 health, run, characterAnimation, routeWalker, primaryWeapon, continueDefinition, continueAd, continueBurst);
         }
 
+        // Score comes from what the Level's fights report: every Shot's hit or miss drives the Combo, every kill earns
+        // points, and each Station's fight is tallied from its first Wave to its clear, then graded on its result card.
+        private void KeepScore()
+        {
+            scoreKeeper = configuration.Score.ToKeeper();
+            if (scoreHud != null)
+            {
+                scoreHud.Show(configuration.ScoreHud, scoreKeeper.Combo, configuration.Score.ComboMaxMultiplier, run.Record.Score);
+            }
+
+            if (scorePopups != null)
+            {
+                scorePopups.Use(configuration.ScoreHud);
+            }
+
+            if (stationResult != null)
+            {
+                stationResult.Use(configuration.ScoreHud, configuration.StationBanners);
+            }
+
+            scoredHealth = characterHealth.Health;
+            scoredHealth.Hurt += OnCharacterHurt;
+            primaryWeapon.ShotLanded += OnShotLanded;
+            stationRhythm.BeatChanged += OnStationBeatChanged;
+        }
+
+        private void StopKeepingScore()
+        {
+            if (scoreKeeper == null)
+            {
+                return;
+            }
+
+            scoredHealth.Hurt -= OnCharacterHurt;
+            primaryWeapon.ShotLanded -= OnShotLanded;
+            stationRhythm.BeatChanged -= OnStationBeatChanged;
+            scoreKeeper = null;
+        }
+
+        private void OnShotLanded(bool hurtEnemy, Vector3 point)
+        {
+            if (!hurtEnemy)
+            {
+                scoreKeeper.ShotMissed();
+                return;
+            }
+
+            scoreKeeper.ShotHit();
+            if (scorePopups != null)
+            {
+                scorePopups.Mark(point);
+            }
+        }
+
+        private void OnCharacterHurt() => scoreKeeper.CharacterHit();
+
+        // The Station's tally runs from the start of its fight to its clear, when its result card shows.
+        private void OnStationBeatChanged(StationBeat beat)
+        {
+            switch (beat)
+            {
+                case StationBeat.Fight:
+                    scoreKeeper.BeginStation();
+                    break;
+                case StationBeat.Clear:
+                    var result = scoreKeeper.EndStation(stationRhythm.FightSeconds);
+                    if (stationResult != null)
+                    {
+                        stationResult.Show(result);
+                    }
+
+                    break;
+                case StationBeat.Go:
+                case StationBeat.Walking:
+                    if (stationResult != null)
+                    {
+                        stationResult.Hide();
+                    }
+
+                    break;
+            }
+        }
+
+        // A kill earns its Enemy's points times the Combo, shown floating up from where it died.
+        private void OnEnemyKilled(EnemyView enemy)
+        {
+            AwardScore(enemy.Definition.ScorePoints, enemy.transform.position);
+        }
+
+        private void AwardScore(int basePoints, Vector3 position)
+        {
+            if (scoreKeeper == null)
+            {
+                return;
+            }
+
+            var multiplied = scoreKeeper.Combo.Multiplier > 1;
+            var earned = scoreKeeper.EnemyKilled(basePoints);
+            if (earned <= 0 || !run.AddScore(earned))
+            {
+                return;
+            }
+
+            if (scoreHud != null)
+            {
+                scoreHud.ShowScore(run.Record.Score);
+            }
+
+            if (scorePopups != null)
+            {
+                scorePopups.Pop(position, earned, multiplied);
+            }
+        }
+
         // What happens in the Level moves the Run on. Kills come from whoever runs the fights: the Level, or the Test Room's Waves.
         private void ReportToRun(bool report)
         {
@@ -432,6 +564,7 @@ namespace DarknessRises.Game
                 {
                     level.EnemyDied += OnEnemyDied;
                     level.EnemySpawned += OnEnemySpawned;
+                    level.EnemyKilled += OnEnemyKilled;
                     level.StartBeatFinished += OnStartBeatFinished;
                     level.FightStarted += OnFightStarted;
                     level.FightCleared += OnFightCleared;
@@ -444,6 +577,7 @@ namespace DarknessRises.Game
                 {
                     level.EnemyDied -= OnEnemyDied;
                     level.EnemySpawned -= OnEnemySpawned;
+                    level.EnemyKilled -= OnEnemyKilled;
                     level.StartBeatFinished -= OnStartBeatFinished;
                     level.FightStarted -= OnFightStarted;
                     level.FightCleared -= OnFightCleared;
@@ -457,11 +591,13 @@ namespace DarknessRises.Game
             {
                 routeWaves.EnemyDied += OnEnemyDied;
                 routeWaves.EnemySpawned += OnEnemySpawned;
+                routeWaves.EnemyKilled += OnEnemyKilled;
             }
             else
             {
                 routeWaves.EnemyDied -= OnEnemyDied;
                 routeWaves.EnemySpawned -= OnEnemySpawned;
+                routeWaves.EnemyKilled -= OnEnemyKilled;
             }
         }
 
@@ -497,6 +633,9 @@ namespace DarknessRises.Game
         {
             routeWalker.TakeBackPlacement();
             StopBossLightning();
+
+            // Beating the Boss is the Level's biggest kill.
+            AwardScore(configuration.Level.Boss.ScorePoints, character.position);
         }
 
         // Back to the weather, if the Boss had Lightning.
@@ -576,6 +715,7 @@ namespace DarknessRises.Game
 
             // The Boss runs on Enemy time, so a flash it asks for is timed on it too: Slow-mo stretches both alike.
             var deltaSeconds = Time.deltaTime;
+            scoreKeeper?.Tick(deltaSeconds);
             lightningScheduler.Tick(lightningScheduler.Mode == LightningMode.BossDriven ? enemyTime.Scaled(deltaSeconds) : deltaSeconds);
             lightning.SetStormAudible(lightningScheduler.IsStormRunning);
         }

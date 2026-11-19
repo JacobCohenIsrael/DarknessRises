@@ -102,6 +102,9 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised when any of the Level's Enemies comes in at a Spawn point.</summary>
         public event Action<EnemyView> EnemySpawned;
 
+        /// <summary>Raised when any of the Level's Enemies dies, with the Enemy as it stands in the scene.</summary>
+        public event Action<EnemyView> EnemyKilled;
+
         /// <summary>The Room the Level starts in.</summary>
         public Room FirstRoom => rooms.Length > 0 ? rooms[0] : null;
 
@@ -184,6 +187,7 @@ namespace DarknessRises.Game.Levels
             pools = new EnemyPools(transform, enemyTime, content, rampStep);
             pools.EnemyDied += OnEnemyDied;
             pools.EnemySpawned += OnEnemySpawned;
+            pools.EnemyKilled += OnEnemyKilled;
             Prewarm(stationWaves, roomStragglers);
             if (hasBoss && definition.Boss.AddType != null)
             {
@@ -438,6 +442,7 @@ namespace DarknessRises.Game.Levels
             fights.Dispose();
             pools.EnemyDied -= OnEnemyDied;
             pools.EnemySpawned -= OnEnemySpawned;
+            pools.EnemyKilled -= OnEnemyKilled;
             pools.Dispose();
             fights = null;
         }
@@ -450,6 +455,11 @@ namespace DarknessRises.Game.Levels
         private void OnEnemySpawned(EnemyView enemy)
         {
             EnemySpawned?.Invoke(enemy);
+        }
+
+        private void OnEnemyKilled(EnemyView enemy)
+        {
+            EnemyKilled?.Invoke(enemy);
         }
 
         // Enough of each Enemy type for the Station that needs the most of it, plus every Room's Stragglers,

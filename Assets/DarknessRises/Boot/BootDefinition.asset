@@ -24,3 +24,9 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  versionLabel:
+    corner: 0
+    margin: {x: 24, y: 10}
+    fontSize: 20
+    color: {r: 0.7, g: 0.7, b: 0.7, a: 0.35}
+    sortingOrder: 100

@@ -1,4 +1,5 @@
 using DarknessRises.Game.Boot;
+using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -9,7 +10,7 @@ namespace DarknessRises.Game.Editor.Boot
 {
     /// <summary>
     /// Builds the boot scene, the only scene in Build Settings: a Bootstrap that loads the Level through Addressables,
-    /// and a camera that keeps the screen black while no Level is showing. Build the Level and the Test Room first.
+    /// a camera that keeps the screen black while no Level is showing, and the build version label. Build the Level and the Test Room first.
     /// </summary>
     public static class BootBuilder
     {
@@ -43,10 +44,13 @@ namespace DarknessRises.Game.Editor.Boot
             cameraData.renderPostProcessing = false;
             loadingCamera.allowMSAA = false;
 
+            var versionLabel = VersionLabelBuilder.Build();
+
             var bootstrap = new GameObject("Bootstrap", typeof(Bootstrap)).GetComponent<Bootstrap>();
             var serialized = new SerializedObject(bootstrap);
             serialized.FindProperty("definition").objectReferenceValue = definition;
             serialized.FindProperty("loadingCamera").objectReferenceValue = loadingCamera;
+            serialized.FindProperty("versionLabel").objectReferenceValue = versionLabel;
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             EditorSceneManager.SaveScene(scene, ScenePath);

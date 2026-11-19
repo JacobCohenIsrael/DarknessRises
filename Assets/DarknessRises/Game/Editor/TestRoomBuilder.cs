@@ -144,9 +144,9 @@ namespace DarknessRises.Game.Editor
         {
             var characterMaterial = LoadOrCreateMaterial("Character", new Color(0.55f, 0.55f, 0.6f));
             var character = BuildCharacter(characterMaterial, start, out var aura);
-            var cameraView = BuildCameras(start, out var cameraTarget);
+            var cameraView = BuildCameras(start);
             var lightning = BuildLightning();
-            var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, cameraTarget, routeWalker);
+            var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, routeWalker);
             var primaryWeapon = PistolBuilder.BuildPrimaryWeapon(character, Camera.main);
             SetReference(gameRoot, "primaryWeapon", primaryWeapon);
             EarsBuilder.BuildEars(character, Camera.main);
@@ -175,14 +175,14 @@ namespace DarknessRises.Game.Editor
         internal static GameConfiguration LoadOrCreateConfiguration()
         {
             var player = LoadOrCreate<PlayerDefinition>(PlayerDefinitionPath);
-            var fixedAngleCamera = LoadOrCreate<CameraDefinition>(CameraDefinitionPath);
+            var rideCamera = LoadOrCreate<CameraDefinition>(CameraDefinitionPath);
             var route = LoadOrCreate<RouteDefinition>(RouteDefinitionPath);
             var lightning = LoadOrCreateLightning();
             var configuration = LoadOrCreate<GameConfiguration>(GameConfigurationPath);
 
             var serialized = new SerializedObject(configuration);
             serialized.FindProperty("player").objectReferenceValue = player;
-            serialized.FindProperty("fixedAngleCamera").objectReferenceValue = fixedAngleCamera;
+            serialized.FindProperty("rideCamera").objectReferenceValue = rideCamera;
             serialized.FindProperty("route").objectReferenceValue = route;
             var pistol = PistolBuilder.LoadOrCreatePistol();
             serialized.FindProperty("pistol").objectReferenceValue = pistol;
@@ -200,7 +200,7 @@ namespace DarknessRises.Game.Editor
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
             EditorUtility.SetDirty(player);
-            EditorUtility.SetDirty(fixedAngleCamera);
+            EditorUtility.SetDirty(rideCamera);
             EditorUtility.SetDirty(route);
             EditorUtility.SetDirty(lightning);
             return configuration;
@@ -539,10 +539,13 @@ namespace DarknessRises.Game.Editor
             return character;
         }
 
-        private static FixedAngleCameraView BuildCameras(Vector3 start, out Transform cameraTarget)
+        // The Ride camera: the Main Camera with Cinemachine's brain, the walking camera that follows a point a little
+        // ahead of the character along the Route, and the Station camera that stands still over a Station.
+        private static RideCameraView BuildCameras(Vector3 start)
         {
-            // The camera follows this point a little ahead of the character along the Route.
-            cameraTarget = new GameObject("Camera Target").transform;
+            var ride = new GameObject("Ride Camera", typeof(RideCameraView));
+            var cameraTarget = new GameObject("Camera Target").transform;
+            cameraTarget.SetParent(ride.transform, false);
             cameraTarget.position = start;
 
             var mainCamera = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener), typeof(CinemachineBrain));
@@ -552,14 +555,17 @@ namespace DarknessRises.Game.Editor
             unityCamera.backgroundColor = Color.black;
             unityCamera.GetUniversalAdditionalCameraData();
 
-            var fixedAngle = new GameObject(
-                "Fixed Angle Camera",
-                typeof(CinemachineCamera),
-                typeof(CinemachineFollow),
-                typeof(FixedAngleCameraView));
-            var view = fixedAngle.GetComponent<FixedAngleCameraView>();
-            SetReference(view, "cinemachineCamera", fixedAngle.GetComponent<CinemachineCamera>());
-            SetReference(view, "follow", fixedAngle.GetComponent<CinemachineFollow>());
+            var walk = new GameObject("Walk Camera", typeof(CinemachineCamera), typeof(CinemachineFollow));
+            walk.transform.SetParent(ride.transform, false);
+            var station = new GameObject("Station Camera", typeof(CinemachineCamera));
+            station.transform.SetParent(ride.transform, false);
+
+            var view = ride.GetComponent<RideCameraView>();
+            SetReference(view, "brain", mainCamera.GetComponent<CinemachineBrain>());
+            SetReference(view, "walkCamera", walk.GetComponent<CinemachineCamera>());
+            SetReference(view, "walkFollow", walk.GetComponent<CinemachineFollow>());
+            SetReference(view, "stationCamera", station.GetComponent<CinemachineCamera>());
+            SetReference(view, "followTarget", cameraTarget);
             return view;
         }
 
@@ -567,8 +573,7 @@ namespace DarknessRises.Game.Editor
             GameConfiguration configuration,
             Transform character,
             AuraView aura,
-            FixedAngleCameraView cameraView,
-            Transform cameraTarget,
+            RideCameraView cameraView,
             RouteWalker routeWalker)
         {
             var gameRoot = new GameObject("Game Root").AddComponent<GameRoot>();
@@ -576,8 +581,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("configuration").objectReferenceValue = configuration;
             serialized.FindProperty("character").objectReferenceValue = character;
             serialized.FindProperty("aura").objectReferenceValue = aura;
-            serialized.FindProperty("fixedAngleCamera").objectReferenceValue = cameraView;
-            serialized.FindProperty("cameraTarget").objectReferenceValue = cameraTarget;
+            serialized.FindProperty("rideCamera").objectReferenceValue = cameraView;
             serialized.FindProperty("routeWalker").objectReferenceValue = routeWalker;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return gameRoot;

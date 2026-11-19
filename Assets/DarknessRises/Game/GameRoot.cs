@@ -45,8 +45,9 @@ namespace DarknessRises.Game
         [SerializeField] private GameConfiguration configuration;
         [SerializeField] private Transform character;
         [SerializeField] private AuraView aura;
-        [SerializeField] private FixedAngleCameraView fixedAngleCamera;
-        [SerializeField] private Transform cameraTarget;
+        [SerializeField, Tooltip("The walking and Station cameras, and the point the walking camera follows.")]
+        private RideCameraView rideCamera;
+
         [SerializeField] private RouteWalker routeWalker;
         [SerializeField] private PrimaryWeaponView primaryWeapon;
         [SerializeField] private AmmoHudView ammoHud;
@@ -230,13 +231,9 @@ namespace DarknessRises.Game
 
         private void Begin(WeaponDefinition[] primaryWeapons, Ramp<EnemyDefinition> ramp)
         {
-            routeWalker.Walk(
-                configuration.Player,
-                configuration.FixedAngleCamera.LookAhead,
-                character,
-                cameraTarget,
-                configuration.StationRhythm.ToWalkEasing());
+            routeWalker.Walk(configuration.Player, character, configuration.StationRhythm.ToWalkEasing());
             stationRhythm = new StationRhythm(configuration.StationRhythm.ToTiming());
+            rideCamera.Ride(routeWalker.Progress, stationRhythm, room);
             if (stationBanner != null)
             {
                 stationBanner.Watch(stationRhythm, configuration.StationBanners, routeWalker.Progress, content);
@@ -568,6 +565,7 @@ namespace DarknessRises.Game
             // Cut a flash short first, so the last Room's windows go dark too.
             lightning.StopFlash();
             room = entered;
+            rideCamera.EnterRoom(entered);
             lightning.Show(configuration.Lightning, room);
             lightningScheduler.EnterRoom(room.LetsLightningIn);
         }
@@ -576,7 +574,7 @@ namespace DarknessRises.Game
         public void Apply()
         {
             aura.Show(configuration.Player.Aura);
-            fixedAngleCamera.Frame(configuration.FixedAngleCamera, cameraTarget);
+            rideCamera.Frame(configuration.RideCamera);
             lightning.Show(configuration.Lightning, room);
         }
     }

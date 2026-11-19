@@ -5,8 +5,9 @@ using UnityEngine;
 namespace DarknessRises.Game.Cameras
 {
     /// <summary>
-    /// The point the camera follows: a little way ahead of the character along its Route while it walks, easing back
-    /// while it is stopped. Following the Route rather than a straight line lets the camera look round corners.
+    /// The point the camera follows: a little way ahead of the character along its Route while it leads the walk,
+    /// easing back while the character is stopped. Following the Route rather than a straight line lets the camera
+    /// look round corners.
     /// </summary>
     public sealed class RouteLookAhead
     {
@@ -45,7 +46,22 @@ namespace DarknessRises.Game.Cameras
         /// <summary>The world point the camera follows.</summary>
         public Vector3 Target { get; private set; }
 
+        /// <summary>Aims ahead while the character walks, and eases back while it's stopped at a Station or the end of the Route.</summary>
         public void Tick(float deltaSeconds, RouteProgress progress)
+        {
+            if (progress == null)
+            {
+                throw new ArgumentNullException(nameof(progress));
+            }
+
+            Tick(deltaSeconds, progress, !progress.IsAtStation && !progress.IsFinished);
+        }
+
+        /// <summary>
+        /// Aims ahead while <paramref name="leading"/>, wherever the character is, and eases back otherwise.
+        /// The camera leads a stopped character on the Go cue, just before it sets off.
+        /// </summary>
+        public void Tick(float deltaSeconds, RouteProgress progress, bool leading)
         {
             if (deltaSeconds < 0f)
             {
@@ -57,8 +73,7 @@ namespace DarknessRises.Game.Cameras
                 throw new ArgumentNullException(nameof(progress));
             }
 
-            var stopped = progress.IsAtStation || progress.IsFinished;
-            var desired = stopped ? stoppedDistance : walkingDistance;
+            var desired = leading ? walkingDistance : stoppedDistance;
             Distance = Mathf.MoveTowards(Distance, desired, changeSpeed * deltaSeconds);
             Target = progress.Path.PositionAt(progress.Distance + Distance);
         }

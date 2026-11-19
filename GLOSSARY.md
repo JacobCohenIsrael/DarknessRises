@@ -28,6 +28,10 @@ _Avoid_: encounter flow, station phases
 How the character stops at a Station: it slows over the last metres, settles into a braced stride with its Weapon up, and holds it until the Clear banner. It never stops dead, and it picks its pace back up as it sets off.
 _Avoid_: halt, brake
 
+**Ride camera**:
+The camera that shows the game as a ride. While the character walks it sits low and close behind it, aims ahead of it along the Route and swings toward where the Route heads. When the character Plants it settles higher and wider over the Station, turned toward where the Room's Enemies enter, and holds still until the Go cue. In a Boss Room it pulls back to frame the whole fight.
+_Avoid_: follow camera, chase camera, fixed camera
+
 **Spawn point**:
 An authored place in a Room where Enemies enter, such as a dark doorway, gap or vent. A Spawn point that is lit at that moment is skipped, so Enemies never appear in view.
 _Avoid_: spawner, portal

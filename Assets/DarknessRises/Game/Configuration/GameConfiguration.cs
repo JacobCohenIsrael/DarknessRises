@@ -11,6 +11,7 @@ using DarknessRises.Game.Runs;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DarknessRises.Game.Configuration
 {
@@ -22,7 +23,8 @@ namespace DarknessRises.Game.Configuration
     public sealed class GameConfiguration : ScriptableObject
     {
         [SerializeField] private PlayerDefinition player;
-        [SerializeField] private CameraDefinition fixedAngleCamera;
+        [SerializeField, FormerlySerializedAs("fixedAngleCamera"), Tooltip("The Ride camera's framings: walking and at a Station.")]
+        private CameraDefinition rideCamera;
         [SerializeField] private RouteDefinition route;
         [SerializeField] private WeaponDefinition pistol;
         [SerializeField] private WeaponDefinition machineGun;
@@ -52,7 +54,7 @@ namespace DarknessRises.Game.Configuration
         private StationBannerSettings stationBanners = new();
 
         public PlayerDefinition Player => player;
-        public CameraDefinition FixedAngleCamera => fixedAngleCamera;
+        public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
         public WeaponDefinition Pistol => pistol;
         public WeaponDefinition MachineGun => machineGun;

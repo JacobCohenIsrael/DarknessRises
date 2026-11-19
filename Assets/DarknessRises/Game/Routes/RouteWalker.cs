@@ -1,26 +1,23 @@
-using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Player;
 using UnityEngine;
 
 namespace DarknessRises.Game.Routes
 {
     /// <summary>
-    /// Walks the character along the scene's Route each frame and moves the camera's follow target ahead of it.
-    /// The rules live in <see cref="RouteProgress"/> and <see cref="RouteLookAhead"/>; this only feeds them frame time
-    /// and shows where they put things. Whoever owns the fights at Stations clears them through <see cref="Progress"/>.
+    /// Walks the character along the scene's Route each frame. The rules live in <see cref="RouteProgress"/>; this
+    /// only feeds it frame time and shows where it puts the character. Whoever owns the fights at Stations clears them
+    /// through <see cref="Progress"/>, and the Ride camera follows it.
     /// </summary>
     /// <remarks>
     /// The character's transform has one owner at a time. The walker places it until a Boss fight takes it with
-    /// <see cref="HandOverPlacement"/>; from then on the fight places the character (Relocate) and the walker only moves
-    /// the camera's follow target, until <see cref="TakeBackPlacement"/> once the character is back on the Boss Station.
+    /// <see cref="HandOverPlacement"/>; from then on the fight places the character (Relocate), until
+    /// <see cref="TakeBackPlacement"/> once the character is back on the Boss Station.
     /// </remarks>
     public sealed class RouteWalker : MonoBehaviour
     {
         [SerializeField] private RouteLayout route;
 
         private Transform character;
-        private Transform cameraTarget;
-        private RouteLookAhead lookAhead;
         private bool placesCharacter;
 
         /// <summary>The character's progress along the Route, once walking has begun. Owners of Station fights listen here.</summary>
@@ -47,27 +44,15 @@ namespace DarknessRises.Game.Routes
 
         /// <summary>
         /// Starts walking <paramref name="walkingCharacter"/> along the Route at the player's walking speed, easing into
-        /// and out of each Station as <paramref name="easing"/> says, with the camera's follow target ahead of it.
+        /// and out of each Station as <paramref name="easing"/> says.
         /// </summary>
-        public void Walk(
-            PlayerDefinition player,
-            LookAheadSettings lookAheadSettings,
-            Transform walkingCharacter,
-            Transform followTarget,
-            WalkEasing easing = default)
+        public void Walk(PlayerDefinition player, Transform walkingCharacter, WalkEasing easing = default)
         {
             character = walkingCharacter;
-            cameraTarget = followTarget;
             placesCharacter = true;
 
             var path = route.CreatePath();
             Progress = new RouteProgress(path, route.CreateStations(path), player.WalkingSpeed, easing);
-            lookAhead = new RouteLookAhead(
-                lookAheadSettings.WalkingDistance,
-                lookAheadSettings.StoppedDistance,
-                lookAheadSettings.ChangeSpeed);
-
-            lookAhead.Tick(0f, Progress);
             Show();
         }
 
@@ -78,9 +63,7 @@ namespace DarknessRises.Game.Routes
                 return;
             }
 
-            var deltaSeconds = Time.deltaTime;
-            Progress.Tick(deltaSeconds);
-            lookAhead.Tick(deltaSeconds, Progress);
+            Progress.Tick(Time.deltaTime);
             Show();
         }
 
@@ -90,8 +73,6 @@ namespace DarknessRises.Game.Routes
             {
                 character.position = Progress.Position;
             }
-
-            cameraTarget.position = lookAhead.Target;
         }
 
         private void Reset()

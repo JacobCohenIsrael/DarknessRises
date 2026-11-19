@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Content;
+using DarknessRises.Game.Hud;
 using DarknessRises.Game.Runs;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -22,6 +23,9 @@ namespace DarknessRises.Game.Boot
 
         [SerializeField, Tooltip("Keeps the screen black while no Level is showing. Off while a Level is, so it costs nothing then.")]
         private Camera loadingCamera;
+
+        [SerializeField, Tooltip("The build version in a corner of the screen, shown for as long as the app runs.")]
+        private VersionLabelView versionLabel;
 
         // Owns the boot's lifetime: the app's.
         private CancellationTokenSource lifetime;
@@ -45,6 +49,7 @@ namespace DarknessRises.Game.Boot
 
         private void Start()
         {
+            versionLabel.Show(definition.VersionLabel, VersionLabel.Text(Application.version, Debug.isDebugBuild));
             lifetime = new CancellationTokenSource();
             Run.LevelStarted += OnLevelStarted;
             RunAsync(lifetime.Token).Forget();

@@ -15,8 +15,8 @@ namespace DarknessRises.Game.Editor.Hud
         private const string TextMeshProSettingsPath = "Assets/TextMesh Pro/Resources/TMP Settings.asset";
 
         // Landscape phone reference resolution; the HUD scales with screen height.
-        private static readonly Vector2 ReferenceResolution = new(1920f, 1080f);
-        private const float MatchHeight = 1f;
+        internal static readonly Vector2 ReferenceResolution = new(1920f, 1080f);
+        internal const float MatchHeight = 1f;
 
         private static readonly Vector2 AmmoMargin = new(56f, 48f);
         private static readonly Vector2 AmmoSize = new(360f, 130f);

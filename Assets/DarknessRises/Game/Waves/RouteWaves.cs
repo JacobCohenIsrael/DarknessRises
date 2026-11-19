@@ -5,22 +5,27 @@ using DarknessRises.Game.Routes;
 namespace DarknessRises.Game.Waves
 {
     /// <summary>
-    /// Runs each Station's Waves when the character reaches it, so the Station is cleared once they're dead
-    /// and the character walks on. A Station without authored Waves is cleared at once.
+    /// Runs each Station's Waves when the character reaches it, to the Station rhythm: ready, fight, clear, quiet, go.
+    /// The Station is cleared at the end of it and the character walks on. A Station without authored Waves is cleared
+    /// at once.
     /// </summary>
     public sealed class RouteWaves<TEnemyType> : IDisposable
     {
         private readonly RouteProgress progress;
         private readonly WaveSchedule<TEnemyType>[] schedules;
-        private WaveSchedule<TEnemyType> current;
+        private readonly StationFight<TEnemyType> fight;
 
         /// <param name="progress">The character's walk. Its Stations are matched to <paramref name="stationWaves"/> by index.</param>
         /// <param name="stationWaves">Each Station's Waves, by Station index.</param>
         /// <param name="spawner">Brings the Enemies in.</param>
+        /// <param name="rhythm">
+        /// The beats each stop plays. None: no beats, the Waves start on arrival and the character leaves with the last death.
+        /// </param>
         public RouteWaves(
             RouteProgress progress,
             IReadOnlyList<IReadOnlyList<WavePlan<TEnemyType>>> stationWaves,
-            IEnemySpawner<TEnemyType> spawner)
+            IEnemySpawner<TEnemyType> spawner,
+            StationRhythm rhythm = null)
         {
             this.progress = progress ?? throw new ArgumentNullException(nameof(progress));
 
@@ -36,30 +41,22 @@ namespace DarknessRises.Game.Waves
                 schedules[i] = new WaveSchedule<TEnemyType>(stationWaves[i], spawner);
             }
 
+            fight = new StationFight<TEnemyType>(rhythm ?? new StationRhythm(default));
             progress.StationReached += OnStationReached;
         }
 
-        /// <summary>The fight at the Station the character is at, or null while it walks.</summary>
-        public WaveSchedule<TEnemyType> Current => current;
+        /// <summary>The Waves of the Station the character is at, or null while it walks.</summary>
+        public WaveSchedule<TEnemyType> Current => fight.Waves;
 
         public void Tick(float deltaSeconds)
         {
-            if (current == null)
-            {
-                return;
-            }
-
-            current.Tick(deltaSeconds);
-            if (current.IsDone)
-            {
-                current = null;
-            }
+            fight.Tick(deltaSeconds);
         }
 
         public void Dispose()
         {
             progress.StationReached -= OnStationReached;
-            current = null;
+            fight.Abandon();
         }
 
         private void OnStationReached(Station station)
@@ -70,9 +67,7 @@ namespace DarknessRises.Game.Waves
                 return;
             }
 
-            var schedule = schedules[station.Index];
-            schedule.Begin(station);
-            current = schedule.IsDone ? null : schedule;
+            fight.Begin(station, schedules[station.Index]);
         }
     }
 }

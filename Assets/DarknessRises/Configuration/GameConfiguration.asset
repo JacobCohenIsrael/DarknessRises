@@ -60,3 +60,58 @@ MonoBehaviour:
     trailHoldSeconds: 0.45
     trailDrainPerSecond: 0.6
     slideSeconds: 0.4
+  stationRhythm:
+    readySeconds: 1.6
+    clearSeconds: 1.3
+    quietSeconds: 0.8
+    goSeconds: 0.7
+    brakingMetres: 1.4
+    setOffSeconds: 0.6
+    slowestSpeedFraction: 0.35
+  stationBanners:
+    ready:
+      text: GET READY
+      color: {r: 1, g: 0.72, b: 0.2, a: 1}
+      clip:
+        m_AssetGUID: 2e071f5b8b8467d45a5e6e24c23c6ad4
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      clipStartSeconds: 0
+      volume: 0.8
+    clear:
+      text: CLEAR
+      color: {r: 0.55, g: 1, b: 0.6, a: 1}
+      clip:
+        m_AssetGUID: 34f9cbd28a9740349b6cc2f5e280dda3
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      clipStartSeconds: 1.3
+      volume: 0.8
+    go:
+      text: GO
+      color: {r: 1, g: 0.95, b: 0.35, a: 1}
+      clip:
+        m_AssetGUID: 0bd05763df902854a80475577a26666a
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      clipStartSeconds: 0
+      volume: 0.8
+    fontSize: 150
+    characterSpacing: 14
+    position: {x: 0, y: 250}
+    bandColor: {r: 0, g: 0, b: 0, a: 0.45}
+    bandHeight: 210
+    popSeconds: 0.16
+    popScale: 1.7
+    fadeOutSeconds: 0.25
+    goLingerSeconds: 0.5
+    arrowSize: 130
+    arrowDistance: 250
+    arrowPulseDistance: 36
+    arrowPulsesPerSecond: 3

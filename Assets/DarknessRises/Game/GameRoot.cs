@@ -63,6 +63,9 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The Boss's name and hit points across the top of the HUD during a Boss fight.")]
         private BossHealthBarView bossHealthBar;
 
+        [SerializeField, Tooltip("The Ready and Clear banners and the Go cue of the Station rhythm.")]
+        private StationBannerView stationBanner;
+
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
@@ -142,6 +145,9 @@ namespace DarknessRises.Game
         // The character's Flare, which shows a Boss's next stomp early.
         private Skill flareSkill;
 
+        // The beats of each stop at a Station. Whoever runs the fights drives it; the banner and the character show it.
+        private StationRhythm stationRhythm;
+
 
         // Owns the scene's lifetime: the content load, and everything loaded for it.
         private CancellationTokenSource lifetime;
@@ -154,6 +160,9 @@ namespace DarknessRises.Game
 
         /// <summary>The Run this scene plays a Level of, once it has one.</summary>
         public RunFlow Run => run;
+
+        /// <summary>The beats of each stop at a Station, once the gameplay has started.</summary>
+        public StationRhythm StationRhythm => stationRhythm;
 
         // The boot scene is the only scene in Build Settings. While it's loaded, it loaded this scene and hands it the Run.
         private const int BootSceneBuildIndex = 0;
@@ -225,14 +234,21 @@ namespace DarknessRises.Game
                 configuration.Player,
                 configuration.FixedAngleCamera.LookAhead,
                 character,
-                cameraTarget);
+                cameraTarget,
+                configuration.StationRhythm.ToWalkEasing());
+            stationRhythm = new StationRhythm(configuration.StationRhythm.ToTiming());
+            if (stationBanner != null)
+            {
+                stationBanner.Watch(stationRhythm, configuration.StationBanners, routeWalker.Progress, content);
+            }
+
             if (level != null)
             {
-                level.Run(configuration.Level, run.LevelIndex, ramp, routeWalker.Progress, character, enemyTime, content);
+                level.Run(configuration.Level, run.LevelIndex, ramp, routeWalker.Progress, character, enemyTime, content, stationRhythm);
             }
             else
             {
-                routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime, content);
+                routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime, content, stationRhythm);
             }
 
             lights.Add(aura.Light);
@@ -245,7 +261,7 @@ namespace DarknessRises.Game
             reloadMeter.Show(primaryWeapon.Weapon);
             reloadSound.Use(configuration.ReloadFeedback, content);
             reloadSound.Show(primaryWeapon.Weapon);
-            characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon);
+            characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon, stationRhythm);
             var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, characterAnimation, content, lights);
             grenadeHud.Show(grenadeCharges);
             if (grenadeButton != null)

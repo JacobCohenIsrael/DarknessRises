@@ -35,6 +35,10 @@ MonoBehaviour:
     deathFallSeconds: 0.85
     deathFallDegrees: 84
     deathLyingHeight: 0.15
+    plantSeconds: 0.22
+    plantLeadDegrees: 26
+    plantRearDegrees: 14
+    plantLeanDegrees: 7
   hitReaction:
     shakeForce: 0.5
     shakeSeconds: 0.3

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using DarknessRises.Game.Enemies;
-using DarknessRises.Game.Routes;
 using DarknessRises.Game.Waves;
 using NUnit.Framework;
 
@@ -48,11 +47,10 @@ namespace DarknessRises.Game.EditModeTests.Waves
             return new WavePlan<string>(delaySeconds, intervalSeconds, enemies);
         }
 
-        private static WaveSchedule<string> Begin(FakeSpawner spawner, out Station station, params WavePlan<string>[] waves)
+        private static WaveSchedule<string> Begin(FakeSpawner spawner, params WavePlan<string>[] waves)
         {
             var schedule = new WaveSchedule<string>(waves, spawner);
-            station = new Station(0, 0f);
-            schedule.Begin(station);
+            schedule.Begin();
             return schedule;
         }
 
@@ -60,10 +58,10 @@ namespace DarknessRises.Game.EditModeTests.Waves
         public void First_Enemy_enters_once_the_Wave_delay_is_over()
         {
             var spawner = new FakeSpawner();
-            Begin(spawner, out _, Wave(2f, 1f, Shambler)).Tick(1.9f);
+            Begin(spawner, Wave(2f, 1f, Shambler)).Tick(1.9f);
             Assert.That(spawner.Spawned, Is.Empty);
 
-            var schedule = Begin(spawner, out _, Wave(2f, 1f, Shambler));
+            var schedule = Begin(spawner, Wave(2f, 1f, Shambler));
             schedule.Tick(1f);
             schedule.Tick(1f);
             Assert.That(spawner.Spawned, Is.EqualTo(new[] { Shambler }));
@@ -73,7 +71,7 @@ namespace DarknessRises.Game.EditModeTests.Waves
         public void Enemies_enter_one_spawn_interval_apart_in_authored_order()
         {
             var spawner = new FakeSpawner();
-            var schedule = Begin(spawner, out _, Wave(0f, 1f, Shambler, Runner, Shambler));
+            var schedule = Begin(spawner, Wave(0f, 1f, Shambler, Runner, Shambler));
 
             schedule.Tick(0.1f);
             Assert.That(spawner.Spawned, Is.EqualTo(new[] { Shambler }));
@@ -92,7 +90,7 @@ namespace DarknessRises.Game.EditModeTests.Waves
         public void A_long_tick_lets_in_every_Enemy_that_was_due()
         {
             var spawner = new FakeSpawner();
-            var schedule = Begin(spawner, out _, Wave(0f, 0.5f, Shambler, Shambler, Shambler, Shambler));
+            var schedule = Begin(spawner, Wave(0f, 0.5f, Shambler, Shambler, Shambler, Shambler));
             schedule.Tick(0.1f);
 
             schedule.Tick(1.1f);
@@ -104,7 +102,7 @@ namespace DarknessRises.Game.EditModeTests.Waves
         public void Next_Wave_waits_for_the_last_Enemy_of_the_previous_one_to_die_then_its_delay()
         {
             var spawner = new FakeSpawner();
-            var schedule = Begin(spawner, out _, Wave(0f, 0f, Shambler, Shambler), Wave(1f, 0f, Runner));
+            var schedule = Begin(spawner, Wave(0f, 0f, Shambler, Shambler), Wave(1f, 0f, Runner));
             schedule.Tick(0.1f);
             Assert.That(spawner.Spawned, Has.Count.EqualTo(2));
 
@@ -126,46 +124,44 @@ namespace DarknessRises.Game.EditModeTests.Waves
         }
 
         [Test]
-        public void Station_is_cleared_once_the_last_Wave_is_dead()
+        public void Schedule_is_done_once_the_last_Wave_is_dead()
         {
             var spawner = new FakeSpawner();
-            var schedule = Begin(spawner, out var station, Wave(0f, 0f, Shambler), Wave(0f, 0f, Shambler, Shambler));
+            var schedule = Begin(spawner, Wave(0f, 0f, Shambler), Wave(0f, 0f, Shambler, Shambler));
 
             schedule.Tick(0.1f);
             spawner.KillAll();
             schedule.Tick(0.1f);
             schedule.Tick(0.1f);
             Assert.That(spawner.Spawned, Has.Count.EqualTo(3));
-            Assert.That(station.IsCleared, Is.False, "The last Wave is still alive.");
+            Assert.That(schedule.IsDone, Is.False, "The last Wave is still alive.");
 
             spawner.KillAll();
             schedule.Tick(0.1f);
 
-            Assert.That(station.IsCleared, Is.True);
             Assert.That(schedule.IsDone, Is.True);
             Assert.That(schedule.AliveCount, Is.Zero);
         }
 
         [Test]
-        public void Station_is_not_cleared_while_its_Wave_is_still_entering()
+        public void Schedule_is_not_done_while_its_Wave_is_still_entering()
         {
             var spawner = new FakeSpawner();
-            var schedule = Begin(spawner, out var station, Wave(0f, 5f, Shambler, Shambler));
+            var schedule = Begin(spawner, Wave(0f, 5f, Shambler, Shambler));
 
             schedule.Tick(0.1f);
             spawner.KillAll();
             schedule.Tick(1f);
 
-            Assert.That(station.IsCleared, Is.False);
+            Assert.That(schedule.IsDone, Is.False);
         }
 
         [Test]
-        public void Station_without_Waves_is_cleared_at_once()
+        public void Schedule_without_Waves_is_done_at_once()
         {
             var spawner = new FakeSpawner();
-            var schedule = Begin(spawner, out var station);
+            var schedule = Begin(spawner);
 
-            Assert.That(station.IsCleared, Is.True);
             Assert.That(schedule.IsDone, Is.True);
         }
 
@@ -173,7 +169,7 @@ namespace DarknessRises.Game.EditModeTests.Waves
         public void An_Enemy_that_finds_every_Spawn_point_lit_waits_and_enters_once_one_is_dark()
         {
             var spawner = new FakeSpawner { AllSpawnPointsLit = true };
-            var schedule = Begin(spawner, out _, Wave(0f, 1f, Shambler, Runner));
+            var schedule = Begin(spawner, Wave(0f, 1f, Shambler, Runner));
 
             schedule.Tick(0.1f);
             schedule.Tick(3f);
@@ -191,7 +187,7 @@ namespace DarknessRises.Game.EditModeTests.Waves
         public void Waves_start_one_after_another()
         {
             var spawner = new FakeSpawner();
-            var schedule = Begin(spawner, out _, Wave(0f, 0f, Shambler), Wave(0f, 0f, Runner));
+            var schedule = Begin(spawner, Wave(0f, 0f, Shambler), Wave(0f, 0f, Runner));
             var started = new List<int>();
             schedule.WaveStarted += started.Add;
 

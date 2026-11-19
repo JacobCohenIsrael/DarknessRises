@@ -55,6 +55,7 @@ namespace DarknessRises.Game.Editor.Hud
             // Loaded through Addressables with the Level's other content.
             AddressableContent.ReferenceIfEmpty(
                 serialized.FindProperty("reloadFeedback.clip"), () => GameplaySoundImport.Load(ClipPath), AddressableContent.SharedGroup);
+            GameplaySoundImport.ApplyToReferenced(serialized.FindProperty("reloadFeedback.clip"));
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Written to disk with the settings' defaults, even when the clip was already set.

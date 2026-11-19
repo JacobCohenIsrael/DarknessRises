@@ -44,6 +44,9 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Tooltip("The small spark and light where a Shot hits something.")]
         private HitSparkSettings hitSpark = new();
 
+        [SerializeField, Tooltip("What the Weapon sounds like when it fires: a Gunshot per Shot, or one Firing loop.")]
+        private WeaponSoundSettings sound = new();
+
         public float ShotsPerSecond => shotsPerSecond;
         public int MagazineSize => magazineSize;
         public float ReloadSeconds => reloadSeconds;
@@ -56,6 +59,7 @@ namespace DarknessRises.Game.Weapons
         public ShotLightSettings ShotLight => shotLight;
         public MuzzleFlashSettings MuzzleFlash => muzzleFlash;
         public HitSparkSettings HitSpark => hitSpark;
+        public WeaponSoundSettings Sound => sound;
 
         /// <summary>A copy of the numbers the Primary weapon rule needs.</summary>
         public PrimaryWeaponStats PrimaryStats => new(shotsPerSecond, magazineSize, reloadSeconds);

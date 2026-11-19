@@ -12,11 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54167575a1a235f46b6441c75f02164d, type: 3}
   m_Name: CameraDefinition
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Cameras.CameraDefinition
-  pitchDegrees: 60
-  distance: 16
-  fieldOfView: 40
-  followDamping: {x: 0.5, y: 0.5, z: 0.5}
+  walking:
+    pitchDegrees: 46
+    distance: 12.5
+    fieldOfView: 42
+    swingDegrees: 38
   lookAhead:
     walkingDistance: 4
     stoppedDistance: 0
     changeSpeed: 3
+  headingMetres: 8
+  swingEaseSeconds: 0.9
+  followDamping: {x: 0.5, y: 0.5, z: 0.5}
+  station:
+    pitchDegrees: 58
+    distance: 15.5
+    fieldOfView: 40
+    swingDegrees: 14
+  stationFocusShare: 0.25
+  stationFocusMaxMetres: 2.5
+  stationBlendSeconds: 1.1
+  walkBlendSeconds: 1.3

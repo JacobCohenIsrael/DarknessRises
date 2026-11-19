@@ -61,7 +61,7 @@ namespace DarknessRises.Game.Editor.Health
         private static readonly Vector2 StatValueOffset = new(220f, 0f);
         private static readonly Vector2 StatValueSize = new(200f, 70f);
 
-        public static void Build(GameRoot gameRoot, Transform character, FixedAngleCameraView cameraView)
+        public static void Build(GameRoot gameRoot, Transform character, RideCameraView cameraView)
         {
             var serializedRoot = new SerializedObject(gameRoot);
             var configuration = (GameConfiguration)serializedRoot.FindProperty("configuration").objectReferenceValue;
@@ -89,19 +89,23 @@ namespace DarknessRises.Game.Editor.Health
             AddressableContent.ReferenceIfEmpty(clip, () => AssetDatabase.LoadAssetAtPath<AudioClip>(path), AddressableContent.SharedGroup);
         }
 
-        private static void AddImpulseListener(FixedAngleCameraView cameraView)
+        // Every camera of the Ride camera shakes with a hit, whichever is live.
+        private static void AddImpulseListener(RideCameraView cameraView)
         {
-            var listener = cameraView.gameObject.AddComponent<CinemachineImpulseListener>();
-            listener.ApplyAfter = CinemachineCore.Stage.Noise;
-            listener.ChannelMask = 1;
-            listener.Gain = 1f;
-            listener.UseCameraSpace = true;
-            listener.ReactionSettings = new CinemachineImpulseListener.ImpulseReaction
+            foreach (var camera in cameraView.GetComponentsInChildren<CinemachineCamera>(true))
             {
-                AmplitudeGain = 1f,
-                FrequencyGain = 1f,
-                Duration = 1f,
-            };
+                var listener = camera.gameObject.AddComponent<CinemachineImpulseListener>();
+                listener.ApplyAfter = CinemachineCore.Stage.Noise;
+                listener.ChannelMask = 1;
+                listener.Gain = 1f;
+                listener.UseCameraSpace = true;
+                listener.ReactionSettings = new CinemachineImpulseListener.ImpulseReaction
+                {
+                    AmplitudeGain = 1f,
+                    FrequencyGain = 1f,
+                    Duration = 1f,
+                };
+            }
         }
 
         private static CharacterHealthView BuildCharacterHealth(Transform character)

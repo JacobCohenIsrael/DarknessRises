@@ -16,7 +16,7 @@ A top-down survival shooter for mobile. The character walks through pitch-black 
 4. Use local C# `Action` events with clear ownership. No global event bus or mutable service locator.
 5. Pool Enemies, Shots and effects, and keep hot paths free of allocations. This is a mobile game.
 6. Player commands go through named Input System actions in a source-controlled `.inputactions` asset, with keyboard/mouse bindings now and touch later. Don't poll devices directly for gameplay.
-7. Cinemachine owns the fixed-angle camera, including camera shake (impulse).
+7. Cinemachine owns the Ride camera: its walking, Station and Boss Room framings, the blends between them, and camera shake (impulse). See [ADR 0008](docs/adr/0008-the-ride-camera.md).
 8. Async game flows use UniTask, not coroutines. Every async operation takes and passes on a `CancellationToken`; the scope that owns the lifetime owns its `CancellationTokenSource`.
 9. Only Lightning casts real-time shadows. Every other light is shadowless unless a device test shows there's budget for it.
 10. Ask before reusing a legacy visual or audio asset. The Free Pack sounds are approved as placeholders.

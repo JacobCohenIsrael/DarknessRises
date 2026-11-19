@@ -57,6 +57,9 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The sound of a reload, ending as the reload finishes.")]
         private ReloadSoundView reloadSound;
 
+        [SerializeField, Tooltip("The sound of the Primary weapons firing: Gunshots and Firing loops.")]
+        private GunshotSoundView gunshotSound;
+
         [SerializeField, Tooltip("The Boss's name and hit points across the top of the HUD during a Boss fight.")]
         private BossHealthBarView bossHealthBar;
 
@@ -235,7 +238,8 @@ namespace DarknessRises.Game
             lights.Add(aura.Light);
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
-            primaryWeapon.Arm(primaryWeapons, content, lights);
+            var loadout = primaryWeapon.Arm(primaryWeapons, content, lights);
+            gunshotSound.Use(configuration.GunshotVoices, primaryWeapons, loadout, content);
             ammoHud.Show(primaryWeapon.Weapon);
             reloadMeter.Use(configuration.ReloadFeedback, character);
             reloadMeter.Show(primaryWeapon.Weapon);

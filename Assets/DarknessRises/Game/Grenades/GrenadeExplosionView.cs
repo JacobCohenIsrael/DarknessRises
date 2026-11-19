@@ -1,3 +1,4 @@
+using DarknessRises.Game.Audio;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -7,7 +8,8 @@ namespace DarknessRises.Game.Grenades
     /// <summary>
     /// A pooled Grenade explosion: throws out a burst of fire and sparks, flashes a shadowless point light that
     /// lights the area up and fades out, plays the bang from just before its blast and shakes the camera through a Cinemachine impulse,
-    /// then goes back to its pool once the burst is gone. Only Lightning casts real-time shadows.
+    /// then goes back to its pool once the burst is gone and the bang has played out (<see cref="SoundTail"/>), so the
+    /// pool never cuts the bang short. Only Lightning casts real-time shadows.
     /// </summary>
     public sealed class GrenadeExplosionView : MonoBehaviour
     {
@@ -22,11 +24,18 @@ namespace DarknessRises.Game.Grenades
         private AudioClip bangClip;
         private float lightSecondsLeft;
         private float lifeSecondsLeft;
+        private readonly SoundTail bangTail = new();
 
         /// <summary>Where in the clip the last bang started, in seconds.</summary>
         public float LastBangClipStartSeconds { get; private set; }
 
-        /// <summary>Seconds until the longest-lived part of the burst is gone.</summary>
+        /// <summary>Whether the bang is still playing, as far as its clip's length goes.</summary>
+        public bool IsBangPlaying => bangTail.IsPlaying;
+
+        /// <summary>The source the bang plays on.</summary>
+        public AudioSource BangSource => bang;
+
+        /// <summary>Seconds until the longest-lived part of the burst is gone. The bang can outlast it.</summary>
         public float LifeSeconds => Mathf.Max(
             settings != null ? settings.LightSeconds : 0f,
             fireballs.main.startLifetime.constantMax,
@@ -89,6 +98,7 @@ namespace DarknessRises.Game.Grenades
             var deltaSeconds = Time.deltaTime;
             lightSecondsLeft -= deltaSeconds;
             lifeSecondsLeft -= deltaSeconds;
+            bangTail.Tick(deltaSeconds, bang.pitch);
 
             if (lightSecondsLeft > 0f)
             {
@@ -101,7 +111,8 @@ namespace DarknessRises.Game.Grenades
                 flashLight.enabled = false;
             }
 
-            if (lifeSecondsLeft <= 0f)
+            // The source is checked too: it starts a moment after Play, so it can outlast the clip's measured length.
+            if (lifeSecondsLeft <= 0f && !bangTail.IsPlaying && !bang.isPlaying)
             {
                 pool.Release(this);
             }
@@ -119,10 +130,12 @@ namespace DarknessRises.Game.Grenades
             bang.Play();
             LastBangClipStartSeconds = 0f;
 
-            // Measuring or seeking a clip that hasn't loaded fails (WebGL decodes audio late): it plays from the start instead.
+            // Measuring or seeking a clip that hasn't loaded fails (WebGL decodes audio late): it plays from the start
+            // instead, and the explosion waits for the source to stop.
             if (bangClip.loadState == AudioDataLoadState.Loaded)
             {
                 bang.time = LastBangClipStartSeconds = Mathf.Clamp(settings.ClipStartSeconds, 0f, bangClip.length);
+                bangTail.Play(bangClip.length, LastBangClipStartSeconds);
             }
         }
 

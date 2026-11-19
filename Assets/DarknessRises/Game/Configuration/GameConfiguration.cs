@@ -39,6 +39,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The reload meter and sounds, shared by every Primary weapon.")]
         private ReloadFeedbackSettings reloadFeedback = new();
 
+        [SerializeField, Tooltip("The voices on the character that every Primary weapon's Gunshots share.")]
+        private GunshotVoiceSettings gunshotVoices = new();
+
         [SerializeField, Tooltip("The health bar across the top of the HUD during a Boss fight, shared by every Boss.")]
         private BossHealthBarSettings bossHealthBar = new();
 
@@ -57,6 +60,7 @@ namespace DarknessRises.Game.Configuration
         public ContinueDefinition Continue => @continue;
         public GestureDefinition Gestures => gestures;
         public ReloadFeedbackSettings ReloadFeedback => reloadFeedback;
+        public GunshotVoiceSettings GunshotVoices => gunshotVoices;
         public BossHealthBarSettings BossHealthBar => bossHealthBar;
     }
 }

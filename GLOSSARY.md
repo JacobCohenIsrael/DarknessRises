@@ -59,6 +59,13 @@ The light made by the player's Weapon: always its Muzzle flash, and for some Wea
 **Muzzle flash**:
 The short burst of light at the Weapon each time it fires. It lights only the area close to the character.
 
+**Gunshot**:
+The sound of one Shot of a Primary weapon, picked from the Weapon's clips with a slightly random pitch. Rapid Gunshots overlap on a few voices; when all are busy, a new one cuts the oldest short. Not to be confused with Gunfire, which is light.
+_Avoid_: fire sound, shot sound
+
+**Firing loop**:
+The sound of a Weapon that fires continuously, such as the Flamethrower, instead of a Gunshot per Shot: one loop that starts with the first Shot and fades out when firing stops.
+
 **Hit spark**:
 The small burst of sparks and light where a Shot hits something. It lights whatever was hit for a moment. A Shot that hits something it can't hurt, such as the Colossus's foot off its weak spot, gives a dull Hit spark: greyer, dimmer and smaller.
 _Avoid_: impact, hit effect

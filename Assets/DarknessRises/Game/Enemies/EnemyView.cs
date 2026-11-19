@@ -1,3 +1,4 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Runs;
@@ -63,6 +64,7 @@ namespace DarknessRises.Game.Enemies
         private bool isWindUpShown;
         private float facingYaw;
         private EnemyTime time;
+        private readonly SoundTail voiceTail = new();
         private AudioClip spawnClip;
         private AudioClip hurtClip;
         private AudioClip deathClip;
@@ -221,6 +223,7 @@ namespace DarknessRises.Game.Enemies
         {
             // Enemy time: Slow-mo slows the Wind-up, recovery and Stagger along with the chase.
             var deltaSeconds = time.Scaled(Time.deltaTime);
+            voiceTail.Tick(Time.deltaTime, voice.pitch);
             if (!Enemy.IsAlive)
             {
                 SinkAndFade(deltaSeconds);
@@ -438,8 +441,14 @@ namespace DarknessRises.Game.Enemies
 
             if (sinking >= 1f)
             {
-                pool.Release(this);
-                return;
+                if (!voiceTail.IsPlaying)
+                {
+                    pool.Release(this);
+                    return;
+                }
+
+                // Sunk out of sight, it waits for its last sound to play out: the pool would cut it short.
+                sinking = 1f;
             }
 
             transform.position = deathPosition + Vector3.down * (death.SinkDepth * sinking);
@@ -514,6 +523,12 @@ namespace DarknessRises.Game.Enemies
             if (clip != null)
             {
                 voice.PlayOneShot(clip);
+
+                // A clip's length is only known once its audio data has loaded (WebGL decodes audio late).
+                if (clip.loadState == AudioDataLoadState.Loaded)
+                {
+                    voiceTail.Play(clip.length);
+                }
             }
         }
 

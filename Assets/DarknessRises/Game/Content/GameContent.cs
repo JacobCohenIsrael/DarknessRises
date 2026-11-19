@@ -9,7 +9,7 @@ namespace DarknessRises.Game.Content
 {
     /// <summary>
     /// The content a playable scene loads before it starts, read from the definitions' Addressables references:
-    /// the Primary weapons' Shots, hit sparks and reload sounds, the Grenade, the character's sounds, the storm loop, the prefab and
+    /// the Primary weapons' Shots, hit sparks, Gunshots, Firing loops and reload sounds, the Grenade, the character's sounds, the storm loop, the prefab and
     /// sounds of every Enemy type its fights use, and its Boss's sounds.
     /// </summary>
     public static class GameContent
@@ -27,6 +27,13 @@ namespace DarknessRises.Game.Content
             {
                 content.Add(primaryWeapons[i].Shot.Prefab);
                 content.Add(primaryWeapons[i].HitSpark.Prefab);
+                var sound = primaryWeapons[i].Sound;
+                for (var j = 0; j < sound.Gunshots.Count; j++)
+                {
+                    content.Add(sound.Gunshots[j].Clip);
+                }
+
+                content.Add(sound.FiringLoop.Clip);
             }
 
             content.Add(configuration.ReloadFeedback.Clip);

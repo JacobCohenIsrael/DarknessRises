@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Shared
   m_GUID: 8f91c16ef0d1a07498feef7f3fd9df66
   m_SerializeEntries:
+  - m_GUID: 34b439bf70b80a6409eadecc6be92d68
+    m_Address: Hand Gun 2
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 373932479250b134c9289d6a734cf6e2
     m_Address: GrenadeExplosion
     m_ReadOnly: 0
@@ -33,8 +39,20 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 6739c01659ad96d47987f4ddee226b36
+    m_Address: Hand Gun 1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 688c6b22d6fbcf843b1886d15e51e8d7
     m_Address: Shot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 7d156b8a5b340cd46bcf0a76557dd2dd
+    m_Address: Dragon Spit Fire 1
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -71,6 +89,12 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: ac6034ade498bb94b87620cdf6eac48b
     m_Address: Monster Bite
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: d40330822ccea6140b664c0560d5022f
+    m_Address: Machine Gun 1
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

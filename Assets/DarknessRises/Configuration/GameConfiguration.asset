@@ -40,6 +40,10 @@ MonoBehaviour:
     volume: 0.8
     pitch: 1
     interruptFadeSeconds: 0.12
+  gunshotVoices:
+    voiceCount: 6
+    endFadeSeconds: 0.04
+    priority: 140
   bossHealthBar:
     maxWidth: 900
     sideClearance: 380

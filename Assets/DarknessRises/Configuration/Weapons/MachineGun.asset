@@ -60,3 +60,31 @@ MonoBehaviour:
     dullColor: {r: 0.55, g: 0.55, b: 0.6, a: 1}
     dullIntensityShare: 0.25
     dullSparkCount: 3
+  sound:
+    gunshots:
+    - clip:
+        m_AssetGUID: d40330822ccea6140b664c0560d5022f
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      startSeconds: 0.4395
+      lengthSeconds: 0.4
+    minPitch: 1.05
+    maxPitch: 1.15
+    volume: 0.55
+    firingLoop:
+      clip:
+        m_AssetGUID: 
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      volume: 0.7
+      startSeconds: 0
+      loopStartSeconds: 0
+      loopEndSeconds: 0
+      crossfadeSeconds: 0.3
+      fadeInSeconds: 0.04
+      fadeOutSeconds: 0.35
+      stopAfterSeconds: 0.2

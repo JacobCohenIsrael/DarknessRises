@@ -126,6 +126,8 @@ namespace DarknessRises.Game.Editor.Grenades
             {
                 AddressableContent.ReferenceIfEmpty(explosionClip, () => GameplaySoundImport.Load(ExplosionClipPath), group);
             }
+
+            GameplaySoundImport.ApplyToReferenced(explosionClip);
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Re-save so fields added since the asset was created are written with their defaults.

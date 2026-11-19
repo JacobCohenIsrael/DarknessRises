@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37fbb8ef96c6d0d44a25caca90b164f3, type: 3}
   m_Name: Level1
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Levels.LevelDefinition
-  titleFormat: Level {0}
-  clearedTitleFormat: Level {0} cleared
+  titleFormat: STAGE {0}
+  firstLevelSetupLine: He walks. You shoot. Keep him alive.
+  clearedTitleFormat: STAGE {0} CLEAR
   rooms:
   - name: Hall
     stations:

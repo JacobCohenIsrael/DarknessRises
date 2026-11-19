@@ -53,6 +53,12 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The Ready and Clear banners and the Go cue shown to the Station rhythm, with their sounds.")]
         private StationBannerSettings stationBanners = new();
 
+        [SerializeField, Tooltip("The reticle where the player aims, which kicks with every Shot.")]
+        private CrosshairSettings crosshair = new();
+
+        [SerializeField, Tooltip("The first-run hint over the first Enemy: tap to shoot.")]
+        private ShootHintSettings shootHint = new();
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -72,5 +78,7 @@ namespace DarknessRises.Game.Configuration
         public BossHealthBarSettings BossHealthBar => bossHealthBar;
         public StationRhythmSettings StationRhythm => stationRhythm;
         public StationBannerSettings StationBanners => stationBanners;
+        public CrosshairSettings Crosshair => crosshair;
+        public ShootHintSettings ShootHint => shootHint;
     }
 }

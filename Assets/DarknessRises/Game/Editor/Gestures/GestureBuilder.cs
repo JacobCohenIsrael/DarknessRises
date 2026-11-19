@@ -15,10 +15,23 @@ namespace DarknessRises.Game.Editor.Gestures
     {
         private const string GestureDefinitionPath = "Assets/DarknessRises/Configuration/GestureDefinition.asset";
 
+        // The Hold used to wait 0.3 s before it fired. It's shorter now, so a pressed finger shoots almost at once (#72).
+        private const float FormerHoldSeconds = 0.3f;
+        private const float HoldSeconds = 0.15f;
+
         /// <summary>Loads the Gesture definition, creating it with its defaults if it's missing.</summary>
         public static GestureDefinition LoadOrCreateGestures()
         {
             var gestures = TestRoomBuilder.LoadOrCreate<GestureDefinition>(GestureDefinitionPath);
+
+            // Only the former default moves; a time tuned in the Inspector stays.
+            var serialized = new SerializedObject(gestures);
+            var holdSeconds = serialized.FindProperty("thresholds.holdSeconds");
+            if (Mathf.Approximately(holdSeconds.floatValue, FormerHoldSeconds))
+            {
+                holdSeconds.floatValue = HoldSeconds;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
 
             // Re-save so fields added since the asset was created are written with their defaults.
             EditorUtility.SetDirty(gestures);

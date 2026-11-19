@@ -16,8 +16,8 @@ namespace DarknessRises.Game.Gestures
     /// <remarks>
     /// A touch that starts on a UI control (the pause button) is left to the UI and never becomes a Gesture.
     /// One-off commands (a Tap's Fire, Reload, Relocate) are pressed for one frame; a Hold keeps Fire pressed.
-    /// While the Grenade button is armed, a Tap in the Room presses Grenade instead of Fire, with the Grenade aimed at
-    /// the tapped point, so the tap that throws never fires.
+    /// While the Grenade button is armed, a touch in the Room (a Tap, or one that stays long enough to start a Hold)
+    /// presses Grenade instead of Fire, with the Grenade aimed at the touched point, so the touch that throws never fires.
     /// Runs early, so the device's state is queued before the rest of the frame reads input.
     /// </remarks>
     [DefaultExecutionOrder(-100)]
@@ -66,6 +66,10 @@ namespace DarknessRises.Game.Gestures
                     break;
                 case GestureCommand.FireOnce:
                     pulses |= 1u << GestureDeviceState.FireBit;
+                    break;
+                case GestureCommand.FireHold when grenadeButton != null && grenadeButton.TapRoom() == RoomTapOutcome.ThrowGrenade:
+                    controls.AimGrenadeAt(gesture.Position * ShorterScreenSide());
+                    pulses |= 1u << GestureDeviceState.GrenadeBit;
                     break;
                 case GestureCommand.FireHold:
                     isHoldingFire = true;

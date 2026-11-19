@@ -15,8 +15,11 @@ namespace DarknessRises.Game.Gestures
         [SerializeField, Min(0f), Tooltip("How far a Tap's (or a Hold's, before it starts) finger may move, in screen units.")]
         private float tapMaxMovement = 0.03f;
 
-        [SerializeField, Min(0f), Tooltip("Seconds a still finger must stay down to start a Hold. Longer than a Tap.")]
-        private float holdSeconds = 0.3f;
+        [SerializeField, Min(0f), Tooltip(
+            "Seconds a still finger must stay down to start a Hold, which fires at once and keeps firing. A shorter still touch is a Tap, " +
+            "which fires as it lifts. Short, so a finger pressed on the screen shoots almost at once; but keep it at or above the two-finger " +
+            "window below, or the first finger of a two-finger Gesture can start a Hold before the second lands.")]
+        private float holdSeconds = 0.15f;
 
         [SerializeField, Min(0f), Tooltip("Seconds at most from the last finger of a Two-finger double-tap's first tap lifting to the first finger of its second touching down.")]
         private float doubleTapMaxGapSeconds = 0.3f;

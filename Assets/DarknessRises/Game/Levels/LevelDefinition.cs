@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Bosses;
+using DarknessRises.Game.Runs;
 using UnityEngine;
 
 namespace DarknessRises.Game.Levels
@@ -13,11 +14,18 @@ namespace DarknessRises.Game.Levels
     [CreateAssetMenu(menuName = "Darkness Rises/Level Definition", fileName = "LevelDefinition", order = 40)]
     public sealed class LevelDefinition : ScriptableObject
     {
-        [SerializeField, Tooltip("Shown on the title card as the Level starts. {0} is the Level's number in the Run.")]
-        private string titleFormat = "Level {0}";
+        [SerializeField, Tooltip(
+            "Shown on the title card as the Level starts, arcade style. {0} is the Level's number in the Run. " +
+            "(On screen a Level is announced as a stage; everywhere else it's a Level.)")]
+        private string titleFormat = "STAGE {0}";
+
+        [SerializeField, Tooltip(
+            "One line under the title of a Run's first Level, telling a new player their job: the character walks on its own, " +
+            "and they are its eyes and its gun. Empty for none.")]
+        private string firstLevelSetupLine = "He walks. You shoot. Keep him alive.";
 
         [SerializeField, Tooltip("Shown once the character has walked out the far door. {0} is the Level's number in the Run.")]
-        private string clearedTitleFormat = "Level {0} cleared";
+        private string clearedTitleFormat = "STAGE {0} CLEAR";
 
         [SerializeField, Tooltip(
             "The Level's Rooms, in the order the Route walks through them. " +
@@ -43,6 +51,12 @@ namespace DarknessRises.Game.Levels
 
         /// <summary>The title card of this Level when it is Level <paramref name="levelIndex"/> of the Run.</summary>
         public string TitleFor(int levelIndex) => string.Format(titleFormat, levelIndex);
+
+        /// <summary>
+        /// The line under the title card of this Level as Level <paramref name="levelIndex"/> of the Run: the setup line on
+        /// the Run's first Level, nothing afterwards.
+        /// </summary>
+        public string SetupLineFor(int levelIndex) => levelIndex == RunRecord.FirstLevel ? firstLevelSetupLine : string.Empty;
 
         /// <summary>The card once the character has walked out of this Level, as Level <paramref name="levelIndex"/> of the Run.</summary>
         public string ClearedTitleFor(int levelIndex) => string.Format(clearedTitleFormat, levelIndex);

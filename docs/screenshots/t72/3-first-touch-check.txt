@@ -1,0 +1,22 @@
+First touch (headless Play Mode in Level.unity, 60 fps, 2400x1079, simulated touches and mouse).
+Times count from the frame the game first saw the finger down.
+
+During the title card (Run phase LevelStart, 1.65 s into the first Level):
+  tap, 4 frames down    first Shot 6 frames / 98 ms later, rounds 12 -> 11
+                        crosshair shown at (1488, 453), exactly the touch point, raycastTarget False
+  title 'STAGE 1', line 'He walks. You shoot. Keep him alive.', alpha 1.00, no raycast targets
+Held finger (30 frames down):
+  first Shot 10 frames / 166 ms later (the Hold starts at 0.15 s; it was 0.3 s), rounds 11 -> 9 while down
+One-finger drag across the screen, 600 ms:
+  the character stayed 0.000 m off its Route
+Shoot hint:
+  'TAP TO SHOOT' over the first Enemy of the first Station, alpha 1.00, raycastTarget False; gone after the next tap
+Mouse (no touchscreen):
+  crosshair shown at the pointer (960, 755) with no click, system cursor hidden; a click kicked it and fired
+
+Gestures, with the Hold at 0.15 s:
+  two-finger double-tap     rounds 10 -> 10, reloading False -> True      (Reload, no Shot)
+  two-finger flick up       Flare Ready -> Active, rounds unchanged      (no Shot)
+  two-finger flick down     Slow-mo Ready -> Active, rounds unchanged    (no Shot)
+  Grenade button, then a 4-frame Room tap      Grenades 3 -> 2, rounds unchanged
+  Grenade button, then a 14-frame Room touch   Grenades 2 -> 1, rounds unchanged (a Hold now throws too)

@@ -257,8 +257,25 @@ namespace DarknessRises.Game.Editor.Levels
         };
 
         // Title card and screen fade.
-        private const float TitleFontSize = 120f;
-        private static readonly Color TitleColor = new(0.86f, 0.84f, 0.8f, 1f);
+        private const float TitleFontSize = 170f;
+        private const float TitleCharacterSpacing = 16f;
+        private static readonly Color TitleColor = new(0.96f, 0.9f, 0.7f, 1f);
+        private static readonly Vector2 TitleOffset = new(0f, 60f);
+        private static readonly Vector2 TitleSize = new(1800f, 240f);
+
+        // The line under the title: the setup line of a Run's first Level.
+        private const float SubtitleFontSize = 50f;
+        private const float SubtitleCharacterSpacing = 6f;
+        private static readonly Color SubtitleColor = new(0.86f, 0.84f, 0.8f, 1f);
+        private static readonly Vector2 SubtitleOffset = new(0f, -90f);
+        private static readonly Vector2 SubtitleSize = new(1800f, 90f);
+
+        // The title card's wording before it went arcade (#72). Only these former defaults are replaced; a title
+        // written in the Inspector stays.
+        private const string FormerTitleFormat = "Level {0}";
+        private const string FormerClearedTitleFormat = "Level {0} cleared";
+        private const string TitleFormat = "STAGE {0}";
+        private const string ClearedTitleFormat = "STAGE {0} CLEAR";
 
         [MenuItem("Darkness Rises/Rebuild Level")]
         public static void Build()
@@ -658,23 +675,38 @@ namespace DarknessRises.Game.Editor.Levels
             group.blocksRaycasts = false;
             group.interactable = false;
 
-            var textObject = new GameObject("Title", typeof(RectTransform), typeof(TextMeshProUGUI));
-            var textRect = textObject.GetComponent<RectTransform>();
-            textRect.SetParent(rect, false);
-            Stretch(textRect);
-            var label = textObject.GetComponent<TextMeshProUGUI>();
-            label.text = "Level 1";
-            label.fontSize = TitleFontSize;
-            label.characterSpacing = 12f;
-            label.color = TitleColor;
-            label.alignment = TextAlignmentOptions.Center;
-            label.raycastTarget = false;
-            label.enabled = false;
+            var label = AddCardText(rect, "Title", "STAGE 1", TitleFontSize, TitleCharacterSpacing, TitleColor, TitleOffset, TitleSize);
+            label.fontStyle = FontStyles.Bold;
+            var subtitle = AddCardText(
+                rect, "Subtitle", string.Empty, SubtitleFontSize, SubtitleCharacterSpacing, SubtitleColor, SubtitleOffset, SubtitleSize);
 
             var view = card.GetComponent<TitleCardView>();
             TestRoomBuilder.SetReference(view, "group", group);
             TestRoomBuilder.SetReference(view, "label", label);
+            TestRoomBuilder.SetReference(view, "subtitle", subtitle);
             return view;
+        }
+
+        // A centred line of the title card. Never a raycast target: taps go through the card and fire.
+        private static TextMeshProUGUI AddCardText(
+            RectTransform card, string name, string text, float fontSize, float characterSpacing, Color color, Vector2 offset, Vector2 size)
+        {
+            var textObject = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
+            var textRect = textObject.GetComponent<RectTransform>();
+            textRect.SetParent(card, false);
+            textRect.anchorMin = textRect.anchorMax = textRect.pivot = new Vector2(0.5f, 0.5f);
+            textRect.anchoredPosition = offset;
+            textRect.sizeDelta = size;
+            var label = textObject.GetComponent<TextMeshProUGUI>();
+            label.text = text;
+            label.fontSize = fontSize;
+            label.characterSpacing = characterSpacing;
+            label.color = color;
+            label.alignment = TextAlignmentOptions.Center;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            label.raycastTarget = false;
+            label.enabled = false;
+            return label;
         }
 
         private static void Stretch(RectTransform rect)
@@ -697,12 +729,23 @@ namespace DarknessRises.Game.Editor.Levels
             if (boss.objectReferenceValue == null)
             {
                 boss.objectReferenceValue = colossus;
-                serialized.ApplyModifiedPropertiesWithoutUndo();
             }
+
+            ReplaceIfFormer(serialized.FindProperty("titleFormat"), FormerTitleFormat, TitleFormat);
+            ReplaceIfFormer(serialized.FindProperty("clearedTitleFormat"), FormerClearedTitleFormat, ClearedTitleFormat);
+            serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Re-saved so fields added since it was created are written to disk with their defaults.
             EditorUtility.SetDirty(definition);
             return definition;
+        }
+
+        private static void ReplaceIfFormer(SerializedProperty text, string former, string current)
+        {
+            if (text.stringValue == former)
+            {
+                text.stringValue = current;
+            }
         }
 
         /// <summary>Authors placeholder Shambler Waves and Stragglers for each Room, unless the Level already has Rooms.</summary>

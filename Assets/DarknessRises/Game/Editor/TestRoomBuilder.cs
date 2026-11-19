@@ -156,6 +156,7 @@ namespace DarknessRises.Game.Editor
             GunshotSoundBuilder.Build(gameRoot, character);
             BossHealthBarBuilder.Build(gameRoot);
             StationBannerBuilder.Build(gameRoot, Camera.main);
+            FirstTouchBuilder.Build(gameRoot, character, primaryWeapon, Camera.main);
             GrenadeBuilder.Build(gameRoot, character);
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);

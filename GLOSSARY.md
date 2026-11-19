@@ -5,8 +5,8 @@ A top-down survival shooter. The character walks through pitch-black Rooms on it
 ## World
 
 **Level**:
-A short, self-contained stretch of a Run with a clear start and end: a Route through a few Rooms, ending in a Boss fight. It opens with the character walking in through a door and closes with a calm moment after the Boss, before the character walks out into the next Level.
-_Avoid_: stage, map, chapter
+A short, self-contained stretch of a Run with a clear start and end: a Route through a few Rooms, ending in a Boss fight. It opens with the character walking in through a door and closes with a calm moment after the Boss, before the character walks out into the next Level. On screen its title card announces it arcade-style as a stage ("STAGE 1"), with one setup line under it on a Run's first Level; in code and docs it's always a Level.
+_Avoid_: stage (outside the title card's wording), map, chapter
 
 **Room**:
 One enclosed space in a Level, connected to the next by a doorway. Each Room has its own lighting; for example, only Rooms with windows get Lightning.
@@ -158,7 +158,7 @@ _Avoid_: slow, time warp, bullet time
 ## Input
 
 **Gesture**:
-A touch pattern that triggers an action. A tap fires once and a hold keeps firing. Two quick one-finger taps are just two taps (two Shots). A two-finger double-tap (two quick two-finger taps in the same place) reloads, and neither of its taps fires. A one-finger flick in any direction Relocates that way in a Boss fight and does nothing elsewhere. A two-finger flick up triggers the Flare and down triggers Slow-mo. A two-finger tap alone does nothing. New Gestures (circles, squares, lines) can be added later for new Skills.
+A touch pattern that triggers an action. A tap fires once, as the finger lifts, and a finger that stays down (a hold) starts firing almost at once and keeps firing. Two quick one-finger taps are just two taps (two Shots). A two-finger double-tap (two quick two-finger taps in the same place) reloads, and neither of its taps fires. A one-finger flick in any direction Relocates that way in a Boss fight and does nothing elsewhere. A two-finger flick up triggers the Flare and down triggers Slow-mo. A two-finger tap alone does nothing. New Gestures (circles, squares, lines) can be added later for new Skills.
 _Avoid_: swipe command, touch combo
 
 **Two-finger flick**:
@@ -168,6 +168,14 @@ _Avoid_: two-finger swipe, double flick
 **Grenade button**:
 On touch only, the on-screen button that throws the Grenade and shows its charges. Tapping it arms the Grenade, and the next tap in the Room throws it at that point instead of firing. Tapping it again cancels. Holding it picks it up so the player can drag it anywhere inside the screen's safe area, and the device remembers where it was dropped. It's greyed out with no charges. On keyboard and mouse it's hidden, and right-click throws.
 _Avoid_: grenade icon, bomb button
+
+**Crosshair**:
+The reticle on the HUD where the player aims. It kicks with every Shot. With a mouse it follows the pointer all the time and stands in for the cursor; on touch it appears where the finger lands with the first Shot and fades a moment after the last.
+_Avoid_: cursor, pointer, hit marker (that marks a hit on an Enemy)
+
+**Shoot hint**:
+The first-run prompt ("TAP TO SHOOT") that bobs over the first Enemy of a Run's first Level and goes away as soon as the player fires.
+_Avoid_: tutorial, tooltip
 
 **Aim assist**:
 On touch only, Shots bend slightly toward the nearest visible Enemy close to the player's finger. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast.

@@ -45,18 +45,23 @@ namespace DarknessRises.Game.Routes
             }
         }
 
+        /// <summary>
+        /// Starts walking <paramref name="walkingCharacter"/> along the Route at the player's walking speed, easing into
+        /// and out of each Station as <paramref name="easing"/> says, with the camera's follow target ahead of it.
+        /// </summary>
         public void Walk(
             PlayerDefinition player,
             LookAheadSettings lookAheadSettings,
             Transform walkingCharacter,
-            Transform followTarget)
+            Transform followTarget,
+            WalkEasing easing = default)
         {
             character = walkingCharacter;
             cameraTarget = followTarget;
             placesCharacter = true;
 
             var path = route.CreatePath();
-            Progress = new RouteProgress(path, route.CreateStations(path), player.WalkingSpeed);
+            Progress = new RouteProgress(path, route.CreateStations(path), player.WalkingSpeed, easing);
             lookAhead = new RouteLookAhead(
                 lookAheadSettings.WalkingDistance,
                 lookAheadSettings.StoppedDistance,

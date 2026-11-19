@@ -45,6 +45,12 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The health bar across the top of the HUD during a Boss fight, shared by every Boss.")]
         private BossHealthBarSettings bossHealthBar = new();
 
+        [SerializeField, Tooltip("The beats of every stop at a Station (ready, fight, clear, quiet, go) and how the walk eases into and out of it.")]
+        private StationRhythmSettings stationRhythm = new();
+
+        [SerializeField, Tooltip("The Ready and Clear banners and the Go cue shown to the Station rhythm, with their sounds.")]
+        private StationBannerSettings stationBanners = new();
+
         public PlayerDefinition Player => player;
         public CameraDefinition FixedAngleCamera => fixedAngleCamera;
         public RouteDefinition Route => route;
@@ -62,5 +68,7 @@ namespace DarknessRises.Game.Configuration
         public ReloadFeedbackSettings ReloadFeedback => reloadFeedback;
         public GunshotVoiceSettings GunshotVoices => gunshotVoices;
         public BossHealthBarSettings BossHealthBar => bossHealthBar;
+        public StationRhythmSettings StationRhythm => stationRhythm;
+        public StationBannerSettings StationBanners => stationBanners;
     }
 }

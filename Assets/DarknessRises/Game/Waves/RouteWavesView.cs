@@ -28,10 +28,17 @@ namespace DarknessRises.Game.Waves
         public event Action<Enemy> EnemyDied;
 
         /// <summary>
-        /// Starts running each Station's authored Waves as the character reaches it. Spawned Enemies run on
-        /// <paramref name="enemyTime"/>, built from the prefabs and sounds already loaded in <paramref name="content"/>.
+        /// Starts running each Station's authored Waves as the character reaches it, to the beats of
+        /// <paramref name="rhythm"/>. Spawned Enemies run on <paramref name="enemyTime"/>, built from the prefabs and
+        /// sounds already loaded in <paramref name="content"/>.
         /// </summary>
-        public void Run(RouteDefinition route, RouteProgress routeProgress, Transform character, EnemyTime enemyTime, ILoadedContent content)
+        public void Run(
+            RouteDefinition route,
+            RouteProgress routeProgress,
+            Transform character,
+            EnemyTime enemyTime,
+            ILoadedContent content,
+            StationRhythm rhythm)
         {
             Stop();
 
@@ -51,7 +58,7 @@ namespace DarknessRises.Game.Waves
 
             PrewarmPools(stationWaves);
             progress.StationReached += OnStationReached;
-            waves = new RouteWaves<EnemyDefinition>(progress, stationWaves, this);
+            waves = new RouteWaves<EnemyDefinition>(progress, stationWaves, this, rhythm);
         }
 
         public Enemy TrySpawn(EnemyDefinition enemyType)

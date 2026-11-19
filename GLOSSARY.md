@@ -20,6 +20,14 @@ _Avoid_: path, rail, track
 A point on the Route where the character stops and fights Waves. It moves on only once they're cleared.
 _Avoid_: checkpoint, encounter, arena
 
+**Station rhythm**:
+The beats every Station with Waves plays, always in the same order, so the game reads as a ride that stops, fights and goes: the character Plants, a Ready banner warns of the fight, the Waves come, a Clear banner calls the win, a moment of quiet follows, and a Go cue points along the Route before the character sets off. A Station without Waves has none: the character walks straight through.
+_Avoid_: encounter flow, station phases
+
+**Plant**:
+How the character stops at a Station: it slows over the last metres, settles into a braced stride with its Weapon up, and holds it until the Clear banner. It never stops dead, and it picks its pace back up as it sets off.
+_Avoid_: halt, brake
+
 **Spawn point**:
 An authored place in a Room where Enemies enter, such as a dark doorway, gap or vent. A Spawn point that is lit at that moment is skipped, so Enemies never appear in view.
 _Avoid_: spawner, portal

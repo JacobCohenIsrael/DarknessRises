@@ -6,10 +6,11 @@ using UnityEngine;
 namespace DarknessRises.Game.Player
 {
     /// <summary>
-    /// Shows the character's animations: walking along the Route, shooting, throwing and dying, with the upper body
-    /// turned to face the aim point and both hands on the Weapon. The rules live in <see cref="CharacterFacing"/> and
-    /// <see cref="OneShotMotion"/>; this feeds them frame time, drives the Animator, and after it twists the upper
-    /// body and puts the hands on the Weapon's grips.
+    /// Shows the character's animations: walking along the Route, planting at a Station, shooting, throwing and dying,
+    /// with the upper body turned to face the aim point and both hands on the Weapon. The rules live in
+    /// <see cref="CharacterFacing"/>, <see cref="OneShotMotion"/> and <see cref="PlantStance"/>; this feeds them frame
+    /// time, drives the Animator, and after it bends the legs into the plant stance, twists the upper body and puts the
+    /// hands on the Weapon's grips.
     /// </summary>
     /// <remarks>
     /// The Grenade and death tickets call <see cref="Throw"/>, <see cref="Die"/> and <see cref="Revive"/>, and listen to
@@ -51,6 +52,9 @@ namespace DarknessRises.Game.Player
         private CharacterAnimationSettings settings;
         private RouteProgress route;
         private PrimaryWeapon weapon;
+        private StationRhythm stationRhythm;
+        private Legs legs;
+        private float plantWeight;
         private CharacterFacing facing;
         private OneShotMotion throwMotion;
         private OneShotMotion deathMotion;
@@ -75,14 +79,24 @@ namespace DarknessRises.Game.Player
         public bool IsThrowing => throwMotion != null && throwMotion.IsPlaying;
         public bool IsDead { get; private set; }
 
-        /// <summary>Starts animating the character as it walks <paramref name="routeProgress"/> and fires <paramref name="primaryWeapon"/>.</summary>
-        public void Show(CharacterAnimationSettings animationSettings, RouteProgress routeProgress, PrimaryWeapon primaryWeapon)
+        /// <summary>
+        /// Starts animating the character as it walks <paramref name="routeProgress"/> and fires
+        /// <paramref name="primaryWeapon"/>. It plants at a Station to the beats of <paramref name="rhythm"/>, if given.
+        /// </summary>
+        public void Show(
+            CharacterAnimationSettings animationSettings,
+            RouteProgress routeProgress,
+            PrimaryWeapon primaryWeapon,
+            StationRhythm rhythm = null)
         {
             Unsubscribe();
 
             settings = animationSettings;
             route = routeProgress;
             weapon = primaryWeapon;
+            stationRhythm = rhythm;
+            plantWeight = 0f;
+            legs = animator.isHuman ? new Legs(animator) : default;
             IsDead = false;
 
             CharacterFacing.TryGetYaw(route.Direction, out var startYaw);
@@ -191,6 +205,13 @@ namespace DarknessRises.Game.Player
                 ? Mathf.MoveTowards(handsWeight, handsTarget, deltaSeconds / settings.HandsBlendSeconds)
                 : handsTarget;
 
+            // Planted from the Ready beat until the clear is called; standing otherwise, and never while dead.
+            var planted = !IsDead && stationRhythm != null && PlantStance.IsPlantedIn(stationRhythm.Beat);
+            var plantTarget = planted ? 1f : 0f;
+            plantWeight = settings.PlantSeconds > 0f
+                ? Mathf.MoveTowards(plantWeight, plantTarget, deltaSeconds / settings.PlantSeconds)
+                : plantTarget;
+
             if (IsDead)
             {
                 deadSeconds += deltaSeconds;
@@ -202,7 +223,8 @@ namespace DarknessRises.Game.Player
             var travel = route.IsAtStation || route.IsFinished ? Vector3.zero : route.Direction;
             facing.Tick(deltaSeconds, travel, aim.forward);
 
-            var move = facing.ToBodySpace(travel);
+            // The walk slows with the character as it eases into a Station and picks up again as it sets off.
+            var move = facing.ToBodySpace(travel) * route.SpeedFraction;
             animator.SetFloat(MoveForwardId, move.y, settings.LocomotionBlendSeconds, deltaSeconds);
             animator.SetFloat(MoveRightId, move.x, settings.LocomotionBlendSeconds, deltaSeconds);
         }
@@ -233,6 +255,7 @@ namespace DarknessRises.Game.Player
             }
             else
             {
+                Plant();
                 var twist = facing.Twist;
                 for (var i = 0; i < twistBones.Length; i++)
                 {
@@ -250,6 +273,44 @@ namespace DarknessRises.Game.Player
             Unsubscribe();
             poseHandler?.Dispose();
             poseHandler = null;
+        }
+
+        // Bends the legs into the plant stance on top of the animated pose, lowers the hips by as much as the feet rose
+        // so they stay on the floor, and leans the upper body over the lead leg.
+        private void Plant()
+        {
+            if (plantWeight <= 0f || !legs.IsComplete)
+            {
+                return;
+            }
+
+            var right = model.right;
+            var leftFootHeight = legs.LeftFoot.position.y;
+            var rightFootHeight = legs.RightFoot.position.y;
+            Bend(
+                legs.LeftThigh, legs.LeftShin, legs.LeftFoot,
+                PlantStance.Lead(settings.PlantLeadDegrees, settings.PlantRearDegrees, plantWeight), right);
+            Bend(
+                legs.RightThigh, legs.RightShin, legs.RightFoot,
+                PlantStance.Rear(settings.PlantLeadDegrees, settings.PlantRearDegrees, plantWeight), right);
+
+            var rise = Mathf.Min(legs.LeftFoot.position.y - leftFootHeight, legs.RightFoot.position.y - rightFootHeight);
+            if (rise > 0f)
+            {
+                legs.Hips.position += Vector3.down * rise;
+            }
+
+            legs.Spine.rotation = Quaternion.AngleAxis(settings.PlantLeanDegrees * plantWeight, right) * legs.Spine.rotation;
+        }
+
+        // Turning about the legs' right axis: a negative angle swings a hanging limb forward, a positive one back.
+        private static void Bend(Transform thigh, Transform shin, Transform foot, LegBend bend, Vector3 right)
+        {
+            thigh.rotation = Quaternion.AngleAxis(-bend.ThighForwardDegrees, right) * thigh.rotation;
+            shin.rotation = Quaternion.AngleAxis(bend.KneeDegrees, right) * shin.rotation;
+
+            // The foot stays flat on the floor.
+            foot.rotation = Quaternion.AngleAxis(-bend.ShinBackDegrees, right) * foot.rotation;
         }
 
         // Tips the body over backwards onto the floor, on top of whatever the death clip does to the limbs.
@@ -322,6 +383,34 @@ namespace DarknessRises.Game.Player
             {
                 deathMotion.Finished -= OnDeathFinished;
             }
+        }
+
+        // The humanoid's leg bones, looked up once, for the plant stance.
+        private readonly struct Legs
+        {
+            public Legs(Animator humanoid)
+            {
+                Hips = humanoid.GetBoneTransform(HumanBodyBones.Hips);
+                Spine = humanoid.GetBoneTransform(HumanBodyBones.Spine);
+                LeftThigh = humanoid.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
+                LeftShin = humanoid.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
+                LeftFoot = humanoid.GetBoneTransform(HumanBodyBones.LeftFoot);
+                RightThigh = humanoid.GetBoneTransform(HumanBodyBones.RightUpperLeg);
+                RightShin = humanoid.GetBoneTransform(HumanBodyBones.RightLowerLeg);
+                RightFoot = humanoid.GetBoneTransform(HumanBodyBones.RightFoot);
+                IsComplete = Hips != null && Spine != null && LeftThigh != null && LeftShin != null && LeftFoot != null
+                    && RightThigh != null && RightShin != null && RightFoot != null;
+            }
+
+            public Transform Hips { get; }
+            public Transform Spine { get; }
+            public Transform LeftThigh { get; }
+            public Transform LeftShin { get; }
+            public Transform LeftFoot { get; }
+            public Transform RightThigh { get; }
+            public Transform RightShin { get; }
+            public Transform RightFoot { get; }
+            public bool IsComplete { get; }
         }
 
         /// <summary>A bone that takes a share of the upper body's twist. The shares of all twist bones add up to 1.</summary>

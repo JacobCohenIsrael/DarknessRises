@@ -1,0 +1,17 @@
+Station rhythm, one full Station of Level 1 (headless Play Mode, 60 fps, god mode on; the Wave was killed 6 s into the fight).
+Logged from StationRhythm.BeatChanged; distance is metres along the Route.
+
+  time     beat      where
+  0.35s    Walking   distance  1.00 m
+  4.71s    Ready     distance 13.22 m  Station 0   character plants, GET READY + sting
+  6.33s    Fight     distance 13.22 m  Station 0   Waves start (1.6 s after arrival)
+ 12.34s    Clear     distance 13.22 m  Station 0   last Enemy dead, CLEAR + chime
+ 13.65s    Quiet     distance 13.22 m  Station 0   banner gone, character stands up
+ 14.45s    Go        distance 13.22 m  Station 0   GO + arrow along the Route + shot
+ 15.14s    Walking   distance 13.22 m              Station cleared, character sets off
+ 19.23s    Ready     distance 24.03 m  Station 1
+
+Banner sounds, read from the banner's AudioSources (AudioListener.volume 0 in the headless Editor):
+  Ready  Metal Impact 7        from 0.00 s  volume 0.8
+  Clear  Magic Spell_Coins_2   from 1.30 s  volume 0.8  (read at 1.81 s, 0.52 s into the Clear beat)
+  Go     Flare gun 5-2         from 0.00 s  volume 0.8  (read at 0.36 s, 0.36 s into the Go beat)

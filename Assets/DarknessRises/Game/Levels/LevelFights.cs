@@ -6,8 +6,9 @@ using DarknessRises.Game.Waves;
 namespace DarknessRises.Game.Levels
 {
     /// <summary>
-    /// Everything the character fights on a Level's Route: each Station's Waves when it gets there, and Stragglers
-    /// while it walks between Stations. The Route's last Station is the Level's end: it is left to the owner,
+    /// Everything the character fights on a Level's Route: each Station's Waves when it gets there, run to the Station
+    /// rhythm (ready, fight, clear, quiet, go), and Stragglers while it walks between Stations.
+    /// The Route's last Station is the Level's end: it is left to the owner,
     /// who clears it once the end beat has played. In a Level with a Boss, the Station before it is the Boss's:
     /// it too is left to the owner, who clears it once the Boss is beaten.
     /// </summary>
@@ -18,8 +19,7 @@ namespace DarknessRises.Game.Levels
         private readonly StragglerSchedule<TEnemyType> stragglers;
         private readonly int exitStation;
         private readonly int bossStation;
-        private WaveSchedule<TEnemyType> current;
-        private Station currentStation;
+        private readonly StationFight<TEnemyType> fight;
 
         /// <param name="progress">The character's walk through the Level.</param>
         /// <param name="stationWaves">
@@ -30,12 +30,17 @@ namespace DarknessRises.Game.Levels
         /// <param name="hasBoss">
         /// Whether the Level ends in a Boss fight, at the Station right after the last one in <paramref name="stationWaves"/>.
         /// </param>
+        /// <param name="rhythm">
+        /// The beats each stop at a Station with Waves plays. None: no beats, the Waves start on arrival and the character
+        /// leaves with the last death.
+        /// </param>
         public LevelFights(
             RouteProgress progress,
             IReadOnlyList<IReadOnlyList<WavePlan<TEnemyType>>> stationWaves,
             IEnemySpawner<TEnemyType> waveSpawner,
             StragglerSchedule<TEnemyType> stragglers,
-            bool hasBoss = false)
+            bool hasBoss = false,
+            StationRhythm rhythm = null)
         {
             this.progress = progress ?? throw new ArgumentNullException(nameof(progress));
             this.stragglers = stragglers ?? throw new ArgumentNullException(nameof(stragglers));
@@ -59,6 +64,7 @@ namespace DarknessRises.Game.Levels
                 schedules[i] = new WaveSchedule<TEnemyType>(stationWaves[i], waveSpawner);
             }
 
+            fight = new StationFight<TEnemyType>(rhythm ?? new StationRhythm(default));
             progress.StationReached += OnStationReached;
         }
 
@@ -68,14 +74,20 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised when the character reaches the Boss's Station. The owner runs the Boss fight and clears it.</summary>
         public event Action<Station> BossReached;
 
-        /// <summary>Raised when the character reaches a Station with Waves to fight. A Station without Waves raises nothing.</summary>
+        /// <summary>
+        /// Raised when the character stops at a Station with Waves to fight, as its Ready beat starts.
+        /// A Station without Waves raises nothing.
+        /// </summary>
         public event Action<Station> FightStarted;
 
-        /// <summary>Raised when a Station's last Wave is dead and the character walks on.</summary>
+        /// <summary>
+        /// Raised when the stop is over: the Station's last Wave is dead, the beats after it have played, and the
+        /// character sets off.
+        /// </summary>
         public event Action<Station> FightCleared;
 
-        /// <summary>The fight at the Station the character is at, or null while it walks.</summary>
-        public WaveSchedule<TEnemyType> Current => current;
+        /// <summary>The Waves of the Station the character is stopped at, or null while it walks.</summary>
+        public WaveSchedule<TEnemyType> Current => fight.Waves;
 
         /// <summary>Whether Stragglers may come. Off during the Level's start and end beats.</summary>
         public bool StragglersAllowed { get; set; }
@@ -83,19 +95,14 @@ namespace DarknessRises.Game.Levels
         public StragglerSchedule<TEnemyType> Stragglers => stragglers;
 
         /// <summary>Enemies of this Level alive right now: the current Station's and the Stragglers.</summary>
-        public int AliveCount => (current != null ? current.AliveCount : 0) + stragglers.AliveCount;
+        public int AliveCount => (fight.Waves != null ? fight.Waves.AliveCount : 0) + stragglers.AliveCount;
 
         public void Tick(float deltaSeconds)
         {
-            if (current != null)
+            var station = fight.Station;
+            if (fight.Tick(deltaSeconds))
             {
-                current.Tick(deltaSeconds);
-                if (current.IsDone)
-                {
-                    current = null;
-                    FightCleared?.Invoke(currentStation);
-                    currentStation = null;
-                }
+                FightCleared?.Invoke(station);
             }
 
             var walking = StragglersAllowed && !progress.IsAtStation && !progress.IsFinished;
@@ -107,21 +114,17 @@ namespace DarknessRises.Game.Levels
         /// </summary>
         public void AbandonCurrent()
         {
-            if (current == null)
+            var station = fight.Abandon();
+            if (station != null)
             {
-                return;
+                FightCleared?.Invoke(station);
             }
-
-            current = null;
-            var station = currentStation;
-            currentStation = null;
-            FightCleared?.Invoke(station);
         }
 
         public void Dispose()
         {
             progress.StationReached -= OnStationReached;
-            current = null;
+            fight.Abandon();
         }
 
         private void OnStationReached(Station station)
@@ -138,16 +141,10 @@ namespace DarknessRises.Game.Levels
                 return;
             }
 
-            var schedule = schedules[station.Index];
-            schedule.Begin(station);
-            if (schedule.IsDone)
+            if (fight.Begin(station, schedules[station.Index]))
             {
-                return;
+                FightStarted?.Invoke(station);
             }
-
-            current = schedule;
-            currentStation = station;
-            FightStarted?.Invoke(station);
         }
     }
 }

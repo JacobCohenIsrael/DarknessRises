@@ -6,17 +6,22 @@ namespace DarknessRises.Game.Routes
 {
     /// <summary>
     /// Where the character is on its Route. It walks on its own at the walking speed, stops at each Station
-    /// until that Station is cleared, and stops for good at the end of the Route (ADR 0004).
+    /// until that Station is cleared, and stops for good at the end of the Route (ADR 0004). Its pace eases into each
+    /// Station and out of it again, as its <see cref="WalkEasing"/> says.
     /// Time comes in as an explicit delta; nothing here reads Unity time.
     /// </summary>
     public sealed class RouteProgress
     {
         private readonly Station[] stations;
         private readonly float walkingSpeed;
+        private readonly WalkEasing easing;
         private readonly Action<Station> onStationCleared;
         private int nextStation;
 
-        public RouteProgress(RoutePath path, IReadOnlyList<Station> stations, float walkingSpeed)
+        // Counted from the last Station the character left. It walks in at full pace at the start of the Route.
+        private float secondsSinceSetOff = float.PositiveInfinity;
+
+        public RouteProgress(RoutePath path, IReadOnlyList<Station> stations, float walkingSpeed, WalkEasing easing = default)
         {
             Path = path ?? throw new ArgumentNullException(nameof(path));
 
@@ -48,6 +53,7 @@ namespace DarknessRises.Game.Routes
             }
 
             this.walkingSpeed = walkingSpeed;
+            this.easing = easing;
             onStationCleared = OnStationCleared;
         }
 
@@ -81,6 +87,12 @@ namespace DarknessRises.Game.Routes
         public bool IsFinished { get; private set; }
 
         /// <summary>
+        /// The share of the walking speed the character moved at in the last tick: 1 at full pace, less while it eases into
+        /// or out of a Station, 0 while it stands at one or at the end of the Route.
+        /// </summary>
+        public float SpeedFraction { get; private set; }
+
+        /// <summary>
         /// Walks the character on. It stops exactly on a Station it reaches; the rest of that step is not carried over.
         /// </summary>
         public void Tick(float deltaSeconds)
@@ -92,10 +104,14 @@ namespace DarknessRises.Game.Routes
 
             if (IsFinished || IsAtStation)
             {
+                SpeedFraction = 0f;
                 return;
             }
 
-            var reach = Distance + walkingSpeed * deltaSeconds;
+            var metresToStation = nextStation < stations.Length ? stations[nextStation].Distance - Distance : float.PositiveInfinity;
+            SpeedFraction = easing.SpeedFraction(metresToStation, secondsSinceSetOff);
+            secondsSinceSetOff += deltaSeconds;
+            var reach = Distance + walkingSpeed * SpeedFraction * deltaSeconds;
 
             if (nextStation < stations.Length && reach >= stations[nextStation].Distance)
             {
@@ -110,6 +126,7 @@ namespace DarknessRises.Game.Routes
             if (Distance >= Path.Length && nextStation == stations.Length)
             {
                 IsFinished = true;
+                SpeedFraction = 0f;
                 Finished?.Invoke();
             }
         }
@@ -141,6 +158,7 @@ namespace DarknessRises.Game.Routes
         private void Arrive(Station station)
         {
             CurrentStation = station;
+            SpeedFraction = 0f;
             station.Cleared += onStationCleared;
             StationReached?.Invoke(station);
 
@@ -164,6 +182,7 @@ namespace DarknessRises.Game.Routes
             var station = CurrentStation;
             station.Cleared -= onStationCleared;
             CurrentStation = null;
+            secondsSinceSetOff = 0f;
             StationLeft?.Invoke(station);
         }
     }

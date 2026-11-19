@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Enemies;
-using DarknessRises.Game.Routes;
 
 namespace DarknessRises.Game.Waves
 {
     /// <summary>
-    /// The fight at one Station: decides who spawns when, and clears the Station once its last Wave is dead.
+    /// The Waves of one Station: decides who spawns when, and is done once its last Wave is dead.
+    /// Whoever runs the Station (see <see cref="StationFight{TEnemyType}"/>) begins it and clears the Station afterwards.
     /// Plain C#: time arrives as an explicit delta (ADR 0003).
     /// </summary>
     /// <remarks>
-    /// Waves run one after another, each starting on a tick. Each Wave waits its delay (counted from arrival for the first Wave, and from
+    /// Waves run one after another, each starting on a tick. Each Wave waits its delay (counted from the start of the fight for the first Wave, and from
     /// the previous Wave's last death for the rest), then lets its Enemies in one at a time, a spawn interval apart,
     /// the first one at once. When the spawner can't bring an Enemy in (every Spawn point is lit), that Enemy
     /// tries again every tick, and the time spent waiting is never banked as faster spawns later.
-    /// Once every Enemy of the last Wave is dead, the Station is cleared.
+    /// Once every Enemy of the last Wave is dead, the schedule is done.
     /// </remarks>
     public sealed class WaveSchedule<TEnemyType>
     {
@@ -22,7 +22,6 @@ namespace DarknessRises.Game.Waves
         private readonly IEnemySpawner<TEnemyType> spawner;
         private readonly Action<Enemy> onEnemyDied;
 
-        private Station station;
         private Phase phase;
         private float delaySecondsLeft;
         private float secondsUntilNextSpawn;
@@ -58,7 +57,7 @@ namespace DarknessRises.Game.Waves
             Done,
         }
 
-        /// <summary>Index of the Wave being waited for, spawned or fought. Equals the Wave count once the Station is cleared.</summary>
+        /// <summary>Index of the Wave being waited for, spawned or fought. Equals the Wave count once the last Wave is dead.</summary>
         public int WaveIndex { get; private set; }
 
         public int WaveCount => waves.Length;
@@ -70,15 +69,17 @@ namespace DarknessRises.Game.Waves
 
         public bool IsDone => phase == Phase.Done;
 
-        /// <summary>Starts the fight at <paramref name="atStation"/>. A Station with no Waves is cleared at once.</summary>
-        public void Begin(Station atStation)
+        /// <summary>Whether <see cref="Begin"/> has been called.</summary>
+        public bool HasBegun => phase != Phase.NotStarted;
+
+        /// <summary>Starts the Waves. A Station with no Waves is done at once.</summary>
+        public void Begin()
         {
             if (phase != Phase.NotStarted)
             {
                 throw new InvalidOperationException("A Station's Waves run only once.");
             }
 
-            station = atStation ?? throw new ArgumentNullException(nameof(atStation));
             WaveIndex = 0;
             if (waves.Length == 0)
             {
@@ -179,7 +180,6 @@ namespace DarknessRises.Game.Waves
         private void Finish()
         {
             phase = Phase.Done;
-            station.Clear();
         }
 
         private void OnEnemyDied(Enemy enemy)

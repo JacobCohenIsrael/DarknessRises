@@ -78,10 +78,10 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised once the start beat is over and the character walks the Route.</summary>
         public event Action StartBeatFinished;
 
-        /// <summary>Raised when the character reaches a Station with Waves to fight.</summary>
+        /// <summary>Raised when the character stops at a Station with Waves to fight, as its Ready beat starts.</summary>
         public event Action FightStarted;
 
-        /// <summary>Raised when the Station's last Wave is dead and the character walks on.</summary>
+        /// <summary>Raised when the stop is over: the Station's Waves are dead, its last beats have played and the character sets off.</summary>
         public event Action FightCleared;
 
         /// <summary>Raised when the character reaches the Boss and its fight starts.</summary>
@@ -110,8 +110,9 @@ namespace DarknessRises.Game.Levels
         /// <summary>
         /// Starts the Level as Level <paramref name="index"/> of the Run: the start beat plays as the character walks in
         /// along <paramref name="routeProgress"/>, then each Room's fights run as the character reaches them, with their
-        /// Waves and Enemies scaled by the <paramref name="ramp"/> at that index. Its Enemies run on
-        /// <paramref name="enemyTime"/>, built from the prefabs and sounds already loaded in <paramref name="content"/>.
+        /// Waves and Enemies scaled by the <paramref name="ramp"/> at that index. Each stop at a Station plays the beats of
+        /// <paramref name="rhythm"/>. Its Enemies run on <paramref name="enemyTime"/>, built from the prefabs and sounds
+        /// already loaded in <paramref name="content"/>.
         /// </summary>
         public void Run(
             LevelDefinition levelDefinition,
@@ -120,7 +121,8 @@ namespace DarknessRises.Game.Levels
             RouteProgress routeProgress,
             Transform character,
             EnemyTime enemyTime,
-            ILoadedContent content)
+            ILoadedContent content,
+            StationRhythm rhythm)
         {
             Stop();
 
@@ -195,7 +197,7 @@ namespace DarknessRises.Game.Levels
 
             // Subscribed before the fights are, so lights created since the last Station count from the first spawn.
             progress.StationReached += OnStationReached;
-            fights = new LevelFights<EnemyDefinition>(progress, stationWaves, spawner.Waves, stragglers, hasBoss);
+            fights = new LevelFights<EnemyDefinition>(progress, stationWaves, spawner.Waves, stragglers, hasBoss, rhythm);
             fights.ExitReached += OnExitReached;
             fights.BossReached += OnBossReached;
             fights.FightStarted += OnFightStarted;

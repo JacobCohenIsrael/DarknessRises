@@ -52,6 +52,25 @@ namespace DarknessRises.Game.Player
         [SerializeField, Min(0f), Tooltip("Metres the body's centre lies above the floor once it has fallen.")]
         private float deathLyingHeight = 0.15f;
 
+        [Header("Plant at a Station")]
+        [SerializeField, Min(0f), Tooltip(
+            "Seconds the character takes to settle into its plant stance when it stops at a Station, and to stand up out of it " +
+            "once the clear is called. 0 snaps.")]
+        private float plantSeconds = 0.22f;
+
+        [SerializeField, Range(0f, 60f), Tooltip(
+            "Degrees the lead (left) thigh swings forward in the plant stance. The rear shin leans back as far, so both feet stay on the floor. " +
+            "0 with the rear angle at 0 switches the stance off.")]
+        private float plantLeadDegrees = 26f;
+
+        [SerializeField, Range(0f, 60f), Tooltip(
+            "Degrees the rear (right) thigh swings back in the plant stance. Keep it at or under the lead angle. " +
+            "The gap between the two is how deep the knees bend.")]
+        private float plantRearDegrees = 14f;
+
+        [SerializeField, Range(0f, 30f), Tooltip("Degrees the upper body leans forward over the lead leg in the plant stance.")]
+        private float plantLeanDegrees = 7f;
+
         public float BodyTurnSpeed => bodyTurnSpeed;
         public float UpperBodyTurnSpeed => upperBodyTurnSpeed;
         public float MaxUpperBodyTwist => maxUpperBodyTwist;
@@ -66,5 +85,9 @@ namespace DarknessRises.Game.Player
         public float DeathFallSeconds => deathFallSeconds;
         public float DeathFallDegrees => deathFallDegrees;
         public float DeathLyingHeight => deathLyingHeight;
+        public float PlantSeconds => plantSeconds;
+        public float PlantLeadDegrees => plantLeadDegrees;
+        public float PlantRearDegrees => plantRearDegrees;
+        public float PlantLeanDegrees => plantLeanDegrees;
     }
 }

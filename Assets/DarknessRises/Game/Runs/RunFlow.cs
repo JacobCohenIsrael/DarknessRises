@@ -165,6 +165,18 @@ namespace DarknessRises.Game.Runs
             return true;
         }
 
+        /// <summary>A kill earned <paramref name="points"/> of Score. Counts while a Run is on, like the kill itself.</summary>
+        public bool AddScore(int points)
+        {
+            if (!IsInRun)
+            {
+                return false;
+            }
+
+            Record.AddScore(points);
+            return true;
+        }
+
         /// <summary>
         /// Debug: leaves the current Level for Level <paramref name="levelIndex"/> of the same Run, with its Ramp.
         /// The key that calls it is compiled out of release builds.

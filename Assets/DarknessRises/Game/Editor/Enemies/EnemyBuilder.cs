@@ -91,6 +91,7 @@ namespace DarknessRises.Game.Editor.Enemies
 
         // The Runner's tuning, set once when its definition is created: fast and fragile, faster than the character walks.
         private const int RunnerHitPoints = 2;
+        private const int RunnerScorePoints = 150;
         private const float RunnerSpeed = 4.2f;
         private const float RunnerAcceleration = 14f;
         private const float RunnerTurnSpeed = 420f;
@@ -112,6 +113,7 @@ namespace DarknessRises.Game.Editor.Enemies
             return LoadOrCreateEnemy(RunnerDefinitionPath, Runner, created =>
             {
                 created.FindProperty("hitPoints").intValue = RunnerHitPoints;
+                created.FindProperty("scorePoints").intValue = RunnerScorePoints;
                 created.FindProperty("speed").floatValue = RunnerSpeed;
                 created.FindProperty("acceleration").floatValue = RunnerAcceleration;
                 created.FindProperty("turnSpeed").floatValue = RunnerTurnSpeed;

@@ -8,6 +8,7 @@ using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
+using DarknessRises.Game.Scoring;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
@@ -59,6 +60,12 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The first-run hint over the first Enemy: tap to shoot.")]
         private ShootHintSettings shootHint = new();
 
+        [SerializeField, Tooltip("The Score's rules: the Combo, and what each Grade of a Station's fight requires.")]
+        private ScoreSettings score = new();
+
+        [SerializeField, Tooltip("How the Score shows: the running Score and Combo, the points over a kill, the hit marker and the result card.")]
+        private ScoreHudSettings scoreHud = new();
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -80,5 +87,7 @@ namespace DarknessRises.Game.Configuration
         public StationBannerSettings StationBanners => stationBanners;
         public CrosshairSettings Crosshair => crosshair;
         public ShootHintSettings ShootHint => shootHint;
+        public ScoreSettings Score => score;
+        public ScoreHudSettings ScoreHud => scoreHud;
     }
 }

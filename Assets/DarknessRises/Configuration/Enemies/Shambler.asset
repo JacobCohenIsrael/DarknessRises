@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Shambler
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Enemies.EnemyDefinition
   hitPoints: 4
+  scorePoints: 100
   speed: 1.4
   acceleration: 8
   turnSpeed: 240

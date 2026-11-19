@@ -53,13 +53,15 @@ namespace DarknessRises.Game.Editor.Health
         private const float ButtonFontSize = 44f;
         private static readonly Vector2 ButtonSize = new(380f, 100f);
         private const float HintFontSize = 28f;
+        private const float CountdownFontSize = 220f;
+        private static readonly Color CountdownColor = new(1f, 0.85f, 0.2f, 1f);
         private const float HintGap = 6f;
 
         // Each end-screen stat is a right-aligned label and a left-aligned value, with a gap between them.
         private static readonly Vector2 StatLabelOffset = new(-200f, 0f);
         private static readonly Vector2 StatLabelSize = new(560f, 70f);
-        private static readonly Vector2 StatValueOffset = new(220f, 0f);
-        private static readonly Vector2 StatValueSize = new(200f, 70f);
+        private static readonly Vector2 StatValueOffset = new(280f, 0f);
+        private static readonly Vector2 StatValueSize = new(320f, 70f);
 
         public static void Build(GameRoot gameRoot, Transform character, RideCameraView cameraView)
         {
@@ -203,23 +205,30 @@ namespace DarknessRises.Game.Editor.Health
         private static DeathScreenView BuildDeathScreen(Transform screens)
         {
             var panel = AddPanel(screens, "Death Screen", DeathShadeColor);
-            AddText(panel, "Title", "YOU DIED", TitleFontSize, TitleColor, new Vector2(0f, 220f), new Vector2(1200f, 160f));
+
+            // The wording comes from the Continue definition: "CONTINUE?" over the countdown, or "GAME OVER".
+            var title = AddText(panel, "Title", "CONTINUE?", TitleFontSize, TitleColor, new Vector2(0f, 360f), new Vector2(1400f, 160f));
+            var countdown = AddText(
+                panel, "Countdown", "10", CountdownFontSize, CountdownColor, new Vector2(0f, 190f), new Vector2(600f, 240f));
+            countdown.fontStyle = FontStyles.Bold;
 
             // Continue is offered once per Run, so it goes away with its hint under it.
-            var continueButton = AddButton(panel, "Continue", new Vector2(0f, 70f));
+            var continueButton = AddButton(panel, "Continue", new Vector2(0f, 10f));
             var hintHeight = HintFontSize * 1.5f;
             var hint = AddText(
                 (RectTransform)continueButton.transform, "Hint", "Watch an ad, once per Run", HintFontSize, TextColor,
                 new Vector2(0f, -(ButtonSize.y + hintHeight) / 2f - HintGap), new Vector2(ButtonSize.x * 2f, hintHeight));
             hint.alignment = TextAlignmentOptions.Center;
-            var restart = AddButton(panel, "Restart", new Vector2(0f, -120f));
-            var exit = AddButton(panel, "Exit", new Vector2(0f, -250f));
+            var restart = AddButton(panel, "Restart", new Vector2(0f, -180f));
+            var exit = AddButton(panel, "Exit", new Vector2(0f, -310f));
 
             var view = panel.gameObject.AddComponent<DeathScreenView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("continueButton").objectReferenceValue = continueButton;
             serialized.FindProperty("restartButton").objectReferenceValue = restart;
             serialized.FindProperty("exitButton").objectReferenceValue = exit;
+            serialized.FindProperty("title").objectReferenceValue = title;
+            serialized.FindProperty("countdownLabel").objectReferenceValue = countdown;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             panel.gameObject.SetActive(false);
             return view;
@@ -228,15 +237,17 @@ namespace DarknessRises.Game.Editor.Health
         private static EndScreenView BuildEndScreen(Transform screens)
         {
             var panel = AddPanel(screens, "End Screen", EndShadeColor);
-            AddText(panel, "Title", "THE DARKNESS WINS", TitleFontSize, TitleColor, new Vector2(0f, 240f), new Vector2(1600f, 160f));
-            AddStat(panel, "Level Reached", "Level reached", new Vector2(0f, 70f), out var levelReached);
-            AddStat(panel, "Enemies Killed", "Enemies killed", new Vector2(0f, -10f), out var enemiesKilled);
-            var newRun = AddButton(panel, "New Run", new Vector2(0f, -170f));
+            AddText(panel, "Title", "THE DARKNESS WINS", TitleFontSize, TitleColor, new Vector2(0f, 280f), new Vector2(1600f, 160f));
+            AddStat(panel, "Score", "Score", new Vector2(0f, 120f), out var score);
+            AddStat(panel, "Level Reached", "Level reached", new Vector2(0f, 40f), out var levelReached);
+            AddStat(panel, "Enemies Killed", "Enemies killed", new Vector2(0f, -40f), out var enemiesKilled);
+            var newRun = AddButton(panel, "New Run", new Vector2(0f, -200f));
 
             var view = panel.gameObject.AddComponent<EndScreenView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("levelReached").objectReferenceValue = levelReached;
             serialized.FindProperty("enemiesKilled").objectReferenceValue = enemiesKilled;
+            serialized.FindProperty("score").objectReferenceValue = score;
             serialized.FindProperty("newRunButton").objectReferenceValue = newRun;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             panel.gameObject.SetActive(false);

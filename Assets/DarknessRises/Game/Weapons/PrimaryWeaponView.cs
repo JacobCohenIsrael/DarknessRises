@@ -37,6 +37,7 @@ namespace DarknessRises.Game.Weapons
 
         private PrimaryWeaponEffects[] effects;
         private Action[] onFired;
+        private Action<bool, Vector3> onShotLanded;
 
         public PrimaryWeaponLoadout Loadout { get; private set; }
 
@@ -47,6 +48,12 @@ namespace DarknessRises.Game.Weapons
         public event Action<PrimaryWeapon> Switched;
 
         /// <summary>
+        /// Raised when a Shot of any of the character's Primaries ends: whether it hurt an Enemy (a hit) or not (a miss),
+        /// and where.
+        /// </summary>
+        public event Action<bool, Vector3> ShotLanded;
+
+        /// <summary>
         /// Arms the character with a fresh, fully loaded Primary for each of <paramref name="definitions"/>,
         /// in switching order, and equips the first. Their Shots and hit sparks come from <paramref name="content"/>, already loaded.
         /// Their lights are added to <paramref name="lights"/>, so what Gunfire lights counts as visible.
@@ -55,6 +62,7 @@ namespace DarknessRises.Game.Weapons
         {
             Disarm();
 
+            onShotLanded ??= OnShotLanded;
             var stats = new PrimaryWeaponStats[definitions.Count];
             effects = new PrimaryWeaponEffects[definitions.Count];
             onFired = new Action[definitions.Count];
@@ -62,6 +70,7 @@ namespace DarknessRises.Game.Weapons
             {
                 stats[i] = definitions[i].PrimaryStats;
                 effects[i] = new PrimaryWeaponEffects(definitions[i], shotHitLayers, content, lights);
+                effects[i].ShotLanded += onShotLanded;
             }
 
             Loadout = new PrimaryWeaponLoadout(stats);
@@ -94,6 +103,7 @@ namespace DarknessRises.Game.Weapons
             for (var i = 0; i < effects.Length; i++)
             {
                 Loadout[i].Fired -= onFired[i];
+                effects[i].ShotLanded -= onShotLanded;
                 effects[i].Dispose();
             }
 
@@ -148,6 +158,11 @@ namespace DarknessRises.Game.Weapons
         private void OnSwitched(PrimaryWeapon equipped)
         {
             Switched?.Invoke(equipped);
+        }
+
+        private void OnShotLanded(bool hurtEnemy, Vector3 point)
+        {
+            ShotLanded?.Invoke(hurtEnemy, point);
         }
     }
 }

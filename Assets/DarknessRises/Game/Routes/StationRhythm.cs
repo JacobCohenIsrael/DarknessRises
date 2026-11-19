@@ -32,6 +32,9 @@ namespace DarknessRises.Game.Routes
         /// <summary>How long the current beat lasts, or 0 when it isn't timed (walking and the fight).</summary>
         public float BeatSeconds => timing.SecondsOf(Beat);
 
+        /// <summary>Seconds the last fight took, from the end of its Ready beat to its last death. 0 before the first is won.</summary>
+        public float FightSeconds { get; private set; }
+
         /// <summary>The character stopped at <paramref name="station"/>: the Ready beat starts. Only while walking.</summary>
         /// <returns>Whether the rhythm started.</returns>
         public bool Arrive(Station station)
@@ -60,6 +63,7 @@ namespace DarknessRises.Game.Routes
                 return false;
             }
 
+            FightSeconds = SecondsInBeat;
             Enter(StationBeat.Clear, 0f);
             return true;
         }

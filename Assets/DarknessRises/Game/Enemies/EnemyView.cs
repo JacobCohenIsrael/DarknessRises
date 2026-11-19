@@ -161,6 +161,12 @@ namespace DarknessRises.Game.Enemies
         /// <summary>Raised each time this Enemy comes in at a Spawn point, alive and hunting.</summary>
         public event Action<EnemyView> Spawned;
 
+        /// <summary>Raised when this Enemy dies, while it still stands where it died.</summary>
+        public event Action<EnemyView> Killed;
+
+        /// <summary>The Enemy type this Enemy is.</summary>
+        public EnemyDefinition Definition => definition;
+
         public void Spawn(Vector3 position, Transform hunted)
         {
             target = hunted;
@@ -487,6 +493,7 @@ namespace DarknessRises.Game.Enemies
         {
             Play(deathClip);
             tells.Silence();
+            Killed?.Invoke(this);
 
             // Out of the way of Shots. A body still being pushed by the killing hit keeps its agent until it comes to
             // rest, so the push stays on the NavMesh; then it lies down out of the way of the living.

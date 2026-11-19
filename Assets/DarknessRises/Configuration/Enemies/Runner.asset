@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Runner
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Enemies.EnemyDefinition
   hitPoints: 2
+  scorePoints: 150
   speed: 4.2
   acceleration: 14
   turnSpeed: 420

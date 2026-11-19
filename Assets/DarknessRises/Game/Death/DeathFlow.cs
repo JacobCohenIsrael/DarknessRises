@@ -14,7 +14,8 @@ namespace DarknessRises.Game.Death
 {
     /// <summary>
     /// What happens when the character dies: it stops walking and shooting, plays its death, and the death screen
-    /// offers Continue (while the Run allows it), Restart or Exit. All three go through the <see cref="RunFlow"/>.
+    /// offers Continue (while the Run allows it, under an arcade countdown that ends the Run when it runs out),
+    /// Restart or Exit. All three go through the <see cref="RunFlow"/>.
     /// Continue shows a rewarded ad; once it's watched, the character comes back where it died with full hit points
     /// and a burst of light that pushes nearby Enemies back, and the Level carries on. Restart starts a new Run at once;
     /// Exit ends the Run and shows the end screen, which then starts a new Run. Whoever runs the Levels (the boot) loads it.
@@ -61,6 +62,7 @@ namespace DarknessRises.Game.Death
             continueDefinition = continueSettings;
             continueAd = ad;
             continueBurst = burst;
+            deathScreen.Use(continueSettings);
             lifetime ??= new CancellationTokenSource();
             onDeathFinished ??= OnDeathFinished;
             health.Died += OnDied;

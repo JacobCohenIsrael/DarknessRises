@@ -28,6 +28,7 @@ namespace DarknessRises.Game.Weapons
         private readonly ObjectPool<MuzzleFlashView> muzzleFlashes;
         private readonly ObjectPool<HitSparkView> hitSparks;
         private readonly Action<RaycastHit, Vector3> onShotHit;
+        private readonly Action<Vector3> onShotSpent;
         private readonly SceneLights lights;
         private int shotsUntilLit;
 
@@ -39,6 +40,7 @@ namespace DarknessRises.Game.Weapons
             definition = weaponDefinition;
             shotHitLayers = hitLayers;
             onShotHit = OnShotHit;
+            onShotSpent = OnShotSpent;
             shotPrefab = content.Prefab<ShotView>(definition.Shot.Prefab);
             hitSparkPrefab = content.Prefab<HitSparkView>(definition.HitSpark.Prefab);
 
@@ -53,6 +55,12 @@ namespace DarknessRises.Game.Weapons
             Prewarm(muzzleFlashes, MostFlashesAlive());
             Prewarm(hitSparks, MostSparksAlive());
         }
+
+        /// <summary>
+        /// Raised when a Shot of this Weapon ends: whether it hurt an Enemy (a hit) or not (a miss: it struck a wall or
+        /// something it can't hurt, or ran out of range), and where.
+        /// </summary>
+        public event Action<bool, Vector3> ShotLanded;
 
         /// <summary>Shows one shot leaving <paramref name="muzzle"/>, aimed along <paramref name="aimDirection"/> (flattened).</summary>
         public void Fire(Vector3 muzzle, Vector3 aimDirection)
@@ -108,13 +116,21 @@ namespace DarknessRises.Game.Weapons
         private void OnShotHit(RaycastHit hit, Vector3 direction)
         {
             var hurt = true;
+            var hurtEnemy = false;
             if (hit.collider.TryGetComponent<IShotTarget>(out var target))
             {
                 var knockback = definition.Knockback;
                 hurt = target.TakeShot(new ShotHit(definition.Damage, direction, knockback.Metres, knockback.Seconds));
+                hurtEnemy = hurt;
             }
 
             hitSparks.Get().Spark(hit.point, hit.normal, dull: !hurt);
+            ShotLanded?.Invoke(hurtEnemy, hit.point);
+        }
+
+        private void OnShotSpent(Vector3 point)
+        {
+            ShotLanded?.Invoke(false, point);
         }
 
         // Enough pooled Shots for a held trigger with every Shot flying its full range.
@@ -139,7 +155,7 @@ namespace DarknessRises.Game.Weapons
         private ShotView CreateShot()
         {
             var shot = Object.Instantiate(shotPrefab, effectsRoot);
-            shot.Prepare(shots, definition.Shot, definition.ShotLight, shotGlowMaterial, shotHitLayers, onShotHit);
+            shot.Prepare(shots, definition.Shot, definition.ShotLight, shotGlowMaterial, shotHitLayers, onShotHit, onShotSpent);
             shot.gameObject.SetActive(false);
             lights.Add(shot.GetComponentInChildren<Light>(true));
             return shot;

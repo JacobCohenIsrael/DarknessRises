@@ -3,7 +3,7 @@ using System;
 namespace DarknessRises.Game.Runs
 {
     /// <summary>
-    /// What the end screen shows about a Run: the Level reached and the Enemies killed. There is no score.
+    /// What the end screen shows about a Run: the Level reached, the Enemies killed and the Score.
     /// Plain C# (ADR 0003). The <see cref="RunFlow"/> keeps one per Run and moves it on.
     /// </summary>
     public sealed class RunRecord
@@ -14,9 +14,23 @@ namespace DarknessRises.Game.Runs
 
         public int EnemiesKilled { get; private set; }
 
+        /// <summary>The Run's Score: the points of every kill, multiplied by the Combo at the time. It isn't Credits.</summary>
+        public int Score { get; private set; }
+
         public void CountKill()
         {
             EnemiesKilled++;
+        }
+
+        /// <summary>Adds <paramref name="points"/> to the Run's Score.</summary>
+        public void AddScore(int points)
+        {
+            if (points < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(points), points, "Score is only ever earned.");
+            }
+
+            Score += points;
         }
 
         /// <summary>Records that the Run reached Level <paramref name="levelIndex"/>.</summary>

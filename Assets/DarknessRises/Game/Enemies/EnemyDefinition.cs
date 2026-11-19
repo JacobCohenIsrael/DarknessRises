@@ -14,6 +14,9 @@ namespace DarknessRises.Game.Enemies
         [SerializeField, Min(1), Tooltip("Hit points of a freshly spawned Enemy. One Shot takes the Weapon's damage.")]
         private int hitPoints = 4;
 
+        [SerializeField, Min(0), Tooltip("Score a kill is worth, before the Combo multiplies it.")]
+        private int scorePoints = 100;
+
         [SerializeField, Min(0f), Tooltip("Metres per second it moves. Compare with the character's walking speed.")]
         private float speed = 1.4f;
 
@@ -42,6 +45,7 @@ namespace DarknessRises.Game.Enemies
         private EnemyTellSettings tells = new();
 
         public int HitPoints => hitPoints;
+        public int ScorePoints => scorePoints;
         public float Speed => speed;
         public float Acceleration => acceleration;
         public float TurnSpeed => turnSpeed;

@@ -30,7 +30,9 @@ namespace DarknessRises.Game.Weapons
         private ShotFlight flight;
         private LayerMask hitLayers;
         private Action<RaycastHit, Vector3> onHit;
+        private Action<Vector3> onSpent;
         private bool isLit;
+        private bool hasHit;
 
         public Material BodyMaterial => body.sharedMaterial;
 
@@ -41,13 +43,15 @@ namespace DarknessRises.Game.Weapons
             ShotLightSettings shotLightSettings,
             Material glowMaterial,
             LayerMask layers,
-            Action<RaycastHit, Vector3> hit)
+            Action<RaycastHit, Vector3> hit,
+            Action<Vector3> spent)
         {
             pool = owner;
             settings = shotSettings;
             lightSettings = shotLightSettings;
             hitLayers = layers;
             onHit = hit;
+            onSpent = spent;
             body.sharedMaterial = glowMaterial;
             transform.localScale = Vector3.one * settings.Size;
 
@@ -73,6 +77,7 @@ namespace DarknessRises.Game.Weapons
         public void Launch(Vector3 origin, Vector3 direction, float speed, float range, bool lit)
         {
             flight = new ShotFlight(origin, direction, speed, range);
+            hasHit = false;
             transform.SetPositionAndRotation(origin, Quaternion.LookRotation(flight.Direction, Vector3.up));
             transform.localScale = Vector3.one * settings.Size;
             trail.Clear();
@@ -97,6 +102,7 @@ namespace DarknessRises.Game.Weapons
             if (Physics.Raycast(flight.Position, flight.Direction, out var hit, step, hitLayers, QueryTriggerInteraction.Ignore))
             {
                 flight.Stop(hit.point);
+                hasHit = true;
                 onHit(hit, flight.Direction);
             }
             else
@@ -114,6 +120,12 @@ namespace DarknessRises.Game.Weapons
 
             if (flight.IsSpent)
             {
+                // A Shot that ran out of range without hitting anything is a miss.
+                if (!hasHit)
+                {
+                    onSpent(flight.Position);
+                }
+
                 pool.Release(this);
             }
         }

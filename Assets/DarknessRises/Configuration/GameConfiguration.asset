@@ -115,3 +115,23 @@ MonoBehaviour:
     arrowDistance: 250
     arrowPulseDistance: 36
     arrowPulsesPerSecond: 3
+  crosshair:
+    size: 96
+    color: {r: 1, g: 0.95, b: 0.75, a: 0.9}
+    kickScale: 1.45
+    kickSeconds: 0.12
+    touchLingerSeconds: 0.5
+    fadeSeconds: 0.25
+    hideMouseCursor: 1
+  shootHint:
+    frequency: 1
+    touchText: TAP TO SHOOT
+    mouseText: CLICK TO SHOOT
+    color: {r: 1, g: 0.95, b: 0.35, a: 1}
+    fontSize: 56
+    worldOffset: {x: 0, y: 2.3, z: 0}
+    arrowSize: 64
+    screenMargin: 40
+    bobDistance: 18
+    bobsPerSecond: 2
+    fadeSeconds: 0.25

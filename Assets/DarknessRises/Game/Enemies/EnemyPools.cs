@@ -18,6 +18,7 @@ namespace DarknessRises.Game.Enemies
         private readonly Transform hatchery;
         private readonly Dictionary<EnemyDefinition, ObjectPool<EnemyView>> pools = new();
         private readonly Action<Enemy> onEnemyDied;
+        private readonly Action<EnemyView> onEnemySpawned;
         private readonly EnemyTime time;
         private readonly ILoadedContent content;
         private readonly RampStep ramp;
@@ -28,6 +29,7 @@ namespace DarknessRises.Game.Enemies
         public EnemyPools(Transform parent, EnemyTime enemyTime, ILoadedContent loadedContent, RampStep rampStep)
         {
             onEnemyDied = OnEnemyDied;
+            onEnemySpawned = OnEnemySpawned;
             time = enemyTime;
             content = loadedContent;
             ramp = rampStep;
@@ -42,6 +44,9 @@ namespace DarknessRises.Game.Enemies
 
         /// <summary>Raised when any Enemy from these pools dies.</summary>
         public event Action<Enemy> EnemyDied;
+
+        /// <summary>Raised when any Enemy from these pools comes in at a Spawn point.</summary>
+        public event Action<EnemyView> EnemySpawned;
 
         /// <summary>Makes sure at least <paramref name="count"/> Enemies of the type are ready in its pool.</summary>
         public void Prewarm(EnemyDefinition definition, int count)
@@ -115,12 +120,18 @@ namespace DarknessRises.Game.Enemies
             enemy.transform.SetParent(root, false);
             enemy.Prepare(pool, definition, time, content, ramp);
             enemy.Enemy.Died += onEnemyDied;
+            enemy.Spawned += onEnemySpawned;
             return enemy;
         }
 
         private void OnEnemyDied(Enemy enemy)
         {
             EnemyDied?.Invoke(enemy);
+        }
+
+        private void OnEnemySpawned(EnemyView enemy)
+        {
+            EnemySpawned?.Invoke(enemy);
         }
 
         private static void OnRelease(EnemyView enemy)

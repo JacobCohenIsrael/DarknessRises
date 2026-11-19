@@ -15,7 +15,7 @@ MonoBehaviour:
   thresholds:
     tapMaxSeconds: 0.25
     tapMaxMovement: 0.03
-    holdSeconds: 0.3
+    holdSeconds: 0.15
     doubleTapMaxGapSeconds: 0.3
     doubleTapMaxDistance: 0.1
     flickMinDistance: 0.08

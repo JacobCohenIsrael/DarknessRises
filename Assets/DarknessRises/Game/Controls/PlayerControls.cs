@@ -78,6 +78,12 @@ namespace DarknessRises.Game.Controls
         /// </summary>
         public bool IsTouchActive { get; private set; }
 
+        /// <summary>Where the player's pointer last was on screen, in pixels: the mouse, or the finger that last aimed.</summary>
+        public Vector2 PointerPosition => lastPointer;
+
+        /// <summary>Whether the commands are held because the game is paused.</summary>
+        public bool IsHeld => isHeld;
+
         public bool WasReloadPressedThisFrame => reload.action.WasPressedThisFrame();
         public bool WasFlarePressedThisFrame => flare.action.WasPressedThisFrame();
         public bool WasSlowMoPressedThisFrame => slowMo.action.WasPressedThisFrame();

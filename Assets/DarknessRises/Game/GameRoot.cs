@@ -67,6 +67,12 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The Ready and Clear banners and the Go cue of the Station rhythm.")]
         private StationBannerView stationBanner;
 
+        [SerializeField, Tooltip("The reticle where the player aims.")]
+        private CrosshairView crosshair;
+
+        [SerializeField, Tooltip("The first-run hint over the first Enemy.")]
+        private ShootHintView shootHint;
+
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
         [SerializeField] private LightningView lightning;
@@ -258,6 +264,16 @@ namespace DarknessRises.Game
             reloadMeter.Show(primaryWeapon.Weapon);
             reloadSound.Use(configuration.ReloadFeedback, content);
             reloadSound.Show(primaryWeapon.Weapon);
+            if (crosshair != null)
+            {
+                crosshair.Show(configuration.Crosshair, primaryWeapon.Weapon);
+            }
+
+            if (shootHint != null)
+            {
+                shootHint.Use(configuration.ShootHint);
+            }
+
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon, stationRhythm);
             var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, characterAnimation, content, lights);
             grenadeHud.Show(grenadeCharges);
@@ -415,6 +431,7 @@ namespace DarknessRises.Game
                 if (report)
                 {
                     level.EnemyDied += OnEnemyDied;
+                    level.EnemySpawned += OnEnemySpawned;
                     level.StartBeatFinished += OnStartBeatFinished;
                     level.FightStarted += OnFightStarted;
                     level.FightCleared += OnFightCleared;
@@ -426,6 +443,7 @@ namespace DarknessRises.Game
                 else
                 {
                     level.EnemyDied -= OnEnemyDied;
+                    level.EnemySpawned -= OnEnemySpawned;
                     level.StartBeatFinished -= OnStartBeatFinished;
                     level.FightStarted -= OnFightStarted;
                     level.FightCleared -= OnFightCleared;
@@ -438,14 +456,25 @@ namespace DarknessRises.Game
             else if (report)
             {
                 routeWaves.EnemyDied += OnEnemyDied;
+                routeWaves.EnemySpawned += OnEnemySpawned;
             }
             else
             {
                 routeWaves.EnemyDied -= OnEnemyDied;
+                routeWaves.EnemySpawned -= OnEnemySpawned;
             }
         }
 
         private void OnEnemyDied(Enemy _) => run.CountKill();
+
+        // The first Enemy of a Run gets the shoot hint over it, if the hint is due.
+        private void OnEnemySpawned(EnemyView enemy)
+        {
+            if (shootHint != null)
+            {
+                shootHint.Offer(enemy, run.LevelIndex, primaryWeapon.Weapon);
+            }
+        }
 
         private void OnStartBeatFinished() => run.FinishStartBeat();
 
@@ -554,6 +583,11 @@ namespace DarknessRises.Game
         private void OnPrimaryWeaponSwitched(PrimaryWeapon equipped)
         {
             ammoHud.Show(equipped);
+            if (crosshair != null)
+            {
+                crosshair.ShowWeapon(equipped);
+            }
+
             reloadMeter.Show(equipped);
             reloadSound.Show(equipped);
             characterAnimation.ShowWeapon(equipped);

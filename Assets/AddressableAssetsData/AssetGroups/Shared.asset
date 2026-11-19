@@ -123,6 +123,12 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: d686c71dcdac9b24b9209aec52cd843d
+    m_Address: Crosshair
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: e05478d53ab27f9409619259809c5e6c
     m_Address: Handling_Gun_01_Reload_Sq_SFX
     m_ReadOnly: 0

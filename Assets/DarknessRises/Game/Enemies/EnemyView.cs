@@ -1,3 +1,4 @@
+using System;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies.Tells;
@@ -157,6 +158,9 @@ namespace DarknessRises.Game.Enemies
         /// Brings the Enemy in at <paramref name="position"/>, alive, hunting <paramref name="hunted"/>. It attacks the
         /// <see cref="IEnemyAttackTarget"/> on the hunted object, if there is one.
         /// </summary>
+        /// <summary>Raised each time this Enemy comes in at a Spawn point, alive and hunting.</summary>
+        public event Action<EnemyView> Spawned;
+
         public void Spawn(Vector3 position, Transform hunted)
         {
             target = hunted;
@@ -190,6 +194,7 @@ namespace DarknessRises.Game.Enemies
             Behaviour.Begin();
             tells.Wake(target);
             Play(spawnClip);
+            Spawned?.Invoke(this);
         }
 
         public bool TakeShot(in ShotHit hit)

@@ -1,0 +1,161 @@
+# #87 headless evidence (muted batch-mode Editor; read from AudioSource state, never listened to)
+# Each source: [category] path  own (the view's volume) x category gain = AudioSource.volume
+
+== Part 1: Level 1, defaults, then pause and open the Volume panel ==
+### T87.Prefs 
+PlayerPrefs: volume.sound (none), volume.ambient (none), volume.music (none)
+### T87.Report 
+percents: Sound 100% (gain 1.0000)  Ambient 100% (gain 1.0000)  Music 80% (gain 0.3944)  
+        sources following the sliders: 20
+          [Sound  ] Lightning/Warning 2                                          own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] HUD/Station Banner/Voice 2                                   own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Ambient] Lightning/Storm Bed                                          own 0.794 x gain 1.0000 = AudioSource.volume 0.7940
+          [Sound  ] Level/Rooms/Room Boss Room/Colossus                          own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Reload Sound                                       own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Voice                                              own 0.900 x gain 1.0000 = AudioSource.volume 0.9000
+          [Sound  ] Lightning/Warning 1                                          own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] HUD/Station Banner/Voice 1                                   own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 1                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 2                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 3                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 4                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 5                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 6                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Level/Enemies/Shambler/Tell Voice                            own 0.700 x gain 1.0000 = AudioSource.volume 0.7000
+          [Sound  ] Level/Enemies/Shambler                                       own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+          [Sound  ] Level/Enemies/Shambler/Tell Voice                            own 0.700 x gain 1.0000 = AudioSource.volume 0.7000
+          [Sound  ] Level/Enemies/Shambler                                       own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+          [Sound  ] Level/Enemies/Shambler/Tell Voice                            own 0.700 x gain 1.0000 = AudioSource.volume 0.7000
+          [Sound  ] Level/Enemies/Shambler                                       own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+### T87.Pause 
+paused: timeScale 0, listener paused True
+### T87.Storm 
+storm bed: listener paused True, ignoreListenerPause False, isPlaying False, time 4.287s -> 4.287s over 60 frames (HELD), AudioSource.volume 0.8521
+### T87.Click ["Sound Button"]
+clicked Sound Button; panel open: True
+### T87.Storm 
+storm bed: listener paused True, ignoreListenerPause True, isPlaying True, time 8.834s -> 8.895s over 60 frames (PLAYING ON), AudioSource.volume 0.8521
+### T87.Report 
+percents: Sound 100% (gain 1.0000)  Ambient 100% (gain 1.0000)  Music 80% (gain 0.3944)  
+        sources following the sliders: 21
+          [Sound  ] Lightning/Warning 2                                          own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] HUD/Station Banner/Voice 2                                   own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Ambient] Lightning/Storm Bed                                          own 0.852 x gain 1.0000 = AudioSource.volume 0.8521
+          [Sound  ] Level/Rooms/Room Boss Room/Colossus                          own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Reload Sound                                       own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Voice                                              own 0.900 x gain 1.0000 = AudioSource.volume 0.9000
+          [Sound  ] Lightning/Warning 1                                          own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] HUD/Station Banner/Voice 1                                   own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 1                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 2                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 3                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 4                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 5                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 6                      own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+          [Sound  ] Level/Enemies/Shambler/Tell Voice                            own 0.700 x gain 1.0000 = AudioSource.volume 0.7000
+          [Sound  ] Level/Enemies/Shambler                                       own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+          [Sound  ] Level/Enemies/Shambler/Tell Voice                            own 0.700 x gain 1.0000 = AudioSource.volume 0.7000
+          [Sound  ] Level/Enemies/Shambler                                       own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+          [Sound  ] Level/Enemies/Shambler/Tell Voice                            own 0.700 x gain 1.0000 = AudioSource.volume 0.7000
+          [Sound  ] Level/Enemies/Shambler                                       own 0.800 x gain 1.0000 = AudioSource.volume 0.8000
+          [Sound  ] Pause/Pause Menu/Volume Panel/Sample                         own 1.000 x gain 1.0000 = AudioSource.volume 1.0000
+
+== Part 2: Back, reopen, move each slider (sources listed once per object; pooled Shamblers and Gunshot voices 2-6 trimmed after Part 1) ==
+### T87.Click ["Sound Button"]
+clicked Sound Button; panel open: True
+### T87.Storm 
+storm bed: listener paused True, ignoreListenerPause True, isPlaying True, time 18.881s -> 19.291s over 60 frames (PLAYING ON), AudioSource.volume 0.9500
+### T87.Move ["Sound",40]
+moved Sound to 40%
+        percents: Sound 40% (gain 0.0614)  Ambient 100% (gain 1.0000)  Music 80% (gain 0.3944)  
+        sources following the sliders: 19
+          [Sound  ] Level/Rooms/Room Boss Room/Colossus                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 2                                   own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Lightning/Warning 2                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Character/Reload Sound                                       own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 1                                   own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+          [Sound  ] Character/Voice                                              own 0.900 x gain 0.0614 = AudioSource.volume 0.0552
+          [Sound  ] Lightning/Warning 1                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Ambient] Lightning/Storm Bed                                          own 0.950 x gain 1.0000 = AudioSource.volume 0.9500
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 1                      own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Pause/Pause Menu/Volume Panel/Sample                         own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+### T87.ReleaseSound 
+released Sound slider: sample 'Hand Gun 1' isPlaying True, time 0.021s, ignoreListenerPause True, own volume 0.800, Sound gain 0.0614, AudioSource.volume 0.0491; listener paused True
+### T87.Move ["Ambient",25]
+moved Ambient to 25%
+        percents: Sound 40% (gain 0.0614)  Ambient 25% (gain 0.0305)  Music 80% (gain 0.3944)  
+        sources following the sliders: 19
+          [Sound  ] Level/Rooms/Room Boss Room/Colossus                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 2                                   own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Lightning/Warning 2                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Character/Reload Sound                                       own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 1                                   own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+          [Sound  ] Character/Voice                                              own 0.900 x gain 0.0614 = AudioSource.volume 0.0552
+          [Sound  ] Lightning/Warning 1                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Ambient] Lightning/Storm Bed                                          own 0.950 x gain 0.0305 = AudioSource.volume 0.0290
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 1                      own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Pause/Pause Menu/Volume Panel/Sample                         own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+### T87.Storm 
+storm bed: listener paused True, ignoreListenerPause True, isPlaying True, time 11.937s -> 12.390s over 60 frames (PLAYING ON), AudioSource.volume 0.0290
+### T87.Move ["Music",10]
+moved Music to 10%
+        percents: Sound 40% (gain 0.0614)  Ambient 25% (gain 0.0305)  Music 10% (gain 0.0152)  
+        sources following the sliders: 19
+          [Sound  ] Level/Rooms/Room Boss Room/Colossus                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 2                                   own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Lightning/Warning 2                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Character/Reload Sound                                       own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 1                                   own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+          [Sound  ] Character/Voice                                              own 0.900 x gain 0.0614 = AudioSource.volume 0.0552
+          [Sound  ] Lightning/Warning 1                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Ambient] Lightning/Storm Bed                                          own 0.950 x gain 0.0305 = AudioSource.volume 0.0290
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 1                      own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Pause/Pause Menu/Volume Panel/Sample                         own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+### T87.Move ["Ambient",0]
+moved Ambient to 0%
+        percents: Sound 40% (gain 0.0614)  Ambient 0% (gain 0.0000)  Music 10% (gain 0.0152)  
+        sources following the sliders: 19
+          [Sound  ] Level/Rooms/Room Boss Room/Colossus                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 2                                   own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Lightning/Warning 2                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Character/Reload Sound                                       own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 1                                   own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+          [Sound  ] Character/Voice                                              own 0.900 x gain 0.0614 = AudioSource.volume 0.0552
+          [Sound  ] Lightning/Warning 1                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Ambient] Lightning/Storm Bed                                          own 0.950 x gain 0.0000 = AudioSource.volume 0.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 1                      own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Pause/Pause Menu/Volume Panel/Sample                         own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+### T87.Storm 
+storm bed: listener paused True, ignoreListenerPause True, isPlaying True, time 30.177s -> 30.759s over 60 frames (PLAYING ON), AudioSource.volume 0.0000
+### T87.Prefs 
+PlayerPrefs: volume.sound 40, volume.ambient 0, volume.music 10
+### T87.Click ["Back Button"]
+clicked Back Button; panel open: False
+### T87.Prefs 
+PlayerPrefs: volume.sound 40, volume.ambient 0, volume.music 10
+
+== Part 3: Editor closed and reopened (restart), then the Shop ==
+=== After closing the Editor and opening a new one (restart) ===
+### T87.Prefs 
+PlayerPrefs: volume.sound 40, volume.ambient 0, volume.music 10
+### T87.StartLevel 
+started, god mode on, frame 2360
+### T87.Report 
+percents: Sound 40% (gain 0.0614)  Ambient 0% (gain 0.0000)  Music 10% (gain 0.0152)  
+        sources following the sliders: 16
+          [Sound  ] Lightning/Warning 2                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 1                                   own 0.800 x gain 0.0614 = AudioSource.volume 0.0491
+          [Sound  ] Character/Reload Sound                                       own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Character/Voice                                              own 0.900 x gain 0.0614 = AudioSource.volume 0.0552
+          [Sound  ] Level/Rooms/Room Boss Room/Colossus                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] HUD/Station Banner/Voice 2                                   own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Lightning/Warning 1                                          own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Ambient] Lightning/Storm Bed                                          own 0.950 x gain 0.0000 = AudioSource.volume 0.0000
+          [Sound  ] Character/Gunshot Sound/Gunshot Voice 1                      own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+### T87.Click ["Sound Button"]
+clicked Sound Button; panel open: True
+### T87.Report 
+percents: Sound 40% (gain 0.0614)  Ambient 0% (gain 0.0000)  Music 10% (gain 0.0152)  
+        sources following the sliders: 2
+          [Sound  ] Shop/Sound                                                   own 1.000 x gain 0.0614 = AudioSource.volume 0.0614
+          [Sound  ] Shop/Volume Panel/Sample                                     own 1.000 x gain 0.0614 = AudioSource.volume 0.0614

@@ -139,7 +139,7 @@ namespace DarknessRises.Game.Weapons
             fade.Tick(deltaSeconds);
             if (fade.IsAudible)
             {
-                source.volume = fade.Volume;
+                source.SetVolume(fade.Volume);
             }
             else
             {
@@ -168,7 +168,7 @@ namespace DarknessRises.Game.Weapons
             fade.Start(settings.Volume);
             source.clip = clip;
             source.pitch = settings.Pitch;
-            source.volume = settings.Volume;
+            source.SetVolume(settings.Volume);
             source.Play();
             source.time = clipTimeSeconds;
             LastClipStartSeconds = clipTimeSeconds;

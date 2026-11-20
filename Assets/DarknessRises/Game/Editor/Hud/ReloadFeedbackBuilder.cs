@@ -1,4 +1,6 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Weapons;
@@ -123,6 +125,7 @@ namespace DarknessRises.Game.Editor.Hud
             var source = soundObject.GetComponent<AudioSource>();
             source.playOnAwake = false;
             source.spatialBlend = 0f;
+            AudioRouting.Route(source, AudioCategory.Sound);
 
             var view = soundObject.GetComponent<ReloadSoundView>();
             var serialized = new SerializedObject(view);

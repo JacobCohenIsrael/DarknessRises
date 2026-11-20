@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
-using UnityEngine;
 using Random = UnityEngine.Random;
+using UnityEngine;
 
 namespace DarknessRises.Game.Weapons
 {
@@ -121,7 +122,7 @@ namespace DarknessRises.Game.Weapons
 
                 if (voices.IsPlaying(i))
                 {
-                    voiceSources[i].volume = voiceVolumes[i] * voices.Gain(i, settings.EndFadeSeconds);
+                    voiceSources[i].SetVolume(voiceVolumes[i] * voices.Gain(i, settings.EndFadeSeconds));
                 }
                 else
                 {
@@ -151,7 +152,7 @@ namespace DarknessRises.Game.Weapons
                 {
                     if (loop.IsPlaying(voice))
                     {
-                        sources[voice].volume = weapons[i].LoopVolume * loop.Volume(voice);
+                        sources[voice].SetVolume(weapons[i].LoopVolume * loop.Volume(voice));
                     }
                 }
             }
@@ -187,7 +188,7 @@ namespace DarknessRises.Game.Weapons
             source.Stop();
             source.clip = clip;
             source.pitch = pitch;
-            source.volume = volume;
+            source.SetVolume(volume);
             source.Play();
             source.time = startSeconds;
             voiceVolumes[voice] = volume;
@@ -239,7 +240,7 @@ namespace DarknessRises.Game.Weapons
             {
                 var source = loopSources[voice];
                 source.Stop();
-                source.volume = loopVolume * loop.Volume(voice);
+                source.SetVolume(loopVolume * loop.Volume(voice));
                 source.Play();
                 source.time = clipSeconds;
             };
@@ -251,7 +252,7 @@ namespace DarknessRises.Game.Weapons
         {
             var sourceObject = new GameObject(sourceName, typeof(AudioSource));
             sourceObject.transform.SetParent(transform, false);
-            var source = sourceObject.GetComponent<AudioSource>();
+            var source = AudioCategorySource.Add(sourceObject, AudioCategory.Sound).Source;
             source.playOnAwake = false;
             source.loop = false;
             source.spatialBlend = 0f;

@@ -1,4 +1,6 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Controls;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Grenades;
@@ -114,6 +116,10 @@ namespace DarknessRises.Game.Editor.Grenades
             const string group = AddressableContent.SharedGroup;
             AddressableContent.ReferenceIfEmpty(serialized.FindProperty("body.prefab"), () => LoadOrCreateGrenadePrefab().gameObject, group);
             AddressableContent.ReferenceIfEmpty(serialized.FindProperty("explosion.prefab"), () => LoadOrCreateExplosionPrefab().gameObject, group);
+
+            // The bang is Sound. A prefab from before the categories gets it here.
+            AudioRouting.RouteUnroutedInPrefab(ExplosionPrefabPath, AudioCategory.Sound);
+
             var explosionClip = serialized.FindProperty("explosion.clip");
             var referencedClip = AddressableContent.Referenced<AudioClip>(explosionClip);
             if (referencedClip != null && AssetDatabase.GetAssetPath(referencedClip) == FormerExplosionClipPath)
@@ -403,6 +409,7 @@ namespace DarknessRises.Game.Editor.Grenades
 
             var bang = explosion.GetComponent<AudioSource>();
             bang.playOnAwake = false;
+            AudioRouting.Route(bang, AudioCategory.Sound);
 
             var view = explosion.AddComponent<GrenadeExplosionView>();
             var serialized = new SerializedObject(view);

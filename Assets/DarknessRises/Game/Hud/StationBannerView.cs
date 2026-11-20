@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Routes;
 using TMPro;
@@ -150,7 +151,7 @@ namespace DarknessRises.Game.Hud
             var voice = voices[nextVoice];
             nextVoice = (nextVoice + 1) % voices.Length;
             voice.clip = clip;
-            voice.volume = cue.Volume;
+            voice.SetVolume(cue.Volume);
             voice.time = Mathf.Clamp(cue.ClipStartSeconds, 0f, Mathf.Max(0f, clip.length - 0.01f));
             voice.Play();
         }

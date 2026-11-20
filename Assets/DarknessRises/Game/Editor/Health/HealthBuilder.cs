@@ -1,7 +1,9 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Health;
@@ -147,6 +149,7 @@ namespace DarknessRises.Game.Editor.Health
             voice.transform.SetParent(character, false);
             voice.playOnAwake = false;
             voice.spatialBlend = 0f;
+            AudioRouting.Route(voice, AudioCategory.Sound);
 
             var view = character.gameObject.AddComponent<CharacterHealthView>();
             var serialized = new SerializedObject(view);
@@ -305,6 +308,7 @@ namespace DarknessRises.Game.Editor.Health
             sound.transform.SetParent(panel, false);
             sound.playOnAwake = false;
             sound.spatialBlend = 0f;
+            AudioRouting.Route(sound, AudioCategory.Sound);
 
             var view = panel.gameObject.AddComponent<EndScreenView>();
             var serialized = new SerializedObject(view);

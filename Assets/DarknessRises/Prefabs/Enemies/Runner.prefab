@@ -374,6 +374,7 @@ GameObject:
   - component: {fileID: 4431054732586435048}
   - component: {fileID: 1047790360479827399}
   - component: {fileID: 755026979331080588}
+  - component: {fileID: 3264941118145387863}
   m_Layer: 0
   m_Name: Runner
   m_TagString: Untagged
@@ -593,6 +594,19 @@ MonoBehaviour:
   - {fileID: 2111043524435333435}
   - {fileID: 2523955473670549176}
   tellVoice: {fileID: 6905221883644201008}
+--- !u!114 &3264941118145387863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2386176102026287847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c74ea894c7d184d80d62403f61e24c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Audio.AudioCategorySource
+  category: 0
 --- !u!1 &2508295861999508449
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,6 +887,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4923712079904088811}
   - component: {fileID: 6905221883644201008}
+  - component: {fileID: 4559507617452212316}
   m_Layer: 0
   m_Name: Tell Voice
   m_TagString: Untagged
@@ -992,6 +1007,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4559507617452212316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6775500414627341955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c74ea894c7d184d80d62403f61e24c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Audio.AudioCategorySource
+  category: 0
 --- !u!1 &8397596946417730119
 GameObject:
   m_ObjectHideFlags: 0

@@ -113,7 +113,7 @@ namespace DarknessRises.Game.Enemies
             voice.spatialBlend = 1f;
             voice.rolloffMode = AudioRolloffMode.Linear;
             voice.maxDistance = audio.HearingRange;
-            voice.volume = audio.Volume;
+            voice.SetVolume(audio.Volume);
             // Pitch follows Enemy time from now on, pooled or not, so a reused Enemy never comes back out of step.
             time.ScaleChanged += OnEnemyTimeScaled;
             OnEnemyTimeScaled(time.Scale);

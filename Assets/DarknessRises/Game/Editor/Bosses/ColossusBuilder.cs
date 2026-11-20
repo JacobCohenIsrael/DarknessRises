@@ -1,6 +1,8 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Bosses;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Health;
@@ -129,6 +131,7 @@ namespace DarknessRises.Game.Editor.Bosses
             var voice = root.GetComponent<AudioSource>();
             voice.playOnAwake = false;
             voice.spatialBlend = 0f;
+            AudioRouting.Route(voice, AudioCategory.Sound);
 
             var view = root.GetComponent<ColossusView>();
             var serialized = new SerializedObject(view);

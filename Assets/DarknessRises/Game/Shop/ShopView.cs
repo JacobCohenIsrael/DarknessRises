@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Upgrades;
@@ -326,7 +327,7 @@ namespace DarknessRises.Game.Shop
             }
 
             sound.clip = buyClip;
-            sound.volume = settings.BuyVolume;
+            sound.SetVolume(settings.BuyVolume);
             sound.time = Mathf.Clamp(settings.BuyClipStartSeconds, 0f, Mathf.Max(0f, buyClip.length - 0.01f));
             sound.Play();
         }

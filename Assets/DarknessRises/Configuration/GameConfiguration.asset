@@ -193,3 +193,23 @@ MonoBehaviour:
     - {r: 1, g: 0.85, b: 0.2, a: 1}
   credits: {fileID: 11400000, guid: 21c37f1934d8a814eb59bf1e16416606, type: 2}
   shop: {fileID: 11400000, guid: eb81b63643629924f8b5d978422c7ca1, type: 2}
+  audioVolumes:
+    soundDefaultPercent: 100
+    ambientDefaultPercent: 100
+    musicDefaultPercent: 80
+    quietestDecibels: -40
+    sampleClip:
+      m_AssetGUID: 6739c01659ad96d47987f4ddee226b36
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    sampleVolume: 0.8
+    sampleClipStartSeconds: 0
+    openLabel: SOUND
+    title: SOUND
+    musicLabel: MUSIC
+    soundLabel: SOUND
+    ambientLabel: AMBIENT
+    percentFormat: '{0}%'
+    closeLabel: BACK

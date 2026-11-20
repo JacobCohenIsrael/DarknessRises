@@ -1,5 +1,7 @@
 using System.IO;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Hud;
 using TMPro;
@@ -126,6 +128,7 @@ namespace DarknessRises.Game.Editor.Hud
                 voices[i].transform.SetParent(area, false);
                 voices[i].playOnAwake = false;
                 voices[i].spatialBlend = 0f;
+                AudioRouting.Route(voices[i], AudioCategory.Sound);
             }
 
             var view = root.GetComponent<StationBannerView>();

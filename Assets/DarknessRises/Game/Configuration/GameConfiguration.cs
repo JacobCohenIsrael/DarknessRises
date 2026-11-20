@@ -1,3 +1,4 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Credits;
@@ -80,6 +81,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The Shop, open only between Runs: the Primary weapons it sells with their prices, and how its screen reads and looks.")]
         private ShopDefinition shop;
 
+        [SerializeField, Tooltip("The volume sliders for Music, Sound and Ambient: their defaults, how loudness follows them, the sample sound and their panel's wording.")]
+        private AudioVolumeSettings audioVolumes = new();
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -107,5 +111,6 @@ namespace DarknessRises.Game.Configuration
         public ScoreHudSettings ScoreHud => scoreHud;
         public CreditsDefinition Credits => credits;
         public ShopDefinition Shop => shop;
+        public AudioVolumeSettings AudioVolumes => audioVolumes;
     }
 }

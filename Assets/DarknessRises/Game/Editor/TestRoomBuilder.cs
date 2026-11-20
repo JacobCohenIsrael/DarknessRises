@@ -1,3 +1,4 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Controls;
@@ -131,6 +132,7 @@ namespace DarknessRises.Game.Editor
             // Show the authored values in the Scene view too, not only in Play mode.
             gameRoot.Apply();
 
+            AudioRouting.RequireRouted(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             // The sandbox loads additively through Addressables too (boot with -testRoom), or plays on its own in the Editor.
             AddressableContent.Add(AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath), AddressableContent.SandboxGroup);
@@ -144,6 +146,8 @@ namespace DarknessRises.Game.Editor
         /// </summary>
         internal static GameRoot BuildGameplay(GameConfiguration configuration, Room room, RouteWalker routeWalker, Vector3 start)
         {
+            // First, so every source built after it has the scene's volumes to follow.
+            var volumes = AudioVolumesBuilder.Build(configuration);
             var characterMaterial = LoadOrCreateMaterial("Character", new Color(0.55f, 0.55f, 0.6f));
             var character = BuildCharacter(characterMaterial, start, out var aura);
             var cameraView = BuildCameras(start);
@@ -172,7 +176,7 @@ namespace DarknessRises.Game.Editor
             HealthBuilder.Build(gameRoot, character, cameraView);
             ContinueBuilder.Build(gameRoot, character);
             CreditsBuilder.Build(gameRoot);
-            PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>());
+            PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>(), volumes);
             GestureBuilder.Build(gameRoot, character);
             WeaponButtonBuilder.Build(gameRoot);
             return gameRoot;
@@ -206,6 +210,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("credits").objectReferenceValue = CreditsBuilder.LoadOrCreateCredits();
             serialized.FindProperty("shop").objectReferenceValue = ShopBuilder.LoadOrCreateShop(pistol, machineGun, flamethrower);
             serialized.ApplyModifiedPropertiesWithoutUndo();
+            AudioVolumesBuilder.AuthorSettings(configuration);
             WavesBuilder.AuthorPlaceholderWaves(route);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.
@@ -471,6 +476,7 @@ namespace DarknessRises.Game.Editor
             storm.transform.SetParent(lightning.transform);
             storm.playOnAwake = false;
             storm.loop = true;
+            AudioRouting.Route(storm, AudioCategory.Ambient);
 
             var warnings = new AudioSource[2];
             for (var i = 0; i < warnings.Length; i++)
@@ -478,6 +484,9 @@ namespace DarknessRises.Game.Editor
                 warnings[i] = new GameObject($"Warning {i + 1}", typeof(AudioSource)).GetComponent<AudioSource>();
                 warnings[i].transform.SetParent(lightning.transform);
                 warnings[i].playOnAwake = false;
+
+                // The Boss's growl: the Boss is Sound, the storm around it Ambient.
+                AudioRouting.Route(warnings[i], AudioCategory.Sound);
             }
 
             // Lightning is the main light: the one light URP renders real-time shadows for.

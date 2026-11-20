@@ -18,9 +18,15 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  chancePerSecond: 0.02
-  cooldownSeconds: 45
-  firstDelaySeconds: 20
+  minGapSeconds: 6
+  maxGapSeconds: 14
+  voiceOnlyShare: 0.25
+  firstDelaySeconds: 6
+  retrySeconds: 1
+  afterFlashSeconds: 0.2
+  longestFlashWaitSeconds: 5
+  maxPairs: 2
+  pairSeparationMetres: 3
   enemyClearanceMetres: 14
   aheadDegrees: 120
   minMetres: 8.5
@@ -31,9 +37,18 @@ MonoBehaviour:
   placementAttempts: 16
   floorSearchMetres: 1.5
   openSeconds: 0.6
-  minHoldSeconds: 2
-  maxHoldSeconds: 4
+  minHoldSeconds: 2.5
+  maxHoldSeconds: 4.5
   blinkOutSeconds: 0.08
+  blinkSeconds: 0.16
+  minBlinkGapSeconds: 0.3
+  maxBlinkGapSeconds: 1.2
+  hopChance: 0.45
+  maxHops: 2
+  minHopGapSeconds: 0.5
+  maxHopGapSeconds: 1.2
+  minHopMetres: 2
+  maxHopMetres: 5
   aimRadiusShare: 0.08
   color: {r: 3, g: 0.7, b: 0.15, a: 1}
   whisperClips:
@@ -52,9 +67,13 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  voiceWithEyesChance: 0.7
+  minVoiceOnlySeconds: 2.5
+  maxVoiceOnlySeconds: 4.5
+  voiceOnlyDegrees: 180
   whisperLatestStartSeconds: 8
   whisperMinPitch: 0.95
   whisperMaxPitch: 1.05
-  whisperVolume: 0.25
+  whisperVolume: 0.7
   whisperFadeSeconds: 0.4
   hearingRange: 25

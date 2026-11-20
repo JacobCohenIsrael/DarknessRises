@@ -46,6 +46,34 @@ namespace DarknessRises.Game.Phantoms
             return character + direction * random.Range(MinMetres, MaxMetres);
         }
 
+        /// <summary>Whether <paramref name="spot"/> is as far out from <paramref name="character"/>, across the floor, as the eyes ever appear.</summary>
+        public bool IsFarOut(Vector3 spot, Vector3 character)
+        {
+            var offset = spot - character;
+            offset.y = 0f;
+            var metres = offset.magnitude;
+            return metres >= MinMetres && metres <= MaxMetres;
+        }
+
+        /// <summary>
+        /// Whether <paramref name="spot"/> is at least <paramref name="metres"/> across the floor from each of the first
+        /// <paramref name="count"/> of <paramref name="others"/>, so two pairs never look out from one spot.
+        /// </summary>
+        public static bool IsApart(Vector3 spot, Vector3[] others, int count, float metres)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                var offset = spot - others[i];
+                offset.y = 0f;
+                if (offset.sqrMagnitude < metres * metres)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Whether <paramref name="spot"/> stays at least <paramref name="keepAwayMetres"/> across the floor from the
         /// character all the way along its next <paramref name="walkMetres"/> of walking along <paramref name="forward"/>,

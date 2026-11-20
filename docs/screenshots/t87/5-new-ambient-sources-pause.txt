@@ -1,0 +1,12 @@
+# #85's sources under the pause with the Volume panel (headless, muted; Level 1, paused)
+# Every Ambient source plays on over the paused listener only while the panel is open; Sound (footsteps) stays held.
+result: started, god mode on, frame 3419
+result: paused: timeScale 0, listener paused True
+panel closed:
+listener paused True: [Ambient] Storm Bed ignoreListenerPause=False; [Sound] Footstep Voice 1 ignoreListenerPause=False; [Sound] Footstep Voice 2 ignoreListenerPause=False; [Sound] Footstep Voice 3 ignoreListenerPause=False; [Sound] Footstep Voice 4 ignoreListenerPause=False; [Ambient] PhantomEyes ignoreListenerPause=False; [Ambient] Ambient Bed Voice ignoreListenerPause=False;
+result: clicked Sound Button; panel open: True
+panel open:
+listener paused True: [Ambient] Storm Bed ignoreListenerPause=True; [Sound] Footstep Voice 1 ignoreListenerPause=False; [Sound] Footstep Voice 2 ignoreListenerPause=False; [Sound] Footstep Voice 3 ignoreListenerPause=False; [Sound] Footstep Voice 4 ignoreListenerPause=False; [Ambient] PhantomEyes ignoreListenerPause=True; [Ambient] Ambient Bed Voice ignoreListenerPause=True;
+result: clicked Back Button; panel open: False
+panel closed again:
+listener paused True: [Ambient] Storm Bed ignoreListenerPause=False; [Sound] Footstep Voice 1 ignoreListenerPause=False; [Sound] Footstep Voice 2 ignoreListenerPause=False; [Sound] Footstep Voice 3 ignoreListenerPause=False; [Sound] Footstep Voice 4 ignoreListenerPause=False; [Ambient] PhantomEyes ignoreListenerPause=False; [Ambient] Ambient Bed Voice ignoreListenerPause=False;

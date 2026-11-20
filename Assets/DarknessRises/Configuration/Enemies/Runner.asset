@@ -58,6 +58,23 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     volume: 0.8
     hearingRange: 25
+    footsteps:
+      clips:
+      - m_AssetGUID: 7c518e8469a403b4c981664ecb28a79a
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      dragClips: []
+      dragVolume: 0.45
+      maxStepSeconds: 0.35
+      strideMetres: 1
+      limp: 0
+      firstStepStrides: 0.3
+      stopSpeed: 0.3
+      minPitch: 0.95
+      maxPitch: 1.15
+      volume: 0.45
   death:
     lingerSeconds: 0.5
     sinkSeconds: 1.6
@@ -80,6 +97,12 @@ MonoBehaviour:
       range: 7
       fadeDistance: 1.5
       color: {r: 3, g: 0.7, b: 0.15, a: 1}
+      opening:
+        seconds: 0.75
+        shutShare: 0.2
+        peekShare: 0.3
+        peekStrength: 0.35
+        blinkShare: 0.15
     sounds:
       clips:
       - m_AssetGUID: ac6034ade498bb94b87620cdf6eac48b

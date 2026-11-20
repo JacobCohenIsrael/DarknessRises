@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Weapons;
 
 namespace DarknessRises.Game.Scoring
 {
@@ -92,6 +93,23 @@ namespace DarknessRises.Game.Scoring
 
         /// <summary>Whether a Station's fight is being tallied right now.</summary>
         public bool IsTallying => isTallying;
+
+        /// <summary>
+        /// A Shot ended as <paramref name="outcome"/>: a hit or a miss drives the Combo and the tally, and a Shot that
+        /// counts as neither (it killed a Critter) changes nothing.
+        /// </summary>
+        public void ShotLanded(ShotOutcome outcome)
+        {
+            switch (outcome)
+            {
+                case ShotOutcome.HurtEnemy:
+                    ShotHit();
+                    break;
+                case ShotOutcome.Missed:
+                    ShotMissed();
+                    break;
+            }
+        }
 
         /// <summary>A Shot hurt an Enemy.</summary>
         public void ShotHit()

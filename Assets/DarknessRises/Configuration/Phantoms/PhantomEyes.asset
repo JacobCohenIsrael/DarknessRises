@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d4522c7fb1d3b24094f915b4c0a93f0, type: 3}
+  m_Name: PhantomEyes
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Phantoms.PhantomEyesDefinition
+  prefab:
+    m_AssetGUID: 5284711aa67500542b63905f5ce09355
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  chancePerSecond: 0.02
+  cooldownSeconds: 45
+  firstDelaySeconds: 20
+  enemyClearanceMetres: 14
+  aheadDegrees: 120
+  minMetres: 8.5
+  maxMetres: 12
+  keepAwayMetres: 7.5
+  walkMarginMetres: 5
+  screenMarginShare: 0.05
+  placementAttempts: 16
+  floorSearchMetres: 1.5
+  openSeconds: 0.6
+  minHoldSeconds: 2
+  maxHoldSeconds: 4
+  blinkOutSeconds: 0.08
+  aimRadiusShare: 0.08
+  color: {r: 3, g: 0.7, b: 0.15, a: 1}
+  whisperClips:
+  - m_AssetGUID: 727c90cef4c97c545a8860dda29b53b1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: af6edb08e1f686041a968120f681aff9
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 57f5f9fc49e59cb4ca4ae0d069d09f33
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  whisperLatestStartSeconds: 8
+  whisperMinPitch: 0.95
+  whisperMaxPitch: 1.05
+  whisperVolume: 0.25
+  whisperFadeSeconds: 0.4
+  hearingRange: 25

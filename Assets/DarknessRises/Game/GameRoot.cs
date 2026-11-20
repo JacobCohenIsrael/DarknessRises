@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Ads;
+using DarknessRises.Game.Ambience;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
@@ -9,8 +10,10 @@ using DarknessRises.Game.Continues;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Credits;
+using DarknessRises.Game.Critters;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Health;
@@ -18,6 +21,7 @@ using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Pausing;
+using DarknessRises.Game.Phantoms;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
@@ -131,6 +135,21 @@ namespace DarknessRises.Game
         // How fast time runs for Enemies. Slow-mo slows it; the global time scale is never touched.
         private readonly EnemyTime enemyTime = new();
 
+        // The footsteps of the living Enemies, made once the Level's content has loaded.
+        private EnemyFootstepsView footsteps;
+
+        // The Critters darting through the dark, made once the Level's content has loaded, if there are any.
+        private CrittersView critters;
+
+        // The living Enemies, as they spawn: the Phantom eyes keep away while one is near.
+        private readonly LivingEnemies livingEnemies = new();
+
+        // The Phantom eyes that look out of the dark, made once the Level's content has loaded, if there are any.
+        private PhantomEyesView phantomEyes;
+
+        // The ambient bed from the dark, made once the Level's content has loaded, if there is one.
+        private AmbientBedView ambientBed;
+
         // The lights that can reveal an Enemy, for Aim assist's idea of a visible Enemy.
         private readonly SceneLights lights = new();
 
@@ -218,6 +237,15 @@ namespace DarknessRises.Game
 
         /// <summary>The scene's volumes, which the boot's own sounds follow while the Level plays.</summary>
         public SceneAudioVolumes AudioVolumes => audioVolumes;
+
+        /// <summary>The Critters darting through the dark, once the gameplay has started; null without any.</summary>
+        public CrittersView Critters => critters;
+
+        /// <summary>The ambient bed, once the gameplay has started; null without one.</summary>
+        public AmbientBedView AmbientBed => ambientBed;
+
+        /// <summary>The Phantom eyes, once the gameplay has started; null without any.</summary>
+        public PhantomEyesView PhantomEyes => phantomEyes;
 
         /// <summary>The beats of each stop at a Station, once the gameplay has started.</summary>
         public StationRhythm StationRhythm => stationRhythm;
@@ -351,6 +379,7 @@ namespace DarknessRises.Game
                 routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime, content, stationRhythm);
             }
 
+            footsteps = EnemyFootstepsView.Create(transform, configuration.FootstepVoices, character, enemyTime, content);
             lights.Add(aura.Light);
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
@@ -378,6 +407,31 @@ namespace DarknessRises.Game
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon, stationRhythm);
             var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, stats.Grenade, characterAnimation, content, lights);
             grenadeHud.Show(grenadeCharges);
+            if (configuration.Critters != null)
+            {
+                critters = CrittersView.Create(transform, configuration.Critters, character, run, stationRhythm, lights, content);
+            }
+
+            if (configuration.PhantomEyes != null)
+            {
+                phantomEyes = PhantomEyesView.Create(
+                    transform,
+                    configuration.PhantomEyes,
+                    character,
+                    character.GetComponent<PlayerControls>(),
+                    Camera.main,
+                    run,
+                    stationRhythm,
+                    lights,
+                    livingEnemies,
+                    content);
+            }
+
+            if (configuration.Ambience != null)
+            {
+                ambientBed = AmbientBedView.Create(transform, configuration.Ambience, character, run, stationRhythm, content);
+            }
+
             if (grenadeButton != null)
             {
                 grenadeButton.Show(grenadeCharges, configuration.Gestures.GrenadeButton);
@@ -579,16 +633,11 @@ namespace DarknessRises.Game
             scoreKeeper = null;
         }
 
-        private void OnShotLanded(bool hurtEnemy, Vector3 point)
+        // A Shot that killed a Critter is neither a hit nor a miss: no hit marker, and the Combo and accuracy stand.
+        private void OnShotLanded(ShotOutcome outcome, Vector3 point)
         {
-            if (!hurtEnemy)
-            {
-                scoreKeeper.ShotMissed();
-                return;
-            }
-
-            scoreKeeper.ShotHit();
-            if (scorePopups != null)
+            scoreKeeper.ShotLanded(outcome);
+            if (outcome == ShotOutcome.HurtEnemy && scorePopups != null)
             {
                 scorePopups.Mark(point);
             }
@@ -705,9 +754,11 @@ namespace DarknessRises.Game
 
         private void OnEnemyDied(Enemy _) => run.CountKill();
 
-        // The first Enemy of a Run gets the shoot hint over it, if the hint is due.
+        // Every Enemy is heard walking, and keeps the Phantom eyes away while it's near. The first Enemy of a Run gets the shoot hint over it, if the hint is due.
         private void OnEnemySpawned(EnemyView enemy)
         {
+            footsteps.Track(enemy);
+            livingEnemies.Add(enemy);
             if (shootHint != null)
             {
                 shootHint.Offer(enemy, run.LevelIndex, primaryWeapon.Weapon);

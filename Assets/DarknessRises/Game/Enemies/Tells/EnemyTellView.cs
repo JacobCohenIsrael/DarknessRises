@@ -9,12 +9,13 @@ namespace DarknessRises.Game.Enemies.Tells
 {
     /// <summary>
     /// Shows a living Enemy's Tells: its eyes glint (emissive, so they show in full Darkness) while it is within
-    /// range of the character, and it makes positional sounds now and then. Sits on the Enemy prefab and is driven
+    /// range of the character, once they've opened after it spawned, and it makes positional sounds now and then. Sits on the Enemy prefab and is driven
     /// by its <see cref="EnemyView"/>. Tells only reveal; nothing here feeds back into what the Enemy does.
     /// </summary>
     /// <remarks>
     /// During a Wind-up the Enemy view swaps the eyes to its brighter Wind-up material, which outshines the glint
-    /// at any distance; the glint material comes back when the Wind-up ends. Tell sounds run on Enemy time.
+    /// at any distance, opened or not: a real attack is never hidden. The glint material comes back when the Wind-up
+    /// ends. The eyes' opening and Tell sounds run on Enemy time, so they follow Slow-mo and stop while paused.
     /// </remarks>
     public sealed class EnemyTellView : MonoBehaviour
     {
@@ -34,6 +35,7 @@ namespace DarknessRises.Game.Enemies.Tells
         private IRandom random;
         private EnemyTime time;
         private TellSoundSchedule soundSchedule;
+        private EyeOpening opening;
         private Material eyeInstance;
         private Transform watcher;
         private float glint = -1f;
@@ -53,6 +55,7 @@ namespace DarknessRises.Game.Enemies.Tells
             time = enemyTime;
 
             // Seeded per Enemy, so Enemies made in the same frame don't share a sequence and call out together.
+            opening = settings.EyeGlint.Opening.Create();
             random = new SystemRandom(unchecked((Environment.TickCount * 397) ^ RuntimeHelpers.GetHashCode(this)));
             var sounds = settings.Sounds;
             soundClips = content.Clips(sounds.Clips);
@@ -89,6 +92,7 @@ namespace DarknessRises.Game.Enemies.Tells
         {
             watcher = character;
             awake = true;
+            opening.Restart();
             glint = -1f;
             UpdateGlint();
 
@@ -114,8 +118,10 @@ namespace DarknessRises.Game.Enemies.Tells
                 return;
             }
 
+            var deltaSeconds = time.Scaled(Time.deltaTime);
+            opening.Tick(deltaSeconds);
             UpdateGlint();
-            if (soundSchedule.Tick(time.Scaled(Time.deltaTime)))
+            if (soundSchedule.Tick(deltaSeconds))
             {
                 PlayTellSound();
             }
@@ -136,7 +142,7 @@ namespace DarknessRises.Game.Enemies.Tells
             var offset = transform.position - watcher.position;
             offset.y = 0f;
             var eyeGlint = settings.EyeGlint;
-            var strength = EyeGlint.Strength(offset.magnitude, eyeGlint.Range, eyeGlint.FadeDistance);
+            var strength = EyeGlint.Strength(offset.magnitude, eyeGlint.Range, eyeGlint.FadeDistance, opening.Strength);
             if (Mathf.Abs(strength - glint) >= GlintStep || (strength != glint && (strength == 0f || strength == 1f)))
             {
                 SetGlint(strength);

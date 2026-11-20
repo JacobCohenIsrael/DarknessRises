@@ -40,7 +40,7 @@ namespace DarknessRises.Game.Weapons
 
         // For each Primary in the Shop's order, where it is in the loadout, or -1 when it isn't carried.
         private int[] places = Array.Empty<int>();
-        private Action<bool, Vector3> onShotLanded;
+        private Action<ShotOutcome, Vector3> onShotLanded;
 
         public PrimaryWeaponLoadout Loadout { get; private set; }
 
@@ -51,10 +51,10 @@ namespace DarknessRises.Game.Weapons
         public event Action<PrimaryWeapon> Switched;
 
         /// <summary>
-        /// Raised when a Shot of any of the character's Primaries ends: whether it hurt an Enemy (a hit) or not (a miss),
-        /// and where.
+        /// Raised when a Shot of any of the character's Primaries ends: whether it hurt an Enemy (a hit), hurt nothing (a
+        /// miss) or struck something that counts as neither (a Critter), and where.
         /// </summary>
-        public event Action<bool, Vector3> ShotLanded;
+        public event Action<ShotOutcome, Vector3> ShotLanded;
 
         /// <summary>
         /// Arms the character with the Run's <paramref name="loadout"/>: one Primary for each of
@@ -205,9 +205,9 @@ namespace DarknessRises.Game.Weapons
             Switched?.Invoke(equipped);
         }
 
-        private void OnShotLanded(bool hurtEnemy, Vector3 point)
+        private void OnShotLanded(ShotOutcome outcome, Vector3 point)
         {
-            ShotLanded?.Invoke(hurtEnemy, point);
+            ShotLanded?.Invoke(outcome, point);
         }
     }
 }

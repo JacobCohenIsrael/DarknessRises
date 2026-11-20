@@ -65,6 +65,10 @@ _Avoid_: strike, flash
 The swell of the storm after Lightning: the storm bed rises, holds and settles back, a short random delay after each flash, as from a strike at a varying distance, with a small pitch change so no two sound quite alike. It never warns of a flash.
 _Avoid_: thunder (as a name in code)
 
+**Ambient bed**:
+Now and then, a quiet sound from somewhere out in the dark, up near the ceiling, such as bats stirring: a few seconds cut from a long recording, fading in and out, and staying where it started while the character walks past. Background, not a Tell: it never comes from an Enemy or a Critter. It plays while the character walks, fights a Wave or takes the quiet after a Clear, never in a Boss fight. Not the storm bed, which is Lightning's.
+_Avoid_: ambience loop, background music
+
 **Gunfire**:
 The light made by the player's Weapon: always its Muzzle flash, and for some Weapons its Shots too.
 
@@ -87,7 +91,7 @@ The faint, always-on light around the character. It shows the character's own po
 _Avoid_: glow, personal light
 
 **Tell**:
-A cue that gives away an Enemy in Darkness without lighting it, such as glinting eyes or a sound from its direction.
+A cue that gives away an Enemy in Darkness without lighting it, such as glinting eyes or a sound from its direction. An Enemy's eyes glint only near the character, and only once they've opened: they're shut when it comes in, crack open, blink, and open fully over about a second (a Runner's sooner than a Shambler's), so an Enemy that spawns close isn't given away at once. Its footsteps are a Tell too: heard from where it walks, faster the faster it moves (a Shambler's drag, a Runner's patter), and silent while it stands to attack, reels or lies dead. Only the nearest few walking Enemies are heard.
 _Avoid_: hint, indicator
 
 ## Threat
@@ -140,6 +144,14 @@ _Avoid_: spawn, batch, horde
 **Straggler**:
 A lone Enemy that comes at the character while it walks between Stations. The character keeps walking while the player deals with it.
 _Avoid_: wanderer, random encounter
+
+**Critter**:
+A small, harmless animal, such as a rat, that darts through the dark to make the player jump: mostly while the character walks between Stations and in the quiet after a Clear, rarely during a Wave fight, never in a Boss fight. It scurries from one dark spot to another across the character's view, at the edge of the light, and is gone in a second or two. Light shows it like anything else, its small eyes glint like an Enemy's, and its scurry is heard from where it runs. It isn't an Enemy: it never hurts the character, Aim assist ignores it, and a Shot that kills it (with a squeak) counts as neither a hit nor a miss, so it earns no Score or Credits and leaves the Combo, accuracy and Grade as they were.
+_Avoid_: rat (it's one kind), animal, vermin, pest
+
+**Phantom eyes**:
+A pair of eyes that looks out of the dark but isn't really there: the character's imagination. They look just like an Enemy's glinting eyes, but they appear only far out (beyond the Aura and beyond where real eyes glint), only while the character walks or in the quiet after a Clear, and only when no real Enemy is near. They're rare and hold a few seconds at most. Any light reaching their spot (Lightning, Gunfire, a Hit spark, the Flare, a Grenade's blast) makes them vanish at once, so a flash shows nothing there; the Crosshair or a tap coming close, or the character walking nearer than they ever appear, makes them blink out; a real Enemy coming near or a fight starting sends them away at once. A faint whisper may come from them. A Shot at them hits nothing, like any miss. So eyes near the character, or in a fight, are always real.
+_Avoid_: ghost, fake eyes, false Tell, hallucination
 
 ## Skills
 
@@ -244,7 +256,7 @@ The points a Run earns for its kills. Each Enemy type and Boss is worth its own 
 _Avoid_: points (for the Run's total), credits
 
 **Combo**:
-A streak of consecutive Shots that each hurt an Enemy. Every few hits in a row its multiplier steps up, to a cap; a Shot that hurts nothing ends it, and so does going too long without a hit.
+A streak of consecutive Shots that each hurt an Enemy. Every few hits in a row its multiplier steps up, to a cap; a Shot that hurts nothing ends it, and so does going too long without a hit. A Shot that kills a Critter is neither: the streak carries on as it was.
 _Avoid_: streak, chain, multiplier (that's the Combo's number)
 
 **Grade**:
@@ -298,11 +310,11 @@ One of the three groups every sound in the game belongs to, Sound, Ambient or Mu
 _Avoid_: channel, bus, mixer group
 
 **Sound**:
-The Audio category of everything the player's actions and the threats make: Gunshots and Firing loops, reloads, the Grenade, Enemies' voices, Wind-ups, attacks and footsteps, the Boss, the Station banners, and the Continue, Shop and HUD sounds. As a category name it's capitalized; "a sound" is still any sound.
+The Audio category of everything the player's actions and the threats make: Gunshots and Firing loops, reloads, the Grenade, Enemies' voices, Wind-ups, attacks and footsteps, Critters, the Boss, the Station banners, and the Continue, Shop and HUD sounds. As a category name it's capitalized; "a sound" is still any sound.
 _Avoid_: SFX, effects
 
 **Ambient**:
-The Audio category of the world around the character: the storm bed and its Rumble, and each Room's own ambience, such as creatures heard in the dark.
+The Audio category of the world around the character: the storm bed and its Rumble, the Ambient bed, and the Phantom eyes' whispers and breath.
 _Avoid_: atmosphere, background, environment
 
 **Music**:

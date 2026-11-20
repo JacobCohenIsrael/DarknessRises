@@ -1,0 +1,77 @@
+# Approved sounds in play, Test Room, headless and muted (#85, slice 5). Every line is read back from AudioSource state; nothing was listened to.
+
+## Phantom eyes whisper
+appeared, 1.00 s in: eyes at (0.04, 1.72, 1.20), 9.3 m from the character; showing True strength 1.00 vanish None; whisper clip=Misc_Whisper loadType=Streaming time=6.7 playing=True vol=0.25 spatial=1.  frozen.
+
+## Ambient bed
+bed from (-18.9, 3.5, 8.2), 16.2 m from the character; slice 5.0-13.0 s of the clip, fading 2.5 s. played True: clip=Bat Short loadType=Streaming length=24.4 s playing=True pitch=1.03 time=5.0 spatial=1 maxDist=30. [0.0 s vol 0.000 playing True time 5.0] [1.0 s vol 0.083 playing True time 5.7] [2.0 s vol 0.165 playing True time 6.7] [3.0 s vol 0.200 playing True time 7.7] [4.0 s vol 0.200 playing True time 8.7] [5.0 s vol 0.200 playing True time 9.8] [6.0 s vol 0.147 playing True time 10.8] [7.0 s vol 0.065 playing True time 11.8] end: playing False.
+
+## Critter scurries
+dash (2.20, 4.97) -> (-4.83, 4.31), 7.07 m at 5.59 m/s = 1.26 s; moment WaveFight. scurry: clip=rats_1 loadType=CompressedInMemory from 0.01 s playing=True pitch=1.15 vol=0.45 spatial=1. after 0.40 s: rat at (-0.04, 4.76), 5.84 m from the character, glint 1.00, alive True, out True. frozen: rat at (-0.04, 4.76), 5.84 m from the character, glint 1.00, alive True, out True.
+dash (3.85, 5.03) -> (-3.64, 6.27), 7.60 m at 5.89 m/s = 1.29 s; moment WaveFight. scurry: clip=dk-scratch loadType=Streaming from 0.02 s playing=True pitch=1.08 vol=0.45 spatial=1. after 0.40 s: rat at (1.52, 5.41), 6.89 m from the character, glint 0.41, alive True, out True. frozen: rat at (1.52, 5.41), 6.89 m from the character, glint 0.41, alive True, out True.
+dash (-6.32, 2.31) -> (0.20, 5.15), 7.11 m at 5.46 m/s = 1.30 s; moment WaveFight. scurry: clip=dk-scratch loadType=Streaming from 3.07 s playing=True pitch=0.98 vol=0.45 spatial=1. after 0.41 s: rat at (-4.26, 3.20), 5.32 m from the character, glint 1.00, alive True, out True. frozen: rat at (-4.26, 3.20), 5.32 m from the character, glint 1.00, alive True, out True.
+
+## A Shot at a Critter: the owl squeak, and the Shot counts as neither hit nor miss
+before: combo streak 3 x1, tallying True hits 13 misses 2, run kills 3 score 300 credits 15; rat at (-3.91, 3.21), 5.12 m from the character, glint 1.00, alive True, out True. Shot landed: Neutral at (-3.09, 3.30). rat at (-3.16, 3.42), 4.92 m from the character, glint 0.00, alive False, out True; voice playing=True pitch=1.12 (squeak from owl_squeak_01). after: combo streak 3 x1, tallying True hits 13 misses 2, run kills 3 score 300 credits 15.
+
+## Shamblers walking in (Test Room's first Wave): zombie steps on concrete, the crawl on the dragged foot
+22 s of play. Steps heard per Enemy type: Shambler 31; distinct Enemies heard 3; steps while not chasing 0; most Enemies walking at once 3; most voices playing at once 4 of 4.
+  6.79s Shambler #10648   at ( -8.79,   3.38)   8.9 m  speed 1.40 m/s  Footstep Voice 1 at (-8.79, 3.38) clip=Footsteps_Zombie_concret_003 pitch=0.97 vol=0.55 playing=True spatial=1 maxDist=25
+  7.12s Shambler #10648   at ( -8.38,   3.15)   8.5 m  speed 1.40 m/s  Footstep Voice 2 at (-8.38, 3.15) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.93 vol=0.45 playing=True spatial=1 maxDist=25
+  7.89s Shambler #10648   at ( -7.45,   2.63)   7.4 m  speed 1.40 m/s  Footstep Voice 3 at (-7.45, 2.63) clip=Footsteps_Zombie_concret_004 pitch=0.99 vol=0.55 playing=True spatial=1 maxDist=25
+  8.22s Shambler #10648   at ( -7.04,   2.40)   6.9 m  speed 1.40 m/s  Footstep Voice 4 at (-7.04, 2.40) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.92 vol=0.45 playing=True spatial=1 maxDist=25
+  8.29s Shambler #-78428  at ( -0.03,  -8.76)   7.8 m  speed 1.40 m/s  Footstep Voice 1 at (-0.03, -8.76) clip=Footsteps_Zombie_concret_004 pitch=0.98 vol=0.55 playing=True spatial=1 maxDist=25
+  8.62s Shambler #-78428  at ( -0.09,  -8.30)   7.4 m  speed 1.40 m/s  Footstep Voice 2 at (-0.09, -8.30) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.95 vol=0.45 playing=True spatial=1 maxDist=25
+  8.97s Shambler #10648   at ( -6.12,   1.88)   5.9 m  speed 1.40 m/s  Footstep Voice 3 at (-6.12, 1.88) clip=Footsteps_Zombie_concret_002 pitch=1.04 vol=0.55 playing=True spatial=1 maxDist=25
+  9.30s Shambler #10648   at ( -5.72,   1.65)   5.4 m  speed 1.40 m/s  Footstep Voice 4 at (-5.72, 1.65) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.92 vol=0.45 playing=True spatial=1 maxDist=25
+  9.39s Shambler #-78428  at ( -0.22,  -7.24)   6.3 m  speed 1.40 m/s  Footstep Voice 1 at (-0.22, -7.24) clip=Footsteps_Zombie_concret_004 pitch=1.01 vol=0.55 playing=True spatial=1 maxDist=25
+  9.72s Shambler #-78428  at ( -0.28,  -6.78)   5.8 m  speed 1.40 m/s  Footstep Voice 2 at (-0.28, -6.78) clip=Foley_Crawling_A_001 (dragged foot) pitch=1.00 vol=0.45 playing=True spatial=1 maxDist=25
+  9.79s Shambler #-21936  at ( -8.79,   3.38)   8.9 m  speed 1.40 m/s  Footstep Voice 3 at (-8.79, 3.38) clip=Footsteps_Zombie_concret_003 pitch=1.04 vol=0.55 playing=True spatial=1 maxDist=25
+ 10.06s Shambler #10648   at ( -4.80,   1.14)   4.4 m  speed 1.40 m/s  Footstep Voice 4 at (-4.80, 1.14) clip=Footsteps_Zombie_concret_004 pitch=0.94 vol=0.55 playing=True spatial=1 maxDist=25
+ 10.12s Shambler #-21936  at ( -8.38,   3.15)   8.5 m  speed 1.40 m/s  Footstep Voice 1 at (-8.38, 3.15) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.94 vol=0.45 playing=True spatial=1 maxDist=25
+ 10.39s Shambler #10648   at ( -4.40,   0.91)   3.9 m  speed 1.40 m/s  Footstep Voice 2 at (-4.40, 0.91) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.96 vol=0.45 playing=True spatial=1 maxDist=25
+ 10.49s Shambler #-78428  at ( -0.41,  -5.71)   4.8 m  speed 1.40 m/s  Footstep Voice 3 at (-0.41, -5.71) clip=Footsteps_Zombie_concret_003 pitch=1.05 vol=0.55 playing=True spatial=1 maxDist=25
+ 10.82s Shambler #-78428  at ( -0.47,  -5.25)   4.3 m  speed 1.40 m/s  Footstep Voice 4 at (-0.47, -5.25) clip=Foley_Crawling_A_001 (dragged foot) pitch=1.05 vol=0.45 playing=True spatial=1 maxDist=25
+ 10.89s Shambler #-21936  at ( -7.45,   2.63)   7.4 m  speed 1.40 m/s  Footstep Voice 1 at (-7.45, 2.63) clip=Footsteps_Zombie_concret_004 pitch=0.91 vol=0.55 playing=True spatial=1 maxDist=25
+ 11.15s Shambler #10648   at ( -3.46,   0.39)   2.8 m  speed 1.40 m/s  Footstep Voice 3 at (-3.46, 0.39) clip=Footsteps_Zombie_concret_004 pitch=0.91 vol=0.55 playing=True spatial=1 maxDist=25
+ 11.22s Shambler #-21936  at ( -7.04,   2.40)   6.9 m  speed 1.40 m/s  Footstep Voice 2 at (-7.04, 2.40) clip=Foley_Crawling_A_001 (dragged foot) pitch=1.03 vol=0.45 playing=True spatial=1 maxDist=25
+ 11.49s Shambler #10648   at ( -3.06,   0.16)   2.4 m  speed 1.40 m/s  Footstep Voice 4 at (-3.06, 0.16) clip=Foley_Crawling_A_001 (dragged foot) pitch=1.00 vol=0.45 playing=True spatial=1 maxDist=25
+ 11.59s Shambler #-78428  at ( -0.60,  -4.19)   3.2 m  speed 1.40 m/s  Footstep Voice 1 at (-0.60, -4.19) clip=Footsteps_Zombie_concret_002 pitch=1.00 vol=0.55 playing=True spatial=1 maxDist=25
+ 11.92s Shambler #-78428  at ( -0.66,  -3.72)   2.8 m  speed 1.40 m/s  Footstep Voice 3 at (-0.66, -3.72) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.98 vol=0.45 playing=True spatial=1 maxDist=25
+ 11.99s Shambler #-21936  at ( -6.11,   1.87)   5.9 m  speed 1.40 m/s  Footstep Voice 2 at (-6.11, 1.87) clip=Footsteps_Zombie_concret_002 pitch=0.92 vol=0.55 playing=True spatial=1 maxDist=25
+ 12.24s Shambler #10648   at ( -2.14,  -0.36)   1.3 m  speed 1.40 m/s  Footstep Voice 4 at (-2.14, -0.36) clip=Footsteps_Zombie_concret_004 pitch=0.92 vol=0.55 playing=True spatial=1 maxDist=25
+ 12.32s Shambler #-21936  at ( -5.70,   1.64)   5.4 m  speed 1.40 m/s  Footstep Voice 1 at (-5.70, 1.64) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.90 vol=0.45 playing=True spatial=1 maxDist=25
+ 12.69s Shambler #-78428  at ( -0.79,  -2.66)   1.7 m  speed 1.40 m/s  Footstep Voice 3 at (-0.79, -2.66) clip=Footsteps_Zombie_concret_004 pitch=0.93 vol=0.55 playing=True spatial=1 maxDist=25
+ 13.07s Shambler #-21936  at ( -4.78,   1.13)   4.3 m  speed 1.40 m/s  Footstep Voice 2 at (-4.78, 1.13) clip=Footsteps_Zombie_concret_004 pitch=0.95 vol=0.55 playing=True spatial=1 maxDist=25
+ 13.39s Shambler #-21936  at ( -4.39,   0.91)   3.9 m  speed 1.40 m/s  Footstep Voice 4 at (-4.39, 0.91) clip=Foley_Crawling_A_001 (dragged foot) pitch=1.00 vol=0.45 playing=True spatial=1 maxDist=25
+ 14.29s Shambler #-21936  at ( -3.47,   0.38)   2.8 m  speed 0.93 m/s  Footstep Voice 1 at (-3.47, 0.38) clip=Footsteps_Zombie_concret_003 pitch=0.99 vol=0.55 playing=True spatial=1 maxDist=25
+ 15.03s Shambler #-21936  at ( -3.09,   0.15)   2.4 m  speed 0.51 m/s  Footstep Voice 3 at (-3.09, 0.15) clip=Foley_Crawling_A_001 (dragged foot) pitch=0.99 vol=0.45 playing=True spatial=1 maxDist=25
+ 16.78s Shambler #-21936  at ( -2.62,  -0.79)   1.6 m  speed 0.70 m/s  Footstep Voice 2 at (-2.62, -0.79) clip=Footsteps_Zombie_concret_001 pitch=0.96 vol=0.55 playing=True spatial=1 maxDist=25
+
+## Six Runners spawned 9 m around the character: the dirt-ground run step
+Runner 0 at (-1.00, 0.08, 8.00). Runner 1 at (6.79, 0.08, 3.50). Runner 2 at (6.79, 0.08, -5.50). Runner 3 at (-1.00, 0.67, -9.83). Runner 4 at (-8.79, 0.08, -5.50). Runner 5 at (-8.79, 0.08, 3.50). 
+3 s of play. Steps heard per Enemy type: Runner 26; distinct Enemies heard 5; steps while not chasing 0; most Enemies walking at once 6; most voices playing at once 4 of 4.
+  0.26s Runner   #37408   at ( -1.00,   7.65)   8.7 m  speed 3.02 m/s  Footstep Voice 4 at (-1.00, 7.65) clip=Footsteps_DirtyGround_Run_03 pitch=1.11 vol=0.45 playing=True spatial=1 maxDist=25
+  0.26s Runner   #35228   at ( -1.03,  -9.49)   8.5 m  speed 3.01 m/s  Footstep Voice 1 at (-1.03, -9.49) clip=Footsteps_DirtyGround_Run_03 pitch=1.10 vol=0.45 playing=True spatial=1 maxDist=25
+  0.26s Runner   #78736   at ( -8.50,  -5.32)   8.7 m  speed 3.02 m/s  Footstep Voice 3 at (-8.50, -5.32) clip=Footsteps_DirtyGround_Run_03 pitch=1.02 vol=0.45 playing=True spatial=1 maxDist=25
+  0.51s Runner   #37408   at ( -1.00,   6.63)   7.6 m  speed 4.20 m/s  Footstep Voice 2 at (-1.00, 6.63) clip=Footsteps_DirtyGround_Run_03 pitch=1.00 vol=0.45 playing=True spatial=1 maxDist=25
+  0.51s Runner   #35228   at ( -1.03,  -8.47)   7.5 m  speed 4.20 m/s  Footstep Voice 4 at (-1.03, -8.47) clip=Footsteps_DirtyGround_Run_03 pitch=0.98 vol=0.45 playing=True spatial=1 maxDist=25
+  0.51s Runner   #78736   at ( -7.61,  -4.81)   7.6 m  speed 4.20 m/s  Footstep Voice 1 at (-7.61, -4.81) clip=Footsteps_DirtyGround_Run_03 pitch=1.03 vol=0.45 playing=True spatial=1 maxDist=25
+  0.76s Runner   #37408   at ( -1.00,   5.58)   6.6 m  speed 4.20 m/s  Footstep Voice 3 at (-1.00, 5.58) clip=Footsteps_DirtyGround_Run_03 pitch=1.15 vol=0.45 playing=True spatial=1 maxDist=25
+  0.76s Runner   #35228   at ( -1.02,  -7.42)   6.4 m  speed 4.20 m/s  Footstep Voice 2 at (-1.02, -7.42) clip=Footsteps_DirtyGround_Run_03 pitch=1.01 vol=0.45 playing=True spatial=1 maxDist=25
+  0.76s Runner   #78736   at ( -6.71,  -4.28)   6.6 m  speed 4.20 m/s  Footstep Voice 4 at (-6.71, -4.28) clip=Footsteps_DirtyGround_Run_03 pitch=1.06 vol=0.45 playing=True spatial=1 maxDist=25
+  1.02s Runner   #37408   at ( -1.00,   4.50)   5.5 m  speed 4.20 m/s  Footstep Voice 1 at (-1.00, 4.50) clip=Footsteps_DirtyGround_Run_03 pitch=1.03 vol=0.45 playing=True spatial=1 maxDist=25
+  1.02s Runner   #35228   at ( -1.03,  -6.40)   5.4 m  speed 3.71 m/s  Footstep Voice 3 at (-1.03, -6.40) clip=Footsteps_DirtyGround_Run_03 pitch=1.09 vol=0.45 playing=True spatial=1 maxDist=25
+  1.02s Runner   #78736   at ( -5.77,  -3.75)   5.5 m  speed 3.97 m/s  Footstep Voice 2 at (-5.77, -3.75) clip=Footsteps_DirtyGround_Run_03 pitch=1.00 vol=0.45 playing=True spatial=1 maxDist=25
+  1.26s Runner   #37408   at ( -1.00,   3.48)   4.5 m  speed 4.20 m/s  Footstep Voice 4 at (-1.00, 3.48) clip=Footsteps_DirtyGround_Run_03 pitch=1.03 vol=0.45 playing=True spatial=1 maxDist=25
+  1.30s Runner   #78736   at ( -4.86,  -3.29)   4.5 m  speed 3.72 m/s  Footstep Voice 1 at (-4.86, -3.29) clip=Footsteps_DirtyGround_Run_03 pitch=0.97 vol=0.45 playing=True spatial=1 maxDist=25
+  1.32s Runner   #35228   at ( -0.96,  -5.35)   4.4 m  speed 3.63 m/s  Footstep Voice 3 at (-0.96, -5.35) clip=Footsteps_DirtyGround_Run_03 pitch=1.11 vol=0.45 playing=True spatial=1 maxDist=25
+  1.53s Runner   #37408   at ( -0.97,   2.47)   3.5 m  speed 3.46 m/s  Footstep Voice 2 at (-0.97, 2.47) clip=Footsteps_DirtyGround_Run_03 pitch=1.10 vol=0.45 playing=True spatial=1 maxDist=25
+  1.60s Runner   #35228   at ( -0.67,  -4.36)   3.4 m  speed 3.60 m/s  Footstep Voice 4 at (-0.67, -4.36) clip=Footsteps_DirtyGround_Run_03 pitch=0.96 vol=0.45 playing=True spatial=1 maxDist=25
+  1.60s Runner   #78736   at ( -3.96,  -2.80)   3.5 m  speed 2.94 m/s  Footstep Voice 1 at (-3.96, -2.80) clip=Footsteps_DirtyGround_Run_03 pitch=1.09 vol=0.45 playing=True spatial=1 maxDist=25
+  1.83s Runner   #37408   at ( -0.92,   1.45)   2.5 m  speed 2.76 m/s  Footstep Voice 3 at (-0.92, 1.45) clip=Footsteps_DirtyGround_Run_03 pitch=1.07 vol=0.45 playing=True spatial=1 maxDist=25
+  1.87s Runner   #-75576  at (  1.72,  -1.73)   2.8 m  speed 2.55 m/s  Footstep Voice 2 at (1.72, -1.73) clip=Footsteps_DirtyGround_Run_03 pitch=1.04 vol=0.45 playing=True spatial=1 maxDist=25
+  1.92s Runner   #35228   at ( -0.44,  -3.38)   2.5 m  speed 2.41 m/s  Footstep Voice 1 at (-0.44, -3.38) clip=Footsteps_DirtyGround_Run_03 pitch=1.01 vol=0.45 playing=True spatial=1 maxDist=25
+  2.28s Runner   #37408   at ( -0.99,   0.44)   1.4 m  speed 2.00 m/s  Footstep Voice 4 at (-0.99, 0.44) clip=Footsteps_DirtyGround_Run_03 pitch=1.12 vol=0.45 playing=True spatial=1 maxDist=25
+  2.32s Runner   #-75576  at (  0.86,  -1.18)   1.9 m  speed 2.12 m/s  Footstep Voice 3 at (0.86, -1.18) clip=Footsteps_DirtyGround_Run_03 pitch=1.06 vol=0.45 playing=True spatial=1 maxDist=25
+  2.42s Runner   #35228   at ( -0.15,  -2.42)   1.7 m  speed 1.88 m/s  Footstep Voice 2 at (-0.15, -2.42) clip=Footsteps_DirtyGround_Run_03 pitch=1.06 vol=0.45 playing=True spatial=1 maxDist=25

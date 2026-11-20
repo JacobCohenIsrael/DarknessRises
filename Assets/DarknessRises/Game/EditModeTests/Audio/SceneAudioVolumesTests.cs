@@ -118,6 +118,27 @@ namespace DarknessRises.Game.EditModeTests.Audio
             Assert.Throws<System.ArgumentException>(() => boot.Follow(boot));
         }
 
+        [Test]
+        public void A_source_that_woke_before_its_scenes_volumes_follows_their_sliders_once_they_attach_it()
+        {
+            // Built into a scene that loads additively, a source wakes before it can find the scene's volumes.
+            var storm = new GameObject("Storm Bed", typeof(AudioSource));
+            made.Add(storm);
+            var source = AudioCategorySource.Add(storm, AudioCategory.Ambient);
+            source.Volume = 0.8f;
+            Assert.That(source.Source.volume, Is.EqualTo(0.8f), "No volumes found yet: it plays at its own volume.");
+
+            var scene = Make("Volumes", out var volumes);
+            scene.AttachSources();
+            Assert.That(source.Source.volume, Is.EqualTo(0.8f).Within(Tolerance));
+
+            volumes.Set(AudioCategory.Ambient, 50);
+            Assert.That(source.Source.volume, Is.EqualTo(0.8f * Curve.Gain(50)).Within(Tolerance), "It moves with the slider.");
+
+            volumes.Set(AudioCategory.Ambient, 0);
+            Assert.That(source.Source.volume, Is.EqualTo(0f), "Ambient at 0 silences it.");
+        }
+
         private SceneAudioVolumes Make(string name) => Make(name, null);
 
         private SceneAudioVolumes Make(string name, out AudioVolumes volumes)

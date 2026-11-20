@@ -25,6 +25,9 @@ namespace DarknessRises.Game.Lightning
 
         private bool audible;
         private bool hushed;
+
+        // Fading back in after a hush, at the gentler hush fade-in, until fully in or told to fade out again.
+        private bool returningFromHush;
         private float presence;
         private SwellPhase phase = SwellPhase.Resting;
         private float phaseElapsedSeconds;
@@ -71,11 +74,16 @@ namespace DarknessRises.Game.Lightning
         /// <summary>
         /// Hushes the bed whatever <see cref="SetAudible"/> says, or lets it follow that again. For whoever owns the bed
         /// beyond one Level (the boot): on the way to the Shop the Level still says the storm reaches the character until
-        /// its scene is gone, and the bed has to start fading out the moment the player leaves. It fades out and back in
-        /// from where it is, over the same authored times.
+        /// its scene is gone, and the bed has to start fading out the moment the player leaves; the same at the end of a
+        /// Level. It fades out and back in from where it is, over the authored hush times.
         /// </summary>
         public void Hush(bool hush)
         {
+            if (hushed && !hush)
+            {
+                returningFromHush = true;
+            }
+
             hushed = hush;
         }
 
@@ -106,9 +114,16 @@ namespace DarknessRises.Game.Lightning
                 throw new ArgumentOutOfRangeException(nameof(deltaSeconds), deltaSeconds, "Time can't run backwards.");
             }
 
-            presence = IsAudible
-                ? Step(presence, 1f, deltaSeconds, envelope.FadeInSeconds)
-                : Step(presence, 0f, deltaSeconds, envelope.FadeOutSeconds);
+            if (IsAudible)
+            {
+                presence = Step(presence, 1f, deltaSeconds, returningFromHush ? envelope.HushFadeInSeconds : envelope.FadeInSeconds);
+                returningFromHush &= presence < 1f;
+            }
+            else
+            {
+                presence = Step(presence, 0f, deltaSeconds, hushed ? envelope.HushFadeOutSeconds : envelope.FadeOutSeconds);
+                returningFromHush &= hushed;
+            }
 
             phaseElapsedSeconds += deltaSeconds;
             while (true)

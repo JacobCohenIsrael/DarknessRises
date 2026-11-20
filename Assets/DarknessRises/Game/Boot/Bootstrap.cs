@@ -105,6 +105,7 @@ namespace DarknessRises.Game.Boot
             banking = new RunBanking(Run, Save);
             Run.LevelStarted += OnLevelStarted;
             Run.Left += OnRunLeft;
+            Run.PhaseChanged += OnRunPhaseChanged;
             RunAsync(lifetime.Token).Forget();
         }
 
@@ -127,6 +128,7 @@ namespace DarknessRises.Game.Boot
             banking?.Dispose();
             Run.LevelStarted -= OnLevelStarted;
             Run.Left -= OnRunLeft;
+            Run.PhaseChanged -= OnRunPhaseChanged;
             lifetime?.Cancel();
             lifetime?.Dispose();
             sceneScope?.Dispose();
@@ -223,6 +225,16 @@ namespace DarknessRises.Game.Boot
         {
             // Before a Level is playing (the first of a Run) there is nothing to leave.
             levelLeft?.TrySetResult(Next.Level);
+        }
+
+        // The Level is over (the calm before the far door): the storm fades out through the Level change, rather than
+        // rolling on loud over the calm, the black screen and the load. The next Level lets it fade back in.
+        private void OnRunPhaseChanged(RunPhase phase)
+        {
+            if (phase == RunPhase.LevelEnd)
+            {
+                storm.Hush(true);
+            }
         }
 
         private void OnRunLeft()

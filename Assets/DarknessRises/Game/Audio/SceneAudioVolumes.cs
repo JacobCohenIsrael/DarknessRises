@@ -38,6 +38,7 @@ namespace DarknessRises.Game.Audio
 
         // Reused by every lookup, so finding a scene's volumes allocates nothing.
         private static readonly List<GameObject> Roots = new();
+        private static readonly List<AudioCategorySource> Found = new();
 
         /// <summary>Raised when a category starts or stops playing on over a paused listener, with the category and whether it does.</summary>
         public event Action<AudioCategory, bool> HearingWhilePausedChanged;
@@ -230,6 +231,32 @@ namespace DarknessRises.Game.Audio
             {
                 sources[i].Apply();
             }
+        }
+
+        // The scene has loaded by now: every source built into it, which woke before it could find these, follows them.
+        private void Start()
+        {
+            AttachSources();
+        }
+
+        /// <summary>
+        /// Makes every categorized source of the scene, enabled or not, follow these volumes. Runs at Start; sources made
+        /// later find them themselves.
+        /// </summary>
+        public void AttachSources()
+        {
+            gameObject.scene.GetRootGameObjects(Roots);
+            foreach (var root in Roots)
+            {
+                root.GetComponentsInChildren(true, Found);
+                foreach (var source in Found)
+                {
+                    source.Attach(this);
+                }
+            }
+
+            Roots.Clear();
+            Found.Clear();
         }
 
         // On a phone the app may never come back from the background.

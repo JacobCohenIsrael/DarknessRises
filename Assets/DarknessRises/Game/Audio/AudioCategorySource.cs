@@ -142,12 +142,33 @@ namespace DarknessRises.Game.Audio
             volume = Source.volume;
         }
 
+        /// <summary>
+        /// Follows <paramref name="sceneVolumes"/>, its scene's volumes, from now on. They call it from their Start for every
+        /// source of their scene, so a source that woke before its scene counted as loaded (every source built into a scene
+        /// that loads additively: a Level, the Shop, the boot in a build) and found nothing still obeys the sliders.
+        /// </summary>
+        internal void Attach(SceneAudioVolumes sceneVolumes)
+        {
+            hasLookedForVolumes = true;
+            volumes = sceneVolumes;
+            if (isActiveAndEnabled && !isRegistered)
+            {
+                volumes.Add(this);
+                isRegistered = true;
+            }
+
+            Apply();
+        }
+
         private SceneAudioVolumes Volumes()
         {
             if (!hasLookedForVolumes)
             {
-                hasLookedForVolumes = true;
                 volumes = SceneAudioVolumes.Of(gameObject.scene);
+
+                // A scene's objects wake while it loads, before it counts as loaded and its roots can be searched: then
+                // it's looked for again, and the scene's volumes attach it once they start.
+                hasLookedForVolumes = volumes != null || gameObject.scene.isLoaded;
             }
 
             return volumes;

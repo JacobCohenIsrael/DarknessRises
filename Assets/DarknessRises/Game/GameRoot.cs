@@ -108,7 +108,7 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("Turns touches into Gestures that press the Gameplay actions.")]
         private GestureInput gestureInput;
 
-        [SerializeField, Tooltip("Bends Shots toward a visible Enemy near the finger, on touch only.")]
+        [SerializeField, Tooltip("Bends Shots toward a visible Enemy near the aim point, on touch and with the mouse.")]
         private AimAssistView aimAssist;
 
         [SerializeField, Tooltip("Debug/ToggleLightning. Only read in the Editor and debug builds.")]
@@ -472,7 +472,7 @@ namespace DarknessRises.Game
 
             if (aimAssist != null)
             {
-                aimAssist.Use(configuration.Gestures.AimAssist, lights);
+                aimAssist.Use(configuration.Gestures.AimAssist, configuration.MouseAimAssist, run.LevelIndex, lights);
             }
 
             isStarted = true;

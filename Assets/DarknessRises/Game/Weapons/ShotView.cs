@@ -15,6 +15,10 @@ namespace DarknessRises.Game.Weapons
     /// </remarks>
     public sealed class ShotView : MonoBehaviour
     {
+        // Enough for the shooter's own colliders and whatever wraps around its gun. Shared: Shots update one at a time.
+        private const int MostBackHits = 8;
+        private static readonly RaycastHit[] BackHits = new RaycastHit[MostBackHits];
+
         [SerializeField] private MeshRenderer body;
         [SerializeField] private TrailRenderer trail;
 
@@ -29,6 +33,7 @@ namespace DarknessRises.Game.Weapons
         private ShotLightSettings lightSettings;
         private ShotFlight flight;
         private LayerMask hitLayers;
+        private Transform shooter;
         private Action<RaycastHit, Vector3> onHit;
         private Action<Vector3> onSpent;
         private bool isLit;
@@ -36,17 +41,22 @@ namespace DarknessRises.Game.Weapons
 
         public Material BodyMaterial => body.sharedMaterial;
 
-        /// <summary>Called once, when the pool creates this Shot.</summary>
+        /// <summary>
+        /// Called once, when the pool creates this Shot. <paramref name="shotBy"/> is whoever fires it: its own colliders
+        /// are never hit.
+        /// </summary>
         public void Prepare(
             IObjectPool<ShotView> owner,
             ShotSettings shotSettings,
             ShotLightSettings shotLightSettings,
             Material glowMaterial,
             LayerMask layers,
+            Transform shotBy,
             Action<RaycastHit, Vector3> hit,
             Action<Vector3> spent)
         {
             pool = owner;
+            shooter = shotBy;
             settings = shotSettings;
             lightSettings = shotLightSettings;
             hitLayers = layers;
@@ -74,9 +84,13 @@ namespace DarknessRises.Game.Weapons
         }
 
         /// <param name="lit">Whether this Shot carries a light. Ignored when the prefab has no light.</param>
-        public void Launch(Vector3 origin, Vector3 direction, float speed, float range, bool lit)
+        /// <param name="leadIn">
+        /// Metres behind <paramref name="origin"/> the first hit check starts, so an Enemy wrapped around the muzzle
+        /// is still hit (see <see cref="ShotFlight"/>).
+        /// </param>
+        public void Launch(Vector3 origin, Vector3 direction, float speed, float range, bool lit, float leadIn)
         {
-            flight = new ShotFlight(origin, direction, speed, range);
+            flight = new ShotFlight(origin, direction, speed, range, leadIn);
             hasHit = false;
             transform.SetPositionAndRotation(origin, Quaternion.LookRotation(flight.Direction, Vector3.up));
             transform.localScale = Vector3.one * settings.Size;
@@ -99,7 +113,8 @@ namespace DarknessRises.Game.Weapons
         private void Update()
         {
             var step = flight.StepLength(Time.deltaTime);
-            if (Physics.Raycast(flight.Position, flight.Direction, out var hit, step, hitLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(flight.CheckOrigin, flight.Direction, out var hit, flight.CheckLength(step), hitLayers, QueryTriggerInteraction.Ignore)
+                || (flight.ChecksBack && TryHitAroundBreech(step, out hit)))
             {
                 flight.Stop(hit.point);
                 hasHit = true;
@@ -128,6 +143,31 @@ namespace DarknessRises.Game.Weapons
 
                 pool.Release(this);
             }
+        }
+
+        // Nothing was met going out from the breech, so whatever the backward check meets (other than the shooter)
+        // wraps around the breech: the one met first, the outermost, is hit.
+        private bool TryHitAroundBreech(float step, out RaycastHit hit)
+        {
+            var found = Physics.RaycastNonAlloc(
+                flight.BackCheckOrigin(step), -flight.Direction, BackHits, flight.CheckLength(step), hitLayers, QueryTriggerInteraction.Ignore);
+            var best = -1;
+            for (var i = 0; i < found; i++)
+            {
+                var candidate = BackHits[i];
+                if (shooter != null && candidate.transform.IsChildOf(shooter))
+                {
+                    continue;
+                }
+
+                if (best < 0 || candidate.distance < BackHits[best].distance)
+                {
+                    best = i;
+                }
+            }
+
+            hit = best >= 0 ? BackHits[best] : default;
+            return best >= 0;
         }
 
         private void Reset()

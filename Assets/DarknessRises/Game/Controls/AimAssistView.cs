@@ -7,7 +7,8 @@ namespace DarknessRises.Game.Controls
 {
     /// <summary>
     /// Finds the living Enemies near the aim point and the lights shining now, and lets <see cref="AimAssist"/> bend the
-    /// aim toward the nearest visible one. Reuses its buffers, so assisting every frame allocates nothing.
+    /// aim toward the nearest visible one, with touch's or the mouse's settings. Only Enemies count: Critters and Phantom
+    /// eyes have no <see cref="EnemyView"/>. Reuses its buffers, so assisting every frame allocates nothing.
     /// </summary>
     public sealed class AimAssistView : MonoBehaviour
     {
@@ -24,25 +25,30 @@ namespace DarknessRises.Game.Controls
         private readonly AimCandidate[] candidates = new AimCandidate[MostCandidates];
         private readonly LitSpot[] spots = new LitSpot[MostLights];
 
-        private AimAssistSettings settings;
-        private AimAssist assist;
+        private AimAssist touchAssist;
+        private AimAssist mouseAssist;
         private SceneLights lights;
 
-        /// <summary>Starts assisting with <paramref name="aimAssist"/>; Enemies count as visible while <paramref name="sceneLights"/> light them.</summary>
-        public void Use(AimAssistSettings aimAssist, SceneLights sceneLights)
+        /// <summary>
+        /// Starts assisting with <paramref name="touch"/> on touch and <paramref name="mouse"/> with the mouse, as strong
+        /// as they are in the Level at <paramref name="levelIndex"/>. Enemies count as visible while
+        /// <paramref name="sceneLights"/> light them.
+        /// </summary>
+        public void Use(AimAssistSettings touch, AimAssistSettings mouse, int levelIndex, SceneLights sceneLights)
         {
-            settings = aimAssist;
-            assist = new AimAssist(aimAssist);
+            touchAssist = touch != null ? new AimAssist(touch, levelIndex) : null;
+            mouseAssist = mouse != null ? new AimAssist(mouse, levelIndex) : null;
             lights = sceneLights;
         }
 
         /// <summary>
-        /// <paramref name="aimPoint"/> bent toward the nearest visible Enemy close to it, seen from <paramref name="from"/>.
-        /// Unchanged when there's none.
+        /// <paramref name="aimPoint"/> bent toward the nearest visible Enemy close to it, seen from <paramref name="from"/>,
+        /// with touch's settings when <paramref name="onTouch"/> and the mouse's otherwise. Unchanged when there's none.
         /// </summary>
-        public Vector3 Assist(Vector3 from, Vector3 aimPoint)
+        public Vector3 Assist(Vector3 from, Vector3 aimPoint, bool onTouch)
         {
-            if (assist == null || settings.Strength <= 0f)
+            var assist = onTouch ? touchAssist : mouseAssist;
+            if (assist == null || assist.Strength <= 0f)
             {
                 return aimPoint;
             }
@@ -50,7 +56,7 @@ namespace DarknessRises.Game.Controls
             var found = Physics.OverlapCapsuleNonAlloc(
                 aimPoint + Vector3.down * ReachHeight,
                 aimPoint + Vector3.up * ReachHeight,
-                settings.Radius,
+                assist.Radius,
                 overlaps,
                 enemyLayers,
                 QueryTriggerInteraction.Collide);

@@ -23,7 +23,7 @@ namespace DarknessRises.Game.Weapons
 
         [SerializeField] private PlayerControls controls;
 
-        [SerializeField, Tooltip("Bends the aim toward a visible Enemy near the finger, on touch only.")]
+        [SerializeField, Tooltip("Bends the aim toward a visible Enemy near the aim point, on touch and with the mouse.")]
         private AimAssistView aimAssist;
 
         [SerializeField, Tooltip("Turns (yaw only) to face the aim point.")]
@@ -91,7 +91,7 @@ namespace DarknessRises.Game.Weapons
             onFired = new Action[definitions.Count];
             for (var i = 0; i < definitions.Count; i++)
             {
-                effects[i] = new PrimaryWeaponEffects(definitions[i], runStats[i], shotHitLayers, content, lights);
+                effects[i] = new PrimaryWeaponEffects(definitions[i], runStats[i], shotHitLayers, content, lights, transform);
                 effects[i].ShotLanded += onShotLanded;
             }
 
@@ -101,7 +101,7 @@ namespace DarknessRises.Game.Weapons
             for (var i = 0; i < effects.Length; i++)
             {
                 var weaponEffects = effects[i];
-                onFired[i] = () => weaponEffects.Fire(muzzle.position, mount.forward);
+                onFired[i] = () => weaponEffects.Fire(mount.position, muzzle.position, mount.forward);
                 Loadout[i].Fired += onFired[i];
             }
 
@@ -145,9 +145,9 @@ namespace DarknessRises.Game.Weapons
 
             if (controls.TryGetAimPoint(muzzle.position.y, out var aimPoint))
             {
-                if (aimAssist != null && controls.IsTouchActive)
+                if (aimAssist != null)
                 {
-                    aimPoint = aimAssist.Assist(mount.position, aimPoint);
+                    aimPoint = aimAssist.Assist(mount.position, aimPoint, controls.IsTouchActive);
                 }
 
                 if (AimPlane.TryGetFlatDirection(mount.position, aimPoint, out var aimDirection))

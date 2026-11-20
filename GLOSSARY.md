@@ -158,7 +158,7 @@ A small, harmless animal, such as a rat, that darts through the dark to make the
 _Avoid_: rat (it's one kind), animal, vermin, pest
 
 **Phantom eyes**:
-A pair of eyes that looks out of the dark but isn't really there: the character's imagination. They look just like an Enemy's glinting eyes, but they appear only far out (beyond the Aura and beyond where real eyes glint), only while the character walks or in the quiet after a Clear, and only when no real Enemy is near. They come every 10 to 20 seconds of such safe time, up to a few pairs at once (each at its own spot), and hold a few seconds at most, blinking now and then; a pair that held its time sometimes opens again a moment later at another dark spot nearby. A whisper, a breath or a hush may come from their spot, never the same one twice in a row, and sometimes a voice comes from a dark spot with no eyes at all. Any light reaching their spot (Lightning, Gunfire, a Hit spark, the Flare, a Grenade's blast) makes them vanish at once, so a flash shows nothing there; the Crosshair or a tap coming close, or the character walking nearer than they ever appear, makes them blink out; a real Enemy coming near or a fight starting sends them away at once. A Shot at them hits nothing, like any miss. So eyes near the character, or in a fight, are always real.
+A pair of eyes that looks out of the dark but isn't really there: the character's imagination. They look just like an Enemy's glinting eyes, but they appear only far out (beyond the Aura and beyond where real eyes glint), only while the character walks or in the quiet after a Clear, and only when no real Enemy is near. They come every 5 to 10 seconds of such safe time, up to a few pairs at once (each at its own spot), and hold a few seconds at most, blinking now and then; a pair that held its time, or that light sent away, sometimes opens again a moment later at another dark spot nearby. A whisper, a breath or a hush may come from their spot, never the same one twice in a row and never right on the heels of another voice, and sometimes a voice comes from a dark spot with no eyes at all. Any light reaching their spot (Lightning, Gunfire, a Hit spark, the Flare, a Grenade's blast) makes them vanish at once, so a flash shows nothing there; the Crosshair or a tap coming close, or the character walking nearer than they ever appear, makes them blink out; a real Enemy coming near or a fight starting sends them away at once. A Shot at them hits nothing, like any miss. So eyes near the character, or in a fight, are always real.
 _Avoid_: ghost, fake eyes, false Tell, hallucination
 
 ## Skills
@@ -202,7 +202,7 @@ The first-run prompt ("TAP TO SHOOT") that bobs over the first Enemy of a Run's 
 _Avoid_: tutorial, tooltip
 
 **Aim assist**:
-On touch only, Shots bend slightly toward the nearest visible Enemy close to the player's finger. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast.
+Shots bend slightly toward the nearest visible Enemy close to where the player aims: the finger on touch, the pointer with a mouse. Each input has its own pull, gentle at first and stronger in later Levels up to a cap; the mouse's is the slighter. The pull fades out toward the edge of its reach, so the aim never jumps. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast. Critters and Phantom eyes never pull the aim.
 
 ## Weapons
 
@@ -230,7 +230,7 @@ _Avoid_: special, sidearm
 A Secondary weapon the character throws. It explodes, damaging Enemies in an area and lighting it up for a moment. The character carries a few Grenade charges, which refill one at a time.
 
 **Shot**:
-One thing a Weapon fires that travels and can hit an Enemy. A Shot always glows enough to be seen; some Weapons' Shots also light their surroundings.
+One thing a Weapon fires that travels and can hit an Enemy. A Shot always glows enough to be seen; some Weapons' Shots also light their surroundings. It hits anything from the character outward, so an Enemy pressed up against the character, even leaning over the gun in its attack, is still hit point-blank.
 _Avoid_: bullet, projectile
 
 ## Structure

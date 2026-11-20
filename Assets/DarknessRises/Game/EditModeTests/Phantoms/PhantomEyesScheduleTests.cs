@@ -80,10 +80,10 @@ namespace DarknessRises.Game.EditModeTests.Phantoms
         }
 
         [Test]
-        public void Over_ten_minutes_of_walking_a_pair_comes_every_ten_to_twenty_seconds()
+        public void Over_ten_minutes_of_walking_a_pair_comes_every_five_to_ten_seconds()
         {
-            // The authored tuning: 6-14 s gaps, a quarter of them lone voices.
-            var schedule = new PhantomEyesSchedule(6f, 14f, 0.25f, 6f, 1f, Clearance, 2, new SystemRandom(3));
+            // The authored tuning (#102): 3-7 s gaps, a quarter of them lone voices, up to 3 pairs.
+            var schedule = new PhantomEyesSchedule(3f, 7f, 0.25f, 4f, 1f, Clearance, 3, new SystemRandom(3));
             var eyes = 0;
             var voices = 0;
             for (var t = 0f; t < 600f; t += Frame)
@@ -93,9 +93,9 @@ namespace DarknessRises.Game.EditModeTests.Phantoms
                 voices += due == PhantomEvent.Voice ? 1 : 0;
             }
 
-            // 600 s: a pair every 10-20 s is 30-60, events every ~10 s about 60.
-            Assert.That(eyes, Is.InRange(30, 60));
-            Assert.That(voices, Is.InRange(6, 25));
+            // 600 s: a pair every 5-10 s is 60-120, events every ~5 s about 120.
+            Assert.That(eyes, Is.InRange(60, 120));
+            Assert.That(voices, Is.InRange(15, 50));
         }
 
         [Test]

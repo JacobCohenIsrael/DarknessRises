@@ -19,6 +19,7 @@ namespace DarknessRises.Game.Editor.Builds
     /// <c>unity build . --target Android --execute-method DarknessRises.Game.Editor.Builds.PlayerBuilds.BuildAndroid</c>
     /// <c>unity build . --target WebGL --execute-method DarknessRises.Game.Editor.Builds.PlayerBuilds.BuildWebGL</c>
     /// Outputs: <c>Builds/Android/DarknessRises-{version}.apk</c> and <c>Builds/WebGL/DarknessRises-{version}-webgl.zip</c>.
+    /// The Web build renders with WebGPU where the browser supports it and falls back to WebGL 2 where it doesn't.
     /// <para>
     /// Dev builds for playtesting: <c>BuildAndroidDev</c> and <c>BuildWebGLDev</c> make a development build of the same
     /// version, named with a <c>-dev</c> suffix (<c>DarknessRises-{version}-dev.apk</c>,
@@ -39,7 +40,9 @@ namespace DarknessRises.Game.Editor.Builds
         private const string AndroidFolder = "Builds/Android";
         private const string WebGLFolder = "Builds/WebGL";
         private const string DevSuffix = "-dev";
-        private const string WebGPUSuffix = "-webgpu";
+
+        // The Web player's graphics APIs, in order of preference: Unity uses the first the browser supports.
+        private static readonly GraphicsDeviceType[] WebGraphicsAPIs = { GraphicsDeviceType.WebGPU, GraphicsDeviceType.OpenGLES3 };
 
         public static void BuildAndroid() => BuildAndroid(false);
 
@@ -50,30 +53,6 @@ namespace DarknessRises.Game.Editor.Builds
 
         /// <summary>A development build of the same version, with the debug menu: <c>DarknessRises-{version}-dev-webgl.zip</c>.</summary>
         public static void BuildWebGLDev() => BuildWebGL(true);
-
-        /// <summary>
-        /// A release test build that renders with WebGPU where the browser has it and falls back to WebGL 2 where it
-        /// doesn't: <c>DarknessRises-{version}-webgpu-webgl.zip</c>. The project's own Web graphics APIs (WebGL 2) are
-        /// put back afterwards, so only this build uses WebGPU.
-        /// </summary>
-        public static void BuildWebGPU()
-        {
-            var target = BuildTarget.WebGL;
-            var usedDefaults = PlayerSettings.GetUseDefaultGraphicsAPIs(target);
-            var apis = PlayerSettings.GetGraphicsAPIs(target);
-            PlayerSettings.SetUseDefaultGraphicsAPIs(target, false);
-            PlayerSettings.SetGraphicsAPIs(target, new[] { GraphicsDeviceType.WebGPU, GraphicsDeviceType.OpenGLES3 });
-            try
-            {
-                BuildWebGL(false, WebGPUSuffix);
-            }
-            finally
-            {
-                PlayerSettings.SetGraphicsAPIs(target, apis);
-                PlayerSettings.SetUseDefaultGraphicsAPIs(target, usedDefaults);
-                AssetDatabase.SaveAssets();
-            }
-        }
 
         private static void BuildAndroid(bool development)
         {
@@ -88,14 +67,18 @@ namespace DarknessRises.Game.Editor.Builds
             Build(BuildTarget.Android, $"{AndroidFolder}/{ProductFileName}-{version}{Suffix(development)}.apk", development);
         }
 
-        private static void BuildWebGL(bool development, string variant = "")
+        private static void BuildWebGL(bool development)
         {
             var version = ApplyVersion();
 
             // itch.io doesn't send Content-Encoding headers for Unity's files, so the loader decompresses them itself.
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
             PlayerSettings.WebGL.decompressionFallback = true;
-            var folder = $"{WebGLFolder}/{ProductFileName}-{version}{Suffix(development)}{variant}";
+
+            // WebGPU where the browser has it (the user, 2026-11-20: it plays very well), WebGL 2 where it doesn't.
+            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.WebGL, false);
+            PlayerSettings.SetGraphicsAPIs(BuildTarget.WebGL, WebGraphicsAPIs);
+            var folder = $"{WebGLFolder}/{ProductFileName}-{version}{Suffix(development)}";
             Build(BuildTarget.WebGL, folder, development);
 
             var zip = $"{folder}-webgl.zip";

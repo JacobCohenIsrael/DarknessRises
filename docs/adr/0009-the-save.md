@@ -27,7 +27,7 @@ On the Web player the JSON file didn't work as a save. Two things were wrong, bo
 So on the Web player the save is kept in the browser's **`localStorage`**, under the fixed key `DarknessRises.save.v1`:
 
 - `localStorage` belongs to the page's origin, not to its address, so every upload of the game finds what the last one left.
-- A write is done when the call returns. There is nothing to sync, and a save written as the tab closes still lands.
+- A write is done when the call returns. There is nothing to sync.
 - The key carries the game's name because every itch.io game is served from the same origin and shares one `localStorage`. The `v1` is the key's own version; the record under it is the same versioned `SaveRecord`, migrated as before.
 - The text, `PlayerSave` and the save points don't change. Only the adapter does: `KeyedSaveStorage` keeps the save under a key of an `IKeyValueStorage`, and `BrowserLocalStorage` is that storage on the Web, a thin bridge to a `.jslib` that never throws.
 

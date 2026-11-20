@@ -54,6 +54,9 @@ namespace DarknessRises.Game.Editor
         private const string RouteDefinitionPath = ConfigurationFolder + "/RouteDefinition.asset";
         private const string LightingSettingsPath = LightingFolder + "/Darkness.lighting";
         private const string LightningDefinitionPath = ConfigurationFolder + "/LightningDefinition.asset";
+        private const float FormerMinElevationDegrees = 23f;
+        private const float FormerMaxElevationDegrees = 33f;
+        private const float FormerYawJitterDegrees = 10f;
 
         // Placeholder storm loop from the old Free Pack sounds (approved as placeholders): real thunder, with distinct
         // strikes from 0.6 s to 30.5 s, looped as in 2019. It replaces the earlier placeholder, an earthquake's steady roar.
@@ -242,9 +245,32 @@ namespace DarknessRises.Game.Editor
                 AddressableContent.ReferenceIfEmpty(stormClip, LoadStormClip, AddressableContent.SharedGroup);
             }
 
+            RetuneFormerAngles(serialized);
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
+            // Re-saved so fields added since it was created (the low strikes, the looming strike) are written with their defaults.
+            EditorUtility.SetDirty(lightning);
             return lightning;
+        }
+
+        // Lightning's angles before issue #101 varied little (23-33 degrees up, 10 either way), so every flash threw
+        // much the same shadows. An asset still on them takes the wider range; one tuned since is left alone.
+        private static void RetuneFormerAngles(SerializedObject lightning)
+        {
+            var min = lightning.FindProperty("flash.minElevationDegrees");
+            var max = lightning.FindProperty("flash.maxElevationDegrees");
+            var jitter = lightning.FindProperty("flash.yawJitterDegrees");
+            if (!Mathf.Approximately(min.floatValue, FormerMinElevationDegrees)
+                || !Mathf.Approximately(max.floatValue, FormerMaxElevationDegrees)
+                || !Mathf.Approximately(jitter.floatValue, FormerYawJitterDegrees))
+            {
+                return;
+            }
+
+            var defaults = new LightningFlashSettings().Angles;
+            min.floatValue = defaults.MinElevationDegrees;
+            max.floatValue = defaults.MaxElevationDegrees;
+            jitter.floatValue = defaults.YawJitterDegrees;
         }
 
         // The storm plays in 2D, so mono loses nothing and halves its memory; it's long and loops all the time,

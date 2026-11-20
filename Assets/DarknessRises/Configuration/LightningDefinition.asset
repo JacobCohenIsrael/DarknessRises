@@ -51,9 +51,13 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    minElevationDegrees: 23
-    maxElevationDegrees: 33
-    yawJitterDegrees: 10
+    minElevationDegrees: 18
+    maxElevationDegrees: 46
+    yawJitterDegrees: 28
+    lowChance: 0.25
+    minLowElevationDegrees: 8
+    maxLowElevationDegrees: 14
+    maxLowBrightnessBoost: 3
     keyColor: {r: 0.45, g: 0.65, b: 1, a: 1}
     keyIntensity: 4.5
     shadowStrength: 1
@@ -62,6 +66,15 @@ MonoBehaviour:
     fillElevationDegrees: 45
     fillYawOffsetDegrees: 180
     windowGlowColor: {r: 0.6, g: 1, b: 2.6, a: 1}
+  looming:
+    chance: 0.35
+    minMetres: 2.5
+    maxMetres: 11
+    aheadDegrees: 80
+    maxTurnFromRoomDegrees: 180
+    minElevationDegrees: 7
+    maxElevationDegrees: 16
+    reachPastCharacterMetres: 4
   storm:
     clip:
       m_AssetGUID: 7dc48ac47b618424f8d032a339525809

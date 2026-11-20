@@ -5,7 +5,7 @@ namespace DarknessRises.Game.Lightning
 {
     /// <summary>
     /// How one Lightning flash looks: an electric-blue key light through the windows that throws long, sharp shadows
-    /// from a slightly different angle each strike, a shadowless fill so the whole Room shows, and the windows
+    /// from a different angle each strike (now and then a low one), a shadowless fill so the whole Room shows, and the windows
     /// themselves lighting up.
     /// </summary>
     [Serializable]
@@ -20,13 +20,27 @@ namespace DarknessRises.Game.Lightning
 
         [Header("Angle (varies with every flash)")]
         [SerializeField, Range(5f, 85f), Tooltip("Lowest degrees above the horizon a strike comes in at. Lower throws longer shadows.")]
-        private float minElevationDegrees = 23f;
+        private float minElevationDegrees = 18f;
 
         [SerializeField, Range(5f, 85f), Tooltip("Highest degrees above the horizon a strike comes in at.")]
-        private float maxElevationDegrees = 33f;
+        private float maxElevationDegrees = 46f;
 
-        [SerializeField, Range(0f, 45f), Tooltip("Degrees a strike's direction may turn either way from the Room's Lightning direction.")]
-        private float yawJitterDegrees = 10f;
+        [SerializeField, Range(0f, 90f), Tooltip("Degrees a strike's direction may turn either way from the Room's Lightning direction.")]
+        private float yawJitterDegrees = 28f;
+
+        [SerializeField, Range(0f, 1f), Tooltip("Chance, from 0 to 1, that a strike comes in low instead, from the low range below, " +
+                                                "throwing long shadows across the floor and up the walls.")]
+        private float lowChance = 0.25f;
+
+        [SerializeField, Range(5f, 85f), Tooltip("Lowest degrees above the horizon a low strike comes in at.")]
+        private float minLowElevationDegrees = 8f;
+
+        [SerializeField, Range(5f, 85f), Tooltip("Highest degrees above the horizon a low strike comes in at.")]
+        private float maxLowElevationDegrees = 14f;
+
+        [SerializeField, Min(1f), Tooltip("Most times brighter the key light shines for a strike lower than the middle of the ordinary range. " +
+                                          "Light from low spreads over more floor, so a low or looming strike shines brighter to reveal the Room as well as an ordinary one.")]
+        private float maxLowBrightnessBoost = 3f;
 
         [Header("Key light (the only shadow-casting light)")]
         [SerializeField] private Color keyColor = new(0.45f, 0.65f, 1f);
@@ -55,7 +69,15 @@ namespace DarknessRises.Game.Lightning
         private Color windowGlowColor = new(0.6f, 1f, 2.6f);
 
         public float DurationSeconds => durationSeconds;
-        public LightningAngles Angles => new(minElevationDegrees, maxElevationDegrees, yawJitterDegrees);
+        public LightningAngles Angles => new(
+            minElevationDegrees,
+            maxElevationDegrees,
+            yawJitterDegrees,
+            lowChance,
+            minLowElevationDegrees,
+            maxLowElevationDegrees);
+
+        public float MaxLowBrightnessBoost => maxLowBrightnessBoost;
         public Color KeyColor => keyColor;
         public float KeyIntensity => keyIntensity;
         public float ShadowStrength => shadowStrength;
@@ -80,6 +102,7 @@ namespace DarknessRises.Game.Lightning
         public void Validate()
         {
             maxElevationDegrees = Mathf.Max(maxElevationDegrees, minElevationDegrees);
+            maxLowElevationDegrees = Mathf.Max(maxLowElevationDegrees, minLowElevationDegrees);
         }
 
         private static AnimationCurve DefaultShape()

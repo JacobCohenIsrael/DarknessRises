@@ -177,6 +177,9 @@ namespace DarknessRises.Game.Enemies
         /// <summary>The Enemy type this Enemy is.</summary>
         public EnemyDefinition Definition => definition;
 
+        /// <summary>The world bounds of what Shots hit: its body, from its feet to the top of its head.</summary>
+        public Bounds Body => hitbox.bounds;
+
         public void Spawn(Vector3 position, Transform hunted)
         {
             target = hunted;

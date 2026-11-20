@@ -1,0 +1,14 @@
+1
+Mobile_RPAsset
+LOW Mobile_RPAsset n=1000: on median=2.378 p25=2.133 | off median=2.113 p25=1.892 | shadow cost median=0.265 ms p25=0.241 ms | drawCpu=0.0684 ms/frame
+2
+Mobile_RPAsset
+MEDIUM Mobile_RPAsset n=1000: on median=2.655 p25=2.467 | off median=2.343 p25=2.167 | shadow cost median=0.312 ms p25=0.301 ms | drawCpu=0.0716 ms/frame
+PC PC_RPAsset n=1000: on median=5.812 p25=5.531 | off median=5.309 p25=5.048 | shadow cost median=0.503 ms p25=0.483 ms | drawCpu=0.1254 ms/frame
+1
+Mobile_RPAsset
+LOW Mobile_RPAsset n=1000: on median=1.954 p25=1.812 | off median=1.708 p25=1.584 | shadow cost median=0.246 ms p25=0.229 ms | drawCpu=0.0484 ms/frame
+2
+Mobile_RPAsset
+MEDIUM Mobile_RPAsset n=1000: on median=1.903 p25=1.805 | off median=1.643 p25=1.505 | shadow cost median=0.259 ms p25=0.300 ms | drawCpu=0.0439 ms/frame
+PC PC_RPAsset n=1000: on median=2.613 p25=2.450 | off median=2.341 p25=2.175 | shadow cost median=0.272 ms p25=0.275 ms | drawCpu=0.0825 ms/frame

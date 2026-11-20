@@ -1,0 +1,53 @@
+Issue #78, slice 1: Credits, the save and the end-of-Run ad. Headless check.
+
+A batch-mode Editor (no window, master volume 0) played Runs from the boot scene. A probe killed Enemies through
+Enemy.TakeHit (no Shots, so the Combo stays at x1 and the Score is 100 per Shambler), killed the character, and clicked
+the screens' buttons through Button.onClick. "file" is the text of save.json under Application.persistentDataPath, read
+back from disk after each step. The save file was deleted afterwards.
+
+Each line: what was done -> Run's Credits (earned / ad bonus / banked) | bank | Runs finished | save.json
+
+FIRST INSTALL (no save file)
+  boot, Level 1 starts                               -> 0 / 0 / 0     | bank 0   | 0 | (no file)
+
+RUN 1: Game Over, then the ad watched through
+  30 Shamblers killed (5 Credits each)               -> 150 / 0 / 0   | bank 0   | 0 | (no file)
+  character dies; the CONTINUE? countdown runs out   -> 150 / 0 / 150 | bank 150 | 1 | {"version":1,"credits":150,"runsFinished":1}
+  end screen: "Credits earned +150", "CREDITS 150", offer "WATCH AD: x2 CREDITS", hint "+150 Credits for this Run"
+  offer taken, fake ad watched to its end            -> 150 / 150 / 300 | bank 300 | 1 | {"version":1,"credits":300,"runsFinished":1}
+  end screen: "Credits earned +150", "Ad bonus +150", "CREDITS 300", offer gone, bonus sound playing
+  NEW RUN                                            -> 0 / 0 / 0     | bank 300 | 1
+
+RUN 2: Exit on the death screen, then the ad closed early
+  10 Shamblers killed                                -> 50 / 0 / 0    | bank 300 | 1
+  character dies, Exit                               -> 50 / 0 / 50   | bank 350 | 2 | {"version":1,"credits":350,"runsFinished":2}
+  end screen: "+50", "CREDITS 350", offer "WATCH AD: x2 CREDITS"
+  offer taken, CLOSE AD pressed after half a second  -> 50 / 0 / 50   | bank 350 | 2 | {"version":1,"credits":350,"runsFinished":2}
+  end screen unchanged: no bonus, and the offer is still there (AdOutcome.NotWatched)
+  NEW RUN                                            -> 0 / 0 / 0     | bank 350 | 2
+
+RUN 3: Restart from the pause menu
+  4 Shamblers killed                                 -> 20 / 0 / 0    | bank 350 | 2
+  pause, Restart                                     -> new Run: 0 / 0 / 0 | bank 370 | 3 | {"version":1,"credits":370,"runsFinished":3}
+
+APP RESTART (Play Mode stopped and started again: a new boot reads the save)
+  boot, Level 1 starts                               -> 0 / 0 / 0     | bank 370 | 3 | {"version":1,"credits":370,"runsFinished":3}
+
+RUN 4: the app quits mid-Run
+  1 Shambler killed                                  -> 5 / 0 / 0     | bank 370 | 3
+  Play Mode stopped (OnApplicationQuit)              -> save.json: {"version":1,"credits":375,"runsFinished":3}
+  The 5 Credits were banked on the way out; the Run doesn't count as finished.
+
+CONTINUE STILL WORKS (#16, #72), after a rebuild of the scenes
+  3 Shamblers killed, character dies                 -> death screen "CONTINUE?" with its countdown
+  Continue picked, its fake ad watched               -> RunPhase.Walking, 1 Continue used, 15 Credits still with the Run, nothing banked
+  character dies again (no Continue left), Exit      -> the Run's 40 Credits banked -> bank 415, 4 Runs finished
+
+EXIT FROM THE PAUSE MENU (the Level stays frozen behind the end screen)
+  5 Shamblers killed; pause, Exit                    -> 25 / 0 / 25   | bank 480 | 5
+  Time.timeScale = 0, AudioListener.pause = true
+  end screen counted up in real time: "+25", "CREDITS 480", offer "WATCH AD: x2 CREDITS"
+  offer taken, the fake ad counted down and ended    -> 25 / 25 / 50  | bank 505 | 5 | {"version":1,"credits":505,"runsFinished":5}
+  bonus sound: AudioSource playing "Magic Spell_Coins_2" from 1.3 s, ignoreListenerPause = true (read from AudioSource state; nothing was heard)
+
+Console: no game errors. EditMode: 843/843 passed in the same Editor (unity command test run --mode editor).

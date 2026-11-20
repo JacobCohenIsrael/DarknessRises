@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Enemies
   m_GUID: 34385de548ff8c6498f6e7680afac694
   m_SerializeEntries:
+  - m_GUID: 0b93f9af63befa2478916a5396131fff
+    m_Address: Bullet Impacts - Multiple 1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 420f6ad99c6d238489fbd1a76efe9fc8
     m_Address: Shambler
     m_ReadOnly: 0
@@ -45,8 +51,20 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: bb6cdd13aeb95f743847b1cd460889bc
+    m_Address: Laser Impact Light_6
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: cc6699269b4c1d44ea1e860518b9bb73
     m_Address: Magic Spell_Simple Swoosh_6
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: d87a6a7cb9efa0e4d9fa08f2888c3274
+    m_Address: Rat
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

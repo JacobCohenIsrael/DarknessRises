@@ -141,6 +141,10 @@ _Avoid_: spawn, batch, horde
 A lone Enemy that comes at the character while it walks between Stations. The character keeps walking while the player deals with it.
 _Avoid_: wanderer, random encounter
 
+**Critter**:
+A small, harmless animal, such as a rat, that darts through the dark to make the player jump: mostly while the character walks between Stations and in the quiet after a Clear, rarely during a Wave fight, never in a Boss fight. It scurries from one dark spot to another across the character's view, at the edge of the light, and is gone in a second or two. Light shows it like anything else, its small eyes glint like an Enemy's, and its scurry is heard from where it runs. It isn't an Enemy: it never hurts the character, Aim assist ignores it, and a Shot that kills it (with a squeak) counts as neither a hit nor a miss, so it earns no Score or Credits and leaves the Combo, accuracy and Grade as they were.
+_Avoid_: rat (it's one kind), animal, vermin, pest
+
 ## Skills
 
 **Skill**:
@@ -244,7 +248,7 @@ The points a Run earns for its kills. Each Enemy type and Boss is worth its own 
 _Avoid_: points (for the Run's total), credits
 
 **Combo**:
-A streak of consecutive Shots that each hurt an Enemy. Every few hits in a row its multiplier steps up, to a cap; a Shot that hurts nothing ends it, and so does going too long without a hit.
+A streak of consecutive Shots that each hurt an Enemy. Every few hits in a row its multiplier steps up, to a cap; a Shot that hurts nothing ends it, and so does going too long without a hit. A Shot that kills a Critter is neither: the streak carries on as it was.
 _Avoid_: streak, chain, multiplier (that's the Combo's number)
 
 **Grade**:

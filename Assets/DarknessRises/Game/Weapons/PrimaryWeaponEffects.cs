@@ -61,10 +61,10 @@ namespace DarknessRises.Game.Weapons
         }
 
         /// <summary>
-        /// Raised when a Shot of this Weapon ends: whether it hurt an Enemy (a hit) or not (a miss: it struck a wall or
-        /// something it can't hurt, or ran out of range), and where.
+        /// Raised when a Shot of this Weapon ends: whether it hurt an Enemy (a hit), hurt nothing (a miss: it struck a wall
+        /// or something it can't hurt, or ran out of range) or struck something that counts as neither (a Critter), and where.
         /// </summary>
-        public event Action<bool, Vector3> ShotLanded;
+        public event Action<ShotOutcome, Vector3> ShotLanded;
 
         /// <summary>Shows one shot leaving <paramref name="muzzle"/>, aimed along <paramref name="aimDirection"/> (flattened).</summary>
         public void Fire(Vector3 muzzle, Vector3 aimDirection)
@@ -120,21 +120,23 @@ namespace DarknessRises.Game.Weapons
         private void OnShotHit(RaycastHit hit, Vector3 direction)
         {
             var hurt = true;
-            var hurtEnemy = false;
+            var outcome = ShotOutcome.Missed;
             if (hit.collider.TryGetComponent<IShotTarget>(out var target))
             {
                 var knockback = definition.Knockback;
                 hurt = target.TakeShot(new ShotHit(stats.Damage, direction, knockback.Metres, knockback.Seconds));
-                hurtEnemy = hurt;
+                outcome = hit.collider.TryGetComponent<IScoreNeutralTarget>(out _)
+                    ? ShotOutcome.Neutral
+                    : hurt ? ShotOutcome.HurtEnemy : ShotOutcome.Missed;
             }
 
             hitSparks.Get().Spark(hit.point, hit.normal, dull: !hurt);
-            ShotLanded?.Invoke(hurtEnemy, hit.point);
+            ShotLanded?.Invoke(outcome, hit.point);
         }
 
         private void OnShotSpent(Vector3 point)
         {
-            ShotLanded?.Invoke(false, point);
+            ShotLanded?.Invoke(ShotOutcome.Missed, point);
         }
 
         // Enough pooled Shots for a held trigger with every Shot flying its full range.

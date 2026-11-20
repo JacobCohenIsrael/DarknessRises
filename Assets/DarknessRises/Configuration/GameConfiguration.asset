@@ -196,3 +196,4 @@ MonoBehaviour:
   footstepVoices:
     voiceCount: 4
     maxHeardEnemies: 3
+  critters: {fileID: 11400000, guid: a8e167178136cf64382c23acc1ba32c1, type: 2}

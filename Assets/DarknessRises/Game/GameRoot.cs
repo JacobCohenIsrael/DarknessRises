@@ -9,6 +9,7 @@ using DarknessRises.Game.Continues;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Credits;
+using DarknessRises.Game.Critters;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Enemies.Tells;
@@ -135,6 +136,9 @@ namespace DarknessRises.Game
         // The footsteps of the living Enemies, made once the Level's content has loaded.
         private EnemyFootstepsView footsteps;
 
+        // The Critters darting through the dark, made once the Level's content has loaded, if there are any.
+        private CrittersView critters;
+
         // The lights that can reveal an Enemy, for Aim assist's idea of a visible Enemy.
         private readonly SceneLights lights = new();
 
@@ -210,6 +214,9 @@ namespace DarknessRises.Game
 
         /// <summary>The Run's effective stats (the authored numbers with the player's Upgrades applied), once the gameplay has started.</summary>
         public RunStats Stats => stats;
+
+        /// <summary>The Critters darting through the dark, once the gameplay has started; null without any.</summary>
+        public CrittersView Critters => critters;
 
         /// <summary>The beats of each stop at a Station, once the gameplay has started.</summary>
         public StationRhythm StationRhythm => stationRhythm;
@@ -369,6 +376,11 @@ namespace DarknessRises.Game
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon, stationRhythm);
             var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, stats.Grenade, characterAnimation, content, lights);
             grenadeHud.Show(grenadeCharges);
+            if (configuration.Critters != null)
+            {
+                critters = CrittersView.Create(transform, configuration.Critters, character, run, stationRhythm, lights, content);
+            }
+
             if (grenadeButton != null)
             {
                 grenadeButton.Show(grenadeCharges, configuration.Gestures.GrenadeButton);
@@ -568,16 +580,11 @@ namespace DarknessRises.Game
             scoreKeeper = null;
         }
 
-        private void OnShotLanded(bool hurtEnemy, Vector3 point)
+        // A Shot that killed a Critter is neither a hit nor a miss: no hit marker, and the Combo and accuracy stand.
+        private void OnShotLanded(ShotOutcome outcome, Vector3 point)
         {
-            if (!hurtEnemy)
-            {
-                scoreKeeper.ShotMissed();
-                return;
-            }
-
-            scoreKeeper.ShotHit();
-            if (scorePopups != null)
+            scoreKeeper.ShotLanded(outcome);
+            if (outcome == ShotOutcome.HurtEnemy && scorePopups != null)
             {
                 scorePopups.Mark(point);
             }

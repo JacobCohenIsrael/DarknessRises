@@ -58,10 +58,10 @@ THE FLAMETHROWER
 
 NO LEVEL CONTENT BEHIND THE SHOP (real bundles: Addressables content built, Play Mode set to "Use Existing Build")
                                            bundles  GameObjects  AudioClips  Enemies (pooled)  cameras
-  Level 1 playing                            11        745          21            16             2
-  end screen over the Level                  11        745          21            16             2
+  Level 1 playing                            10        745          21            16             2
+  end screen over the Level                  10        745          21            16             2
   the Shop open                               4         47           1             0             1
-  PLAY, Level 1 playing again                11        745          21            16             2
+  PLAY, Level 1 playing again                10        745          21            16             2
 
   The 4 bundles under the Shop: the Shop's scene, Shared (the definitions and the buy sound), and the two built-in
   bundles (MonoScripts, Unity built-in assets). Released with the Level: its scene, its assets and five Enemy bundles

@@ -148,6 +148,9 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The volume sliders, opened from the pause menu.")]
         private VolumePanelView volumePanel;
 
+        [SerializeField, Tooltip("The scene's volumes, which every sound source in it follows.")]
+        private SceneAudioVolumes audioVolumes;
+
         [Header("Continue")]
         [SerializeField, Tooltip("The placeholder ad watched for a Continue. A real ad network replaces it later.")]
         private FakeAdView continueAd;
@@ -170,6 +173,9 @@ namespace DarknessRises.Game
         // memory when the scene is played on its own.
         private PlayerSave save;
         private RunBanking ownBanking;
+
+        // The boot's storm player, which outlives this Level; null when the scene plays on its own.
+        private StormPlayer carriedStorm;
 
         // What a cleared Level pays on top of its kills.
         private LevelClearBonus levelClearBonus;
@@ -210,6 +216,9 @@ namespace DarknessRises.Game
         /// <summary>The Run's effective stats (the authored numbers with the player's Upgrades applied), once the gameplay has started.</summary>
         public RunStats Stats => stats;
 
+        /// <summary>The scene's volumes, which the boot's own sounds follow while the Level plays.</summary>
+        public SceneAudioVolumes AudioVolumes => audioVolumes;
+
         /// <summary>The beats of each stop at a Station, once the gameplay has started.</summary>
         public StationRhythm StationRhythm => stationRhythm;
 
@@ -229,10 +238,11 @@ namespace DarknessRises.Game
 
         /// <summary>
         /// Plays the current Level of <paramref name="runFlow"/> in this scene, with the Ramp at its Level index.
-        /// The Run's Credits are banked in <paramref name="playerSave"/>, by whoever owns both.
+        /// The Run's Credits are banked in <paramref name="playerSave"/>, by whoever owns both. The storm plays on
+        /// <paramref name="storm"/>, the boot's, which carries it from Level to Level; without one, on the scene's own.
         /// Called by the boot right after it loads the scene.
         /// </summary>
-        public void Play(RunFlow runFlow, PlayerSave playerSave)
+        public void Play(RunFlow runFlow, PlayerSave playerSave, StormPlayer storm = null)
         {
             if (run != null)
             {
@@ -240,6 +250,7 @@ namespace DarknessRises.Game
             }
 
             save = playerSave ?? throw new ArgumentNullException(nameof(playerSave));
+            carriedStorm = storm;
             run = runFlow ?? throw new ArgumentNullException(nameof(runFlow));
         }
 
@@ -378,7 +389,7 @@ namespace DarknessRises.Game
             volumePanel.Use(audioVolumes, content.Clip(audioVolumes.SampleClip));
             // The storm that swells after every flash, and the Boss's growl that warns of its flashes.
             var lightningRandom = new SystemRandom();
-            lightning.UseStorm(content.Clip(configuration.Lightning.Storm.Clip), lightningRandom, enemyTime);
+            lightning.UseStorm(carriedStorm, configuration.Lightning.Storm, lightningRandom, enemyTime);
             var boss = level != null ? configuration.Level.Boss : null;
             if (bossHealthBar != null && level != null && level.Boss != null)
             {

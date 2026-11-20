@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Configuration;
 using UnityEngine;
@@ -9,41 +10,64 @@ namespace DarknessRises.Game.Audio
     /// A scene's volume sliders at work (ADR 0010): it holds the scene's <see cref="AudioVolumes"/>, read from the device
     /// when the scene first needs them, and applies each category's gain to the scene's <see cref="AudioCategorySource"/>s
     /// whenever its slider moves. It sits on a root object of every scene that has sound (a Level, the Test Room, the
-    /// Shop), where each source finds it once by its scene: sources made at runtime, pooled Enemies among them, are
-    /// created in their scene and find it the same way, with nothing handed down to them.
+    /// Shop, the boot), where each source finds it once by its scene: sources made at runtime, pooled Enemies among them,
+    /// are created in their scene and find it the same way, with nothing handed down to them.
     /// It also lets one category play on while the listener is paused, so the Ambient slider is heard from the pause menu.
+    /// <para>
+    /// The boot scene's has no volumes of its own: the boot makes it <see cref="Follow"/> the volumes of the Level or Shop
+    /// that is showing, so the sounds it carries across scenes (the storm) move with that scene's sliders and are heard
+    /// from its pause menu. Between scenes it keeps the gains it last had (ADR 0011).
+    /// </para>
     /// </summary>
     public sealed class SceneAudioVolumes : MonoBehaviour
     {
         // Enough for a Level's sources (Gunshot voices, banners, the storm, a few dozen pooled Enemies) before it grows.
         private const int ExpectedSources = 128;
 
-        [SerializeField, Tooltip("The root configuration: the sliders' defaults and curve.")]
+        [SerializeField, Tooltip("The root configuration: the sliders' defaults and curve. Empty in the boot scene, whose volumes follow the scene that is showing.")]
         private GameConfiguration configuration;
 
         // Every enabled source of the scene with a category.
         private readonly List<AudioCategorySource> sources = new(ExpectedSources);
         private readonly bool[] heardWhilePaused = new bool[AudioVolumes.CategoryCount];
+
+        // The gains while following nothing and owning no volumes: full, until a followed scene leaves its own here.
+        private readonly float[] keptGains = { 1f, 1f, 1f };
         private AudioVolumes volumes;
+        private SceneAudioVolumes leader;
 
         // Reused by every lookup, so finding a scene's volumes allocates nothing.
         private static readonly List<GameObject> Roots = new();
 
-        /// <summary>The scene's volumes, read from the device the first time they're needed.</summary>
+        /// <summary>Raised when a category starts or stops playing on over a paused listener, with the category and whether it does.</summary>
+        public event Action<AudioCategory, bool> HearingWhilePausedChanged;
+
+        /// <summary>
+        /// The volumes the sliders set: the followed scene's while following one, else the scene's own, read from the
+        /// device the first time they're needed. Null in a scene with no configuration that follows nothing (the boot
+        /// between scenes).
+        /// </summary>
         public AudioVolumes Volumes
         {
             get
             {
-                if (volumes == null)
+                if (leader != null)
+                {
+                    return leader.Volumes;
+                }
+
+                if (volumes == null && configuration != null)
                 {
                     var settings = configuration.AudioVolumes;
-                    volumes = new AudioVolumes(settings.Curve, settings.Defaults, new PlayerPrefsVolumeStorage());
-                    volumes.Changed += OnChanged;
+                    UseVolumes(new AudioVolumes(settings.Curve, settings.Defaults, new PlayerPrefsVolumeStorage()));
                 }
 
                 return volumes;
             }
         }
+
+        /// <summary>The volumes this one follows, or null.</summary>
+        public SceneAudioVolumes Leader => leader;
 
         /// <summary>How many sources follow the sliders now.</summary>
         public int SourceCount => sources.Count;
@@ -70,8 +94,83 @@ namespace DarknessRises.Game.Audio
             return found;
         }
 
+        /// <summary>
+        /// Makes <paramref name="ownVolumes"/> the scene's volumes, in place of the ones it would read from the device.
+        /// For a scene whose volumes are made elsewhere, and for tests.
+        /// </summary>
+        public void UseVolumes(AudioVolumes ownVolumes)
+        {
+            if (volumes != null)
+            {
+                volumes.Changed -= OnChanged;
+            }
+
+            volumes = ownVolumes ?? throw new ArgumentNullException(nameof(ownVolumes));
+            volumes.Changed += OnChanged;
+            ApplyAll();
+        }
+
         /// <summary>The factor the sources of <paramref name="category"/> play their own volume at.</summary>
-        public float Gain(AudioCategory category) => Volumes.Gain(category);
+        public float Gain(AudioCategory category)
+        {
+            var current = Volumes;
+            return current != null ? current.Gain(category) : keptGains[AudioVolumes.IndexOf(category)];
+        }
+
+        /// <summary>
+        /// Follows <paramref name="followed"/>, the volumes of the scene that is showing: the sources here play at its
+        /// gains, change with its sliders, and play on over a paused listener when its do. Replaces any scene followed before.
+        /// </summary>
+        public void Follow(SceneAudioVolumes followed)
+        {
+            if (followed == null)
+            {
+                throw new ArgumentNullException(nameof(followed));
+            }
+
+            if (followed == this)
+            {
+                throw new ArgumentException("Volumes can't follow themselves.", nameof(followed));
+            }
+
+            Unfollow();
+            leader = followed;
+            leader.Volumes.Changed += OnChanged;
+            leader.HearingWhilePausedChanged += HearWhilePaused;
+            for (var i = 0; i < AudioVolumes.CategoryCount; i++)
+            {
+                var category = (AudioCategory)i;
+                HearWhilePaused(category, leader.IsHeardWhilePaused(category));
+            }
+
+            ApplyAll();
+        }
+
+        /// <summary>
+        /// Stops following, keeping the gains the followed scene had, so the sounds here play on as they were until the
+        /// next scene is followed. Nothing here plays on over a paused listener any more.
+        /// </summary>
+        public void Unfollow()
+        {
+            if (leader == null)
+            {
+                return;
+            }
+
+            var followed = leader;
+            leader = null;
+            for (var i = 0; i < AudioVolumes.CategoryCount; i++)
+            {
+                keptGains[i] = followed.Gain((AudioCategory)i);
+                HearWhilePaused((AudioCategory)i, false);
+            }
+
+            // Plain C# events: fine to leave even if the followed scene is already being destroyed.
+            followed.Volumes.Changed -= OnChanged;
+            followed.HearingWhilePausedChanged -= HearWhilePaused;
+
+            ApplyAll();
+        }
 
         /// <summary>
         /// Lets the sources of <paramref name="category"/> play on while <c>AudioListener.pause</c> holds every other
@@ -93,6 +192,8 @@ namespace DarknessRises.Game.Audio
                     sources[i].Source.ignoreListenerPause = hear;
                 }
             }
+
+            HearingWhilePausedChanged?.Invoke(category, hear);
         }
 
         /// <summary>Whether the sources of <paramref name="category"/> play on while the listener is paused.</summary>
@@ -123,6 +224,14 @@ namespace DarknessRises.Game.Audio
             }
         }
 
+        private void ApplyAll()
+        {
+            for (var i = 0; i < sources.Count; i++)
+            {
+                sources[i].Apply();
+            }
+        }
+
         // On a phone the app may never come back from the background.
         private void OnApplicationPause(bool isPaused)
         {
@@ -134,6 +243,7 @@ namespace DarknessRises.Game.Audio
 
         private void OnDestroy()
         {
+            Unfollow();
             if (volumes == null)
             {
                 return;

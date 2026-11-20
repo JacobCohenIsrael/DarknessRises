@@ -1,8 +1,10 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Hud;
+using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Saving;
 using DarknessRises.Game.Shop;
@@ -23,6 +25,9 @@ namespace DarknessRises.Game.Boot
     /// once a Run has been finished, the app opens in the Shop (<see cref="BootDestinations"/>).
     /// It also owns the player's save, which outlives every Run: it reads it from the device at start, banks each Run's
     /// Credits in it, and writes it when the app goes to the background or quits.
+    /// And it owns the sounds that carry across scenes (ADR 0011): the storm plays on the boot's own
+    /// <see cref="StormPlayer"/>, which each Level drives while it plays, so it rolls on through a Level change instead of
+    /// dying with the old scene, and fades out for the Shop. Its volumes follow the scene that is showing.
     /// </summary>
     public sealed class Bootstrap : MonoBehaviour
     {
@@ -43,6 +48,12 @@ namespace DarknessRises.Game.Boot
 
         [SerializeField, Tooltip("The build version in a corner of the screen, shown for as long as the app runs.")]
         private VersionLabelView versionLabel;
+
+        [SerializeField, Tooltip("Plays the storm bed for as long as the app runs, so it carries on from one Level to the next.")]
+        private StormPlayer storm;
+
+        [SerializeField, Tooltip("The boot scene's volumes: they follow the volumes of the Level or Shop that is showing.")]
+        private SceneAudioVolumes audioVolumes;
 
         // Owns the boot's lifetime: the app's.
         private CancellationTokenSource lifetime;
@@ -72,6 +83,9 @@ namespace DarknessRises.Game.Boot
 
         /// <summary>The Run being played. It lives as long as the app; Restart starts a new Run in it.</summary>
         public RunFlow Run { get; } = new();
+
+        /// <summary>The storm player that outlives every Level.</summary>
+        public StormPlayer Storm => storm;
 
         /// <summary>The player's save: the Credits in the bank and what they bought. Read from the device at start.</summary>
         public PlayerSave Save { get; private set; }
@@ -138,14 +152,17 @@ namespace DarknessRises.Game.Boot
             var scene = await LoadSceneAsync(levelKey, cancellationToken);
             loadingCamera.enabled = false;
             var gameRoot = Find<GameRoot>(scene);
-            gameRoot.Play(Run, Save);
+            gameRoot.Play(Run, Save, storm);
+            audioVolumes.Follow(gameRoot.AudioVolumes);
             LevelLoaded?.Invoke(gameRoot);
 
             var next = await levelLeft.Task.AttachExternalCancellation(cancellationToken);
             levelLeft = null;
 
-            // Out of whatever callback moved the Run on (often the Level's own) before its scene goes.
+            // Out of whatever callback moved the Run on (often the Level's own) before its scene goes. The storm plays on
+            // at the Level's last volumes through the change.
             await UniTask.Yield(cancellationToken);
+            audioVolumes.Unfollow();
             await UnloadSceneAsync(cancellationToken);
             LevelUnloaded?.Invoke();
             return next;
@@ -154,10 +171,14 @@ namespace DarknessRises.Game.Boot
         // Loads the Shop scene, with nothing of a Level left loaded behind it, and shows it until the player presses PLAY.
         private async UniTask ShowShopAsync(CancellationToken cancellationToken)
         {
+            // There is no storm in the Shop: it fades out, and fades back in when a Level with Lightning is played.
+            storm.SetAudible(false);
             var scene = await LoadSceneAsync(definition.ShopScene.RuntimeKey, cancellationToken);
             var shop = Find<ShopRoot>(scene);
+            audioVolumes.Follow(shop.AudioVolumes);
             ShopLoaded?.Invoke(shop);
             await shop.RunAsync(Save, cancellationToken);
+            audioVolumes.Unfollow();
             await UnloadSceneAsync(cancellationToken);
             ShopUnloaded?.Invoke();
         }

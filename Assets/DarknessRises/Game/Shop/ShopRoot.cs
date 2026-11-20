@@ -28,6 +28,9 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The volume sliders, behind the SOUND button.")]
         private VolumePanelView volumePanel;
 
+        [SerializeField, Tooltip("The scene's volumes, which every sound source in it follows.")]
+        private SceneAudioVolumes audioVolumes;
+
         private ContentScope content;
 
         /// <summary>The Shop's rules over the save it was opened with, once it's open.</summary>
@@ -35,6 +38,9 @@ namespace DarknessRises.Game.Shop
 
         /// <summary>Everything the open Shop sells.</summary>
         public ShopCatalog Catalog { get; private set; }
+
+        /// <summary>The scene's volumes, which the boot's own sounds follow while the Shop is showing.</summary>
+        public SceneAudioVolumes AudioVolumes => audioVolumes;
 
         /// <summary>Whether the Shop's content has loaded and its screen is up.</summary>
         public bool IsOpen => Keeper != null;

@@ -352,6 +352,7 @@ namespace DarknessRises.Game.Editor.Shop
             serializedRoot.FindProperty("configuration").objectReferenceValue = configuration;
             serializedRoot.FindProperty("view").objectReferenceValue = view;
             serializedRoot.FindProperty("volumePanel").objectReferenceValue = volumePanel;
+            serializedRoot.FindProperty("audioVolumes").objectReferenceValue = volumes;
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
 
             AudioRouting.RequireRouted(scene);

@@ -192,7 +192,7 @@ namespace DarknessRises.Game.Bosses
 
         /// <summary>
         /// Sends the character to <paramref name="position"/> whether or not Relocate is enabled: the fight's own
-        /// moves, such as walking back onto the Route once the Boss is beaten. A dash under way is finished first.
+        /// moves, such as a stomp knocking it off its Position. A dash under way is finished first.
         /// </summary>
         public void MoveTo(int position)
         {

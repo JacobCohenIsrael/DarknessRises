@@ -13,6 +13,36 @@ namespace DarknessRises.Game.Cameras
         private const float MinLength = 1e-4f;
 
         /// <summary>
+        /// The flat unit direction from the character to the point <paramref name="metresAhead"/> further along its way:
+        /// the Route, or its way back onto the Route while it rejoins it. Where there is nothing further on, it's the
+        /// direction the character heads in.
+        /// </summary>
+        public static Vector3 Ahead(RouteProgress progress, float metresAhead)
+        {
+            if (progress == null)
+            {
+                throw new ArgumentNullException(nameof(progress));
+            }
+
+            if (metresAhead < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(metresAhead), metresAhead, "The way is read ahead, not behind.");
+            }
+
+            var chord = progress.PositionAhead(metresAhead) - progress.Position;
+            chord.y = 0f;
+            var length = chord.magnitude;
+            if (length > MinLength)
+            {
+                return chord / length;
+            }
+
+            var heading = progress.Direction;
+            heading.y = 0f;
+            return heading.sqrMagnitude > MinLength * MinLength ? heading.normalized : Vector3.forward;
+        }
+
+        /// <summary>
         /// The flat unit direction from the point <paramref name="distance"/> metres along <paramref name="path"/> to
         /// the point <paramref name="metresAhead"/> further on. Near the end of the Route, where there is nothing
         /// further on, it's the direction of the last leg.

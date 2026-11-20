@@ -16,7 +16,7 @@ namespace DarknessRises.Game.Phantoms
         /// <summary>The player aimed at them: they blink out.</summary>
         AimedAt,
 
-        /// <summary>A real Enemy came within the clearance: gone at once, so they never compete with a real target.</summary>
+        /// <summary>A real Enemy came within the clearance of the character or of their own spot: gone at once, so they never compete with or sit beside a real target.</summary>
         EnemyNear,
 
         /// <summary>A fight or anything else that allows no Phantom eyes began: gone at once.</summary>
@@ -34,9 +34,16 @@ namespace DarknessRises.Game.Phantoms
     /// <summary>What a showing pair of Phantom eyes checks every frame.</summary>
     public readonly struct PhantomConditions
     {
-        public PhantomConditions(CritterMoment moment, float nearestEnemyMetres, bool isLit, bool isAimedAt, float metresAway = float.PositiveInfinity)
+        public PhantomConditions(
+            CritterMoment moment,
+            float nearestEnemyMetres,
+            bool isLit,
+            bool isAimedAt,
+            float metresAway = float.PositiveInfinity,
+            float spotEnemyMetres = float.PositiveInfinity)
         {
             Moment = moment;
+            SpotEnemyMetres = spotEnemyMetres;
             NearestEnemyMetres = nearestEnemyMetres;
             IsLit = isLit;
             IsAimedAt = isAimedAt;
@@ -45,8 +52,11 @@ namespace DarknessRises.Game.Phantoms
 
         public CritterMoment Moment { get; }
 
-        /// <summary>Metres to the nearest living Enemy; infinity when there's none.</summary>
+        /// <summary>Metres from the character to the nearest living Enemy; infinity when there's none.</summary>
         public float NearestEnemyMetres { get; }
+
+        /// <summary>Metres from the eyes' own spot to the nearest living Enemy; infinity when there's none.</summary>
+        public float SpotEnemyMetres { get; }
 
         /// <summary>Whether any light reaches their spot now.</summary>
         public bool IsLit { get; }
@@ -103,6 +113,7 @@ namespace DarknessRises.Game.Phantoms
         private readonly float openSeconds;
         private readonly float blinkOutSeconds;
         private readonly float clearanceMetres;
+        private readonly float spotClearanceMetres;
         private readonly float keepAwayMetres;
         private readonly PhantomBlinking blinking;
         private readonly IRandom random;
@@ -118,13 +129,15 @@ namespace DarknessRises.Game.Phantoms
         /// <param name="keepAwayMetres">They blink out once the character is nearer to them than this: the least they appear at.</param>
         /// <param name="blinking">How they blink while they hold; by default, never.</param>
         /// <param name="random">Picks the gaps between blinks. Needed only when they blink.</param>
+        /// <param name="spotClearanceMetres">They vanish the moment a living Enemy is this near their own spot, in a fight too.</param>
         public PhantomEyesSighting(
             float openSeconds,
             float blinkOutSeconds,
             float clearanceMetres,
             float keepAwayMetres = 0f,
             PhantomBlinking blinking = default,
-            IRandom random = null)
+            IRandom random = null,
+            float spotClearanceMetres = 0f)
         {
             if (blinking.IsOn && random == null)
             {
@@ -137,7 +150,11 @@ namespace DarknessRises.Game.Phantoms
             this.blinkOutSeconds = NotNegative(blinkOutSeconds, nameof(blinkOutSeconds));
             this.clearanceMetres = NotNegative(clearanceMetres, nameof(clearanceMetres));
             this.keepAwayMetres = NotNegative(keepAwayMetres, nameof(keepAwayMetres));
+            this.spotClearanceMetres = NotNegative(spotClearanceMetres, nameof(spotClearanceMetres));
         }
+
+        /// <summary>Whether these eyes opened during a Wave fight: then only a fight's rules keep them, not safe time's.</summary>
+        public bool IsInFight { get; private set; }
 
         /// <summary>Whether the eyes are out: opening, holding or blinking out.</summary>
         public bool IsShowing { get; private set; }
@@ -154,9 +171,14 @@ namespace DarknessRises.Game.Phantoms
         /// <summary>Why the last sighting went away, or <see cref="PhantomVanish.None"/> while it's out.</summary>
         public PhantomVanish Vanish { get; private set; }
 
-        /// <summary>The eyes appear, to hold for <paramref name="seconds"/> (their opening included) unless something sends them away.</summary>
-        public void Show(float seconds)
+        /// <summary>
+        /// The eyes appear, to hold for <paramref name="seconds"/> (their opening included) unless something sends them
+        /// away. <paramref name="inFight"/>: they open during a Wave fight (<see cref="PhantomFightSchedule"/>), so they
+        /// stay through it, and go when it ends.
+        /// </summary>
+        public void Show(float seconds, bool inFight = false)
         {
+            IsInFight = inFight;
             holdSeconds = NotNegative(seconds, nameof(seconds));
             secondsIn = 0f;
             IsShowing = true;
@@ -189,12 +211,24 @@ namespace DarknessRises.Game.Phantoms
                 return End(PhantomVanish.Lit);
             }
 
-            if (conditions.NearestEnemyMetres <= clearanceMetres)
+            // A real Enemy near their own spot: never a phantom next to a real threat, in a fight or not.
+            if (conditions.SpotEnemyMetres <= spotClearanceMetres)
             {
                 return End(PhantomVanish.EnemyNear);
             }
 
-            if (!PhantomEyesSchedule.MayShow(conditions.Moment, conditions.NearestEnemyMetres, clearanceMetres))
+            if (IsInFight)
+            {
+                if (!PhantomFightSchedule.MayShow(conditions.Moment))
+                {
+                    return End(PhantomVanish.MomentEnded);
+                }
+            }
+            else if (conditions.NearestEnemyMetres <= clearanceMetres)
+            {
+                return End(PhantomVanish.EnemyNear);
+            }
+            else if (!PhantomEyesSchedule.MayShow(conditions.Moment, conditions.NearestEnemyMetres, clearanceMetres))
             {
                 return End(PhantomVanish.MomentEnded);
             }

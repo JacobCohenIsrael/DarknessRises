@@ -28,24 +28,32 @@ namespace DarknessRises.Game.Phantoms
         }
 
         /// <summary>Whether a pair is waiting to open.</summary>
-        public bool IsWaiting { get; private set; }
+        public bool IsWaiting => Waiting > 0;
 
-        /// <summary>A pair is due: it waits for the next flash to fade.</summary>
+        /// <summary>How many due pairs are waiting to open: all of them open as the same flash fades, one a frame.</summary>
+        public int Waiting { get; private set; }
+
+        /// <summary>A pair is due: it waits for the next flash to fade, with any others already waiting.</summary>
         public void Wait()
         {
-            IsWaiting = true;
-            waitedSeconds = 0f;
+            if (Waiting == 0)
+            {
+                waitedSeconds = 0f;
+            }
+
+            Waiting++;
         }
 
-        /// <summary>The wait is called off (a fight began, an Enemy came near).</summary>
+        /// <summary>The wait is called off for every waiting pair (a fight began, an Enemy came near).</summary>
         public void Cancel()
         {
-            IsWaiting = false;
+            Waiting = 0;
         }
 
         /// <summary>
         /// Moves time on by <paramref name="deltaSeconds"/>; <paramref name="isRoomLit"/> says whether a light reaches the
-        /// whole Room now. True when the waiting pair should open now; the wait then ends.
+        /// whole Room now. True when one waiting pair should open now; the others open in the next frames of the same
+        /// moment, so a flash that fades opens them all.
         /// </summary>
         public bool Tick(float deltaSeconds, bool isRoomLit)
         {
@@ -67,7 +75,7 @@ namespace DarknessRises.Game.Phantoms
                 return false;
             }
 
-            IsWaiting = false;
+            Waiting--;
             return true;
         }
     }

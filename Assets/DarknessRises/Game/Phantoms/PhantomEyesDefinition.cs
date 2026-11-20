@@ -19,10 +19,10 @@ namespace DarknessRises.Game.Phantoms
 
         [Header("When")]
         [SerializeField, Min(0f), Tooltip("Fewest seconds of safe time (walking, or the quiet after a clear, with no Enemy near) between two events: a pair of eyes or a lone voice. Time in a fight or with an Enemy near doesn't count.")]
-        private float minGapSeconds = 3f;
+        private float minGapSeconds = 2f;
 
-        [SerializeField, Min(0f), Tooltip("Most seconds of safe time between two events. With the fewest and the share of lone voices, this sets how often eyes come: a 3-7 s gap with a quarter of them voices is a pair about every 7 s of safe walking.")]
-        private float maxGapSeconds = 7f;
+        [SerializeField, Min(0f), Tooltip("Most seconds of safe time between two events. With the fewest and the share of lone voices, this sets how often eyes come: a 2-4 s gap with a quarter of them voices is a pair about every 4 s of safe walking.")]
+        private float maxGapSeconds = 4f;
 
         [SerializeField, Range(0f, 1f), Tooltip("Share of events that are a lone voice from a dark spot, with no eyes.")]
         private float voiceOnlyShare = 0.25f;
@@ -40,13 +40,32 @@ namespace DarknessRises.Game.Phantoms
         private float longestFlashWaitSeconds = 5f;
 
         [SerializeField, Min(1), Tooltip("Most pairs of eyes out at once, each at its own spot. A pair about to open again nearby counts.")]
-        private int maxPairs = 3;
+        private int maxPairs = 4;
 
         [SerializeField, Min(0f), Tooltip("Fewest metres between two pairs, or a pair and a lone voice, so each looks out from its own spot.")]
         private float pairSeparationMetres = 3f;
 
-        [SerializeField, Min(0f), Tooltip("Metres from the character within which a living Enemy keeps Phantom eyes away, and sends a showing pair away at once.")]
-        private float enemyClearanceMetres = 14f;
+        [SerializeField, Min(0f), Tooltip("Metres from the character within which a living Enemy keeps Phantom eyes away in safe time, and sends a safe-time pair away at once. Beyond it, Enemies may be about but not close.")]
+        private float enemyClearanceMetres = 9f;
+
+        [SerializeField, Min(0f), Tooltip("Metres from the eyes' own spot within which a living Enemy keeps them away, and sends a showing pair away at once, in safe time and in a fight. A phantom never sits next to a real threat.")]
+        private float spotClearanceMetres = 6f;
+
+        [Header("In a Wave fight")]
+        [SerializeField, Min(0f), Tooltip("Fewest seconds of Wave fight between two pairs of eyes in a fight. Rare: the fight's real eyes come first. Never in the Boss fight.")]
+        private float fightMinGapSeconds = 8f;
+
+        [SerializeField, Min(0f), Tooltip("Most seconds of Wave fight between two pairs of eyes in a fight.")]
+        private float fightMaxGapSeconds = 15f;
+
+        [SerializeField, Min(0), Tooltip("Most pairs out at once during a Wave fight. 0: none in fights.")]
+        private int fightMaxPairs = 1;
+
+        [SerializeField, Min(0f), Tooltip("Fewest metres from the character eyes open at in a fight: the far edge of the dark, well beyond the keep-away distance and where real eyes glint.")]
+        private float fightMinMetres = 10f;
+
+        [SerializeField, Min(0f), Tooltip("Most metres from the character eyes open at in a fight.")]
+        private float fightMaxMetres = 12f;
 
         [Header("Where")]
         [SerializeField, Range(0f, 180f), Tooltip("Degrees either side of the character's facing the eyes may be. Wide: the Ride camera sees little far ahead, so far-out eyes are mostly off to the sides. Spots out of view are skipped anyway.")]
@@ -68,7 +87,7 @@ namespace DarknessRises.Game.Phantoms
         private float screenMarginShare = 0.05f;
 
         [SerializeField, Min(1), Tooltip("Spots tried each time a sighting is due, before giving up until the next: a spot must be on the floor, in the dark, in view, with nothing between it and the character.")]
-        private int placementAttempts = 16;
+        private int placementAttempts = 32;
 
         [SerializeField, Min(0.01f), Tooltip("Metres a spot may be moved to find the floor (NavMesh) under it.")]
         private float floorSearchMetres = 1.5f;
@@ -98,7 +117,7 @@ namespace DarknessRises.Game.Phantoms
 
         [Header("Opening again nearby")]
         [SerializeField, Range(0f, 1f), Tooltip("Chance that a pair that held its time, or that light sent away (Lightning shows nothing, then they are back), opens again a moment later at another dark spot nearby. One sent away by aim, by the character coming near, by an Enemy or by a fight never does.")]
-        private float hopChance = 0.55f;
+        private float hopChance = 0.65f;
 
         [SerializeField, Min(0), Tooltip("Most times one pair may open again nearby.")]
         private int maxHops = 2;
@@ -167,6 +186,8 @@ namespace DarknessRises.Game.Phantoms
         public int PlacementAttempts => placementAttempts;
         public float FloorSearchMetres => floorSearchMetres;
         public int MaxPairs => maxPairs;
+        public int FightMaxPairs => fightMaxPairs;
+        public float SpotClearanceMetres => spotClearanceMetres;
         public float PairSeparationMetres => pairSeparationMetres;
         public float VoiceWithEyesChance => voiceWithEyesChance;
         public float MinVoiceOnlySeconds => minVoiceOnlySeconds;
@@ -204,7 +225,8 @@ namespace DarknessRises.Game.Phantoms
                 enemyClearanceMetres,
                 keepAwayMetres,
                 new PhantomBlinking(blinkSeconds, minBlinkGapSeconds, maxBlinkGapSeconds),
-                random);
+                random,
+                spotClearanceMetres);
         }
 
         public PhantomEyesSpot ToSpot()
@@ -216,6 +238,17 @@ namespace DarknessRises.Game.Phantoms
         public PhantomEyesSpot ToVoiceSpot()
         {
             return new PhantomEyesSpot(voiceOnlyDegrees, minMetres, maxMetres);
+        }
+
+        public PhantomFightSchedule ToFightSchedule(IRandom random)
+        {
+            return new PhantomFightSchedule(fightMinGapSeconds, fightMaxGapSeconds, retrySeconds, fightMaxPairs, random);
+        }
+
+        /// <summary>Where eyes may open in a fight: the far edge of the dark, within the same angle as in safe time.</summary>
+        public PhantomEyesSpot ToFightSpot()
+        {
+            return new PhantomEyesSpot(aheadDegrees, fightMinMetres, fightMaxMetres);
         }
 
         public PhantomAfterFlash ToAfterFlash()

@@ -2,6 +2,7 @@ using DarknessRises.Game.Ambience;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
+using DarknessRises.Game.Controls;
 using DarknessRises.Game.Credits;
 using DarknessRises.Game.Critters;
 using DarknessRises.Game.Enemies.Tells;
@@ -44,7 +45,13 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private GrenadeDefinition grenade;
         [SerializeField, Tooltip("How each Level after the first gets harder.")] private RampDefinition ramp;
         [SerializeField, Tooltip("Coming back after death, once per Run, for watching an ad.")] private ContinueDefinition @continue;
-        [SerializeField, Tooltip("Touch Gestures and Aim assist.")] private GestureDefinition gestures;
+        [SerializeField, Tooltip("Touch Gestures and Aim assist on touch.")] private GestureDefinition gestures;
+
+        [SerializeField, Tooltip(
+            "Aim assist with the mouse (WebGL and the Editor): a slight pull toward a visible Enemy near the pointer, "
+            + "growing in later Levels. Touch's is on the Gesture definition.")]
+        private AimAssistSettings mouseAimAssist = new(
+            radius: 1.2f, strength: 0.15f, strengthPerLevel: 0.03f, maxStrength: 0.4f, fullPullFraction: 0.4f);
 
         [SerializeField, Tooltip("How the Primary weapons' ammo reserves refill during a Run. Each Weapon's own reserve is on its definition.")]
         private AmmoSettings ammo = new();
@@ -113,6 +120,7 @@ namespace DarknessRises.Game.Configuration
         public RampDefinition Ramp => ramp;
         public ContinueDefinition Continue => @continue;
         public GestureDefinition Gestures => gestures;
+        public AimAssistSettings MouseAimAssist => mouseAimAssist;
         public AmmoSettings Ammo => ammo;
         public ReloadFeedbackSettings ReloadFeedback => reloadFeedback;
         public GunshotVoiceSettings GunshotVoices => gunshotVoices;

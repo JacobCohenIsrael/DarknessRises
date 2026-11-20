@@ -18,7 +18,7 @@ namespace DarknessRises.Game.Gestures
             + "A Two-finger flick in any other direction does nothing.")]
         private float twoFingerFlickAxisHalfAngleDegrees = 45f;
 
-        [SerializeField, Tooltip("On touch only, bends Shots toward the nearest visible Enemy close to the finger.")]
+        [SerializeField, Tooltip("On touch, bends Shots toward the nearest visible Enemy close to the finger, more in later Levels. The mouse's is on the root configuration.")]
         private AimAssistSettings aimAssist = new();
 
         [SerializeField, Tooltip("The on-screen Grenade button, touch only: tap to arm, tap the Room to throw, hold to move it.")]

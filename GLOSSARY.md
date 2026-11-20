@@ -199,7 +199,7 @@ The rounds a Primary weapon carries beyond its magazine, which its reloads take 
 _Avoid_: spare ammo, stock, clips
 
 **Run dry**:
-What a Primary weapon does when its magazine and its ammo reserve are both empty. The character switches to the Pistol on its own, and the dry Weapon can't be selected until a refill gives it ammo again. A magazine that is merely empty hasn't run dry: it reloads.
+What a Primary weapon does when its magazine and its ammo reserve are both empty. The character switches to the Pistol on its own, the Weapon button flashes to show why, and the dry Weapon can't be selected until a refill gives it ammo again. A magazine that is merely empty hasn't run dry: it reloads.
 _Avoid_: out of ammo, empty (for a Weapon that can still reload)
 
 **Secondary weapon**:

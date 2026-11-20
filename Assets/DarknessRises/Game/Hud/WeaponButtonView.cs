@@ -12,13 +12,15 @@ namespace DarknessRises.Game.Hud
     /// <summary>
     /// The Weapon button, beside the magazine count on the HUD: it shows the equipped Primary weapon's name and its ammo
     /// reserve, and a tap or click on it switches to the next unlocked Primary that has ammo. It's there only while
-    /// the character carries more than one Primary; with the Pistol alone there is nothing to switch to.
+    /// the character carries more than one Primary; with the Pistol alone there is nothing to switch to. When a
+    /// Weapon runs dry and the Pistol takes over, its face flashes, so the player sees why the Weapon changed.
     /// </summary>
     /// <remarks>
     /// The tap presses the Next Weapon command on the Gesture device, so it drives the same named action as the mouse
     /// wheel. The button is an interactable UI control, so a press on it never fires and never becomes a Gesture
     /// (<see cref="UiPointerFilter"/>); it's a small tile in the HUD's ammo corner, away from the Grenade button, and
-    /// nothing on it looks like a movement control. Its texts are rewritten only when the Weapon or its reserve changes.
+    /// nothing on it looks like a movement control. Its texts are rewritten only when the Weapon or its reserve changes,
+    /// and it runs every frame only while the run-dry flash fades.
     /// </remarks>
     public sealed class WeaponButtonView : MonoBehaviour
     {
@@ -41,8 +43,10 @@ namespace DarknessRises.Game.Hud
         private PrimaryWeaponLoadout loadout;
         private IReadOnlyList<string> names;
         private AmmoReserve shownReserve;
+        private RunDryFlash flash;
         private Action<PrimaryWeapon> onSwitched;
         private Action onReserveChanged;
+        private Action<int> onRanDry;
 
         /// <summary>Whether the button is on the HUD: the character carries more than one Primary.</summary>
         public bool IsShown => loadout != null && loadout.Count > 1;
@@ -58,15 +62,38 @@ namespace DarknessRises.Game.Hud
             loadout = carried ?? throw new ArgumentNullException(nameof(carried));
             names = weaponNames ?? throw new ArgumentNullException(nameof(weaponNames));
             settings = buttonSettings ?? throw new ArgumentNullException(nameof(buttonSettings));
+            flash = new RunDryFlash(settings.RunDryFlashSeconds);
             onSwitched ??= OnSwitched;
             onReserveChanged ??= ShowReserve;
+            onRanDry ??= OnRanDry;
             loadout.Switched += onSwitched;
+            loadout.RanDry += onRanDry;
             button.onClick.AddListener(OnPressed);
 
+            // Nothing to do each frame until a Weapon runs dry.
+            enabled = false;
             face.color = settings.FaceColor;
             weaponName.color = settings.TextColor;
             gameObject.SetActive(IsShown);
             ShowEquipped();
+        }
+
+        // Runs only while the run-dry flash fades.
+        private void Update()
+        {
+            // Before the button is shown there is nothing to fade.
+            if (flash == null)
+            {
+                enabled = false;
+                return;
+            }
+
+            flash.Tick(Time.deltaTime);
+            face.color = Color.Lerp(settings.FaceColor, settings.RunDryFlashColor, flash.Strength);
+            if (!flash.IsFlashing)
+            {
+                enabled = false;
+            }
         }
 
         private void OnDestroy()
@@ -82,7 +109,9 @@ namespace DarknessRises.Game.Hud
             }
 
             loadout.Switched -= onSwitched;
+            loadout.RanDry -= onRanDry;
             button.onClick.RemoveListener(OnPressed);
+            enabled = false;
             WatchReserve(null);
             loadout = null;
         }
@@ -96,6 +125,17 @@ namespace DarknessRises.Game.Hud
         }
 
         private void OnSwitched(PrimaryWeapon _) => ShowEquipped();
+
+        // A Weapon fired its last round: the face flashes as the Pistol takes over.
+        private void OnRanDry(int _)
+        {
+            flash.Start();
+            enabled = flash.IsFlashing;
+            if (enabled)
+            {
+                face.color = settings.RunDryFlashColor;
+            }
+        }
 
         private void ShowEquipped()
         {

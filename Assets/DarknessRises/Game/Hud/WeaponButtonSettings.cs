@@ -21,10 +21,18 @@ namespace DarknessRises.Game.Hud
         [SerializeField, Tooltip("The button's face.")]
         private Color faceColor = new(0.1f, 0.1f, 0.11f, 0.6f);
 
+        [SerializeField, Tooltip("The face's colour at the moment a Weapon runs dry and the Pistol takes over. It fades back to the face colour.")]
+        private Color runDryFlashColor = new(1f, 0.35f, 0.25f, 0.9f);
+
+        [SerializeField, Min(0f), Tooltip("Seconds the run-dry flash takes to fade out. 0 turns it off.")]
+        private float runDryFlashSeconds = 0.8f;
+
         public string ReserveFormat => reserveFormat;
         public string UnlimitedText => unlimitedText;
         public Color TextColor => textColor;
         public Color EmptyReserveColor => emptyReserveColor;
         public Color FaceColor => faceColor;
+        public Color RunDryFlashColor => runDryFlashColor;
+        public float RunDryFlashSeconds => runDryFlashSeconds;
     }
 }

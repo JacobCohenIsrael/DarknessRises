@@ -23,7 +23,10 @@ namespace DarknessRises.Game.Runs
         /// <summary>Raised whenever <see cref="Phase"/> changes.</summary>
         public event Action<RunPhase> PhaseChanged;
 
-        /// <summary>Raised when the Run ends with Exit, before the end screen shows its record.</summary>
+        /// <summary>
+        /// Raised when a Run ends, with its record: on Exit, before the end screen shows it, and on Restart, before the
+        /// new Run starts. Whoever banks the Run's Credits listens here, so no way of ending a Run loses them.
+        /// </summary>
         public event Action<RunRecord> RunEnded;
 
         public RunPhase Phase { get; private set; } = RunPhase.NotStarted;
@@ -63,6 +66,7 @@ namespace DarknessRises.Game.Runs
                 return false;
             }
 
+            RunEnded?.Invoke(Record);
             BeginRun();
             return true;
         }
@@ -174,6 +178,21 @@ namespace DarknessRises.Game.Runs
             }
 
             Record.AddScore(points);
+            return true;
+        }
+
+        /// <summary>
+        /// A kill or a cleared Level paid <paramref name="credits"/>. Counts while a Run is on, like the kill itself.
+        /// Credits are flat: the Combo never multiplies them.
+        /// </summary>
+        public bool EarnCredits(int credits)
+        {
+            if (!IsInRun)
+            {
+                return false;
+            }
+
+            Record.Credits.Earn(credits);
             return true;
         }
 

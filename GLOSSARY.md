@@ -220,7 +220,7 @@ Ending the current Run and starting a new one from the first Level.
 _Avoid_: retry
 
 **Exit**:
-Ending the Run, after dying or from the pause menu. The end screen shows the Run's Score, the Level reached and Enemies killed; it leads to the Shop once the Shop exists.
+Ending the Run, after dying or from the pause menu. The end screen shows the Run's Score, the Level reached and Enemies killed, then the Credits the Run earned and the new total in the bank, counted up. It offers the end-of-Run ad, and it leads to the Shop once the Shop exists.
 _Avoid_: quit, give up
 
 **Pause**:
@@ -248,8 +248,20 @@ The red mark that flashes where a Shot hurts an Enemy: the hit confirmation. Not
 _Avoid_: hit indicator, crosshair
 
 **Credits**:
-Currency earned by killing Enemies during a Run and spent in the Shop. Not the Score.
+Currency earned during a Run and spent in the Shop. Each Enemy type and Boss pays its own Credits for a kill, and a cleared Level (its Boss beaten) pays a bonus that grows with the Level number. Credits are flat: the Combo never multiplies them. Not the Score: the Score says how well a Run went, Credits are what it pays.
 _Avoid_: coins, gold, money, score
+
+**Bank**:
+The Credits the player holds between Runs, kept in the save. A Run's Credits are banked when the Run ends, whichever way it ends (Exit, the Continue countdown running out, or Restart), and when the app goes to the background mid-Run, so they're never lost.
+_Avoid_: wallet, balance, purse
+
+**End-of-Run ad**:
+The one rewarded ad the end screen offers after a Run: watching it through multiplies the Credits that Run earned. It's optional, pays once per Run, and never blocks moving on. An ad that isn't watched through pays nothing and leaves the offer standing. A Run that earned too few Credits isn't offered one.
+_Avoid_: bonus ad, double-up, reward video
+
+**Save**:
+The player's durable progress on the device: the bank, and what was bought in the Shop. It survives app restarts and updates.
+_Avoid_: profile, account, progress (that's how far along the Route the character is)
 
 **Shop**:
 Where Credits are spent. It is open only between Runs, never between Levels.

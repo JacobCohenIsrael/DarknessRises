@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Runs;
+using DarknessRises.Game.Saving;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -16,6 +17,8 @@ namespace DarknessRises.Game.Boot
     /// (its <see cref="GameRoot"/> releases the Level's content with it) and the Level scene loads again, additively
     /// through Addressables, to play that Level with the Ramp at its index. Until more Levels exist, every Level of the
     /// chain is the same Level scene.
+    /// It also owns the player's save, which outlives every Run: it reads it from the device at start, banks each Run's
+    /// Credits in it, and writes it when the app goes to the background or quits.
     /// </summary>
     public sealed class Bootstrap : MonoBehaviour
     {
@@ -38,6 +41,9 @@ namespace DarknessRises.Game.Boot
 
         private readonly IContentSource source = new AddressablesContentSource();
 
+        // Banks each Run's Credits in the save, however the Run ends.
+        private RunBanking banking;
+
         /// <summary>Raised each time a Level scene has loaded, is the active scene and has been handed the Run.</summary>
         public event Action<GameRoot> LevelLoaded;
 
@@ -47,16 +53,36 @@ namespace DarknessRises.Game.Boot
         /// <summary>The Run being played. It lives as long as the app; Restart starts a new Run in it.</summary>
         public RunFlow Run { get; } = new();
 
+        /// <summary>The player's save: the Credits in the bank and what they bought. Read from the device at start.</summary>
+        public PlayerSave Save { get; private set; }
+
         private void Start()
         {
             versionLabel.Show(definition.VersionLabel, VersionLabel.Text(Application.version, Debug.isDebugBuild));
             lifetime = new CancellationTokenSource();
+            Save = PlayerSave.Load(FileSaveStorage.InPersistentData());
+            banking = new RunBanking(Run, Save);
             Run.LevelStarted += OnLevelStarted;
             RunAsync(lifetime.Token).Forget();
         }
 
+        // On a phone the app may never come back from the background, so what the Run has earned is banked on the way out.
+        private void OnApplicationPause(bool isPaused)
+        {
+            if (isPaused)
+            {
+                banking?.BankNow();
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            banking?.BankNow();
+        }
+
         private void OnDestroy()
         {
+            banking?.Dispose();
             Run.LevelStarted -= OnLevelStarted;
             lifetime?.Cancel();
             lifetime?.Dispose();
@@ -76,7 +102,7 @@ namespace DarknessRises.Game.Boot
                 SceneManager.SetActiveScene(scene);
                 loadingCamera.enabled = false;
                 var gameRoot = FindGameRoot(scene);
-                gameRoot.Play(Run);
+                gameRoot.Play(Run, Save);
                 LevelLoaded?.Invoke(gameRoot);
 
                 await levelChanged.Task.AttachExternalCancellation(cancellationToken);

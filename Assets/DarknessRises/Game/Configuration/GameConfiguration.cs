@@ -1,5 +1,6 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
+using DarknessRises.Game.Credits;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Hud;
@@ -66,6 +67,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("How the Score shows: the running Score and Combo, the points over a kill, the hit marker and the result card.")]
         private ScoreHudSettings scoreHud = new();
 
+        [SerializeField, Tooltip("Credits: what a cleared Level pays, the end-of-Run ad, and how the end screen shows them. What a kill pays is on each Enemy type and Boss.")]
+        private CreditsDefinition credits;
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -89,5 +93,6 @@ namespace DarknessRises.Game.Configuration
         public ShootHintSettings ShootHint => shootHint;
         public ScoreSettings Score => score;
         public ScoreHudSettings ScoreHud => scoreHud;
+        public CreditsDefinition Credits => credits;
     }
 }

@@ -23,6 +23,9 @@ namespace DarknessRises.Game.Bosses
         [SerializeField, Min(0), Tooltip("Score beating it is worth, before the Combo multiplies it.")]
         private int scorePoints = 5000;
 
+        [SerializeField, Min(0), Tooltip("Credits beating it pays, on top of the cleared Level's bonus. Flat: the Combo never multiplies them.")]
+        private int credits = 150;
+
         [SerializeField] private ColossusPhaseThresholds phases = new();
 
         [SerializeField] private ColossusStompTiming stomp = new();
@@ -86,6 +89,7 @@ namespace DarknessRises.Game.Bosses
         public string DisplayName => displayName;
         public int HitPoints => hitPoints;
         public int ScorePoints => scorePoints;
+        public int Credits => credits;
         public ColossusPhaseThresholds Phases => phases;
         public ColossusStompTiming Stomp => stomp;
         public ColossusPhase2Settings Phase2 => phase2;

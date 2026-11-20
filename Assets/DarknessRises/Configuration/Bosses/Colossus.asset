@@ -15,6 +15,7 @@ MonoBehaviour:
   displayName: Colossus
   hitPoints: 50
   scorePoints: 5000
+  credits: 150
   phases:
     phase2Below: 0.5
     phase3Below: 0.15

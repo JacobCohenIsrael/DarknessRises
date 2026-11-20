@@ -110,6 +110,13 @@ namespace DarknessRises.Game.Editor.Enemies
         /// <summary>Loads the Runner definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateRunner()
         {
+            var runner = LoadOrCreateRunnerDefinition();
+            Credits.CreditsBuilder.AuthorRunnerCredits(runner);
+            return runner;
+        }
+
+        private static EnemyDefinition LoadOrCreateRunnerDefinition()
+        {
             return LoadOrCreateEnemy(RunnerDefinitionPath, Runner, created =>
             {
                 created.FindProperty("hitPoints").intValue = RunnerHitPoints;

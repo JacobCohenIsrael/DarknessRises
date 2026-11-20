@@ -181,3 +181,4 @@ MonoBehaviour:
     - {r: 0.45, g: 0.75, b: 1, a: 1}
     - {r: 0.55, g: 1, b: 0.6, a: 1}
     - {r: 1, g: 0.85, b: 0.2, a: 1}
+  credits: {fileID: 11400000, guid: 21c37f1934d8a814eb59bf1e16416606, type: 2}

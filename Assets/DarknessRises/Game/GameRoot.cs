@@ -8,6 +8,7 @@ using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
+using DarknessRises.Game.Credits;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Gestures;
@@ -22,6 +23,7 @@ using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
+using DarknessRises.Game.Saving;
 using DarknessRises.Game.Scoring;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Visibility;
@@ -152,9 +154,24 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The burst of light around the character that pushes Enemies back on a Continue.")]
         private ContinueBurstView continueBurst;
 
+        [Header("Credits")]
+        [SerializeField, Tooltip("The end screen, which shows the Credits a Run earned and offers the end-of-Run ad.")]
+        private EndScreenView endScreen;
+
+        [SerializeField, Tooltip("The placeholder ad watched to multiply a Run's Credits. A real ad network replaces it later.")]
+        private FakeAdView endOfRunAd;
+
         // The Run this scene plays a Level of: handed in by the boot, or the scene's own when it's played on its own.
         private RunFlow run;
         private bool ownsRun;
+
+        // The player's save, where Credits are banked: handed in by the boot with the Run, or a throwaway one kept in
+        // memory when the scene is played on its own.
+        private PlayerSave save;
+        private RunBanking ownBanking;
+
+        // What a cleared Level pays on top of its kills.
+        private LevelClearBonus levelClearBonus;
         private bool reportsToRun;
 
         // Whether the scene runs a Level (or the Test Room's Waves). Kept from Awake: on unload the Level may be destroyed first.
@@ -204,15 +221,17 @@ namespace DarknessRises.Game
 
         /// <summary>
         /// Plays the current Level of <paramref name="runFlow"/> in this scene, with the Ramp at its Level index.
+        /// The Run's Credits are banked in <paramref name="playerSave"/>, by whoever owns both.
         /// Called by the boot right after it loads the scene.
         /// </summary>
-        public void Play(RunFlow runFlow)
+        public void Play(RunFlow runFlow, PlayerSave playerSave)
         {
             if (run != null)
             {
                 throw new InvalidOperationException("This scene already plays a Level of a Run.");
             }
 
+            save = playerSave ?? throw new ArgumentNullException(nameof(playerSave));
             run = runFlow ?? throw new ArgumentNullException(nameof(runFlow));
         }
 
@@ -242,10 +261,13 @@ namespace DarknessRises.Game
             Begin(primaryWeapons, ramp);
         }
 
+        // Nothing is written to the device: the real save belongs to the boot.
         private void PlayOwnRun()
         {
+            save = PlayerSave.Load(new MemorySaveStorage());
             run = new RunFlow();
             ownsRun = true;
+            ownBanking = new RunBanking(run, save);
             run.StartNewRun();
             run.LevelStarted += OnOwnRunLevelStarted;
         }
@@ -418,6 +440,7 @@ namespace DarknessRises.Game
                 if (ownsRun)
                 {
                     run.LevelStarted -= OnOwnRunLevelStarted;
+                    ownBanking.Dispose();
                 }
             }
             finally
@@ -438,6 +461,16 @@ namespace DarknessRises.Game
             continueBurst.Prepare(continueDefinition);
             deathFlow.Watch(
                 health, run, characterAnimation, routeWalker, primaryWeapon, continueDefinition, continueAd, continueBurst);
+            ShowCredits();
+        }
+
+        // Credits are earned in the Level and shown on the end screen, which also offers the end-of-Run ad.
+        private void ShowCredits()
+        {
+            var credits = configuration.Credits;
+            levelClearBonus = credits.LevelClearBonus.ToBonus();
+            endOfRunAd.Use(credits.EndOfRunAd.FakeAdSeconds);
+            endScreen.Use(credits, endOfRunAd, save, content.Clip(credits.EndScreen.BonusClip));
         }
 
         // Score comes from what the Level's fights report: every Shot's hit or miss drives the Combo, every kill earns
@@ -523,10 +556,12 @@ namespace DarknessRises.Game
             }
         }
 
-        // A kill earns its Enemy's points times the Combo, shown floating up from where it died.
+        // A kill earns its Enemy's points times the Combo, shown floating up from where it died, and its Credits, which
+        // the Combo doesn't touch.
         private void OnEnemyKilled(EnemyView enemy)
         {
             AwardScore(enemy.Definition.ScorePoints, enemy.transform.position);
+            run.EarnCredits(enemy.Definition.Credits);
         }
 
         private void AwardScore(int basePoints, Vector3 position)
@@ -634,8 +669,11 @@ namespace DarknessRises.Game
             routeWalker.TakeBackPlacement();
             StopBossLightning();
 
-            // Beating the Boss is the Level's biggest kill.
-            AwardScore(configuration.Level.Boss.ScorePoints, character.position);
+            // Beating the Boss is the Level's biggest kill, and it clears the Level, which pays its bonus.
+            var boss = configuration.Level.Boss;
+            AwardScore(boss.ScorePoints, character.position);
+            run.EarnCredits(boss.Credits);
+            run.EarnCredits(levelClearBonus.For(run.LevelIndex));
         }
 
         // Back to the weather, if the Boss had Lightning.

@@ -63,6 +63,26 @@ namespace DarknessRises.Game.Editor.Health
         private static readonly Vector2 StatValueOffset = new(280f, 0f);
         private static readonly Vector2 StatValueSize = new(320f, 70f);
 
+        // The end screen, top to bottom: the title, the Run's record, a rule, the Credits, the ad's offer and the way on.
+        private static readonly Vector2 EndTitlePosition = new(0f, 420f);
+        private static readonly Vector2 EndScorePosition = new(0f, 300f);
+        private static readonly Vector2 EndLevelPosition = new(0f, 235f);
+        private static readonly Vector2 EndKillsPosition = new(0f, 170f);
+        private static readonly Vector2 EndRulePosition = new(0f, 118f);
+        private static readonly Vector2 EndRuleSize = new(900f, 3f);
+        private static readonly Color EndRuleColor = new(0.85f, 0.85f, 0.85f, 0.25f);
+        private static readonly Vector2 EndCreditsEarnedPosition = new(0f, 62f);
+        private static readonly Vector2 EndAdBonusPosition = new(0f, -3f);
+        private static readonly Vector2 EndCreditsTotalPosition = new(0f, -85f);
+        private const float EndCreditsTotalFontSize = 68f;
+        private static readonly Vector2 EndAdButtonPosition = new(0f, -215f);
+        private static readonly Vector2 EndAdButtonSize = new(820f, 104f);
+        private static readonly Color EndAdButtonColor = new(0.07f, 0.26f, 0.21f, 0.98f);
+        private static readonly Vector2 EndNewRunPosition = new(0f, -410f);
+
+        // Until the Credits definition colours them at runtime.
+        private static readonly Color CreditsColor = new(0.35f, 1f, 0.78f, 1f);
+
         public static void Build(GameRoot gameRoot, Transform character, RideCameraView cameraView)
         {
             var serializedRoot = new SerializedObject(gameRoot);
@@ -237,18 +257,77 @@ namespace DarknessRises.Game.Editor.Health
         private static EndScreenView BuildEndScreen(Transform screens)
         {
             var panel = AddPanel(screens, "End Screen", EndShadeColor);
-            AddText(panel, "Title", "THE DARKNESS WINS", TitleFontSize, TitleColor, new Vector2(0f, 280f), new Vector2(1600f, 160f));
-            AddStat(panel, "Score", "Score", new Vector2(0f, 120f), out var score);
-            AddStat(panel, "Level Reached", "Level reached", new Vector2(0f, 40f), out var levelReached);
-            AddStat(panel, "Enemies Killed", "Enemies killed", new Vector2(0f, -40f), out var enemiesKilled);
-            var newRun = AddButton(panel, "New Run", new Vector2(0f, -200f));
+            AddText(panel, "Title", "THE DARKNESS WINS", TitleFontSize, TitleColor, EndTitlePosition, new Vector2(1600f, 160f));
+            AddStat(panel, "Score", "Score", EndScorePosition, out var score);
+            AddStat(panel, "Level Reached", "Level reached", EndLevelPosition, out var levelReached);
+            AddStat(panel, "Enemies Killed", "Enemies killed", EndKillsPosition, out var enemiesKilled);
+
+            var rule = new GameObject("Rule", typeof(RectTransform), typeof(Image));
+            var ruleRect = rule.GetComponent<RectTransform>();
+            ruleRect.SetParent(panel, false);
+            ruleRect.anchoredPosition = EndRulePosition;
+            ruleRect.sizeDelta = EndRuleSize;
+            var ruleImage = rule.GetComponent<Image>();
+            ruleImage.color = EndRuleColor;
+            ruleImage.raycastTarget = false;
+
+            // Credits get their own lines and colour, apart from the Score: they're what the Run pays, not how well it went.
+            var earnedLabel = AddStat(panel, "Credits Earned", "Credits earned", EndCreditsEarnedPosition, out var creditsEarned);
+
+            // The ad's bonus has its own line, shown only once the ad has paid out.
+            var adBonusRow = new GameObject("Ad Bonus", typeof(RectTransform)).GetComponent<RectTransform>();
+            adBonusRow.SetParent(panel, false);
+            adBonusRow.anchoredPosition = EndAdBonusPosition;
+            var bonusLabel = AddStat(adBonusRow, "Ad Bonus", "Ad bonus", Vector2.zero, out var adBonus);
+            adBonusRow.gameObject.SetActive(false);
+
+            var totalLabel = AddStat(panel, "Credits Total", "CREDITS", EndCreditsTotalPosition, out var creditsTotal);
+            totalLabel.fontSize = creditsTotal.fontSize = EndCreditsTotalFontSize;
+            totalLabel.fontStyle = creditsTotal.fontStyle = FontStyles.Bold;
+
+            // The end-of-Run ad's offer: its wording and the bonus under it come from the Credits definition.
+            var adButton = AddButton(panel, "Watch Ad", EndAdButtonPosition);
+            var adButtonRect = (RectTransform)adButton.transform;
+            adButtonRect.sizeDelta = EndAdButtonSize;
+            adButton.targetGraphic.color = EndAdButtonColor;
+            var adButtonLabel = adButton.GetComponentInChildren<TextMeshProUGUI>();
+            adButtonLabel.rectTransform.sizeDelta = EndAdButtonSize;
+            adButtonLabel.fontStyle = FontStyles.Bold;
+            var hintHeight = HintFontSize * 1.5f;
+            var adHint = AddText(
+                adButtonRect, "Hint", string.Empty, HintFontSize, CreditsColor,
+                new Vector2(0f, -(EndAdButtonSize.y + hintHeight) / 2f - HintGap), new Vector2(EndAdButtonSize.x, hintHeight));
+
+            var newRun = AddButton(panel, "New Run", EndNewRunPosition);
+
+            var sound = new GameObject("Sound", typeof(AudioSource)).GetComponent<AudioSource>();
+            sound.transform.SetParent(panel, false);
+            sound.playOnAwake = false;
+            sound.spatialBlend = 0f;
 
             var view = panel.gameObject.AddComponent<EndScreenView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("levelReached").objectReferenceValue = levelReached;
             serialized.FindProperty("enemiesKilled").objectReferenceValue = enemiesKilled;
             serialized.FindProperty("score").objectReferenceValue = score;
+            serialized.FindProperty("creditsEarned").objectReferenceValue = creditsEarned;
+            serialized.FindProperty("adBonusRow").objectReferenceValue = adBonusRow.gameObject;
+            serialized.FindProperty("adBonus").objectReferenceValue = adBonus;
+            serialized.FindProperty("creditsTotal").objectReferenceValue = creditsTotal;
+            serialized.FindProperty("adButton").objectReferenceValue = adButton;
+            serialized.FindProperty("adButtonLabel").objectReferenceValue = adButtonLabel;
+            serialized.FindProperty("adHint").objectReferenceValue = adHint;
+            serialized.FindProperty("sound").objectReferenceValue = sound;
             serialized.FindProperty("newRunButton").objectReferenceValue = newRun;
+            var creditsTexts = new[] { earnedLabel, creditsEarned, bonusLabel, adBonus, totalLabel, creditsTotal, adButtonLabel, adHint };
+            var creditsTextsProperty = serialized.FindProperty("creditsTexts");
+            creditsTextsProperty.arraySize = creditsTexts.Length;
+            for (var i = 0; i < creditsTexts.Length; i++)
+            {
+                creditsTexts[i].color = CreditsColor;
+                creditsTextsProperty.GetArrayElementAtIndex(i).objectReferenceValue = creditsTexts[i];
+            }
+
             serialized.ApplyModifiedPropertiesWithoutUndo();
             panel.gameObject.SetActive(false);
             return view;
@@ -266,12 +345,13 @@ namespace DarknessRises.Game.Editor.Health
             return rect;
         }
 
-        private static void AddStat(RectTransform panel, string name, string label, Vector2 position, out TextMeshProUGUI value)
+        private static TextMeshProUGUI AddStat(RectTransform panel, string name, string label, Vector2 position, out TextMeshProUGUI value)
         {
             var labelText = AddText(panel, $"{name} Label", label, StatFontSize, TextColor, position + StatLabelOffset, StatLabelSize);
             labelText.alignment = TextAlignmentOptions.Right;
             value = AddText(panel, $"{name} Value", "0", StatFontSize, TitleColor, position + StatValueOffset, StatValueSize);
             value.alignment = TextAlignmentOptions.Left;
+            return labelText;
         }
 
         internal static Button AddButton(RectTransform panel, string label, Vector2 position)

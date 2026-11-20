@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ba48af1b8277eb47b9d7afe5c90920e, type: 3}
+  m_Name: CreditsDefinition
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Credits.CreditsDefinition
+  levelClearBonus:
+    firstLevelCredits: 100
+    growthPerLevel: 50
+    maxCredits: 500
+  endOfRunAd:
+    factor: 2
+    minimumCredits: 20
+    fakeAdSeconds: 5
+    offerFormat: 'WATCH AD: x{0} CREDITS'
+    bonusHintFormat: +{0} Credits for this Run
+  endScreen:
+    color: {r: 0.35, g: 1, b: 0.78, a: 1}
+    countUpSeconds: 1.2
+    bonusCountUpSeconds: 1
+    bonusKickScale: 1.35
+    bonusKickSeconds: 0.25
+    bonusClip:
+      m_AssetGUID: 34f9cbd28a9740349b6cc2f5e280dda3
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    bonusClipStartSeconds: 1.3
+    bonusVolume: 0.8

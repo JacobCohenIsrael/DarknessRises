@@ -6,6 +6,7 @@ using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Bosses;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Continues;
+using DarknessRises.Game.Editor.Credits;
 using DarknessRises.Game.Editor.Enemies;
 using DarknessRises.Game.Editor.Gestures;
 using DarknessRises.Game.Editor.Grenades;
@@ -169,6 +170,7 @@ namespace DarknessRises.Game.Editor
             SkillsBuilder.Build(gameRoot, character, character.GetComponent<PlayerControls>(), Object.FindAnyObjectByType<Canvas>());
             HealthBuilder.Build(gameRoot, character, cameraView);
             ContinueBuilder.Build(gameRoot, character);
+            CreditsBuilder.Build(gameRoot);
             PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>());
             GestureBuilder.Build(gameRoot, character);
             return gameRoot;
@@ -197,6 +199,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp();
             serialized.FindProperty("continue").objectReferenceValue = ContinueBuilder.LoadOrCreateContinue();
             serialized.FindProperty("gestures").objectReferenceValue = GestureBuilder.LoadOrCreateGestures();
+            serialized.FindProperty("credits").objectReferenceValue = CreditsBuilder.LoadOrCreateCredits();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
 

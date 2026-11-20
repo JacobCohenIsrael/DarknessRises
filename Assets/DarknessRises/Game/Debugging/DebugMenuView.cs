@@ -10,7 +10,7 @@ namespace DarknessRises.Game.Debugging
     /// <summary>
     /// Debug only: the touch debug menu for playtesting on a phone. A "DEV" button at the top right opens a panel that
     /// pauses the game and runs the same debug commands as the keyboard (weapons, god mode, Skip to Boss, the Ramp
-    /// jump, Lightning). Built from code at runtime, so no release scene references it. Compiled out of release builds.
+    /// jump, Lightning), and the save's: add Credits, max out everything the Shop sells, reset the save. Built from code at runtime, so no release scene references it. Compiled out of release builds.
     /// </summary>
     /// <remarks>
     /// The DEV button and the panel's shade are <see cref="Selectable"/>s on a canvas with a raycaster, so the UI filter
@@ -20,12 +20,16 @@ namespace DarknessRises.Game.Debugging
     public sealed class DebugMenuView : MonoBehaviour
     {
         public const string DevButtonName = "Debug Menu Button";
+        public const string AddCreditsButtonName = "Add Credits Button";
+        public const string MaxOutButtonName = "Max Upgrades Button";
+        public const string ResetSaveButtonName = "Reset Save Button";
 
         private PrimaryWeaponDebugSwitch weapons;
         private Func<GodModeToggle> godMode;
         private LightningDebugToggle lightning;
         private RampLevelDebugJump rampJump;
         private BossSkipDebug bossSkip;
+        private SaveDebugCommands save;
         private GamePause pause;
 
         private RectTransform safeArea;
@@ -50,7 +54,8 @@ namespace DarknessRises.Game.Debugging
         /// <summary>
         /// Builds the menu under <paramref name="parent"/>. <paramref name="godModeToggle"/> is read on every use, since the
         /// character's health makes a new one each time it's shown. <paramref name="jump"/> and <paramref name="skip"/>
-        /// may be null (no Level).
+        /// may be null (no Level). <paramref name="saveCommands"/> change the player's save: what they max out or reset
+        /// shows up from the next Level started.
         /// </summary>
         public static DebugMenuView Create(
             Transform parent,
@@ -60,6 +65,7 @@ namespace DarknessRises.Game.Debugging
             LightningDebugToggle lightningToggle,
             RampLevelDebugJump jump,
             BossSkipDebug skip,
+            SaveDebugCommands saveCommands,
             GamePause gamePause)
         {
             var root = new GameObject("Debug Menu", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -70,6 +76,7 @@ namespace DarknessRises.Game.Debugging
             view.lightning = lightningToggle;
             view.rampJump = jump;
             view.bossSkip = skip;
+            view.save = saveCommands;
             view.pause = gamePause;
             view.Build(weaponNames);
             return view;
@@ -182,6 +189,15 @@ namespace DarknessRises.Game.Debugging
                 OnSkipToBoss, out _, out _).GetComponent<Button>().interactable = bossSkip != null;
             AddButton(jumpRow, "Ramp Jump Button", "Jump to Ramp level", DebugMenuStyle.LabelFontSize, DebugMenuStyle.ButtonColor,
                 OnRampJump, out _, out _).GetComponent<Button>().interactable = rampJump != null;
+
+            // The save: what the Shop sells and the Credits that buy it. Takes effect from the next Level started.
+            var saveRow = AddRow(box, "Save");
+            AddButton(saveRow, AddCreditsButtonName, $"+{save.CreditsPerPress} Credits", DebugMenuStyle.LabelFontSize, DebugMenuStyle.ButtonColor,
+                save.AddCredits, out _, out _);
+            AddButton(saveRow, MaxOutButtonName, "Max upgrades", DebugMenuStyle.LabelFontSize, DebugMenuStyle.ButtonColor,
+                save.MaxOut, out _, out _);
+            AddButton(saveRow, ResetSaveButtonName, "Reset save", DebugMenuStyle.LabelFontSize, DebugMenuStyle.ButtonColor,
+                save.ResetSave, out _, out _);
 
             var closeRow = AddRow(box, "Close");
             AddButton(closeRow, "Close Button", "Close", DebugMenuStyle.LabelFontSize, DebugMenuStyle.ButtonColor, Close, out _, out _);
@@ -297,7 +313,7 @@ namespace DarknessRises.Game.Debugging
             safeArea.anchorMax = new Vector2(area.xMax / Screen.width, area.yMax / Screen.height);
         }
 
-        private static RectTransform AddRow(RectTransform parent, string name)
+        internal static RectTransform AddRow(RectTransform parent, string name)
         {
             var row = NewRect(name, parent);
             var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
@@ -308,7 +324,7 @@ namespace DarknessRises.Game.Debugging
             return row;
         }
 
-        private static RectTransform AddButton(
+        internal static RectTransform AddButton(
             RectTransform parent, string name, string text, float fontSize, Color color, UnityEngine.Events.UnityAction onClick,
             out Image image, out TextMeshProUGUI label)
         {
@@ -322,14 +338,14 @@ namespace DarknessRises.Game.Debugging
             return rect;
         }
 
-        private static Image AddImage(RectTransform rect, Color color)
+        internal static Image AddImage(RectTransform rect, Color color)
         {
             var image = rect.gameObject.AddComponent<Image>();
             image.color = color;
             return image;
         }
 
-        private static TextMeshProUGUI AddText(RectTransform parent, string name, string text, float fontSize)
+        internal static TextMeshProUGUI AddText(RectTransform parent, string name, string text, float fontSize)
         {
             var label = NewRect(name, parent).gameObject.AddComponent<TextMeshProUGUI>();
             label.text = text;
@@ -340,14 +356,14 @@ namespace DarknessRises.Game.Debugging
             return label;
         }
 
-        private static RectTransform NewRect(string name, Transform parent)
+        internal static RectTransform NewRect(string name, Transform parent)
         {
             var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
             rect.SetParent(parent, false);
             return rect;
         }
 
-        private static void Stretch(RectTransform rect)
+        internal static void Stretch(RectTransform rect)
         {
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;

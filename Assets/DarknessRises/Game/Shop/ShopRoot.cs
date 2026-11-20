@@ -5,6 +5,9 @@ using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Saving;
 using UnityEngine;
+#if UNITY_EDITOR || DEBUG
+using DarknessRises.Game.Debugging;
+#endif
 
 namespace DarknessRises.Game.Shop
 {
@@ -57,6 +60,10 @@ namespace DarknessRises.Game.Shop
             Catalog = shop.ToCatalog();
             Keeper = new ShopKeeper(save);
             view.Show(configuration, Catalog, Keeper, content.Clip(shop.Screen.BuyClip));
+#if UNITY_EDITOR || DEBUG
+            // Built from code, so the scene doesn't reference it and release builds have none of it.
+            ShopDebugMenuView.Create(transform, new SaveDebugCommands(save, shop));
+#endif
             await view.PlayAsync(cancellationToken);
         }
 

@@ -33,8 +33,13 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The Shop screen's wording, colours, and the pop and sound of a purchase.")]
         private ShopScreenSettings screen = new();
 
+        [Header("Debug")]
+        [SerializeField, Min(1), Tooltip("Credits one press of the DEV menu's Add Credits puts in the bank. The DEV menu exists in the Editor and debug builds only.")]
+        private int debugCredits = 1000;
+
         public IReadOnlyList<WeaponOffer> Weapons => weapons;
         public ShopScreenSettings Screen => screen;
+        public int DebugCredits => debugCredits;
 
         /// <summary>Everything the Shop sells, as the rules see it. Make it once per use: its items are new objects each time.</summary>
         public ShopCatalog ToCatalog()

@@ -10,8 +10,8 @@ namespace DarknessRises.Game.Content
     /// <summary>
     /// The content a playable scene loads before it starts, read from the definitions' Addressables references:
     /// the Primary weapons' Shots, hit sparks, Gunshots, Firing loops and reload sounds, the Station banners' sounds, the Grenade,
-    /// the character's sounds, the storm loop, the end screen's Credits sound, the prefab and sounds of every Enemy type its
-    /// fights use, and its Boss's sounds.
+    /// the character's sounds, the storm loop, the end screen's Credits sound, the prefab and sounds (footsteps included) of
+    /// every Enemy type its fights use, and its Boss's sounds.
     /// </summary>
     public static class GameContent
     {
@@ -75,6 +75,7 @@ namespace DarknessRises.Game.Content
                 content.Add(audio.WindUpClip);
                 content.Add(audio.AttackClip);
                 content.Add(enemyType.Tells.Sounds.Clips);
+                content.Add(audio.Footsteps.Clips);
             }
 
             return content;

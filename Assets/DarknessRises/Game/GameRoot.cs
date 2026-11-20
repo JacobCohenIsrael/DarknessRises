@@ -11,6 +11,7 @@ using DarknessRises.Game.Controls;
 using DarknessRises.Game.Credits;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Health;
@@ -130,6 +131,9 @@ namespace DarknessRises.Game
 
         // How fast time runs for Enemies. Slow-mo slows it; the global time scale is never touched.
         private readonly EnemyTime enemyTime = new();
+
+        // The footsteps of the living Enemies, made once the Level's content has loaded.
+        private EnemyFootstepsView footsteps;
 
         // The lights that can reveal an Enemy, for Aim assist's idea of a visible Enemy.
         private readonly SceneLights lights = new();
@@ -337,6 +341,7 @@ namespace DarknessRises.Game
                 routeWaves.Run(configuration.Route, routeWalker.Progress, character, enemyTime, content, stationRhythm);
             }
 
+            footsteps = EnemyFootstepsView.Create(transform, configuration.FootstepVoices, character, enemyTime, content);
             lights.Add(aura.Light);
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
@@ -689,9 +694,10 @@ namespace DarknessRises.Game
 
         private void OnEnemyDied(Enemy _) => run.CountKill();
 
-        // The first Enemy of a Run gets the shoot hint over it, if the hint is due.
+        // Every Enemy is heard walking. The first Enemy of a Run gets the shoot hint over it, if the hint is due.
         private void OnEnemySpawned(EnemyView enemy)
         {
+            footsteps.Track(enemy);
             if (shootHint != null)
             {
                 shootHint.Offer(enemy, run.LevelIndex, primaryWeapon.Weapon);

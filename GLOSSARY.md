@@ -87,7 +87,7 @@ The faint, always-on light around the character. It shows the character's own po
 _Avoid_: glow, personal light
 
 **Tell**:
-A cue that gives away an Enemy in Darkness without lighting it, such as glinting eyes or a sound from its direction. An Enemy's eyes glint only near the character, and only once they've opened: they're shut when it comes in, crack open, blink, and open fully over about a second (a Runner's sooner than a Shambler's), so an Enemy that spawns close isn't given away at once.
+A cue that gives away an Enemy in Darkness without lighting it, such as glinting eyes or a sound from its direction. An Enemy's eyes glint only near the character, and only once they've opened: they're shut when it comes in, crack open, blink, and open fully over about a second (a Runner's sooner than a Shambler's), so an Enemy that spawns close isn't given away at once. Its footsteps are a Tell too: heard from where it walks, faster the faster it moves (a Shambler's drag, a Runner's patter), and silent while it stands to attack, reels or lies dead. Only the nearest few walking Enemies are heard.
 _Avoid_: hint, indicator
 
 ## Threat

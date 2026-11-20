@@ -1,6 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Credits;
+using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Hud;
@@ -80,6 +81,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The Shop, open only between Runs: the Primary weapons it sells with their prices, and how its screen reads and looks.")]
         private ShopDefinition shop;
 
+        [SerializeField, Tooltip("The voices every Enemy's footsteps share, and how many Enemies are heard stepping at once. Each Enemy type's own steps are on its definition.")]
+        private FootstepVoiceSettings footstepVoices = new();
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -107,5 +111,6 @@ namespace DarknessRises.Game.Configuration
         public ScoreHudSettings ScoreHud => scoreHud;
         public CreditsDefinition Credits => credits;
         public ShopDefinition Shop => shop;
+        public FootstepVoiceSettings FootstepVoices => footstepVoices;
     }
 }

@@ -100,6 +100,10 @@ namespace DarknessRises.Game.Editor.Enemies
         // Light on its feet: hits push it further than a Shambler.
         private const float RunnerKnockbackMultiplier = 1.3f;
 
+        // A Shambler's eyes open drowsily (the definition's default); a Runner is wide awake sooner.
+        private const float DefaultEyeOpeningSeconds = 1.2f;
+        private const float RunnerEyeOpeningSeconds = 0.75f;
+
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
         {
@@ -112,6 +116,7 @@ namespace DarknessRises.Game.Editor.Enemies
         {
             var runner = LoadOrCreateRunnerDefinition();
             Credits.CreditsBuilder.AuthorRunnerCredits(runner);
+            AuthorRunnerEyeOpening(runner);
             return runner;
         }
 
@@ -127,6 +132,19 @@ namespace DarknessRises.Game.Editor.Enemies
                 created.FindProperty("pathRefreshSeconds").floatValue = RunnerPathRefreshSeconds;
                 created.FindProperty("knockback.multiplier").floatValue = RunnerKnockbackMultiplier;
             });
+        }
+
+        // The eye opening came after the Runner; give an asset still on the Shambler's default the Runner's quicker one.
+        private static void AuthorRunnerEyeOpening(EnemyDefinition runner)
+        {
+            var serialized = new SerializedObject(runner);
+            var seconds = serialized.FindProperty("tells.eyeGlint.opening.seconds");
+            if (Mathf.Approximately(seconds.floatValue, DefaultEyeOpeningSeconds))
+            {
+                seconds.floatValue = RunnerEyeOpeningSeconds;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(runner);
+            }
         }
 
         // Loads an Enemy type's definition, creating it (tuned by <paramref name="tuneCreated"/>) and its prefab if missing.

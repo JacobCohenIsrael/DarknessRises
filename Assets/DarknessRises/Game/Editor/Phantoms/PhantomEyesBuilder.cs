@@ -81,9 +81,9 @@ namespace DarknessRises.Game.Editor.Phantoms
             return definition;
         }
 
-        private static PhantomEyesView LoadOrCreatePrefab()
+        private static PhantomEyesPair LoadOrCreatePrefab()
         {
-            var existing = AssetDatabase.LoadAssetAtPath<PhantomEyesView>(PrefabPath);
+            var existing = AssetDatabase.LoadAssetAtPath<PhantomEyesPair>(PrefabPath);
             if (existing != null)
             {
                 return existing;
@@ -115,7 +115,7 @@ namespace DarknessRises.Game.Editor.Phantoms
                 eyes[i] = renderer;
             }
 
-            var view = root.AddComponent<PhantomEyesView>();
+            var view = root.AddComponent<PhantomEyesPair>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("voice").objectReferenceValue = voice;
             var list = serialized.FindProperty("eyes");
@@ -128,7 +128,7 @@ namespace DarknessRises.Game.Editor.Phantoms
             serialized.ApplyModifiedPropertiesWithoutUndo();
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
             Object.DestroyImmediate(root);
-            return prefab.GetComponent<PhantomEyesView>();
+            return prefab.GetComponent<PhantomEyesPair>();
         }
 
         private static bool IsOnlyPlaceholder(SerializedProperty clips)

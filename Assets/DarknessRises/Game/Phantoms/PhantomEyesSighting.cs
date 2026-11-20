@@ -1,5 +1,6 @@
 using System;
 using DarknessRises.Game.Critters;
+using DarknessRises.Game.Randomness;
 
 namespace DarknessRises.Game.Phantoms
 {
@@ -58,7 +59,42 @@ namespace DarknessRises.Game.Phantoms
     }
 
     /// <summary>
-    /// One sighting of Phantom eyes: they open over a moment, hold for a few seconds at most, then blink out. Light on
+    /// How a holding pair of Phantom eyes blinks: a quick close and reopen, at random gaps. Default: never.
+    /// </summary>
+    public readonly struct PhantomBlinking
+    {
+        /// <param name="seconds">Seconds a blink takes, closing and reopening. 0: they never blink.</param>
+        /// <param name="minGapSeconds">Fewest seconds of open eyes before a blink.</param>
+        /// <param name="maxGapSeconds">Most seconds of open eyes before a blink.</param>
+        public PhantomBlinking(float seconds, float minGapSeconds, float maxGapSeconds)
+        {
+            if (seconds < 0f || minGapSeconds < 0f || maxGapSeconds < minGapSeconds)
+            {
+                throw new ArgumentOutOfRangeException(nameof(seconds), seconds, "A blink's time and its gaps can't be negative, and the most gap can't be below the fewest.");
+            }
+
+            Seconds = seconds;
+            MinGapSeconds = minGapSeconds;
+            MaxGapSeconds = maxGapSeconds;
+        }
+
+        public float Seconds { get; }
+        public float MinGapSeconds { get; }
+        public float MaxGapSeconds { get; }
+
+        /// <summary>Whether they blink at all.</summary>
+        public bool IsOn => Seconds > 0f;
+
+        /// <summary>How open the eyes are <paramref name="share"/> of the way through a blink: shut halfway, open at both ends.</summary>
+        public static float Openness(float share)
+        {
+            return Math.Min(1f, Math.Abs(1f - 2f * share));
+        }
+    }
+
+    /// <summary>
+    /// One sighting of Phantom eyes: they open over a moment, hold for a few seconds at most (blinking now and then while
+    /// they do), then blink out. Light on
     /// their spot, a real Enemy coming near, or a fight starting makes them vanish at once; the player aiming at them, or
     /// the character walking nearer than they ever appear, makes them blink out. Plain C# (ADR 0003); time comes in as game time, so the pause holds them.
     /// </summary>
@@ -68,7 +104,11 @@ namespace DarknessRises.Game.Phantoms
         private readonly float blinkOutSeconds;
         private readonly float clearanceMetres;
         private readonly float keepAwayMetres;
+        private readonly PhantomBlinking blinking;
+        private readonly IRandom random;
         private float holdSeconds;
+        private float nextBlinkIn;
+        private float blinkSecondsIn = -1f;
         private float secondsIn;
         private float blinkLeft;
 
@@ -76,8 +116,23 @@ namespace DarknessRises.Game.Phantoms
         /// <param name="blinkOutSeconds">Seconds a blink out takes. Light makes them vanish at once instead.</param>
         /// <param name="clearanceMetres">They vanish the moment a living Enemy is this near the character.</param>
         /// <param name="keepAwayMetres">They blink out once the character is nearer to them than this: the least they appear at.</param>
-        public PhantomEyesSighting(float openSeconds, float blinkOutSeconds, float clearanceMetres, float keepAwayMetres = 0f)
+        /// <param name="blinking">How they blink while they hold; by default, never.</param>
+        /// <param name="random">Picks the gaps between blinks. Needed only when they blink.</param>
+        public PhantomEyesSighting(
+            float openSeconds,
+            float blinkOutSeconds,
+            float clearanceMetres,
+            float keepAwayMetres = 0f,
+            PhantomBlinking blinking = default,
+            IRandom random = null)
         {
+            if (blinking.IsOn && random == null)
+            {
+                throw new ArgumentNullException(nameof(random), "Blinking eyes need a random source for their gaps.");
+            }
+
+            this.blinking = blinking;
+            this.random = random;
             this.openSeconds = NotNegative(openSeconds, nameof(openSeconds));
             this.blinkOutSeconds = NotNegative(blinkOutSeconds, nameof(blinkOutSeconds));
             this.clearanceMetres = NotNegative(clearanceMetres, nameof(clearanceMetres));
@@ -89,6 +144,9 @@ namespace DarknessRises.Game.Phantoms
 
         /// <summary>Whether they are blinking out.</summary>
         public bool IsBlinkingOut { get; private set; }
+
+        /// <summary>Whether they are in the middle of a blink while they hold.</summary>
+        public bool IsBlinking => blinkSecondsIn >= 0f;
 
         /// <summary>How strongly the eyes show now, from 0 (not at all) to 1.</summary>
         public float Strength { get; private set; }
@@ -105,6 +163,8 @@ namespace DarknessRises.Game.Phantoms
             IsBlinkingOut = false;
             Vanish = PhantomVanish.None;
             Strength = openSeconds > 0f ? 0f : 1f;
+            blinkSecondsIn = -1f;
+            nextBlinkIn = NextBlinkGap();
         }
 
         /// <summary>
@@ -152,7 +212,8 @@ namespace DarknessRises.Game.Phantoms
             }
 
             secondsIn += deltaSeconds;
-            Strength = openSeconds > 0f ? Math.Min(1f, secondsIn / openSeconds) : 1f;
+            var openness = openSeconds > 0f ? Math.Min(1f, secondsIn / openSeconds) : 1f;
+            Strength = openness * Blink(deltaSeconds, openness >= 1f);
             if (conditions.IsAimedAt)
             {
                 return BlinkOut(PhantomVanish.AimedAt);
@@ -166,6 +227,42 @@ namespace DarknessRises.Game.Phantoms
             return secondsIn >= holdSeconds ? BlinkOut(PhantomVanish.TimeUp) : PhantomVanish.None;
         }
 
+        // How open a blink leaves them now, from 0 to 1, moving the blinks on. Only fully open eyes blink.
+        private float Blink(float deltaSeconds, bool isOpen)
+        {
+            if (!blinking.IsOn || !isOpen)
+            {
+                return 1f;
+            }
+
+            if (blinkSecondsIn >= 0f)
+            {
+                blinkSecondsIn += deltaSeconds;
+                if (blinkSecondsIn < blinking.Seconds)
+                {
+                    return PhantomBlinking.Openness(blinkSecondsIn / blinking.Seconds);
+                }
+
+                blinkSecondsIn = -1f;
+                nextBlinkIn = NextBlinkGap();
+                return 1f;
+            }
+
+            nextBlinkIn -= deltaSeconds;
+            if (nextBlinkIn > 0f)
+            {
+                return 1f;
+            }
+
+            blinkSecondsIn = 0f;
+            return 1f;
+        }
+
+        private float NextBlinkGap()
+        {
+            return blinking.IsOn ? random.Range(blinking.MinGapSeconds, blinking.MaxGapSeconds) : 0f;
+        }
+
         // Starts blinking out. The reason is reported when the blink ends; a blink of no time ends now.
         private PhantomVanish BlinkOut(PhantomVanish reason)
         {
@@ -176,12 +273,14 @@ namespace DarknessRises.Game.Phantoms
             }
 
             IsBlinkingOut = true;
+            blinkSecondsIn = -1f;
             blinkLeft = blinkOutSeconds;
             return PhantomVanish.None;
         }
 
         private PhantomVanish End(PhantomVanish reason)
         {
+            blinkSecondsIn = -1f;
             IsShowing = false;
             IsBlinkingOut = false;
             Strength = 0f;

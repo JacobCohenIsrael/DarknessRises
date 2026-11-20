@@ -11,15 +11,19 @@ namespace DarknessRises.Game.Upgrades
     /// </summary>
     public static class RunStatsBuilder
     {
-        /// <summary>A Primary weapon's numbers: fire rate, magazine, reload and damage, as its Upgrades set them.</summary>
-        public static WeaponRunStats Weapon(PrimaryWeaponStats firing, int damage, OwnedUpgrades upgrades)
+        /// <summary>
+        /// A Primary weapon's numbers: fire rate, magazine, reload, damage and ammo reserve, as its Upgrades set them.
+        /// A Weapon with unlimited ammo (<paramref name="reserveRounds"/> below 0) stays unlimited whatever was bought.
+        /// </summary>
+        public static WeaponRunStats Weapon(PrimaryWeaponStats firing, int damage, int reserveRounds, OwnedUpgrades upgrades)
         {
             return new WeaponRunStats(
                 new PrimaryWeaponStats(
                     upgrades.Value(UpgradeStat.ShotsPerSecond, firing.ShotsPerSecond),
                     upgrades.Whole(UpgradeStat.MagazineSize, firing.MagazineSize),
                     upgrades.Value(UpgradeStat.ReloadSeconds, firing.ReloadSeconds)),
-                upgrades.Whole(UpgradeStat.Damage, damage));
+                upgrades.Whole(UpgradeStat.Damage, damage),
+                reserveRounds < 0 ? WeaponRunStats.UnlimitedAmmo : upgrades.Whole(UpgradeStat.AmmoReserve, reserveRounds));
         }
 
         /// <summary>The Grenade's numbers: charges, refill time and blast radius, as its Upgrades set them.</summary>

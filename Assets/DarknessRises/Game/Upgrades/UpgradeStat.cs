@@ -18,6 +18,9 @@ namespace DarknessRises.Game.Upgrades
         /// <summary>Shots per second a Primary weapon fires while the trigger is held.</summary>
         ShotsPerSecond = 3,
 
+        /// <summary>Rounds a Primary weapon's full ammo reserve holds. Only for a Weapon whose ammo isn't unlimited.</summary>
+        AmmoReserve = 4,
+
         /// <summary>Grenades the character carries.</summary>
         GrenadeCharges = 10,
 

@@ -67,16 +67,16 @@ namespace DarknessRises.Game.Editor.Shop
 
         // Margins from the safe area's edges, in HUD units (1080 tall).
         private const float SideMargin = 80f;
-        private const float TopBarHeight = 170f;
-        private const float BottomBarHeight = 190f;
+        private const float TopBarHeight = 150f;
+        private const float BottomBarHeight = 160f;
 
         private const float TitleFontSize = 110f;
         private static readonly Vector2 TitleSize = new(420f, 130f);
         private const float CreditsCaptionFontSize = 34f;
         private const float CreditsValueFontSize = 88f;
         private static readonly Vector2 CreditsSize = new(460f, 100f);
-        private const float CreditsCaptionTop = 26f;
-        private const float CreditsValueTop = 58f;
+        private const float CreditsCaptionTop = 16f;
+        private const float CreditsValueTop = 46f;
 
         // The two pages' tabs, side by side in the middle of the top bar.
         private static readonly Vector2 TabSize = new(290f, 78f);
@@ -87,43 +87,46 @@ namespace DarknessRises.Game.Editor.Shop
         private const float ColumnSpacing = 36f;
         private const float RowSpacing = 10f;
 
-        private const float CardHeight = 214f;
+        private const float CardHeight = 190f;
         private const float CardFrameWidth = 3f;
         private const float CardPadding = 22f;
-        private const float CardTitleFontSize = 48f;
-        private const float CardTitleTop = 14f;
-        private const float CardTitleHeight = 54f;
-        private const float CardDescriptionFontSize = 25f;
-        private const float CardDescriptionTop = 70f;
-        private const float CardDescriptionHeight = 32f;
-        private const float CardButtonHeight = 64f;
-        private const float CardButtonBottom = 40f;
-        private const float CardButtonFontSize = 34f;
+        private const float CardTitleFontSize = 46f;
+        private const float CardTitleTop = 12f;
+        private const float CardTitleHeight = 50f;
+        private const float CardDescriptionFontSize = 24f;
+        private const float CardDescriptionTop = 64f;
+        private const float CardDescriptionHeight = 30f;
+        private const float CardButtonHeight = 58f;
+        private const float CardButtonBottom = 34f;
+        private const float CardButtonFontSize = 32f;
         private const float CardHintFontSize = 22f;
-        private const float CardHintBottom = 8f;
-        private const float CardHintHeight = 28f;
+        private const float CardHintBottom = 6f;
+        private const float CardHintHeight = 26f;
 
         private const float HeadingHeight = 64f;
         private const float HeadingFontSize = 44f;
 
-        private const float UpgradeRowHeight = 112f;
-        private const float UpgradeRowPadding = 18f;
-        private const float UpgradeTitleFontSize = 30f;
-        private const float UpgradeTitleTop = 14f;
-        private const float UpgradeTitleHeight = 38f;
-        private const float UpgradeEffectFontSize = 32f;
-        private const float UpgradeEffectBottom = 14f;
-        private const float UpgradeEffectHeight = 42f;
-        private const float UpgradeLevelFontSize = 21f;
-        private const float UpgradeLevelTop = 8f;
-        private const float UpgradeLevelHeight = 26f;
-        private static readonly Vector2 UpgradeButtonSize = new(170f, 64f);
-        private const float UpgradeButtonBottom = 12f;
-        private const float UpgradeButtonFontSize = 34f;
+        private const float UpgradeRowHeight = 104f;
+        private const float UpgradeRowPadding = 16f;
+        private const float UpgradeTitleFontSize = 28f;
+        private const float UpgradeTitleTop = 10f;
+        private const float UpgradeTitleHeight = 36f;
+        private const float UpgradeEffectFontSize = 30f;
+        private const float UpgradeEffectBottom = 10f;
+        private const float UpgradeEffectHeight = 38f;
+        private const float UpgradeLevelFontSize = 20f;
+        private const float UpgradeLevelTop = 6f;
+        private const float UpgradeLevelHeight = 24f;
+        private static readonly Vector2 UpgradeButtonSize = new(170f, 58f);
+        private const float UpgradeButtonBottom = 10f;
+        private const float UpgradeButtonFontSize = 32f;
 
-        private const float PrimaryLineFontSize = 44f;
-        private static readonly Vector2 PrimaryLineSize = new(1100f, 70f);
-        private static readonly Vector2 PlayButtonSize = new(460f, 130f);
+        private const float HintLineFontSize = 30f;
+        // The hint fills the left half of the bottom bar, short of the middle, where debug builds put their DEV button.
+        // It's one line on a wide screen and wraps onto two on a narrow one.
+        private const float HintLineHeight = 90f;
+        private const float HintLineGapToMiddle = 80f;
+        private static readonly Vector2 PlayButtonSize = new(460f, 120f);
         private const float PlayFontSize = 84f;
 
         /// <summary>
@@ -145,6 +148,7 @@ namespace DarknessRises.Game.Editor.Shop
             }
 
             AuthorWeaponUpgrades(weapons);
+            AuthorReserveUpgrades(weapons);
             AuthorGearUpgrades(serialized);
 
             var clip = serialized.FindProperty("screen.buyClip");
@@ -212,6 +216,27 @@ namespace DarknessRises.Game.Editor.Shop
             }
         }
 
+        // The ammo reserve Upgrade of the two Primaries whose ammo runs out (Machine gun 240 rounds, Flamethrower 300),
+        // added after the others if the Weapon's list doesn't have it yet. The top level is a little under twice the
+        // reserve a Weapon starts with.
+        private static void AuthorReserveUpgrades(SerializedProperty weapons)
+        {
+            for (var i = 0; i < weapons.arraySize; i++)
+            {
+                var offer = weapons.GetArrayElementAtIndex(i);
+                var upgrades = offer.FindPropertyRelative("upgrades");
+                switch (offer.FindPropertyRelative("id").stringValue)
+                {
+                    case MachineGunId:
+                        AddIfMissing(upgrades, ("machine-gun.reserve", UpgradeStat.AmmoReserve, "RESERVE", Whole, new[] { (500, 300f), (1000, 360f), (1700, 450f) }));
+                        break;
+                    case FlamethrowerId:
+                        AddIfMissing(upgrades, ("flamethrower.reserve", UpgradeStat.AmmoReserve, "RESERVE", Whole, new[] { (600, 380f), (1200, 460f), (2000, 560f) }));
+                        break;
+                }
+            }
+        }
+
         // The Grenade (3 charges, 20 s refill, 3.5 m blast), the Skills (Flare and Slow-mo: 4 s, 15 s cooldown) and the
         // character (5 hit points, Aura 4.5 m). The Aura's levels are small on purpose: 0.3 m each, 20% in all, so
         // Darkness stays dark.
@@ -245,26 +270,47 @@ namespace DarknessRises.Game.Editor.Shop
             }
         }
 
+        // Appends an Upgrade to a list that doesn't hold one with its id yet. The ones already there keep their tuning.
+        private static void AddIfMissing(
+            SerializedProperty list, (string id, UpgradeStat stat, string name, string format, (int price, float value)[] levels) upgrade)
+        {
+            for (var i = 0; i < list.arraySize; i++)
+            {
+                if (list.GetArrayElementAtIndex(i).FindPropertyRelative("id").stringValue == upgrade.id)
+                {
+                    return;
+                }
+            }
+
+            list.arraySize++;
+            Write(list.GetArrayElementAtIndex(list.arraySize - 1), upgrade);
+        }
+
         private static void Author(
             SerializedProperty list, params (string id, UpgradeStat stat, string name, string format, (int price, float value)[] levels)[] upgrades)
         {
             list.arraySize = upgrades.Length;
             for (var i = 0; i < upgrades.Length; i++)
             {
-                var (id, stat, name, format, levels) = upgrades[i];
-                var upgrade = list.GetArrayElementAtIndex(i);
-                upgrade.FindPropertyRelative("id").stringValue = id;
-                upgrade.FindPropertyRelative("stat").intValue = (int)stat;
-                upgrade.FindPropertyRelative("displayName").stringValue = name;
-                upgrade.FindPropertyRelative("valueFormat").stringValue = format;
-                var levelList = upgrade.FindPropertyRelative("levels");
-                levelList.arraySize = levels.Length;
-                for (var level = 0; level < levels.Length; level++)
-                {
-                    var authored = levelList.GetArrayElementAtIndex(level);
-                    authored.FindPropertyRelative("price").intValue = levels[level].price;
-                    authored.FindPropertyRelative("value").floatValue = levels[level].value;
-                }
+                Write(list.GetArrayElementAtIndex(i), upgrades[i]);
+            }
+        }
+
+        private static void Write(
+            SerializedProperty upgrade, (string id, UpgradeStat stat, string name, string format, (int price, float value)[] levels) authored)
+        {
+            var (id, stat, name, format, levels) = authored;
+            upgrade.FindPropertyRelative("id").stringValue = id;
+            upgrade.FindPropertyRelative("stat").intValue = (int)stat;
+            upgrade.FindPropertyRelative("displayName").stringValue = name;
+            upgrade.FindPropertyRelative("valueFormat").stringValue = format;
+            var levelList = upgrade.FindPropertyRelative("levels");
+            levelList.arraySize = levels.Length;
+            for (var level = 0; level < levels.Length; level++)
+            {
+                var step = levelList.GetArrayElementAtIndex(level);
+                step.FindPropertyRelative("price").intValue = levels[level].price;
+                step.FindPropertyRelative("value").floatValue = levels[level].value;
             }
         }
 
@@ -354,9 +400,15 @@ namespace DarknessRises.Game.Editor.Shop
             var headingTemplate = BuildHeadingTemplate(templates);
             var rowTemplate = BuildRowTemplate(templates);
 
-            // The bottom bar: the Primary the next Run carries on the left, the big PLAY on the right.
-            var primaryLine = AddText(safeArea, "Primary Line", "NEXT RUN: PISTOL", PrimaryLineFontSize, TextColor, TextAlignmentOptions.Left);
-            Corner(primaryLine.rectTransform, new Vector2(0f, 0f), new Vector2(SideMargin, (BottomBarHeight - PrimaryLineSize.y) / 2f), PrimaryLineSize);
+            // The bottom bar: what owning a Weapon means on the left, the big PLAY on the right.
+            var hintLine = AddText(safeArea, "Hint Line", "Every unlocked Weapon comes along on a Run.", HintLineFontSize, DimTextColor, TextAlignmentOptions.Left);
+            var hintRect = hintLine.rectTransform;
+            hintRect.anchorMin = new Vector2(0f, 0f);
+            hintRect.anchorMax = new Vector2(0.5f, 0f);
+            hintRect.pivot = new Vector2(0f, 0f);
+            hintRect.offsetMin = new Vector2(SideMargin, (BottomBarHeight - HintLineHeight) / 2f);
+            hintRect.offsetMax = new Vector2(-HintLineGapToMiddle, (BottomBarHeight + HintLineHeight) / 2f);
+            hintLine.textWrappingMode = TextWrappingModes.Normal;
 
             var playButton = AddButton(safeArea, "Play Button", "PLAY", PlayFontSize, PlayColor, Color.white, out var playLabel);
             Corner((RectTransform)playButton.transform, new Vector2(1f, 0f), new Vector2(-SideMargin, (BottomBarHeight - PlayButtonSize.y) / 2f), PlayButtonSize);
@@ -373,7 +425,7 @@ namespace DarknessRises.Game.Editor.Shop
             serialized.FindProperty("title").objectReferenceValue = title;
             serialized.FindProperty("creditsCaption").objectReferenceValue = creditsCaption;
             serialized.FindProperty("creditsValue").objectReferenceValue = creditsValue;
-            serialized.FindProperty("primaryLine").objectReferenceValue = primaryLine;
+            serialized.FindProperty("hintLine").objectReferenceValue = hintLine;
             serialized.FindProperty("weaponsPage").objectReferenceValue = weaponsPage;
             serialized.FindProperty("gearPage").objectReferenceValue = gearPage;
             serialized.FindProperty("weaponsTab").objectReferenceValue = weaponsTab;

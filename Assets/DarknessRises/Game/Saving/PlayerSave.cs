@@ -6,9 +6,9 @@ namespace DarknessRises.Game.Saving
 {
     /// <summary>
     /// The player's durable progress, kept across app restarts: the Credits in the bank, how many Runs they've
-    /// finished, the level of everything bought in the Shop, and the Primary weapon chosen for the next Run. It's read
-    /// from its <see cref="ISaveStorage"/> once, and written back whenever it changes at a moment that matters: a Run
-    /// banks its Credits, something is bought or chosen, the app goes to the background or quits.
+    /// finished, and the level of everything bought in the Shop. It's read from its <see cref="ISaveStorage"/> once,
+    /// and written back whenever it changes at a moment that matters: a Run banks its Credits, something is bought,
+    /// the app goes to the background or quits.
     /// Plain C# (ADR 0003): whoever lives longest (the boot) owns it and hands it to what needs it.
     /// </summary>
     /// <remarks>
@@ -30,7 +30,6 @@ namespace DarknessRises.Game.Saving
             storage = saveStorage;
             Credits = record.credits;
             RunsFinished = record.runsFinished;
-            PrimaryWeaponId = record.primaryWeapon ?? string.Empty;
             foreach (var item in record.items)
             {
                 levels[item.id] = item.level;
@@ -41,7 +40,7 @@ namespace DarknessRises.Game.Saving
         /// <summary>Raised when the Credits in the bank change, with the new total.</summary>
         public event Action<int> CreditsChanged;
 
-        /// <summary>Raised when anything the save holds changes: the bank, what was bought, the chosen Primary, the Runs finished.</summary>
+        /// <summary>Raised when anything the save holds changes: the bank, what was bought, the Runs finished.</summary>
         public event Action Changed;
 
         /// <summary>Credits in the bank: every Run's earnings so far, less what was spent in the Shop.</summary>
@@ -49,9 +48,6 @@ namespace DarknessRises.Game.Saving
 
         /// <summary>How many Runs the player has finished, whichever way they ended.</summary>
         public int RunsFinished { get; private set; }
-
-        /// <summary>The id of the Primary weapon chosen for the next Run. Empty until one is chosen.</summary>
-        public string PrimaryWeaponId { get; private set; }
 
         /// <summary>
         /// Reads the save from <paramref name="saveStorage"/>, migrating an older record to this build's version.
@@ -165,15 +161,14 @@ namespace DarknessRises.Game.Saving
         }
 
         /// <summary>
-        /// Puts the save back to a first install: no Credits, nothing bought, no Primary chosen, no Run finished. For the
-        /// dev tools. It doesn't write the save.
+        /// Puts the save back to a first install: no Credits, nothing bought, no Run finished. For the dev tools. It
+        /// doesn't write the save.
         /// </summary>
         public void Reset()
         {
             var hadCredits = Credits != 0;
             Credits = 0;
             RunsFinished = 0;
-            PrimaryWeaponId = string.Empty;
             levels.Clear();
             boughtIds.Clear();
             if (hadCredits)
@@ -182,21 +177,6 @@ namespace DarknessRises.Game.Saving
             }
 
             MarkChanged();
-        }
-
-        /// <summary>Chooses the Primary weapon for the next Run, by its id. Whether it's owned is the Shop's call.</summary>
-        /// <returns>Whether the choice changed.</returns>
-        public bool ChoosePrimaryWeapon(string weaponId)
-        {
-            weaponId ??= string.Empty;
-            if (weaponId == PrimaryWeaponId)
-            {
-                return false;
-            }
-
-            PrimaryWeaponId = weaponId;
-            MarkChanged();
-            return true;
         }
 
         /// <summary>Writes the save if it changed since it was last written.</summary>
@@ -243,7 +223,6 @@ namespace DarknessRises.Game.Saving
                 version = SaveRecord.CurrentVersion,
                 credits = Credits,
                 runsFinished = RunsFinished,
-                primaryWeapon = PrimaryWeaponId,
             };
 
             foreach (var id in boughtIds)

@@ -164,7 +164,7 @@ namespace DarknessRises.Game.Editor
             SetReference(gameRoot, "room", room);
             SetReference(gameRoot, "lightning", lightning);
             SetReference(gameRoot, "toggleLightning", LoadDebugToggleLightningAction());
-            PrimaryWeaponsBuilder.WireDebugSwitch(gameRoot);
+            PrimaryWeaponsBuilder.WireSwitch(character.GetComponent<PlayerControls>());
             RampBuilder.WireDebugJump(gameRoot);
             ColossusBuilder.WireDebugSkip(gameRoot);
             ColossusBuilder.WireRelocateInput(character.GetComponent<PlayerControls>());
@@ -174,6 +174,7 @@ namespace DarknessRises.Game.Editor
             CreditsBuilder.Build(gameRoot);
             PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>());
             GestureBuilder.Build(gameRoot, character);
+            WeaponButtonBuilder.Build(gameRoot);
             return gameRoot;
         }
 

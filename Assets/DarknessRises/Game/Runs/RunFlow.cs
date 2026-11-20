@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Weapons;
 
 namespace DarknessRises.Game.Runs
 {
@@ -45,6 +46,13 @@ namespace DarknessRises.Game.Runs
 
         /// <summary>How many times the character has Continued in this Run. Back to 0 with every new Run.</summary>
         public int ContinuesUsed { get; private set; }
+
+        /// <summary>
+        /// The Primary weapons the character carries through this Run: their magazines, their ammo reserves and which
+        /// one is equipped. The Run's first Level arms it (<see cref="Carry"/>); the Levels after it find it as the
+        /// last one left it. A new Run starts with none.
+        /// </summary>
+        public PrimaryWeaponLoadout Loadout { get; private set; }
 
         // The phase of the Level the character is dead in: where a Continue goes back to.
         private RunPhase resumePhase;
@@ -208,6 +216,25 @@ namespace DarknessRises.Game.Runs
         }
 
         /// <summary>
+        /// Arms the Run with the Primary weapons the character carries for the rest of it. Only while a Run is on.
+        /// </summary>
+        public bool Carry(PrimaryWeaponLoadout loadout)
+        {
+            if (loadout == null)
+            {
+                throw new ArgumentNullException(nameof(loadout));
+            }
+
+            if (!IsInRun)
+            {
+                return false;
+            }
+
+            Loadout = loadout;
+            return true;
+        }
+
+        /// <summary>
         /// A kill or a cleared Level paid <paramref name="credits"/>. Counts while a Run is on, like the kill itself.
         /// Credits are flat: the Combo never multiplies them.
         /// </summary>
@@ -246,6 +273,7 @@ namespace DarknessRises.Game.Runs
         {
             Record = new RunRecord();
             ContinuesUsed = 0;
+            Loadout = null;
             StartLevel(RunRecord.FirstLevel);
         }
 

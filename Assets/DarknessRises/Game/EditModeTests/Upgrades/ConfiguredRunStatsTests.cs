@@ -30,6 +30,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             { UpgradeStat.MagazineSize, 77f },
             { UpgradeStat.ReloadSeconds, 0.5f },
             { UpgradeStat.ShotsPerSecond, 9f },
+            { UpgradeStat.AmmoReserve, 444f },
             { UpgradeStat.GrenadeCharges, 6f },
             { UpgradeStat.GrenadeRefillSeconds, 9f },
             { UpgradeStat.GrenadeBlastRadius, 8f },
@@ -44,6 +45,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
         private static readonly UpgradeStat[] WeaponStats =
         {
             UpgradeStat.Damage, UpgradeStat.MagazineSize, UpgradeStat.ReloadSeconds, UpgradeStat.ShotsPerSecond,
+            UpgradeStat.AmmoReserve,
         };
 
         private static readonly UpgradeStat[] GrenadeStats =
@@ -61,6 +63,9 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
 
         private const int UpgradePrice = 10;
 
+        // The test Weapon's ammo runs out, so its reserve is a number an Upgrade can raise.
+        private const int AuthoredReserve = 200;
+
         private readonly List<Object> created = new();
         private GameConfiguration configuration;
         private WeaponDefinition weapon;
@@ -69,6 +74,10 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
         public void SetUp()
         {
             weapon = Create<WeaponDefinition>();
+            var serializedWeapon = new SerializedObject(weapon);
+            serializedWeapon.FindProperty("hasUnlimitedAmmo").boolValue = false;
+            serializedWeapon.FindProperty("ammoReserve").intValue = AuthoredReserve;
+            serializedWeapon.ApplyModifiedPropertiesWithoutUndo();
             var shop = Create<ShopDefinition>();
             var serializedShop = new SerializedObject(shop);
             var weapons = serializedShop.FindProperty("weapons");
@@ -158,6 +167,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
                 UpgradeStat.MagazineSize => stats.Primaries[0].Firing.MagazineSize,
                 UpgradeStat.ReloadSeconds => stats.Primaries[0].Firing.ReloadSeconds,
                 UpgradeStat.ShotsPerSecond => stats.Primaries[0].Firing.ShotsPerSecond,
+                UpgradeStat.AmmoReserve => stats.Primaries[0].ReserveRounds,
                 UpgradeStat.GrenadeCharges => stats.Grenade.Charges.MaxCharges,
                 UpgradeStat.GrenadeRefillSeconds => stats.Grenade.Charges.RefillSeconds,
                 UpgradeStat.GrenadeBlastRadius => stats.Grenade.BlastRadius,
@@ -185,6 +195,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
 
             // The definitions' defaults, so the test would notice a number read from the wrong place.
             Assert.That(stats.Primaries[0].Firing.MagazineSize, Is.EqualTo(weapon.MagazineSize));
+            Assert.That(stats.Primaries[0].ReserveRounds, Is.EqualTo(AuthoredReserve));
             Assert.That(stats.Grenade.Charges.MaxCharges, Is.EqualTo(configuration.Grenade.ChargeStats.MaxCharges));
             Assert.That(stats.MaxHitPoints, Is.EqualTo(configuration.Player.HitPoints));
             Assert.That(stats.AuraRange, Is.EqualTo(configuration.Player.Aura.Range));
@@ -236,6 +247,20 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
 
             Assert.That(stats.Primaries[0].Firing.MagazineSize, Is.EqualTo(77));
             Assert.That(stats.Primaries[1].Firing.MagazineSize, Is.EqualTo(other.MagazineSize));
+        }
+
+        [Test]
+        public void A_Weapon_authored_with_unlimited_ammo_is_carried_with_unlimited_ammo()
+        {
+            // A definition's ammo is unlimited until a reserve is authored for it: the Pistol's.
+            var pistol = Create<WeaponDefinition>();
+            var catalog = configuration.Shop.ToCatalog();
+
+            var stats = ConfiguredRunStats.For(configuration, catalog, KeeperWith(0), new[] { pistol, weapon });
+
+            Assert.That(stats.Primaries[0].HasUnlimitedAmmo, Is.True);
+            Assert.That(stats.Primaries[1].HasUnlimitedAmmo, Is.False);
+            Assert.That(stats.Primaries[1].ReserveRounds, Is.EqualTo(AuthoredReserve));
         }
 
         [Test]

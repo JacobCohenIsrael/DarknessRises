@@ -1,4 +1,4 @@
-using DarknessRises.Game.Debugging;
+using DarknessRises.Game.Controls;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Weapons;
 using UnityEditor;
@@ -9,9 +9,10 @@ using UnityEngine.Rendering;
 namespace DarknessRises.Game.Editor.Weapons
 {
     /// <summary>
-    /// Builds the Machine gun and Flamethrower definitions, the Flamethrower's fiery Shot prefab, and the debug keys
-    /// (1–3) that switch Primaries. New definitions start from placeholder tuning; existing assets are kept, so tuning
-    /// done in the Inspector survives a rebuild.
+    /// Builds the Machine gun and Flamethrower definitions, the Flamethrower's fiery Shot prefab, and the Gameplay
+    /// actions that switch Primaries (keys 1–3, the mouse wheel, and the touch Weapon button's control). New
+    /// definitions start from placeholder tuning; existing assets are kept, so tuning done in the Inspector survives
+    /// a rebuild.
     /// </summary>
     public static class PrimaryWeaponsBuilder
     {
@@ -30,8 +31,24 @@ namespace DarknessRises.Game.Editor.Weapons
         private const string ParticlesUnlitShaderName = "Universal Render Pipeline/Particles/Unlit";
         private const string SoftParticleTexture = "Default-Particle.psd";
 
-        // Keys 1-3 equip the Pistol, Machine gun and Flamethrower, in loadout order.
-        private const int DebugSwitchKeyCount = 3;
+        // Keys 1-3 equip the Pistol, Machine gun and Flamethrower: their places in the Shop's order.
+        private const int WeaponKeyCount = 3;
+        private const string GameplayMap = "Gameplay";
+        private const string DebugMap = "Debug";
+        private const string WeaponActionPrefix = "Weapon";
+        private const string NextWeaponAction = "NextWeapon";
+        private const string PreviousWeaponAction = "PreviousWeapon";
+        private const string KeyboardMouseGroup = "Keyboard&Mouse";
+        private const string TouchGroup = "Touch";
+
+        // The debug-only actions the Weapon actions replace.
+        private const string FormerDebugActionPrefix = "PrimaryWeapon";
+
+        // First-pass ammo reserves: what a gun carries beyond its magazine. The Machine gun's 240 is eight magazines,
+        // about 27 seconds of held fire; the Flamethrower's 300 is five tanks, 20 seconds. Enough to lean on for the
+        // hard part of a Level, not to carry a whole one: the Pistol never runs out.
+        private const int MachineGunReserve = 240;
+        private const int FlamethrowerReserve = 300;
 
         // Placeholder flame particles, relative to the Shot's size (the particles scale with the Shot): seconds,
         // metres per second and multiples of the Shot's size.
@@ -76,6 +93,7 @@ namespace DarknessRises.Game.Editor.Weapons
             }
 
             FillMissingPrefabs(serialized, () => pistol.Shot.Prefab.editorAsset, () => pistol.HitSpark.Prefab.editorAsset);
+            AuthorReserve(serialized, MachineGunReserve);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(machineGun);
             return machineGun;
@@ -117,81 +135,107 @@ namespace DarknessRises.Game.Editor.Weapons
             }
 
             FillMissingPrefabs(serialized, () => LoadOrCreateFlameShotPrefab().gameObject, () => pistol.HitSpark.Prefab.editorAsset);
+            AuthorReserve(serialized, FlamethrowerReserve);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(flamethrower);
             return flamethrower;
         }
 
+        // Gives a Weapon that was never given one a finite ammo reserve. Unlimited ammo with a reserve of 0 is how a
+        // definition starts; once either was set in the Inspector, it's left alone.
+        private static void AuthorReserve(SerializedObject weapon, int reserve)
+        {
+            var unlimited = weapon.FindProperty("hasUnlimitedAmmo");
+            var rounds = weapon.FindProperty("ammoReserve");
+            if (unlimited.boolValue && rounds.intValue == 0)
+            {
+                unlimited.boolValue = false;
+                rounds.intValue = reserve;
+            }
+        }
+
         /// <summary>
-        /// The debug actions that equip the 1st, 2nd and 3rd Primary. Adds any that are missing to the game's input
-        /// actions (Debug/PrimaryWeapon1-3 on keys 1-3) and keeps every other action as it is.
+        /// Points the player's controls at the Gameplay actions that switch Primaries, adding them to the game's input
+        /// actions if they're missing: Weapon1-3 on keys 1-3, NextWeapon on the mouse wheel down and on the Gesture
+        /// device (the touch Weapon button presses it), PreviousWeapon on the wheel up. The debug-only
+        /// PrimaryWeapon1-3 actions they replace are removed. Every other action is kept as it is.
         /// </summary>
-        public static InputActionReference[] LoadDebugSwitchActions()
+        public static void WireSwitch(PlayerControls controls)
+        {
+            EnsureSwitchActions();
+            var serialized = new SerializedObject(controls);
+            var select = serialized.FindProperty("selectWeapon");
+            select.arraySize = WeaponKeyCount;
+            for (var number = 1; number <= WeaponKeyCount; number++)
+            {
+                select.GetArrayElementAtIndex(number - 1).objectReferenceValue = LoadReference($"{GameplayMap}/{WeaponActionPrefix}{number}");
+            }
+
+            serialized.FindProperty("nextWeapon").objectReferenceValue = LoadReference($"{GameplayMap}/{NextWeaponAction}");
+            serialized.FindProperty("previousWeapon").objectReferenceValue = LoadReference($"{GameplayMap}/{PreviousWeaponAction}");
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void EnsureSwitchActions()
         {
             const string controlsPath = PistolBuilder.ControlsPath;
             var actions = AssetDatabase.LoadAssetAtPath<InputActionAsset>(controlsPath);
-            var missing = false;
-            for (var number = 1; number <= DebugSwitchKeyCount; number++)
+            var isUpToDate = actions.FindAction($"{GameplayMap}/{NextWeaponAction}") != null
+                && actions.FindAction($"{GameplayMap}/{PreviousWeaponAction}") != null;
+            for (var number = 1; number <= WeaponKeyCount; number++)
             {
-                missing |= actions.FindAction(PrimaryWeaponDebugSwitch.ActionPath(number)) == null;
+                isUpToDate &= actions.FindAction($"{GameplayMap}/{WeaponActionPrefix}{number}") != null;
+                isUpToDate &= actions.FindAction($"{DebugMap}/{FormerDebugActionPrefix}{number}") == null;
             }
 
-            if (missing)
+            if (isUpToDate)
             {
-                var edited = InputActionAsset.FromJson(actions.ToJson());
-                var debugMap = edited.FindActionMap(PrimaryWeaponDebugSwitch.MapName)
-                    ?? edited.AddActionMap(PrimaryWeaponDebugSwitch.MapName);
-                for (var number = 1; number <= DebugSwitchKeyCount; number++)
-                {
-                    var name = PrimaryWeaponDebugSwitch.ActionPrefix + number;
-                    if (debugMap.FindAction(name) == null)
-                    {
-                        debugMap.AddAction(name, InputActionType.Button, $"<Keyboard>/{number}");
-                    }
-                }
-
-                System.IO.File.WriteAllText(controlsPath, edited.ToJson());
-                Object.DestroyImmediate(edited);
-                AssetDatabase.ImportAsset(controlsPath);
-                actions = AssetDatabase.LoadAssetAtPath<InputActionAsset>(controlsPath);
+                return;
             }
 
-            var references = new InputActionReference[DebugSwitchKeyCount];
-            var subAssets = AssetDatabase.LoadAllAssetsAtPath(controlsPath);
-            for (var i = 0; i < references.Length; i++)
+            var edited = InputActionAsset.FromJson(actions.ToJson());
+            var gameplay = edited.FindActionMap(GameplayMap, throwIfNotFound: true);
+            var debug = edited.FindActionMap(DebugMap);
+            for (var number = 1; number <= WeaponKeyCount; number++)
             {
-                var path = PrimaryWeaponDebugSwitch.ActionPath(i + 1);
-                var action = actions.FindAction(path, throwIfNotFound: true);
-                foreach (var asset in subAssets)
+                debug?.FindAction(FormerDebugActionPrefix + number)?.RemoveAction();
+                var name = WeaponActionPrefix + number;
+                if (gameplay.FindAction(name) == null)
                 {
-                    if (asset is InputActionReference reference && reference.action != null && reference.action.id == action.id)
-                    {
-                        references[i] = reference;
-                    }
-                }
-
-                if (references[i] == null)
-                {
-                    throw new System.InvalidOperationException($"No action reference for {path} in {controlsPath}.");
+                    gameplay.AddAction(name, InputActionType.Button, $"<Keyboard>/{number}", groups: KeyboardMouseGroup);
                 }
             }
 
-            return references;
+            if (gameplay.FindAction(NextWeaponAction) == null)
+            {
+                var next = gameplay.AddAction(NextWeaponAction, InputActionType.Button, "<Mouse>/scroll/down", groups: KeyboardMouseGroup);
+                next.AddBinding("<GestureDevice>/nextWeapon", groups: TouchGroup);
+            }
+
+            if (gameplay.FindAction(PreviousWeaponAction) == null)
+            {
+                gameplay.AddAction(PreviousWeaponAction, InputActionType.Button, "<Mouse>/scroll/up", groups: KeyboardMouseGroup);
+            }
+
+            System.IO.File.WriteAllText(controlsPath, edited.ToJson());
+            Object.DestroyImmediate(edited);
+            AssetDatabase.ImportAsset(controlsPath);
         }
 
-        /// <summary>Points the Game root's debug Primary switch at the Debug/PrimaryWeapon1-3 actions.</summary>
-        public static void WireDebugSwitch(GameRoot gameRoot)
+        private static InputActionReference LoadReference(string actionPath)
         {
-            var references = LoadDebugSwitchActions();
-            var serialized = new SerializedObject(gameRoot);
-            var property = serialized.FindProperty("switchPrimaryWeapon");
-            property.arraySize = references.Length;
-            for (var i = 0; i < references.Length; i++)
+            const string controlsPath = PistolBuilder.ControlsPath;
+            var actions = AssetDatabase.LoadAssetAtPath<InputActionAsset>(controlsPath);
+            var action = actions.FindAction(actionPath, throwIfNotFound: true);
+            foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(controlsPath))
             {
-                property.GetArrayElementAtIndex(i).objectReferenceValue = references[i];
+                if (asset is InputActionReference reference && reference.action != null && reference.action.id == action.id)
+                {
+                    return reference;
+                }
             }
 
-            serialized.ApplyModifiedPropertiesWithoutUndo();
+            throw new System.InvalidOperationException($"No action reference for {actionPath} in {controlsPath}.");
         }
 
         private static WeaponDefinition LoadOrCreate(string path, out bool created)

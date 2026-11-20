@@ -41,6 +41,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("Coming back after death, once per Run, for watching an ad.")] private ContinueDefinition @continue;
         [SerializeField, Tooltip("Touch Gestures and Aim assist.")] private GestureDefinition gestures;
 
+        [SerializeField, Tooltip("How the Primary weapons' ammo reserves refill during a Run. Each Weapon's own reserve is on its definition.")]
+        private AmmoSettings ammo = new();
+
         [SerializeField, Tooltip("The reload meter and sounds, shared by every Primary weapon.")]
         private ReloadFeedbackSettings reloadFeedback = new();
 
@@ -55,6 +58,9 @@ namespace DarknessRises.Game.Configuration
 
         [SerializeField, Tooltip("The Ready and Clear banners and the Go cue shown to the Station rhythm, with their sounds.")]
         private StationBannerSettings stationBanners = new();
+
+        [SerializeField, Tooltip("The Weapon button beside the ammo count: the equipped Primary weapon and its ammo reserve.")]
+        private WeaponButtonSettings weaponButton = new();
 
         [SerializeField, Tooltip("The reticle where the player aims, which kicks with every Shot.")]
         private CrosshairSettings crosshair = new();
@@ -88,11 +94,13 @@ namespace DarknessRises.Game.Configuration
         public RampDefinition Ramp => ramp;
         public ContinueDefinition Continue => @continue;
         public GestureDefinition Gestures => gestures;
+        public AmmoSettings Ammo => ammo;
         public ReloadFeedbackSettings ReloadFeedback => reloadFeedback;
         public GunshotVoiceSettings GunshotVoices => gunshotVoices;
         public BossHealthBarSettings BossHealthBar => bossHealthBar;
         public StationRhythmSettings StationRhythm => stationRhythm;
         public StationBannerSettings StationBanners => stationBanners;
+        public WeaponButtonSettings WeaponButton => weaponButton;
         public CrosshairSettings Crosshair => crosshair;
         public ShootHintSettings ShootHint => shootHint;
         public ScoreSettings Score => score;

@@ -169,6 +169,10 @@ _Avoid_: two-finger swipe, double flick
 On touch only, the on-screen button that throws the Grenade and shows its charges. Tapping it arms the Grenade, and the next tap in the Room throws it at that point instead of firing. Tapping it again cancels. Holding it picks it up so the player can drag it anywhere inside the screen's safe area, and the device remembers where it was dropped. It's greyed out with no charges. On keyboard and mouse it's hidden, and right-click throws.
 _Avoid_: grenade icon, bomb button
 
+**Weapon button**:
+The on-screen button that switches Primary weapons, in the ammo corner of the HUD. It shows the equipped Primary's name and its ammo reserve, and a tap or a click equips the next unlocked Primary that has ammo. On keyboard and mouse, keys 1 to 3 also pick a Primary and the mouse wheel steps through them. It's hidden while the Pistol is the only Primary unlocked.
+_Avoid_: weapon wheel, weapon picker, switch button
+
 **Crosshair**:
 The reticle on the HUD where the player aims. It kicks with every Shot. With a mouse it follows the pointer all the time and stands in for the cursor; on touch it appears where the finger lands with the first Shot and fades a moment after the last.
 _Avoid_: cursor, pointer, hit marker (that marks a hit on an Enemy)
@@ -183,12 +187,20 @@ On touch only, Shots bend slightly toward the nearest visible Enemy close to the
 ## Weapons
 
 **Weapon**:
-What the character fires. Each Weapon has its own fire rate, ammo, Muzzle flash and Shots. The character carries one Primary weapon and one Secondary weapon.
+What the character fires. Each Weapon has its own fire rate, ammo, Muzzle flash and Shots. The character carries every Primary weapon the player has unlocked, with one of them equipped, and one Secondary weapon.
 _Avoid_: gun
 
 **Primary weapon**:
-The Weapon fired most of the time, such as the Pistol, Machine gun or Flamethrower. It uses a magazine and reloads. A Run has one Primary: the one chosen in the Shop from the Weapons the player has unlocked. The Pistol is owned from the start.
+The Weapon fired most of the time, such as the Pistol, Machine gun or Flamethrower. It uses a magazine and reloads from its ammo reserve. Every Primary the player has unlocked comes along on every Run, and the player switches between them as they play; one that isn't unlocked can't be selected. A Run starts with the Pistol equipped: it's owned from the start and never runs out of ammo.
 _Avoid_: main weapon
+
+**Ammo reserve**:
+The rounds a Primary weapon carries beyond its magazine, which its reloads take from. The Pistol's is unlimited; the Machine gun's and the Flamethrower's are finite. Reserves are full when a Run starts, each new Level refills a share of them, and a Continue fills them. The HUD shows the reserve under the magazine.
+_Avoid_: spare ammo, stock, clips
+
+**Run dry**:
+What a Primary weapon does when its magazine and its ammo reserve are both empty. The character switches to the Pistol on its own, and the dry Weapon can't be selected until a refill gives it ammo again. A magazine that is merely empty hasn't run dry: it reloads.
+_Avoid_: out of ammo, empty (for a Weapon that can still reload)
 
 **Secondary weapon**:
 A Weapon with limited uses, fired with a separate input, such as the Grenade.
@@ -212,7 +224,7 @@ The rise in difficulty along a Level and from each Level to the next.
 _Avoid_: stage, difficulty curve
 
 **Continue**:
-Coming back to life where the character died, with full hit points and a burst of light that pushes nearby Enemies back, in exchange for watching an ad. Allowed once per Run. The death screen offers it arcade-style, as "CONTINUE?" over a countdown; when the countdown runs out, the Run ends as if the player took Exit. With no Continue left the screen says "GAME OVER".
+Coming back to life where the character died, with full hit points, full ammo reserves and a burst of light that pushes nearby Enemies back, in exchange for watching an ad. Allowed once per Run. The death screen offers it arcade-style, as "CONTINUE?" over a countdown; when the countdown runs out, the Run ends as if the player took Exit. With no Continue left the screen says "GAME OVER".
 _Avoid_: revive, respawn, second chance
 
 **Restart**:
@@ -264,15 +276,15 @@ The player's durable progress on the device: the bank, and what was bought in th
 _Avoid_: profile, account, progress (that's how far along the Route the character is)
 
 **Shop**:
-Where Credits are spent: the player unlocks Weapons there, chooses the Primary weapon for the next Run, and buys Upgrades. It is open only between Runs, never between Levels: the end screen leads to it, and its PLAY starts the next Run. A first install goes straight into the first Level; once a Run has been finished, the app opens in the Shop.
+Where Credits are spent: the player unlocks Weapons there and buys Upgrades. It is open only between Runs, never between Levels: the end screen leads to it, and its PLAY starts the next Run. A first install goes straight into the first Level; once a Run has been finished, the app opens in the Shop.
 _Avoid_: store, upgrade screen, menu, lobby
 
 **Unlock**:
-Buying a Weapon in the Shop, once, with Credits. An unlocked Weapon is owned for good and can be chosen as the Primary weapon.
+Buying a Weapon in the Shop, once, with Credits. An unlocked Weapon is owned for good and comes along on every Run.
 _Avoid_: purchase (for a Weapon), acquire
 
 **Upgrade**:
-A lasting improvement bought in the Shop with Credits, level by level, each level dearer than the last. An Upgrade sets one number: a Primary weapon's damage, magazine, reload time or fire rate; the Grenade's charges, refill time or blast radius; the Flare's or Slow-mo's duration or cooldown; the character's hit points or the reach of the Aura. A Weapon's Upgrades can be bought only once the Weapon is unlocked. Upgrades apply from the next Run; the Aura's are kept small so Darkness stays dark.
+A lasting improvement bought in the Shop with Credits, level by level, each level dearer than the last. An Upgrade sets one number: a Primary weapon's damage, magazine, reload time or fire rate, or the ammo reserve of one whose ammo runs out; the Grenade's charges, refill time or blast radius; the Flare's or Slow-mo's duration or cooldown; the character's hit points or the reach of the Aura. A Weapon's Upgrades can be bought only once the Weapon is unlocked. Upgrades apply from the next Run; the Aura's are kept small so Darkness stays dark.
 _Avoid_: perk, boost, power-up, skill tree, level-up
 
 **Run's stats**:

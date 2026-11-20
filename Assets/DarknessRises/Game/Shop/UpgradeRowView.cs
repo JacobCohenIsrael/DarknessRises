@@ -115,7 +115,7 @@ namespace DarknessRises.Game.Shop
                     break;
                 case Look.Maxed:
                     buttonLabel.text = settings.MaxLabel;
-                    buttonLabel.color = settings.EquippedColor;
+                    buttonLabel.color = settings.OwnedColor;
                     buttonImage.color = settings.CannotBuyColor;
                     break;
                 default:

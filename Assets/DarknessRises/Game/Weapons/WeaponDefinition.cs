@@ -23,6 +23,16 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Min(0), Tooltip("Damage one Shot deals to the Enemy it hits.")]
         private int damage = 1;
 
+        [Header("Ammo")]
+        [SerializeField, Tooltip(
+            "Whether the Weapon reloads forever, as the Pistol does. The player always needs one such Weapon, so they're never helpless.")]
+        private bool hasUnlimitedAmmo = true;
+
+        [SerializeField, Min(0), Tooltip(
+            "Rounds in a full ammo reserve: what the Weapon carries beyond its magazine, and reloads from. Ignored with unlimited ammo. " +
+            "A reserve starts each Run full and gets a share back at each new Level.")]
+        private int ammoReserve;
+
         [SerializeField, Min(0.1f), Tooltip("Metres a Shot travels before it fades out.")]
         private float range = 20f;
 
@@ -52,6 +62,9 @@ namespace DarknessRises.Game.Weapons
         public float ReloadSeconds => reloadSeconds;
         public float ShotSpeed => shotSpeed;
         public int Damage => damage;
+
+        /// <summary>Rounds in a full ammo reserve, or <see cref="WeaponRunStats.UnlimitedAmmo"/> when the Weapon reloads forever.</summary>
+        public int ReserveRounds => hasUnlimitedAmmo ? WeaponRunStats.UnlimitedAmmo : ammoReserve;
         public float Range => range;
         public float SpreadDegrees => spreadDegrees;
         public KnockbackSettings Knockback => knockback;

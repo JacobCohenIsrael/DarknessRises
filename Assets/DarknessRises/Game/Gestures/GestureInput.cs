@@ -39,6 +39,9 @@ namespace DarknessRises.Game.Gestures
 
         private bool isHoldingFire;
         private uint pulses;
+
+        // One-frame presses asked for from outside a Gesture (the Weapon button), sent with the next state.
+        private uint queuedPulses;
         private Vector2 relocate;
         private GestureDeviceState sent;
 
@@ -53,6 +56,15 @@ namespace DarknessRises.Game.Gestures
         public void UseGrenadeButton(GrenadeButtonRules button)
         {
             grenadeButton = button;
+        }
+
+        /// <summary>
+        /// Presses the Next Weapon command for a frame: the on-screen Weapon button was tapped. It goes through the
+        /// Gesture device like every touch command, so it drives the same named action as the mouse wheel.
+        /// </summary>
+        public void PressNextWeapon()
+        {
+            queuedPulses |= 1u << GestureDeviceState.NextWeaponBit;
         }
 
         void IGestureSink.OnGesture(in Gesture gesture)
@@ -113,6 +125,7 @@ namespace DarknessRises.Game.Gestures
             EnhancedTouchSupport.Disable();
             recognizer?.Reset();
             isHoldingFire = false;
+            queuedPulses = 0;
             uiFingerCount = 0;
         }
 
@@ -124,7 +137,8 @@ namespace DarknessRises.Game.Gestures
             }
 
             // Last frame's one-frame presses are let go by the state sent below.
-            pulses = 0;
+            pulses = queuedPulses;
+            queuedPulses = 0;
             relocate = Vector2.zero;
 
             var touches = Touch.activeTouches;

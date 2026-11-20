@@ -53,7 +53,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
         [Test]
         public void With_nothing_bought_a_Weapon_is_as_authored()
         {
-            var stats = RunStatsBuilder.Weapon(Pistol, PistolDamage, PistolUpgrades());
+            var stats = RunStatsBuilder.Weapon(Pistol, PistolDamage, WeaponRunStats.UnlimitedAmmo, PistolUpgrades());
 
             Assert.That(stats.Firing.ShotsPerSecond, Is.EqualTo(4f));
             Assert.That(stats.Firing.MagazineSize, Is.EqualTo(12));
@@ -66,7 +66,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
         {
             levels["pistol.magazine"] = 1;
 
-            var stats = RunStatsBuilder.Weapon(Pistol, PistolDamage, PistolUpgrades());
+            var stats = RunStatsBuilder.Weapon(Pistol, PistolDamage, WeaponRunStats.UnlimitedAmmo, PistolUpgrades());
 
             Assert.That(stats.Firing.MagazineSize, Is.EqualTo(15));
             Assert.That(stats.Firing.ShotsPerSecond, Is.EqualTo(4f));
@@ -82,7 +82,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             levels["pistol.fire-rate"] = 1;
             levels["pistol.damage"] = 2;
 
-            var stats = RunStatsBuilder.Weapon(Pistol, PistolDamage, PistolUpgrades());
+            var stats = RunStatsBuilder.Weapon(Pistol, PistolDamage, WeaponRunStats.UnlimitedAmmo, PistolUpgrades());
 
             Assert.That(stats.Firing.MagazineSize, Is.EqualTo(22));
             Assert.That(stats.Firing.ReloadSeconds, Is.EqualTo(0.85f));
@@ -98,7 +98,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             levels["flamethrower.tank"] = 1;
             var upgrades = Owned(NewUpgrade("flamethrower.tank", UpgradeStat.MagazineSize, 80f, 100f));
 
-            var stats = RunStatsBuilder.Weapon(flamethrower, 1, upgrades);
+            var stats = RunStatsBuilder.Weapon(flamethrower, 1, 300, upgrades);
 
             Assert.That(stats.Firing.MagazineSize, Is.EqualTo(80));
             Assert.That(stats.Firing.ShotsPerSecond, Is.EqualTo(15f));
@@ -111,8 +111,49 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             var machineGun = new PrimaryWeaponStats(10f, 30, 2.5f);
             var machineGunUpgrades = Owned(NewUpgrade("machine-gun.magazine", UpgradeStat.MagazineSize, 40f, 50f));
 
-            Assert.That(RunStatsBuilder.Weapon(Pistol, PistolDamage, PistolUpgrades()).Firing.MagazineSize, Is.EqualTo(22));
-            Assert.That(RunStatsBuilder.Weapon(machineGun, 1, machineGunUpgrades).Firing.MagazineSize, Is.EqualTo(30));
+            Assert.That(RunStatsBuilder.Weapon(Pistol, PistolDamage, WeaponRunStats.UnlimitedAmmo, PistolUpgrades()).Firing.MagazineSize, Is.EqualTo(22));
+            Assert.That(RunStatsBuilder.Weapon(machineGun, 1, 240, machineGunUpgrades).Firing.MagazineSize, Is.EqualTo(30));
+        }
+
+        [Test]
+        public void The_ammo_reserve_follows_its_Upgrade()
+        {
+            var machineGun = new PrimaryWeaponStats(10f, 30, 2.5f);
+            var upgrades = Owned(NewUpgrade("machine-gun.reserve", UpgradeStat.AmmoReserve, 300f, 360f, 450f));
+
+            Assert.That(RunStatsBuilder.Weapon(machineGun, 1, 240, upgrades).ReserveRounds, Is.EqualTo(240), "Nothing bought.");
+
+            levels["machine-gun.reserve"] = 2;
+            var stats = RunStatsBuilder.Weapon(machineGun, 1, 240, upgrades);
+
+            Assert.That(stats.ReserveRounds, Is.EqualTo(360));
+            Assert.That(stats.HasUnlimitedAmmo, Is.False);
+            Assert.That(stats.Firing.MagazineSize, Is.EqualTo(30), "The reserve Upgrade leaves the magazine alone.");
+        }
+
+        [Test]
+        public void A_Weapon_with_unlimited_ammo_stays_unlimited_whatever_is_bought()
+        {
+            levels["pistol.reserve"] = 1;
+            var upgrades = Owned(NewUpgrade("pistol.reserve", UpgradeStat.AmmoReserve, 100f));
+
+            var stats = RunStatsBuilder.Weapon(Pistol, PistolDamage, WeaponRunStats.UnlimitedAmmo, upgrades);
+
+            Assert.That(stats.HasUnlimitedAmmo, Is.True);
+            Assert.That(stats.ToWeapon().Reserve.IsUnlimited, Is.True);
+        }
+
+        [Test]
+        public void A_Runs_Weapon_starts_with_a_full_magazine_and_a_full_reserve()
+        {
+            var stats = new WeaponRunStats(new PrimaryWeaponStats(10f, 30, 2.5f), 1, 240);
+
+            var weapon = stats.ToWeapon();
+
+            Assert.That(weapon.RoundsInMagazine, Is.EqualTo(30));
+            Assert.That(weapon.Reserve.Rounds, Is.EqualTo(240));
+            Assert.That(weapon.Reserve.Max, Is.EqualTo(240));
+            Assert.That(stats.ToWeapon(), Is.Not.SameAs(weapon), "Every Run gets Weapons of its own.");
         }
 
         [Test]
@@ -179,7 +220,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
         [Test]
         public void With_no_Upgrades_at_all_everything_is_as_authored()
         {
-            var weapon = RunStatsBuilder.Weapon(Pistol, PistolDamage, OwnedUpgrades.None);
+            var weapon = RunStatsBuilder.Weapon(Pistol, PistolDamage, WeaponRunStats.UnlimitedAmmo, OwnedUpgrades.None);
             var grenade = RunStatsBuilder.Grenade(new GrenadeChargeStats(3, 20f), 3.5f, OwnedUpgrades.None);
 
             Assert.That(weapon.Firing.MagazineSize, Is.EqualTo(12));
@@ -192,7 +233,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
         [Test]
         public void A_Runs_stats_hold_every_carried_Primary_in_order()
         {
-            var pistol = RunStatsBuilder.Weapon(Pistol, PistolDamage, OwnedUpgrades.None);
+            var pistol = RunStatsBuilder.Weapon(Pistol, PistolDamage, WeaponRunStats.UnlimitedAmmo, OwnedUpgrades.None);
             var machineGun = new WeaponRunStats(new PrimaryWeaponStats(10f, 30, 2.5f), 1);
             var grenade = new GrenadeRunStats(new GrenadeChargeStats(3, 20f), 3.5f);
             var timing = new SkillTiming(4f, 15f);

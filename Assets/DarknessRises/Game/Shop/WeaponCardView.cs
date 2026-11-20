@@ -6,9 +6,9 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Shop
 {
     /// <summary>
-    /// One Primary weapon's card in the Shop: its name and pitch, and one button that unlocks it, equips it, or says it's
-    /// the Primary the next Run carries. The Shop's rules decide which; the card only shows it, and writes its texts
-    /// only when what it shows changes.
+    /// One Primary weapon's card in the Shop: its name and pitch, and one button that unlocks it, or says it's owned.
+    /// An owned Weapon comes along on every Run, so there is nothing to choose here. The Shop's rules decide what the
+    /// card shows; the card only shows it, and writes its texts only when what it shows changes.
     /// </summary>
     public sealed class WeaponCardView : MonoBehaviour
     {
@@ -19,10 +19,9 @@ namespace DarknessRises.Game.Shop
             CanUnlock,
             CannotUnlock,
             Owned,
-            Equipped,
         }
 
-        [SerializeField, Tooltip("The outline around the card, lit in the chosen Primary's colour.")]
+        [SerializeField, Tooltip("The outline around the card, lit in the owned colour once the Weapon is unlocked.")]
         private Image frame;
 
         [SerializeField] private TMP_Text title;
@@ -60,12 +59,12 @@ namespace DarknessRises.Game.Shop
             button.onClick.AddListener(OnPressed);
         }
 
-        /// <summary>Shows where the Weapon stands: locked, owned, or the Primary the next Run carries.</summary>
-        public void Show(ShopKeeper keeper, bool isPrimary, ShopScreenSettings settings, Color creditsColor)
+        /// <summary>Shows where the Weapon stands: to unlock, or owned.</summary>
+        public void Show(ShopKeeper keeper, ShopScreenSettings settings, Color creditsColor)
         {
-            var look = !keeper.Owns(Item) ? keeper.CanBuy(Item) ? Look.CanUnlock : Look.CannotUnlock
-                : isPrimary ? Look.Equipped
-                : Look.Owned;
+            var look = keeper.Owns(Item) ? Look.Owned
+                : keeper.CanBuy(Item) ? Look.CanUnlock
+                : Look.CannotUnlock;
             var missing = look == Look.CannotUnlock ? keeper.NextPrice(Item) - keeper.Credits : 0;
             if (look == shown && missing == shownMissing)
             {
@@ -74,8 +73,8 @@ namespace DarknessRises.Game.Shop
 
             shown = look;
             shownMissing = missing;
-            button.interactable = look == Look.CanUnlock || look == Look.Owned;
-            frame.color = look == Look.Equipped ? settings.EquippedColor : settings.FrameColor;
+            button.interactable = look == Look.CanUnlock;
+            frame.color = look == Look.Owned ? settings.OwnedColor : settings.FrameColor;
             hint.gameObject.SetActive(look == Look.CannotUnlock);
             switch (look)
             {
@@ -90,14 +89,9 @@ namespace DarknessRises.Game.Shop
                     buttonImage.color = settings.CannotBuyColor;
                     hint.SetText(settings.MissingFormat, missing);
                     break;
-                case Look.Owned:
-                    buttonLabel.text = settings.EquipLabel;
-                    buttonLabel.color = Color.white;
-                    buttonImage.color = settings.EquipColor;
-                    break;
                 default:
-                    buttonLabel.text = settings.EquippedLabel;
-                    buttonLabel.color = settings.EquippedColor;
+                    buttonLabel.text = settings.OwnedLabel;
+                    buttonLabel.color = settings.OwnedColor;
                     buttonImage.color = settings.CannotBuyColor;
                     break;
             }

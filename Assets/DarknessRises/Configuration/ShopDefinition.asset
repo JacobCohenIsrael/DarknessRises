@@ -109,6 +109,17 @@ MonoBehaviour:
         value: 13
       - price: 1600
         value: 15
+    - id: machine-gun.reserve
+      stat: 4
+      displayName: RESERVE
+      valueFormat: '{0}'
+      levels:
+      - price: 500
+        value: 300
+      - price: 1000
+        value: 360
+      - price: 1700
+        value: 450
   - id: flamethrower
     displayName: FLAMETHROWER
     description: A stream of fire that lights the Room.
@@ -146,6 +157,17 @@ MonoBehaviour:
         value: 1.8
       - price: 1500
         value: 1.5
+    - id: flamethrower.reserve
+      stat: 4
+      displayName: RESERVE
+      valueFormat: '{0}'
+      levels:
+      - price: 600
+        value: 380
+      - price: 1200
+        value: 460
+      - price: 2000
+        value: 560
   grenadeUpgrades:
   - id: grenade.charges
     stat: 10
@@ -250,11 +272,10 @@ MonoBehaviour:
     title: SHOP
     creditsCaption: CREDITS
     playLabel: PLAY
-    primaryFormat: 'NEXT RUN: {0}'
+    carryHint: Every unlocked Weapon comes along on a Run. Switch between them as you play.
     unlockFormat: UNLOCK  {0}
     missingFormat: '{0} more Credits needed'
-    equipLabel: EQUIP
-    equippedLabel: EQUIPPED
+    ownedLabel: OWNED
     weaponsTab: WEAPONS
     gearTab: GEAR
     grenadeTitle: GRENADE
@@ -268,8 +289,7 @@ MonoBehaviour:
     buyColor: {r: 0.07, g: 0.3, b: 0.24, a: 1}
     cannotBuyColor: {r: 0.12, g: 0.12, b: 0.13, a: 1}
     cannotBuyTextColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    equipColor: {r: 0.2, g: 0.2, b: 0.22, a: 1}
-    equippedColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+    ownedColor: {r: 1, g: 0.85, b: 0.2, a: 1}
     frameColor: {r: 0.85, g: 0.85, b: 0.85, a: 0.18}
     activeTabColor: {r: 0.8, g: 0.12, b: 0.1, a: 1}
     inactiveTabColor: {r: 0.14, g: 0.14, b: 0.16, a: 1}

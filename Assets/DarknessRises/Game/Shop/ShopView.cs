@@ -14,8 +14,8 @@ namespace DarknessRises.Game.Shop
 {
     /// <summary>
     /// The Shop screen: the Credits in the bank at the top, two pages of wares, and a big PLAY that starts the Run.
-    /// The Weapons page has a column for each Primary weapon: its card (unlock it, or choose it as the Primary the next
-    /// Run carries) over its Upgrades. The Gear page has the Upgrades of the Grenade, the Skills and the character.
+    /// The Weapons page has a column for each Primary weapon: its card (unlock it; an owned Weapon comes along on every
+    /// Run) over its Upgrades. The Gear page has the Upgrades of the Grenade, the Skills and the character.
     /// Buying is instant: the card or row pops, the Credits count down and a sound plays. The
     /// <see cref="ShopKeeper"/> holds the rules; this shows them, inside the screen's safe area, with buttons that work
     /// by touch and by mouse.
@@ -37,8 +37,8 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The Credits in the bank.")]
         private TMP_Text creditsValue;
 
-        [SerializeField, Tooltip("Names the Primary weapon the next Run carries.")]
-        private TMP_Text primaryLine;
+        [SerializeField, Tooltip("Says what owning a Weapon means: it comes along on every Run.")]
+        private TMP_Text hintLine;
 
         [Header("Pages")]
         [SerializeField, Tooltip("The page of the Primary weapons: a column for each goes here, side by side.")]
@@ -84,7 +84,6 @@ namespace DarknessRises.Game.Shop
         private ShopKeeper keeper;
         private Color creditsColor;
         private AudioClip buyClip;
-        private ShopItem shownPrimary;
         private Rect fittedSafeArea;
         private Action<WeaponCardView> onCardPressed;
         private Action<UpgradeRowView> onRowPressed;
@@ -119,6 +118,7 @@ namespace DarknessRises.Game.Shop
             creditsCaption.text = settings.CreditsCaption;
             creditsCaption.color = creditsColor;
             creditsValue.color = creditsColor;
+            hintLine.text = settings.CarryHint;
             weaponsTabLabel.text = settings.WeaponsTab;
             gearTabLabel.text = settings.GearTab;
 
@@ -266,25 +266,15 @@ namespace DarknessRises.Game.Shop
             }
         }
 
-        // A locked Weapon's button unlocks it, and the new Weapon becomes the Primary; an owned one's equips it.
+        // A locked Weapon's button unlocks it. From then on it comes along on every Run.
         private void OnCardPressed(WeaponCardView card)
         {
-            var item = card.Item;
-            if (!keeper.Owns(item))
-            {
-                if (!keeper.Buy(item))
-                {
-                    return;
-                }
-
-                keeper.ChoosePrimary(item);
-                PlayBuySound();
-            }
-            else if (!keeper.ChoosePrimary(item))
+            if (!keeper.Buy(card.Item))
             {
                 return;
             }
 
+            PlayBuySound();
             card.Pop(settings.PopScale, settings.PopSeconds);
             Refresh();
         }
@@ -314,30 +304,17 @@ namespace DarknessRises.Game.Shop
             Refresh();
         }
 
-        // Everything that depends on the bank, on what is owned or on the chosen Primary. Called when one of them changed.
+        // Everything that depends on the bank or on what is owned. Called when one of them changed.
         private void Refresh()
         {
-            var primary = keeper.PrimaryOf(catalog.WeaponItems);
             for (var i = 0; i < weaponCards.Count; i++)
             {
-                weaponCards[i].Show(keeper, weaponCards[i].Item == primary, settings, creditsColor);
+                weaponCards[i].Show(keeper, settings, creditsColor);
             }
 
             for (var i = 0; i < rows.Count; i++)
             {
                 rows[i].Show(keeper, settings, creditsColor);
-            }
-
-            if (primary != shownPrimary)
-            {
-                shownPrimary = primary;
-                for (var i = 0; i < catalog.Weapons.Count; i++)
-                {
-                    if (catalog.Weapons[i].Item == primary)
-                    {
-                        primaryLine.text = string.Format(settings.PrimaryFormat, catalog.Weapons[i].Offer.DisplayName);
-                    }
-                }
             }
         }
 

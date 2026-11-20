@@ -27,7 +27,8 @@ namespace DarknessRises.Game.Upgrades
             for (var i = 0; i < primaries.Length; i++)
             {
                 var weapon = carried[i];
-                primaries[i] = RunStatsBuilder.Weapon(weapon.PrimaryStats, weapon.Damage, UpgradesOf(catalog, weapon, levelOf));
+                primaries[i] = RunStatsBuilder.Weapon(
+                    weapon.PrimaryStats, weapon.Damage, weapon.ReserveRounds, UpgradesOf(catalog, weapon, levelOf));
             }
 
             var grenade = configuration.Grenade;
@@ -59,6 +60,8 @@ namespace DarknessRises.Game.Upgrades
                     return Require(weapon, stat).ReloadSeconds;
                 case UpgradeStat.ShotsPerSecond:
                     return Require(weapon, stat).ShotsPerSecond;
+                case UpgradeStat.AmmoReserve:
+                    return Require(weapon, stat).ReserveRounds;
                 case UpgradeStat.GrenadeCharges:
                     return configuration.Grenade.ChargeStats.MaxCharges;
                 case UpgradeStat.GrenadeRefillSeconds:

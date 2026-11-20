@@ -1,6 +1,7 @@
 #if UNITY_EDITOR || DEBUG
 using System;
 using DarknessRises.Game.Pausing;
+using DarknessRises.Game.Weapons;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,7 +25,7 @@ namespace DarknessRises.Game.Debugging
         public const string MaxOutButtonName = "Max Upgrades Button";
         public const string ResetSaveButtonName = "Reset Save Button";
 
-        private PrimaryWeaponDebugSwitch weapons;
+        private PrimaryWeaponView weapons;
         private Func<GodModeToggle> godMode;
         private LightningDebugToggle lightning;
         private RampLevelDebugJump rampJump;
@@ -60,7 +61,7 @@ namespace DarknessRises.Game.Debugging
         public static DebugMenuView Create(
             Transform parent,
             string[] weaponNames,
-            PrimaryWeaponDebugSwitch weaponSwitch,
+            PrimaryWeaponView weaponSwitch,
             Func<GodModeToggle> godModeToggle,
             LightningDebugToggle lightningToggle,
             RampLevelDebugJump jump,
@@ -223,7 +224,7 @@ namespace DarknessRises.Game.Debugging
 
         private void OnWeapon(int index)
         {
-            weapons.Equip(index);
+            weapons.Switch(index);
             Refresh();
         }
 
@@ -272,7 +273,7 @@ namespace DarknessRises.Game.Debugging
 
         private void Refresh()
         {
-            var weapon = weapons.EquippedIndex;
+            var weapon = weapons.Loadout != null ? weapons.Loadout.EquippedIndex : -1;
             if (weapon != shownWeapon)
             {
                 shownWeapon = weapon;

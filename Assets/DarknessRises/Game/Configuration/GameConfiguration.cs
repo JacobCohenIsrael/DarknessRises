@@ -10,6 +10,7 @@ using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Scoring;
+using DarknessRises.Game.Shop;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Weapons;
 using UnityEngine;
@@ -70,6 +71,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("Credits: what a cleared Level pays, the end-of-Run ad, and how the end screen shows them. What a kill pays is on each Enemy type and Boss.")]
         private CreditsDefinition credits;
 
+        [SerializeField, Tooltip("The Shop, open only between Runs: the Primary weapons it sells with their prices, and how its screen reads and looks.")]
+        private ShopDefinition shop;
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -94,5 +98,6 @@ namespace DarknessRises.Game.Configuration
         public ScoreSettings Score => score;
         public ScoreHudSettings ScoreHud => scoreHud;
         public CreditsDefinition Credits => credits;
+        public ShopDefinition Shop => shop;
     }
 }

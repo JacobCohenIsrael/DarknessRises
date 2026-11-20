@@ -161,6 +161,73 @@ namespace DarknessRises.Game.EditModeTests.Saving
         }
 
         [Test]
+        public void A_purchase_pays_from_the_bank_and_raises_the_item()
+        {
+            var save = PlayerSave.Load(storage);
+            save.Bank(RunThatEarned(300));
+
+            Assert.That(save.Purchase("pistol.magazine", 1, 250), Is.True);
+
+            Assert.That(save.Credits, Is.EqualTo(50));
+            Assert.That(save.LevelOf("pistol.magazine"), Is.EqualTo(1));
+            Assert.That(save.LevelOf("something-else"), Is.Zero);
+        }
+
+        [Test]
+        public void A_purchase_the_bank_cant_cover_changes_nothing()
+        {
+            var save = PlayerSave.Load(storage);
+            save.Bank(RunThatEarned(100));
+
+            Assert.That(save.Purchase("pistol.magazine", 1, 250), Is.False);
+
+            Assert.That(save.Credits, Is.EqualTo(100));
+            Assert.That(save.LevelOf("pistol.magazine"), Is.Zero);
+        }
+
+        [Test]
+        public void Purchases_and_the_Primary_choice_survive_an_app_restart()
+        {
+            var save = PlayerSave.Load(storage);
+            save.Bank(RunThatEarned(3000));
+            save.Purchase("machine-gun", 1, 2500);
+            save.Purchase("pistol.magazine", 1, 250);
+            save.Purchase("pistol.magazine", 2, 200);
+            save.ChoosePrimaryWeapon("machine-gun");
+            save.Write();
+
+            var afterRestart = PlayerSave.Load(storage);
+
+            Assert.That(afterRestart.Credits, Is.EqualTo(50));
+            Assert.That(afterRestart.LevelOf("machine-gun"), Is.EqualTo(1));
+            Assert.That(afterRestart.LevelOf("pistol.magazine"), Is.EqualTo(2));
+            Assert.That(afterRestart.PrimaryWeaponId, Is.EqualTo("machine-gun"));
+        }
+
+        [Test]
+        public void Choosing_the_same_Primary_again_isnt_a_change()
+        {
+            var save = PlayerSave.Load(storage);
+
+            Assert.That(save.ChoosePrimaryWeapon("machine-gun"), Is.True);
+            Assert.That(save.ChoosePrimaryWeapon("machine-gun"), Is.False);
+            save.Write();
+            save.Write();
+
+            Assert.That(storage.WriteCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void A_purchase_needs_an_id_a_level_and_a_price_that_isnt_negative()
+        {
+            var save = PlayerSave.Load(storage);
+
+            Assert.That(() => save.Purchase(null, 1, 0), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => save.Purchase("x", 0, 0), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => save.Purchase("x", 1, -5), Throws.InstanceOf<ArgumentOutOfRangeException>());
+        }
+
+        [Test]
         public void It_needs_somewhere_to_keep_the_save_and_Credits_to_bank()
         {
             var save = PlayerSave.Load(storage);

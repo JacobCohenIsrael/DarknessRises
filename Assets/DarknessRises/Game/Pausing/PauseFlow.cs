@@ -146,11 +146,11 @@ namespace DarknessRises.Game.Pausing
             }
         }
 
-        // The end screen shows over the frozen Level, then a new Run starts, which the boot loads.
+        // The end screen shows over the frozen Level, then the player leaves it for the Shop, which the boot loads.
         private async UniTaskVoid ShowEndScreenAsync(CancellationToken cancellationToken)
         {
             await endScreen.ShowAsync(run.Record, cancellationToken);
-            run.StartNewRun();
+            run.Leave();
         }
 
         private void OnStateChanged(PauseState _) => Show();

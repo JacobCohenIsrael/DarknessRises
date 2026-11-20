@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DarknessRises.Game.Saving
 {
@@ -14,7 +15,10 @@ namespace DarknessRises.Game.Saving
     public static class SaveMigration
     {
         /// <summary>The first version there was: Credits and the Runs finished.</summary>
-        private const int FirstVersion = 1;
+        private const int CreditsVersion = 1;
+
+        /// <summary>Adds what was bought in the Shop and the Primary weapon choice.</summary>
+        private const int ShopVersion = 2;
 
         /// <summary>Migrates <paramref name="record"/> in place to <see cref="SaveRecord.CurrentVersion"/> and returns it.</summary>
         public static SaveRecord ToCurrent(SaveRecord record)
@@ -25,22 +29,56 @@ namespace DarknessRises.Game.Saving
             }
 
             // Text without a version predates nothing: the first version's fields are all it could hold.
-            if (record.version < FirstVersion)
+            if (record.version < CreditsVersion)
             {
-                record.version = FirstVersion;
+                record.version = CreditsVersion;
             }
 
-            // Steps from one version to the next go here, in order:
-            // if (record.version == 1) { ...; record.version = 2; }
+            if (record.version == CreditsVersion)
+            {
+                // Before the Shop nothing could be bought and the character always carried the starting Primary.
+                record.items = new List<SaveItem>();
+                record.primaryWeapon = string.Empty;
+                record.version = ShopVersion;
+            }
 
             if (record.version > SaveRecord.CurrentVersion)
             {
                 record.version = SaveRecord.CurrentVersion;
             }
 
+            PutRight(record);
+            return record;
+        }
+
+        private static void PutRight(SaveRecord record)
+        {
             record.credits = Math.Max(0, record.credits);
             record.runsFinished = Math.Max(0, record.runsFinished);
-            return record;
+            record.primaryWeapon ??= string.Empty;
+            record.items ??= new List<SaveItem>();
+
+            // One entry per item, at its highest level; entries without an id or a level are dropped.
+            var kept = new List<SaveItem>(record.items.Count);
+            foreach (var item in record.items)
+            {
+                if (item == null || string.IsNullOrEmpty(item.id) || item.level <= 0)
+                {
+                    continue;
+                }
+
+                var existing = kept.Find(other => other.id == item.id);
+                if (existing == null)
+                {
+                    kept.Add(item);
+                }
+                else
+                {
+                    existing.level = Math.Max(existing.level, item.level);
+                }
+            }
+
+            record.items = kept;
         }
     }
 }

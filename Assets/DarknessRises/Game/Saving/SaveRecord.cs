@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DarknessRises.Game.Saving
 {
@@ -15,7 +16,7 @@ namespace DarknessRises.Game.Saving
     public sealed class SaveRecord
     {
         /// <summary>The version this build writes.</summary>
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
 
         /// <summary>The version the record was written as. 0 means the text carried none.</summary>
         public int version;
@@ -25,5 +26,22 @@ namespace DarknessRises.Game.Saving
 
         /// <summary>How many Runs the player has finished, whichever way they ended.</summary>
         public int runsFinished;
+
+        /// <summary>What was bought in the Shop, each with the level it stands at. Since version 2.</summary>
+        public List<SaveItem> items = new();
+
+        /// <summary>
+        /// The id of the Primary weapon the character carries into the next Run. Empty: the one owned from the start.
+        /// Since version 2.
+        /// </summary>
+        public string primaryWeapon = string.Empty;
+    }
+
+    /// <summary>One thing bought in the Shop: the item's id, as authored in the Shop definition, and its level.</summary>
+    [Serializable]
+    public sealed class SaveItem
+    {
+        public string id;
+        public int level;
     }
 }

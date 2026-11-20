@@ -11,9 +11,6 @@ namespace DarknessRises.Game.Credits
     [Serializable]
     public sealed class CreditsEndScreenSettings
     {
-        [SerializeField, Tooltip("Credits have their own colour everywhere, so they never read as the Score.")]
-        private Color color = new(0.35f, 1f, 0.78f, 1f);
-
         [SerializeField, Min(0f), Tooltip("Seconds the Credits earned and the total take to count up. Real time: the Level behind the screen may be frozen.")]
         private float countUpSeconds = 1.2f;
 
@@ -34,7 +31,6 @@ namespace DarknessRises.Game.Credits
 
         [SerializeField, Range(0f, 1f)] private float bonusVolume = 0.8f;
 
-        public Color Color => color;
         public float CountUpSeconds => countUpSeconds;
         public float BonusCountUpSeconds => bonusCountUpSeconds;
         public float BonusKickScale => bonusKickScale;

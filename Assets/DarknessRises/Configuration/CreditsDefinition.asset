@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ba48af1b8277eb47b9d7afe5c90920e, type: 3}
   m_Name: CreditsDefinition
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Credits.CreditsDefinition
+  color: {r: 0.35, g: 1, b: 0.78, a: 1}
   levelClearBonus:
     firstLevelCredits: 100
     growthPerLevel: 50
@@ -23,7 +24,6 @@ MonoBehaviour:
     offerFormat: 'WATCH AD: x{0} CREDITS'
     bonusHintFormat: +{0} Credits for this Run
   endScreen:
-    color: {r: 0.35, g: 1, b: 0.78, a: 1}
     countUpSeconds: 1.2
     bonusCountUpSeconds: 1
     bonusKickScale: 1.35

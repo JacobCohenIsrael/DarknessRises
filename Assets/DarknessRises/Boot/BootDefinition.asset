@@ -18,6 +18,12 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  shopScene:
+    m_AssetGUID: 384845ead0426e14d9306f5714d937a6
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
   testRoomScene:
     m_AssetGUID: 0af79ab275eac414f99c7770d52f0a39
     m_SubObjectName: 

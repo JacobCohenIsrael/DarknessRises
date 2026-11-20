@@ -78,7 +78,7 @@ namespace DarknessRises.Game.Editor.Health
         private static readonly Vector2 EndAdButtonPosition = new(0f, -215f);
         private static readonly Vector2 EndAdButtonSize = new(820f, 104f);
         private static readonly Color EndAdButtonColor = new(0.07f, 0.26f, 0.21f, 0.98f);
-        private static readonly Vector2 EndNewRunPosition = new(0f, -410f);
+        private static readonly Vector2 EndShopPosition = new(0f, -410f);
 
         // Until the Credits definition colours them at runtime.
         private static readonly Color CreditsColor = new(0.35f, 1f, 0.78f, 1f);
@@ -298,7 +298,8 @@ namespace DarknessRises.Game.Editor.Health
                 adButtonRect, "Hint", string.Empty, HintFontSize, CreditsColor,
                 new Vector2(0f, -(EndAdButtonSize.y + hintHeight) / 2f - HintGap), new Vector2(EndAdButtonSize.x, hintHeight));
 
-            var newRun = AddButton(panel, "New Run", EndNewRunPosition);
+            // The way on: the Shop, where the next Run starts.
+            var shop = AddButton(panel, "Shop", EndShopPosition);
 
             var sound = new GameObject("Sound", typeof(AudioSource)).GetComponent<AudioSource>();
             sound.transform.SetParent(panel, false);
@@ -318,7 +319,7 @@ namespace DarknessRises.Game.Editor.Health
             serialized.FindProperty("adButtonLabel").objectReferenceValue = adButtonLabel;
             serialized.FindProperty("adHint").objectReferenceValue = adHint;
             serialized.FindProperty("sound").objectReferenceValue = sound;
-            serialized.FindProperty("newRunButton").objectReferenceValue = newRun;
+            serialized.FindProperty("shopButton").objectReferenceValue = shop;
             var creditsTexts = new[] { earnedLabel, creditsEarned, bonusLabel, adBonus, totalLabel, creditsTotal, adButtonLabel, adHint };
             var creditsTextsProperty = serialized.FindProperty("creditsTexts");
             creditsTextsProperty.arraySize = creditsTexts.Length;

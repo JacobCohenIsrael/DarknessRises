@@ -1,21 +1,28 @@
 using System;
+using System.Collections.Generic;
 using DarknessRises.Game.Runs;
 
 namespace DarknessRises.Game.Saving
 {
     /// <summary>
-    /// The player's durable progress, kept across app restarts: the Credits in the bank and how many Runs they've
-    /// finished. It's read from its <see cref="ISaveStorage"/> once, and written back whenever it changes at a moment
-    /// that matters: a Run banks its Credits, something is bought, the app goes to the background or quits.
+    /// The player's durable progress, kept across app restarts: the Credits in the bank, how many Runs they've
+    /// finished, the level of everything bought in the Shop, and the Primary weapon chosen for the next Run. It's read
+    /// from its <see cref="ISaveStorage"/> once, and written back whenever it changes at a moment that matters: a Run
+    /// banks its Credits, something is bought or chosen, the app goes to the background or quits.
     /// Plain C# (ADR 0003): whoever lives longest (the boot) owns it and hands it to what needs it.
     /// </summary>
     /// <remarks>
-    /// A write that fails (a full disk) loses nothing in memory: the save stays marked as changed and is written again
-    /// at the next save point.
+    /// It holds what the player has, not what anything costs or does: prices and effects are authored, and the Shop's
+    /// rules decide what may be bought. A write that fails (a full disk) loses nothing in memory: the save stays marked
+    /// as changed and is written again at the next save point.
     /// </remarks>
     public sealed class PlayerSave
     {
         private readonly ISaveStorage storage;
+
+        // The level of each thing bought in the Shop, by its authored id, in the order they were first bought.
+        private readonly Dictionary<string, int> levels = new();
+        private readonly List<string> boughtIds = new();
         private bool hasUnsavedChanges;
 
         private PlayerSave(ISaveStorage saveStorage, SaveRecord record)
@@ -23,6 +30,12 @@ namespace DarknessRises.Game.Saving
             storage = saveStorage;
             Credits = record.credits;
             RunsFinished = record.runsFinished;
+            PrimaryWeaponId = record.primaryWeapon ?? string.Empty;
+            foreach (var item in record.items)
+            {
+                levels[item.id] = item.level;
+                boughtIds.Add(item.id);
+            }
         }
 
         /// <summary>Raised when the Credits in the bank change, with the new total.</summary>
@@ -33,6 +46,9 @@ namespace DarknessRises.Game.Saving
 
         /// <summary>How many Runs the player has finished, whichever way they ended.</summary>
         public int RunsFinished { get; private set; }
+
+        /// <summary>The id of the Primary weapon chosen for the next Run. Empty until one is chosen.</summary>
+        public string PrimaryWeaponId { get; private set; }
 
         /// <summary>
         /// Reads the save from <paramref name="saveStorage"/>, migrating an older record to this build's version.
@@ -82,6 +98,70 @@ namespace DarknessRises.Game.Saving
             Bank(runCredits);
         }
 
+        /// <summary>The level the item with <paramref name="itemId"/> was bought up to. 0 when it was never bought.</summary>
+        public int LevelOf(string itemId)
+        {
+            return itemId != null && levels.TryGetValue(itemId, out var level) ? level : 0;
+        }
+
+        /// <summary>
+        /// Pays <paramref name="price"/> from the bank and raises the item to <paramref name="level"/>, both or
+        /// neither. Whether the item may be bought at all is the Shop's call; this only refuses a price the bank can't
+        /// cover. It doesn't write the save: the Shop does, once the purchase is done.
+        /// </summary>
+        public bool Purchase(string itemId, int level, int price)
+        {
+            if (string.IsNullOrEmpty(itemId))
+            {
+                throw new ArgumentException("A Shop item needs an id to be saved under.", nameof(itemId));
+            }
+
+            if (level <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(level), level, "A bought item is at least at level 1.");
+            }
+
+            if (price < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(price), price, "Nothing in the Shop pays the player.");
+            }
+
+            if (Credits < price)
+            {
+                return false;
+            }
+
+            if (!levels.ContainsKey(itemId))
+            {
+                boughtIds.Add(itemId);
+            }
+
+            levels[itemId] = level;
+            hasUnsavedChanges = true;
+            if (price > 0)
+            {
+                Credits -= price;
+                CreditsChanged?.Invoke(Credits);
+            }
+
+            return true;
+        }
+
+        /// <summary>Chooses the Primary weapon for the next Run, by its id. Whether it's owned is the Shop's call.</summary>
+        /// <returns>Whether the choice changed.</returns>
+        public bool ChoosePrimaryWeapon(string weaponId)
+        {
+            weaponId ??= string.Empty;
+            if (weaponId == PrimaryWeaponId)
+            {
+                return false;
+            }
+
+            PrimaryWeaponId = weaponId;
+            hasUnsavedChanges = true;
+            return true;
+        }
+
         /// <summary>Writes the save if it changed since it was last written.</summary>
         /// <returns>Whether the stored save is up to date.</returns>
         public bool Write()
@@ -115,12 +195,20 @@ namespace DarknessRises.Game.Saving
 
         private SaveRecord ToRecord()
         {
-            return new SaveRecord
+            var record = new SaveRecord
             {
                 version = SaveRecord.CurrentVersion,
                 credits = Credits,
                 runsFinished = RunsFinished,
+                primaryWeapon = PrimaryWeaponId,
             };
+
+            foreach (var id in boughtIds)
+            {
+                record.items.Add(new SaveItem { id = id, level = levels[id] });
+            }
+
+            return record;
         }
     }
 }

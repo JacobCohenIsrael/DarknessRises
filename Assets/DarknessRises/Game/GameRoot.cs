@@ -25,6 +25,7 @@ using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Saving;
 using DarknessRises.Game.Scoring;
+using DarknessRises.Game.Shop;
 using DarknessRises.Game.Skills;
 using DarknessRises.Game.Visibility;
 using DarknessRises.Game.Waves;
@@ -122,8 +123,10 @@ namespace DarknessRises.Game
         private BossSkipDebug bossSkipDebug;
         private DebugMenuView debugMenu;
 
-        // The touch debug menu's labels for the Primaries, in the order of PrimaryWeapons.
-        private static readonly string[] PrimaryWeaponLabels = { "Pistol", "Machine gun", "Flamethrower" };
+        // Debug builds carry every Primary, so the debug switch can try them all.
+        private const bool CarriesEveryPrimary = true;
+#else
+        private const bool CarriesEveryPrimary = false;
 #endif
         [SerializeField] private RouteWavesView routeWaves;
         [SerializeField] private CharacterSkillsView characterSkills;
@@ -208,8 +211,6 @@ namespace DarknessRises.Game
 
         private static bool IsBooted => SceneManager.GetSceneByBuildIndex(BootSceneBuildIndex).isLoaded;
 
-        private WeaponDefinition[] PrimaryWeapons => new[] { configuration.Pistol, configuration.MachineGun, configuration.Flamethrower };
-
         private void Awake()
         {
             runsLevel = level != null;
@@ -249,7 +250,10 @@ namespace DarknessRises.Game
 
             var ramp = configuration.Ramp.ToRamp();
             var rampStep = ramp.StepAt(run.LevelIndex);
-            var primaryWeapons = PrimaryWeapons;
+            // One Primary per Run: the one chosen in the Shop. Only what the character carries is loaded.
+            var chosenPrimary = configuration.Shop.PrimaryWeapon(new ShopKeeper(save));
+            var primaryWeapons = CarriedPrimaries.For(
+                configuration.Shop.ToPrimaryWeapons(), chosenPrimary, CarriesEveryPrimary, out var equippedPrimary);
             await GameContent.For(configuration, primaryWeapons, level != null, rampStep).LoadAsync(content, cancellationToken);
 
             // Runtime objects (pools, effects) are created in the active scene, so they go when this scene does.
@@ -258,7 +262,7 @@ namespace DarknessRises.Game
                 SceneManager.SetActiveScene(gameObject.scene);
             }
 
-            Begin(primaryWeapons, ramp);
+            Begin(primaryWeapons, equippedPrimary, ramp);
         }
 
         // Nothing is written to the device: the real save belongs to the boot.
@@ -270,9 +274,10 @@ namespace DarknessRises.Game
             ownBanking = new RunBanking(run, save);
             run.StartNewRun();
             run.LevelStarted += OnOwnRunLevelStarted;
+            run.Left += OnOwnRunLeft;
         }
 
-        private void Begin(WeaponDefinition[] primaryWeapons, Ramp<EnemyDefinition> ramp)
+        private void Begin(WeaponDefinition[] primaryWeapons, int equippedPrimary, Ramp<EnemyDefinition> ramp)
         {
             routeWalker.Walk(configuration.Player, character, configuration.StationRhythm.ToWalkEasing());
             stationRhythm = new StationRhythm(configuration.StationRhythm.ToTiming());
@@ -295,6 +300,7 @@ namespace DarknessRises.Game
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
             var loadout = primaryWeapon.Arm(primaryWeapons, content, lights);
+            loadout.Switch(equippedPrimary);
             gunshotSound.Use(configuration.GunshotVoices, primaryWeapons, loadout, content);
             ammoHud.Show(primaryWeapon.Weapon);
             reloadMeter.Use(configuration.ReloadFeedback, character);
@@ -410,7 +416,7 @@ namespace DarknessRises.Game
             // Built from code, so no scene references it and release builds have none of it.
             debugMenu = DebugMenuView.Create(
                 transform,
-                PrimaryWeaponLabels,
+                PrimaryWeaponLabels(),
                 primaryWeaponDebugSwitch,
                 () => characterHealth.GodMode,
                 lightningDebugToggle,
@@ -440,6 +446,7 @@ namespace DarknessRises.Game
                 if (ownsRun)
                 {
                     run.LevelStarted -= OnOwnRunLevelStarted;
+                    run.Left -= OnOwnRunLeft;
                     ownBanking.Dispose();
                 }
             }
@@ -702,12 +709,32 @@ namespace DarknessRises.Game
         // The character walked out the far door: the Run moves on to the next Level, which the boot loads.
         private void OnLevelFinished() => run.FinishLevel();
 
-        // Played on its own, nobody loads the next Level or a new Run: the boot scene (the only one in Build Settings)
-        // starts the game afresh instead.
+        // Played on its own, nobody loads the next Level, a new Run or the Shop: the boot scene (the only one in Build
+        // Settings) starts the game afresh instead.
         private void OnOwnRunLevelStarted(int _)
         {
             SceneManager.LoadScene(BootSceneBuildIndex);
         }
+
+        private void OnOwnRunLeft()
+        {
+            SceneManager.LoadScene(BootSceneBuildIndex);
+        }
+
+#if UNITY_EDITOR || DEBUG
+        // The touch debug menu's labels for the Primaries, in the order they're carried: the Shop's.
+        private string[] PrimaryWeaponLabels()
+        {
+            var weapons = configuration.Shop.Weapons;
+            var labels = new string[weapons.Count];
+            for (var i = 0; i < labels.Length; i++)
+            {
+                labels[i] = weapons[i].DisplayName;
+            }
+
+            return labels;
+        }
+#endif
 
         private void OnDisable()
         {

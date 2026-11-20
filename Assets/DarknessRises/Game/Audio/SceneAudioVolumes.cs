@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Storage;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -60,7 +61,7 @@ namespace DarknessRises.Game.Audio
                 if (volumes == null && configuration != null)
                 {
                     var settings = configuration.AudioVolumes;
-                    UseVolumes(new AudioVolumes(settings.Curve, settings.Defaults, new PlayerPrefsVolumeStorage()));
+                    UseVolumes(new AudioVolumes(settings.Curve, settings.Defaults, new DeviceVolumeStorage(DeviceSettings.OfThisPlayer())));
                 }
 
                 return volumes;

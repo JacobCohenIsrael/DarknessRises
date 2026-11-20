@@ -101,7 +101,7 @@ namespace DarknessRises.Game.Boot
         {
             versionLabel.Show(definition.VersionLabel, VersionLabel.Text(Application.version, Debug.isDebugBuild));
             lifetime = new CancellationTokenSource();
-            Save = PlayerSave.Load(FileSaveStorage.InPersistentData());
+            Save = PlayerSave.Load(SaveStorages.OfThisPlayer());
             banking = new RunBanking(Run, Save);
             Run.LevelStarted += OnLevelStarted;
             Run.Left += OnRunLeft;

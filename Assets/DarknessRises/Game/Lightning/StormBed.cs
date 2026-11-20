@@ -24,6 +24,7 @@ namespace DarknessRises.Game.Lightning
         private readonly StormEnvelope envelope;
 
         private bool audible;
+        private bool hushed;
         private float presence;
         private SwellPhase phase = SwellPhase.Resting;
         private float phaseElapsedSeconds;
@@ -47,7 +48,10 @@ namespace DarknessRises.Game.Lightning
         public bool IsSwelling => phase != SwellPhase.Resting;
 
         /// <summary>Whether the bed is fading in or playing, rather than fading out or silent.</summary>
-        public bool IsAudible => audible;
+        public bool IsAudible => audible && !hushed;
+
+        /// <summary>Whether the bed is hushed, whatever Lightning does: see <see cref="Hush"/>.</summary>
+        public bool IsHushed => hushed;
 
         /// <summary>The bed's volume right now.</summary>
         public float Volume => presence * (envelope.BaseVolume + (envelope.SwellPeakVolume - envelope.BaseVolume) * swell);
@@ -62,6 +66,17 @@ namespace DarknessRises.Game.Lightning
         public void SetAudible(bool isAudible)
         {
             audible = isAudible;
+        }
+
+        /// <summary>
+        /// Hushes the bed whatever <see cref="SetAudible"/> says, or lets it follow that again. For whoever owns the bed
+        /// beyond one Level (the boot): on the way to the Shop the Level still says the storm reaches the character until
+        /// its scene is gone, and the bed has to start fading out the moment the player leaves. It fades out and back in
+        /// from where it is, over the same authored times.
+        /// </summary>
+        public void Hush(bool hush)
+        {
+            hushed = hush;
         }
 
         /// <summary>
@@ -91,7 +106,7 @@ namespace DarknessRises.Game.Lightning
                 throw new ArgumentOutOfRangeException(nameof(deltaSeconds), deltaSeconds, "Time can't run backwards.");
             }
 
-            presence = audible
+            presence = IsAudible
                 ? Step(presence, 1f, deltaSeconds, envelope.FadeInSeconds)
                 : Step(presence, 0f, deltaSeconds, envelope.FadeOutSeconds);
 

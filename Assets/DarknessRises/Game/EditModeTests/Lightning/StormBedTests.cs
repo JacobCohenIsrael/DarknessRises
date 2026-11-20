@@ -129,6 +129,39 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         }
 
         [Test]
+        public void AHushedBedFadesOutOverTheFadeOutTime_EvenWhileLightningStillReachesTheCharacter()
+        {
+            var bed = AudibleBed();
+
+            bed.Hush(true);
+            bed.SetAudible(true);
+            Assert.That(bed.IsAudible, NUnit.Framework.Is.False);
+            bed.Tick(FadeOut / 2f);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(BaseVolume / 2f).Within(Tolerance));
+            bed.Tick(FadeOut / 2f);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void LettingAHushGoFadesTheBedBackInFromWhereItIs_IfLightningReachesTheCharacter()
+        {
+            var bed = AudibleBed();
+            bed.Hush(true);
+            bed.Tick(FadeOut / 4f);
+            var volume = bed.Volume;
+
+            bed.Hush(false);
+            bed.Tick(Frame);
+            Assert.That(bed.Volume, NUnit.Framework.Is.GreaterThan(volume));
+
+            bed.SetAudible(false);
+            bed.Hush(true);
+            bed.Hush(false);
+            bed.Tick(FadeOut);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(0f), "A Room without windows keeps it out after the hush.");
+        }
+
+        [Test]
         public void FadingBackInHalfwayThroughAFadeOutStartsFromTheCurrentVolume()
         {
             var bed = AudibleBed();

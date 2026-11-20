@@ -18,6 +18,13 @@ namespace DarknessRises.Game.Routes
         private readonly Action<Station> onStationCleared;
         private int nextStation;
 
+        // The straight walk back onto the Route after something else moved the character off it (Rejoin).
+        private Vector3 leadInFrom;
+        private Vector3 leadInTo;
+        private float leadInLength;
+        private float leadInWalked;
+        private float joinDistance;
+
         // Counted from the last Station the character left. It walks in at full pace at the start of the Route.
         private float secondsSinceSetOff = float.PositiveInfinity;
 
@@ -66,18 +73,33 @@ namespace DarknessRises.Game.Routes
         /// <summary>Raised once, when the character reaches the end of the Route.</summary>
         public event Action Finished;
 
+        /// <summary>Raised when <see cref="Rejoin"/> sets the character's way back onto the Route.</summary>
+        public event Action Rejoined;
+
         public RoutePath Path { get; }
 
         /// <summary>The Route's Stations, in the order the character reaches them.</summary>
         public IReadOnlyList<Station> Stations => stations;
 
-        /// <summary>Metres walked from the start of the Route.</summary>
+        /// <summary>
+        /// Metres walked from the start of the Route. While the character walks back onto it (<see cref="IsRejoining"/>),
+        /// this stays where it left the Route until it joins it again.
+        /// </summary>
         public float Distance { get; private set; }
 
-        public Vector3 Position => Path.PositionAt(Distance);
+        /// <summary>Where the character is: on the Route, or on its straight way back onto it.</summary>
+        public Vector3 Position => IsRejoining
+            ? Vector3.Lerp(leadInFrom, leadInTo, leadInWalked / leadInLength)
+            : Path.PositionAt(Distance);
 
-        /// <summary>Unit direction the Route heads in from where the character is.</summary>
-        public Vector3 Direction => Path.DirectionAt(Distance);
+        /// <summary>Unit direction the character heads in: the Route's from where it is, or its way back onto the Route.</summary>
+        public Vector3 Direction => IsRejoining ? (leadInTo - leadInFrom) / leadInLength : Path.DirectionAt(Distance);
+
+        /// <summary>Whether the character is walking back onto the Route, off it, after <see cref="Rejoin"/>.</summary>
+        public bool IsRejoining => leadInWalked < leadInLength;
+
+        /// <summary>Metres along the Route of the next Station the character will stop at, or of the Route's end.</summary>
+        public float NextStopDistance => nextStation < stations.Length ? stations[nextStation].Distance : Path.Length;
 
         /// <summary>The Station the character is stopped at, or null while it walks.</summary>
         public Station CurrentStation { get; private set; }
@@ -108,10 +130,29 @@ namespace DarknessRises.Game.Routes
                 return;
             }
 
-            var metresToStation = nextStation < stations.Length ? stations[nextStation].Distance - Distance : float.PositiveInfinity;
+            var rejoining = IsRejoining;
+            var metresToStation = nextStation < stations.Length
+                ? stations[nextStation].Distance - (rejoining ? joinDistance - (leadInLength - leadInWalked) : Distance)
+                : float.PositiveInfinity;
             SpeedFraction = easing.SpeedFraction(metresToStation, secondsSinceSetOff);
             secondsSinceSetOff += deltaSeconds;
-            var reach = Distance + walkingSpeed * SpeedFraction * deltaSeconds;
+            var step = walkingSpeed * SpeedFraction * deltaSeconds;
+
+            // Back onto the Route first; what's left of the step walks on along it.
+            if (rejoining)
+            {
+                var leadInLeft = leadInLength - leadInWalked;
+                if (step < leadInLeft)
+                {
+                    leadInWalked += step;
+                    return;
+                }
+
+                step -= leadInLeft;
+                EndLeadIn(joinDistance);
+            }
+
+            var reach = Distance + step;
 
             if (nextStation < stations.Length && reach >= stations[nextStation].Distance)
             {
@@ -149,10 +190,70 @@ namespace DarknessRises.Game.Routes
                 Leave();
             }
 
+            EndLeadIn(Distance);
             nextStation = index + 1;
             Distance = station.Distance;
             Arrive(station);
             return true;
+        }
+
+        /// <summary>
+        /// The character stands at <paramref name="from"/>, where something else (a Boss fight) moved it: from now on it
+        /// walks in a straight line from there to the Route, <paramref name="joinAt"/> metres along it, and on along the
+        /// Route, at the walking speed and with the usual easing. Where it stands is where it is at once, so nothing
+        /// that places it jumps. <paramref name="joinAt"/> lies between <see cref="Distance"/> and
+        /// <see cref="NextStopDistance"/> (<see cref="RouteRejoin"/> picks it). A character at a Station only walks off
+        /// once the Station is cleared.
+        /// </summary>
+        public void Rejoin(Vector3 from, float joinAt)
+        {
+            if (joinAt < Distance || joinAt > NextStopDistance)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(joinAt), joinAt, "The character rejoins the Route between where it left it and its next stop.");
+            }
+
+            if (IsFinished)
+            {
+                return;
+            }
+
+            leadInFrom = from;
+            leadInTo = Path.PositionAt(joinAt);
+            leadInLength = Vector3.Distance(from, leadInTo);
+            leadInWalked = 0f;
+            joinDistance = joinAt;
+            if (!IsRejoining)
+            {
+                EndLeadIn(joinAt);
+            }
+
+            Rejoined?.Invoke();
+        }
+
+        /// <summary>
+        /// The point <paramref name="metres"/> further along the character's way: along its way back onto the Route
+        /// while it rejoins, then along the Route, clamped to the Route's end. The camera aims here.
+        /// </summary>
+        public Vector3 PositionAhead(float metres)
+        {
+            metres = Mathf.Max(metres, 0f);
+            if (!IsRejoining)
+            {
+                return Path.PositionAt(Distance + metres);
+            }
+
+            var walked = leadInWalked + metres;
+            return walked < leadInLength
+                ? Vector3.Lerp(leadInFrom, leadInTo, walked / leadInLength)
+                : Path.PositionAt(joinDistance + walked - leadInLength);
+        }
+
+        private void EndLeadIn(float distance)
+        {
+            leadInLength = 0f;
+            leadInWalked = 0f;
+            Distance = distance;
         }
 
         private void Arrive(Station station)

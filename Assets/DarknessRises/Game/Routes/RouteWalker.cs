@@ -1,5 +1,7 @@
+using System;
 using DarknessRises.Game.Player;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace DarknessRises.Game.Routes
 {
@@ -11,7 +13,8 @@ namespace DarknessRises.Game.Routes
     /// <remarks>
     /// The character's transform has one owner at a time. The walker places it until a Boss fight takes it with
     /// <see cref="HandOverPlacement"/>; from then on the fight places the character (Relocate), until
-    /// <see cref="TakeBackPlacement"/> once the character is back on the Boss Station.
+    /// <see cref="TakeBackPlacement"/> once the fight is over. The walker then walks the character on from wherever the
+    /// fight left it, back onto the Route (<see cref="RouteRejoin"/>), never snapping it there.
     /// </remarks>
     public sealed class RouteWalker : MonoBehaviour
     {
@@ -19,6 +22,8 @@ namespace DarknessRises.Game.Routes
 
         private Transform character;
         private bool placesCharacter;
+        private RouteRejoinSettings rejoin;
+        private Func<Vector3, Vector3, bool> isWalkable;
 
         /// <summary>The character's progress along the Route, once walking has begun. Owners of Station fights listen here.</summary>
         public RouteProgress Progress { get; private set; }
@@ -32,14 +37,27 @@ namespace DarknessRises.Game.Routes
             placesCharacter = false;
         }
 
-        /// <summary>Places the character on the Route again, from this frame on.</summary>
+        /// <summary>
+        /// Places the character again, from this frame on, starting where it stands: it walks from there back onto the
+        /// Route and on, as <see cref="RouteRejoin"/> picks the way.
+        /// </summary>
         public void TakeBackPlacement()
         {
             placesCharacter = true;
-            if (Progress != null)
+            if (Progress == null)
             {
-                Show();
+                return;
             }
+
+            if (!Progress.IsFinished)
+            {
+                var from = character.position;
+                var joinAt = RouteRejoin.JoinDistance(
+                    from, Progress.Path, Progress.Distance, Progress.NextStopDistance, rejoin.OnRouteMetres, rejoin.SampleMetres, isWalkable);
+                Progress.Rejoin(from, joinAt);
+            }
+
+            Show();
         }
 
         /// <summary>
@@ -50,6 +68,8 @@ namespace DarknessRises.Game.Routes
         {
             character = walkingCharacter;
             placesCharacter = true;
+            rejoin = player.Rejoin;
+            isWalkable ??= IsWalkable;
 
             var path = route.CreatePath();
             Progress = new RouteProgress(path, route.CreateStations(path), player.WalkingSpeed, easing);
@@ -73,6 +93,20 @@ namespace DarknessRises.Game.Routes
             {
                 character.position = Progress.Position;
             }
+        }
+
+        // A straight walk is clear when the NavMesh has no edge (a wall, an Obstacle) between its ends. Where there's no
+        // NavMesh under the character to check against, it is taken as clear: the fight only puts it on open floor.
+        private bool IsWalkable(Vector3 from, Vector3 to)
+        {
+            var search = rejoin.NavMeshSearchMetres;
+            if (!NavMesh.SamplePosition(from, out var start, search, NavMesh.AllAreas))
+            {
+                return true;
+            }
+
+            return NavMesh.SamplePosition(to, out var end, search, NavMesh.AllAreas)
+                && !NavMesh.Raycast(start.position, end.position, out _, NavMesh.AllAreas);
         }
 
         private void Reset()

@@ -50,6 +50,7 @@ namespace DarknessRises.Game.Cameras
         private Room room;
         private CinemachineBlenderSettings blends;
         private Action<StationBeat> onBeatChanged;
+        private Action onRejoined;
 
         /// <summary>Degrees the walking camera is swung off north right now. 0 before the ride starts.</summary>
         public float SwingDegrees => swing != null ? swing.Degrees : 0f;
@@ -105,6 +106,8 @@ namespace DarknessRises.Game.Cameras
             UseBlends();
             onBeatChanged ??= OnBeatChanged;
             rhythm.BeatChanged += onBeatChanged;
+            onRejoined ??= OnRejoined;
+            progress.Rejoined += onRejoined;
         }
 
         /// <summary>The character walked into <paramref name="entered"/>: Station framings look toward its Spawn points from now on.</summary>
@@ -140,6 +143,11 @@ namespace DarknessRises.Game.Cameras
                 rhythm = null;
             }
 
+            if (progress != null)
+            {
+                progress.Rejoined -= onRejoined;
+            }
+
             if (blends != null)
             {
                 if (brain != null && brain.CustomBlends == blends)
@@ -162,7 +170,7 @@ namespace DarknessRises.Game.Cameras
 
         private float WalkSwingTarget()
         {
-            var heading = RouteHeading.Ahead(progress.Path, progress.Distance, definition.HeadingMetres);
+            var heading = RouteHeading.Ahead(progress, definition.HeadingMetres);
             return RideSwing.TowardsDegrees(heading, definition.Walking.SwingDegrees);
         }
 
@@ -171,6 +179,18 @@ namespace DarknessRises.Game.Cameras
             var walking = definition.Walking;
             walkFollow.FollowOffset = FixedAngleFraming.FollowOffset(walking.PitchDegrees, swingDegrees, walking.Distance);
             walkCamera.transform.rotation = FixedAngleFraming.Rotation(walking.PitchDegrees, swingDegrees);
+        }
+
+        // The character walks back onto the Route from wherever a Boss fight left it. The walking camera, not live during
+        // the fight, is posed over it at once, so Cinemachine's blend from the Boss Room camera lands on the character
+        // rather than on the Route where it left it.
+        private void OnRejoined()
+        {
+            lookAhead.Tick(0f, progress, IsLeading());
+            followTarget.position = lookAhead.Target;
+            swing.Snap(WalkSwingTarget());
+            PoseWalkCamera(swing.Degrees);
+            walkCamera.ForceCameraPosition(followTarget.position + walkFollow.FollowOffset, walkCamera.transform.rotation);
         }
 
         private void OnBeatChanged(StationBeat beat)

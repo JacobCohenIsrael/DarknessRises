@@ -35,7 +35,12 @@ namespace DarknessRises.Game.Editor.Bosses
         private const string StompClipPath = "Assets/Free Pack/Cannon impact 9.wav";
         private const string HurtClipPath = "Assets/Free Pack/Metal impact 5.wav";
         private const string DefeatClipPath = "Assets/Free Pack/Tsunami hitting a Large City.wav";
-        private const string RelocateClipPath = "Assets/Free Pack/Indiana Jones Punch.wav";
+        // A whoosh that rises in a tenth of a second and peaks through the dash: the character dashing to its next
+        // Position (issue #94). A placeholder until the user picks one by ear.
+        private const string RelocateClipPath = "Assets/Free Pack/Magic Spell_Simple Swoosh_6.wav";
+
+        // The dash's first placeholder, a punch, which never read as a dash. Replaced wherever it's still referenced.
+        private const string FormerRelocateClipPath = "Assets/Free Pack/Indiana Jones Punch.wav";
 
         private const string GameplayMap = "Gameplay";
         private const string RelocateAction = "Relocate";
@@ -80,7 +85,9 @@ namespace DarknessRises.Game.Editor.Bosses
             Reference(serialized, "stompClip", StompClipPath, contentGroup);
             Reference(serialized, "hurtClip", HurtClipPath, contentGroup);
             Reference(serialized, "defeatClip", DefeatClipPath, contentGroup);
-            Reference(serialized, "relocateClip", RelocateClipPath, contentGroup);
+            // The Enemies swing with it too, so it stays in the Enemies group, where their builder keeps it.
+            ReplaceFormerRelocateClip(serialized.FindProperty("relocateClip"));
+            Reference(serialized, "relocateClip", RelocateClipPath, AddressableContent.EnemiesGroup);
 
             // From phase 2, Shamblers drop from its back.
             var addType = serialized.FindProperty("addType");
@@ -94,6 +101,19 @@ namespace DarknessRises.Game.Editor.Bosses
             // Re-saved so fields added since it was created are written to disk with their defaults.
             EditorUtility.SetDirty(colossus);
             return colossus;
+        }
+
+        // The punch is replaced by the current dash sound and leaves the Level's content, which nothing else plays it in.
+        private static void ReplaceFormerRelocateClip(SerializedProperty reference)
+        {
+            var referenced = AddressableContent.Referenced<AudioClip>(reference);
+            if (referenced == null || AssetDatabase.GetAssetPath(referenced) != FormerRelocateClipPath)
+            {
+                return;
+            }
+
+            AddressableContent.Reference(reference, AssetDatabase.LoadAssetAtPath<AudioClip>(RelocateClipPath), AddressableContent.EnemiesGroup);
+            AddressableContent.Remove(FormerRelocateClipPath);
         }
 
         private static void Reference(SerializedObject definition, string property, string clipPath, string group)

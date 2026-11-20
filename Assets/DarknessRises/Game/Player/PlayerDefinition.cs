@@ -1,4 +1,5 @@
 using DarknessRises.Game.Health;
+using DarknessRises.Game.Routes;
 using UnityEngine;
 
 namespace DarknessRises.Game.Player
@@ -18,6 +19,9 @@ namespace DarknessRises.Game.Player
         [SerializeField, Min(0f), Tooltip("Metres per second the character walks along the Route.")]
         private float walkingSpeed = 3f;
 
+        [SerializeField, Tooltip("How the character walks back onto the Route from wherever a Boss fight left it.")]
+        private RouteRejoinSettings rejoin = new();
+
         [SerializeField, Tooltip("The faint, always-on, shadowless light around the character.")]
         private AuraSettings aura = new();
 
@@ -31,6 +35,7 @@ namespace DarknessRises.Game.Player
         public int HitPoints => hitPoints;
         public float InvulnerabilitySeconds => invulnerabilitySeconds;
         public float WalkingSpeed => walkingSpeed;
+        public RouteRejoinSettings Rejoin => rejoin;
         public AuraSettings Aura => aura;
         public CharacterAnimationSettings Animation => animation;
     }

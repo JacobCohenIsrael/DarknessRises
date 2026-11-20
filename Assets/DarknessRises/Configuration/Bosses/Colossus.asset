@@ -97,6 +97,8 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  hurtVolume: 0.35
+  hurtMinIntervalSeconds: 0.4
   defeatClip:
     m_AssetGUID: 40ab3a7e4e36423488e589303d63346f
     m_SubObjectName: 
@@ -104,8 +106,9 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   relocateClip:
-    m_AssetGUID: e1a75776f005439469f89a17a986c567
+    m_AssetGUID: cc6699269b4c1d44ea1e860518b9bb73
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
+  relocateVolume: 0.45

@@ -48,6 +48,10 @@ _Avoid_: spot, node, waypoint
 The character's quick dash to a Position the player picks by direction. It exists only in Boss fights that call for it; everywhere else the player never steers.
 _Avoid_: dodge, dash, move
 
+**Rejoin**:
+The character's walk back onto the Route once the Boss is beaten: from the Position where it stands, straight to the farthest point of the Route it can reach that way before the next Station, then on along the Route. It never snaps the character back to the Boss's Station.
+_Avoid_: return, snap back, teleport
+
 **Obstacle**:
 A solid object in a Room, such as a pillar or furniture, that blocks movement and casts shadows.
 _Avoid_: prop, cover

@@ -27,7 +27,8 @@ namespace DarknessRises.Game.Boot
     /// Credits in it, and writes it when the app goes to the background or quits.
     /// And it owns the sounds that carry across scenes (ADR 0011): the storm plays on the boot's own
     /// <see cref="StormPlayer"/>, which each Level drives while it plays, so it rolls on through a Level change instead of
-    /// dying with the old scene, and fades out for the Shop. Its volumes follow the scene that is showing.
+    /// dying with the old scene, and fades out for the Shop. Its volumes follow the scene that is showing, and its own
+    /// ears (<see cref="BootEars"/>) hear it while no scene's are there.
     /// </summary>
     public sealed class Bootstrap : MonoBehaviour
     {
@@ -54,6 +55,9 @@ namespace DarknessRises.Game.Boot
 
         [SerializeField, Tooltip("The boot scene's volumes: they follow the volumes of the Level or Shop that is showing.")]
         private SceneAudioVolumes audioVolumes;
+
+        [SerializeField, Tooltip("Hears the storm while no Level or Shop is loaded to hear it: through every unload and load.")]
+        private BootEars ears;
 
         // Owns the boot's lifetime: the app's.
         private CancellationTokenSource lifetime;
@@ -86,6 +90,9 @@ namespace DarknessRises.Game.Boot
 
         /// <summary>The storm player that outlives every Level.</summary>
         public StormPlayer Storm => storm;
+
+        /// <summary>The boot's AudioListener, on while no other scene's is.</summary>
+        public BootEars Ears => ears;
 
         /// <summary>The player's save: the Credits in the bank and what they bought. Read from the device at start.</summary>
         public PlayerSave Save { get; private set; }
@@ -152,6 +159,7 @@ namespace DarknessRises.Game.Boot
             var scene = await LoadSceneAsync(levelKey, cancellationToken);
             loadingCamera.enabled = false;
             var gameRoot = Find<GameRoot>(scene);
+            storm.Hush(false);
             gameRoot.Play(Run, Save, storm);
             audioVolumes.Follow(gameRoot.AudioVolumes);
             LevelLoaded?.Invoke(gameRoot);
@@ -159,11 +167,17 @@ namespace DarknessRises.Game.Boot
             var next = await levelLeft.Task.AttachExternalCancellation(cancellationToken);
             levelLeft = null;
 
+            // On the way to the Shop the storm starts fading out now, through the change, rather than once the Shop shows.
+            if (next == Next.Shop)
+            {
+                storm.Hush(true);
+            }
+
             // Out of whatever callback moved the Run on (often the Level's own) before its scene goes. The storm plays on
-            // at the Level's last volumes through the change.
+            // at the Level's last volumes through the change, heard by the boot's ears while the Level's are gone.
             await UniTask.Yield(cancellationToken);
             audioVolumes.Unfollow();
-            await UnloadSceneAsync(cancellationToken);
+            await UnloadSceneAsync(scene, cancellationToken);
             LevelUnloaded?.Invoke();
             return next;
         }
@@ -172,14 +186,14 @@ namespace DarknessRises.Game.Boot
         private async UniTask ShowShopAsync(CancellationToken cancellationToken)
         {
             // There is no storm in the Shop: it fades out, and fades back in when a Level with Lightning is played.
-            storm.SetAudible(false);
+            storm.Hush(true);
             var scene = await LoadSceneAsync(definition.ShopScene.RuntimeKey, cancellationToken);
             var shop = Find<ShopRoot>(scene);
             audioVolumes.Follow(shop.AudioVolumes);
             ShopLoaded?.Invoke(shop);
             await shop.RunAsync(Save, cancellationToken);
             audioVolumes.Unfollow();
-            await UnloadSceneAsync(cancellationToken);
+            await UnloadSceneAsync(scene, cancellationToken);
             ShopUnloaded?.Invoke();
         }
 
@@ -192,9 +206,12 @@ namespace DarknessRises.Game.Boot
             return scene;
         }
 
-        private async UniTask UnloadSceneAsync(CancellationToken cancellationToken)
+        private async UniTask UnloadSceneAsync(Scene scene, CancellationToken cancellationToken)
         {
             loadingCamera.enabled = true;
+
+            // The scene's ears go with it; the boot's hear on, so a sound that carries across scenes never cuts.
+            ears.TakeFrom(scene);
             await sceneScope.EndAsync();
             sceneScope = null;
 

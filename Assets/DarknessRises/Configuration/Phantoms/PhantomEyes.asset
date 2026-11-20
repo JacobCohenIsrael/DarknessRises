@@ -18,14 +18,14 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  minGapSeconds: 6
-  maxGapSeconds: 14
+  minGapSeconds: 3
+  maxGapSeconds: 7
   voiceOnlyShare: 0.25
-  firstDelaySeconds: 6
+  firstDelaySeconds: 4
   retrySeconds: 1
   afterFlashSeconds: 0.2
   longestFlashWaitSeconds: 5
-  maxPairs: 2
+  maxPairs: 3
   pairSeparationMetres: 3
   enemyClearanceMetres: 14
   aheadDegrees: 120
@@ -43,7 +43,7 @@ MonoBehaviour:
   blinkSeconds: 0.16
   minBlinkGapSeconds: 0.3
   maxBlinkGapSeconds: 1.2
-  hopChance: 0.45
+  hopChance: 0.55
   maxHops: 2
   minHopGapSeconds: 0.5
   maxHopGapSeconds: 1.2
@@ -68,6 +68,7 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   voiceWithEyesChance: 0.7
+  minVoiceGapSeconds: 4
   minVoiceOnlySeconds: 2.5
   maxVoiceOnlySeconds: 4.5
   voiceOnlyDegrees: 180

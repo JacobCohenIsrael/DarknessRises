@@ -1,0 +1,74 @@
+120 s of play, 96 s of it safe (walking or after a clear). first sightings 13, reopened nearby 6, blinks 24, voices with eyes 8, lone voices 4, same clip twice in a row 0.
+  1.37s Walking    VOICE ALONE: Misc_Whisper from PhantomEyes 1 at (-2.9, 8.3) 9.3 m, +0 deg, screen (0.31, 0.97); clip=Misc_Whisper playing=True vol=0.70 spatial=1 pitch=0.96 t=0.7
+ 19.22s Walking    EYES open: PhantomEyes 1 at (9.5, 3.9) 9.8 m, +101 deg, screen (0.74, 0.82); out now 1
+ 20.11s Walking    gone TooNear: PhantomEyes 1
+ 39.30s Walking    EYES open: PhantomEyes 1 at (-0.7, -2.7) 8.9 m, -103 deg, screen (0.07, 0.71); out now 1
+ 39.30s Walking    VOICE with eyes: Misc_Shh from PhantomEyes 1 at (-0.7, -2.7) 8.9 m, -103 deg, screen (0.07, 0.71); clip=Misc_Shh playing=True vol=0.70 spatial=1 pitch=1.01 t=0.0
+ 41.05s Walking      blink: PhantomEyes 1
+ 41.84s Walking      blink: PhantomEyes 1
+ 41.97s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.52 r=10.0 3.3 m away] 
+ 45.07s Walking    EYES open: PhantomEyes 1 at (-1.7, -4.0) 10.5 m, -68 deg, screen (0.09, 0.88); out now 1
+ 45.07s Walking    VOICE with eyes: Misc_breath from PhantomEyes 1 at (-1.7, -4.0) 10.5 m, -68 deg, screen (0.09, 0.88); clip=Misc_breath playing=True vol=0.70 spatial=1 pitch=0.99 t=3.5
+ 46.26s Walking      blink: PhantomEyes 1
+ 46.76s Walking      blink: PhantomEyes 1
+ 47.52s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.52 r=10.0 4.7 m away] 
+ 48.52s Walking    EYES reopened nearby (hop 1): PhantomEyes 1 at (-0.8, -6.2) 9.0 m, -78 deg, screen (0.09, 0.78); out now 1
+ 50.11s Walking      blink: PhantomEyes 1
+ 50.64s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.48 r=10.0 6.5 m away] 
+ 51.05s Walking    EYES open: PhantomEyes 1 at (0.3, -4.2) 8.6 m, -64 deg, screen (0.17, 0.88); out now 1
+ 51.05s Walking    VOICE with eyes: Misc_Whisper from PhantomEyes 1 at (0.3, -4.2) 8.6 m, -64 deg, screen (0.17, 0.88); clip=Misc_Whisper playing=True vol=0.70 spatial=1 pitch=0.97 t=3.1
+ 52.11s Walking      blink: PhantomEyes 1
+ 52.91s Walking      blink: PhantomEyes 1
+ 53.45s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.48 r=10.0 4.6 m away] 
+ 53.87s Walking    EYES open: PhantomEyes 2 at (-2.4, -2.5) 11.8 m, -62 deg, screen (0.10, 0.95); out now 2
+ 54.99s Walking    EYES reopened nearby (hop 1): PhantomEyes 1 at (-1.2, -5.7) 9.4 m, -76 deg, screen (0.08, 0.80); out now 2
+ 55.07s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.52 r=10.0 6.1 m away] 
+ 55.07s Walking    gone Lit: PhantomEyes 2 by [Key Light (shadows) Directional i=0.52 r=10.0 3.9 m away] 
+ 56.15s Walking    EYES reopened nearby (hop 1): PhantomEyes 2 at (-1.1, -5.2) 9.5 m, -73 deg, screen (0.09, 0.82); out now 1
+ 56.15s Walking    VOICE with eyes: Misc_breath from PhantomEyes 2 at (-1.1, -5.2) 9.5 m, -73 deg, screen (0.09, 0.82); clip=Misc_breath playing=True vol=0.70 spatial=1 pitch=1.01 t=0.9
+ 57.04s Walking    gone Lit: PhantomEyes 2 by [Key Light (shadows) Directional i=0.48 r=10.0 5.6 m away] 
+ 65.94s Walking    EYES open: PhantomEyes 1 at (-2.1, -4.5) 10.7 m, -71 deg, screen (0.07, 0.85); out now 1
+ 65.94s Walking    VOICE with eyes: Misc_Whisper from PhantomEyes 1 at (-2.1, -4.5) 10.7 m, -71 deg, screen (0.07, 0.85); clip=Misc_Whisper playing=True vol=0.70 spatial=1 pitch=1.04 t=3.5
+ 66.87s Walking      blink: PhantomEyes 1
+ 67.24s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.54 r=10.0 5.3 m away] 
+ 68.57s Walking    EYES reopened nearby (hop 1): PhantomEyes 1 at (0.0, -5.0) 8.6 m, -69 deg, screen (0.14, 0.85); out now 1
+ 69.94s Walking    VOICE ALONE: Misc_breath from PhantomEyes 2 at (4.9, 2.9) 11.4 m, -16 deg, screen (0.40, 1.13); clip=Misc_breath playing=True vol=0.70 spatial=1 pitch=1.02 t=2.6
+ 70.17s Walking      blink: PhantomEyes 1
+ 70.71s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.53 r=10.0 5.4 m away] 
+ 75.64s Walking    EYES open: PhantomEyes 1 at (-1.4, -5.3) 9.8 m, -74 deg, screen (0.08, 0.82); out now 1
+ 77.09s Walking      blink: PhantomEyes 1
+ 77.60s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.48 r=10.0 5.7 m away] 
+ 79.04s Walking    VOICE ALONE: Misc_Whisper from PhantomEyes 1 at (-0.8, -6.6) 8.9 m, -81 deg, screen (0.07, 0.76); clip=Misc_Whisper playing=True vol=0.70 spatial=1 pitch=0.97 t=3.1
+ 83.32s Walking    VOICE ALONE: Misc_Shh from PhantomEyes 1 at (0.8, 0.2) 10.9 m, -41 deg, screen (0.25, 1.05); clip=Misc_Shh playing=True vol=0.70 spatial=1 pitch=0.97 t=0.0
+ 89.40s Walking    EYES open: PhantomEyes 1 at (-2.2, -3.7) 11.0 m, -67 deg, screen (0.08, 0.89); out now 1
+ 89.40s Walking    VOICE with eyes: Misc_Whisper from PhantomEyes 1 at (-2.2, -3.7) 11.0 m, -67 deg, screen (0.08, 0.89); clip=Misc_Whisper playing=True vol=0.70 spatial=1 pitch=1.03 t=0.1
+ 90.48s Walking      blink: PhantomEyes 1
+ 91.38s Walking      blink: PhantomEyes 1
+ 92.25s Walking      blink: PhantomEyes 1
+ 92.43s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.42 r=10.0 4.6 m away] 
+ 97.81s Walking    EYES open: PhantomEyes 1 at (-1.7, -5.5) 10.0 m, -75 deg, screen (0.06, 0.81); out now 1
+ 99.27s Walking      blink: PhantomEyes 1
+100.23s Walking      blink: PhantomEyes 1
+100.33s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.35 r=10.0 6.0 m away] 
+100.74s Walking    EYES open: PhantomEyes 1 at (-1.1, -3.7) 10.1 m, -65 deg, screen (0.13, 0.90); out now 1
+100.74s Walking    VOICE with eyes: Misc_breath from PhantomEyes 1 at (-1.1, -3.7) 10.1 m, -65 deg, screen (0.13, 0.90); clip=Misc_breath playing=True vol=0.70 spatial=1 pitch=1.03 t=0.3
+102.30s Walking      blink: PhantomEyes 1
+102.95s Walking      blink: PhantomEyes 1
+103.41s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.51 r=10.0 4.2 m away] 
+106.43s Walking    EYES open: PhantomEyes 1 at (-0.1, -4.1) 9.0 m, -64 deg, screen (0.16, 0.89); out now 1
+107.68s Walking      blink: PhantomEyes 1
+108.80s Walking      blink: PhantomEyes 1
+109.11s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.77 r=10.0 4.5 m away] 
+109.51s Walking    EYES open: PhantomEyes 1 at (-0.7, -5.9) 9.0 m, -76 deg, screen (0.09, 0.80); out now 1
+110.73s Walking      blink: PhantomEyes 1
+111.39s Walking      blink: PhantomEyes 1
+112.32s Walking      blink: PhantomEyes 1
+112.33s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.44 r=10.0 6.2 m away] 
+113.77s Walking    EYES reopened nearby (hop 1): PhantomEyes 1 at (-2.3, -4.5) 10.9 m, -71 deg, screen (0.06, 0.85); out now 1
+115.03s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.39 r=10.0 5.4 m away] 
+116.22s Walking    EYES reopened nearby (hop 2): PhantomEyes 1 at (-0.4, -6.5) 8.6 m, -80 deg, screen (0.09, 0.76); out now 1
+116.22s Walking    VOICE with eyes: Misc_Whisper from PhantomEyes 1 at (-0.4, -6.5) 8.6 m, -80 deg, screen (0.09, 0.76); clip=Misc_Whisper playing=True vol=0.70 spatial=1 pitch=0.97 t=3.3
+117.16s Walking      blink: PhantomEyes 1
+118.00s Walking      blink: PhantomEyes 1
+118.51s Walking    gone Lit: PhantomEyes 1 by [Key Light (shadows) Directional i=0.48 r=10.0 6.9 m away] 
+118.92s Walking    EYES open: PhantomEyes 1 at (-1.7, -4.3) 10.4 m, -69 deg, screen (0.09, 0.86); out now 1

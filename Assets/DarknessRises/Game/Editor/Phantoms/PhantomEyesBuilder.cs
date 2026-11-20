@@ -81,6 +81,40 @@ namespace DarknessRises.Game.Editor.Phantoms
             return definition;
         }
 
+        // How often they come, tuned for #102 (more often than #96): written over the asset by ApplyFrequencyTuning.
+        private static readonly string[] FrequencyFields =
+        {
+            "minGapSeconds", "maxGapSeconds", "firstDelaySeconds", "maxPairs", "hopChance", "minVoiceGapSeconds",
+        };
+
+        /// <summary>
+        /// Writes the definition's class defaults for how often Phantom eyes come (the gap, the first delay, the most
+        /// pairs, the hop chance, the gap between voices) over the asset, so a retune never hand-edits its YAML. Run
+        /// headless: <c>unity run . -- -executeMethod DarknessRises.Game.Editor.Phantoms.PhantomEyesBuilder.ApplyFrequencyTuning</c>.
+        /// </summary>
+        public static void ApplyFrequencyTuning()
+        {
+            var definition = LoadOrCreate();
+            var serialized = new SerializedObject(definition);
+            var fresh = ScriptableObject.CreateInstance<PhantomEyesDefinition>();
+            try
+            {
+                var defaults = new SerializedObject(fresh);
+                foreach (var field in FrequencyFields)
+                {
+                    serialized.CopyFromSerializedProperty(defaults.FindProperty(field));
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(fresh);
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(definition);
+            AssetDatabase.SaveAssets();
+        }
+
         private static PhantomEyesPair LoadOrCreatePrefab()
         {
             var existing = AssetDatabase.LoadAssetAtPath<PhantomEyesPair>(PrefabPath);

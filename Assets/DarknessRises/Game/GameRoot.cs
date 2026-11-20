@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Ads;
+using DarknessRises.Game.Ambience;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Configuration;
@@ -146,6 +147,9 @@ namespace DarknessRises.Game
         // The Phantom eyes that look out of the dark, made once the Level's content has loaded, if there are any.
         private PhantomEyesView phantomEyes;
 
+        // The ambient bed from the dark, made once the Level's content has loaded, if there is one.
+        private AmbientBedView ambientBed;
+
         // The lights that can reveal an Enemy, for Aim assist's idea of a visible Enemy.
         private readonly SceneLights lights = new();
 
@@ -224,6 +228,9 @@ namespace DarknessRises.Game
 
         /// <summary>The Critters darting through the dark, once the gameplay has started; null without any.</summary>
         public CrittersView Critters => critters;
+
+        /// <summary>The ambient bed, once the gameplay has started; null without one.</summary>
+        public AmbientBedView AmbientBed => ambientBed;
 
         /// <summary>The Phantom eyes, once the gameplay has started; null without any.</summary>
         public PhantomEyesView PhantomEyes => phantomEyes;
@@ -404,6 +411,11 @@ namespace DarknessRises.Game
                     lights,
                     livingEnemies,
                     content);
+            }
+
+            if (configuration.Ambience != null)
+            {
+                ambientBed = AmbientBedView.Create(transform, configuration.Ambience, character, run, stationRhythm, content);
             }
 
             if (grenadeButton != null)

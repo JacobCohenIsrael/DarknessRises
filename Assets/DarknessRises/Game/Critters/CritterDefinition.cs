@@ -2,6 +2,7 @@ using System;
 using DarknessRises.Game.Randomness;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 
 namespace DarknessRises.Game.Critters
 {
@@ -131,17 +132,17 @@ namespace DarknessRises.Game.Critters
         [SerializeField, Tooltip("Played as a Critter dashes, one picked at random. Leave empty for a silent dash.")]
         private AssetReferenceT<AudioClip>[] scurryClips = new AssetReferenceT<AudioClip>[0];
 
-        [SerializeField, Min(0f), Tooltip("Seconds into the scurry clip it starts from.")]
-        private float scurryStartSeconds = 0.3f;
+        [SerializeField, Min(0f), FormerlySerializedAs("scurryStartSeconds"), Tooltip("Latest second into the scurry clip it may start from, picked at random each dash, so a long scratching or hissing clip isn't the same every time. Never so late that the clip runs out before the dash ends.")]
+        private float scurryLatestStartSeconds = 6f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Lowest pitch of a scurry.")]
-        private float scurryMinPitch = 1.8f;
+        private float scurryMinPitch = 0.95f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Highest pitch of a scurry.")]
-        private float scurryMaxPitch = 2.3f;
+        private float scurryMaxPitch = 1.15f;
 
         [SerializeField, Range(0f, 1f)]
-        private float scurryVolume = 0.35f;
+        private float scurryVolume = 0.45f;
 
         [SerializeField, Min(0f), Tooltip("Seconds the scurry fades out over once the dash ends.")]
         private float scurryFadeSeconds = 0.2f;
@@ -150,10 +151,10 @@ namespace DarknessRises.Game.Critters
         private AssetReferenceT<AudioClip>[] squeakClips = new AssetReferenceT<AudioClip>[0];
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Lowest pitch of a squeak.")]
-        private float squeakMinPitch = 1.8f;
+        private float squeakMinPitch = 1f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Highest pitch of a squeak.")]
-        private float squeakMaxPitch = 2.4f;
+        private float squeakMaxPitch = 1.2f;
 
         [SerializeField, Range(0f, 1f)]
         private float squeakVolume = 0.6f;
@@ -162,7 +163,7 @@ namespace DarknessRises.Game.Critters
         private float hearingRange = 18f;
 
         public AssetReferenceT<AudioClip>[] ScurryClips => scurryClips;
-        public float ScurryStartSeconds => scurryStartSeconds;
+        public float ScurryLatestStartSeconds => scurryLatestStartSeconds;
         public float ScurryMinPitch => scurryMinPitch;
         public float ScurryMaxPitch => scurryMaxPitch;
         public float ScurryVolume => scurryVolume;

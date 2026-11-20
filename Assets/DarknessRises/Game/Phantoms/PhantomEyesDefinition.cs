@@ -81,10 +81,10 @@ namespace DarknessRises.Game.Phantoms
         private float whisperLatestStartSeconds = 8f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Lowest pitch of the whisper.")]
-        private float whisperMinPitch = 0.85f;
+        private float whisperMinPitch = 0.95f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Highest pitch of the whisper.")]
-        private float whisperMaxPitch = 1f;
+        private float whisperMaxPitch = 1.05f;
 
         [SerializeField, Range(0f, 1f), Tooltip("Volume of the whisper at the eyes. Faint.")]
         private float whisperVolume = 0.25f;

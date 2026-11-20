@@ -129,6 +129,7 @@ namespace DarknessRises.Game.Phantoms
 
         private CritterMoment Moment => CritterMoments.Of(run.Phase, rhythm.Beat);
 
+        // The one place the whisper's voice is set up: route it to the ambient mixer group here.
         private void Prepare()
         {
             voice.playOnAwake = false;
@@ -247,9 +248,9 @@ namespace DarknessRises.Game.Phantoms
 
             voice.clip = clip;
             voice.pitch = random.Range(definition.WhisperMinPitch, definition.WhisperMaxPitch);
-            // Somewhere in its first seconds, so it isn't the same breath every time.
-            var latestShare = clip.length > 0f ? Mathf.Clamp01(definition.WhisperLatestStartSeconds / clip.length) : 0f;
-            voice.timeSamples = (int)(random.Range(0f, latestShare) * Mathf.Max(0, clip.samples - 1));
+            // Somewhere in its first seconds, so it isn't the same breath every time, with enough left to last the hold.
+            var latestStart = Mathf.Min(definition.WhisperLatestStartSeconds, clip.length - definition.MaxHoldSeconds * voice.pitch);
+            voice.time = latestStart > 0f ? random.Range(0f, latestStart) : 0f;
             whisper.Start(definition.WhisperVolume);
             voice.volume = whisper.Volume;
             voice.Play();

@@ -33,8 +33,21 @@ namespace DarknessRises.Game.Editor.Enemies
         private const string AttackClipPath = "Assets/Free Pack/Magic Spell_Simple Swoosh_6.wav";
         private static readonly string[] TellClipPaths = { "Assets/Free Pack/Monster Bite.wav" };
 
-        // A soft thud, until real footstep clips are approved. Already an Enemy sound, so it stays in the Enemies group.
-        private static readonly string[] FootstepClipPaths = { DeathClipPath };
+        // Approved footsteps (2026-11-20). The placeholder was the death clip, which stays the death clip.
+        private static readonly string[] FootstepPlaceholderPaths = { DeathClipPath };
+        private static readonly string[] ShamblerFootstepPaths =
+        {
+            "Assets/ZombieHorrorPackageFree/WAV/Footsteps/Footsteps_Zombie_concret_001.wav",
+            "Assets/ZombieHorrorPackageFree/WAV/Footsteps/Footsteps_Zombie_concret_002.wav",
+            "Assets/ZombieHorrorPackageFree/WAV/Footsteps/Footsteps_Zombie_concret_003.wav",
+            "Assets/ZombieHorrorPackageFree/WAV/Footsteps/Footsteps_Zombie_concret_004.wav",
+        };
+
+        private static readonly string[] ShamblerDragPaths = { "Assets/ZombieHorrorPackageFree/WAV/Foley/Foley_Crawling_A_001.wav" };
+        private static readonly string[] RunnerFootstepPaths =
+        {
+            "Assets/Footsteps - Essentials/Footsteps_DirtyGround/Footsteps_DirtyGround_Run/Footsteps_DirtyGround_Run_03.wav",
+        };
 
         private const string LitShaderName = "Universal Render Pipeline/Lit";
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
@@ -111,9 +124,15 @@ namespace DarknessRises.Game.Editor.Enemies
         private const float DefaultFootstepStrideMetres = 0.75f;
         private const float RunnerFootstepStrideMetres = 1f;
         private const float RunnerFootstepLimp = 0f;
-        private const float RunnerFootstepMinPitch = 1.05f;
-        private const float RunnerFootstepMaxPitch = 1.3f;
-        private const float RunnerFootstepVolume = 0.4f;
+        private const float RunnerFootstepMinPitch = 0.95f;
+        private const float RunnerFootstepMaxPitch = 1.15f;
+        private const float RunnerFootstepVolume = 0.45f;
+        private const float RunnerMaxStepSeconds = 0.35f;
+
+        // The Shambler's tuning for the approved clips, set when they replace the placeholder (which was pitched down).
+        private const float ShamblerFootstepMinPitch = 0.9f;
+        private const float ShamblerFootstepMaxPitch = 1.05f;
+        private const float ShamblerFootstepVolume = 0.55f;
 
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
@@ -156,17 +175,37 @@ namespace DarknessRises.Game.Editor.Enemies
         {
             var serialized = new SerializedObject(enemyType);
             var clips = serialized.FindProperty("audio.footsteps.clips");
-            if (clips.arraySize == 0)
+            var wasPlaceholder = OnlyPlaceholderSteps(clips);
+            HorrorSoundImport.ReplacePlaceholders(
+                clips,
+                FootstepPlaceholderPaths,
+                isRunner ? RunnerFootstepPaths : ShamblerFootstepPaths,
+                HorrorClipLength.Short,
+                AddressableContent.EnemiesGroup);
+            if (!isRunner)
             {
-                clips.arraySize = FootstepClipPaths.Length;
-                for (var i = 0; i < FootstepClipPaths.Length; i++)
-                {
-                    var path = FootstepClipPaths[i];
-                    AddressableContent.ReferenceIfEmpty(
-                        clips.GetArrayElementAtIndex(i),
-                        () => LoadMonoClip(path),
-                        AddressableContent.EnemiesGroup);
-                }
+                HorrorSoundImport.ReplacePlaceholders(
+                    serialized.FindProperty("audio.footsteps.dragClips"),
+                    FootstepPlaceholderPaths,
+                    ShamblerDragPaths,
+                    HorrorClipLength.Short,
+                    AddressableContent.EnemiesGroup);
+            }
+
+            // The placeholder was pitched and levelled to pass for a step; the real steps play near their own pitch.
+            if (wasPlaceholder && !isRunner)
+            {
+                serialized.FindProperty("audio.footsteps.minPitch").floatValue = ShamblerFootstepMinPitch;
+                serialized.FindProperty("audio.footsteps.maxPitch").floatValue = ShamblerFootstepMaxPitch;
+                serialized.FindProperty("audio.footsteps.volume").floatValue = ShamblerFootstepVolume;
+            }
+
+            if (wasPlaceholder && isRunner)
+            {
+                serialized.FindProperty("audio.footsteps.minPitch").floatValue = RunnerFootstepMinPitch;
+                serialized.FindProperty("audio.footsteps.maxPitch").floatValue = RunnerFootstepMaxPitch;
+                serialized.FindProperty("audio.footsteps.volume").floatValue = RunnerFootstepVolume;
+                serialized.FindProperty("audio.footsteps.maxStepSeconds").floatValue = RunnerMaxStepSeconds;
             }
 
             var stride = serialized.FindProperty("audio.footsteps.strideMetres");
@@ -177,10 +216,26 @@ namespace DarknessRises.Game.Editor.Enemies
                 serialized.FindProperty("audio.footsteps.minPitch").floatValue = RunnerFootstepMinPitch;
                 serialized.FindProperty("audio.footsteps.maxPitch").floatValue = RunnerFootstepMaxPitch;
                 serialized.FindProperty("audio.footsteps.volume").floatValue = RunnerFootstepVolume;
+                serialized.FindProperty("audio.footsteps.maxStepSeconds").floatValue = RunnerMaxStepSeconds;
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(enemyType);
+        }
+
+        // Whether the step list is empty or holds only the placeholder: then the approved clips and their tuning go in.
+        private static bool OnlyPlaceholderSteps(SerializedProperty clips)
+        {
+            for (var i = 0; i < clips.arraySize; i++)
+            {
+                var clip = AddressableContent.Referenced<AudioClip>(clips.GetArrayElementAtIndex(i));
+                if (clip != null && AssetDatabase.GetAssetPath(clip) != DeathClipPath)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         // The eye opening came after the Runner; give an asset still on the Shambler's default the Runner's quicker one.

@@ -41,23 +41,33 @@ MonoBehaviour:
     color: {r: 2.2, g: 1.4, b: 0.35, a: 1}
   sounds:
     scurryClips:
-    - m_AssetGUID: 0b93f9af63befa2478916a5396131fff
+    - m_AssetGUID: 5027c464c917eb14cb042556fb054951
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
-    scurryStartSeconds: 0.3
-    scurryMinPitch: 1.8
-    scurryMaxPitch: 2.3
-    scurryVolume: 0.35
+    - m_AssetGUID: 1e2dcbea73060294491fd210015c682c
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    - m_AssetGUID: 5bfbb652e8a734eb0a68fcb972453274
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    scurryLatestStartSeconds: 6
+    scurryMinPitch: 0.95
+    scurryMaxPitch: 1.15
+    scurryVolume: 0.45
     scurryFadeSeconds: 0.2
     squeakClips:
-    - m_AssetGUID: bb6cdd13aeb95f743847b1cd460889bc
+    - m_AssetGUID: d4358666844e212469c7bc3ba4bd5918
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
-    squeakMinPitch: 1.8
-    squeakMaxPitch: 2.4
+    squeakMinPitch: 1
+    squeakMaxPitch: 1.2
     squeakVolume: 0.6
     hearingRange: 18

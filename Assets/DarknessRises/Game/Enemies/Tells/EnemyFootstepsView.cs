@@ -27,12 +27,15 @@ namespace DarknessRises.Game.Enemies.Tells
 
         private readonly List<EnemyView> enemies = new(InitialCapacity);
         private readonly Dictionary<EnemyDefinition, AudioClip[]> clipsByType = new();
+        private readonly Dictionary<EnemyDefinition, AudioClip[]> dragClipsByType = new();
         private FootstepCandidate[] candidates = new FootstepCandidate[InitialCapacity];
         private bool[] heard = new bool[InitialCapacity];
         private bool[] stepped = new bool[InitialCapacity];
         private FootstepVoicePicker picker;
         private GunshotVoices voices;
         private AudioSource[] voiceSources;
+        private float[] voiceVolumes;
+        private float endFadeSeconds;
         private Transform listener;
         private EnemyTime time;
         private ILoadedContent content;
@@ -64,6 +67,8 @@ namespace DarknessRises.Game.Enemies.Tells
             view.picker = new FootstepVoicePicker(settings.MaxHeardEnemies);
             view.voices = new GunshotVoices(settings.VoiceCount);
             view.voiceSources = new AudioSource[settings.VoiceCount];
+            view.voiceVolumes = new float[settings.VoiceCount];
+            view.endFadeSeconds = settings.EndFadeSeconds;
             for (var i = 0; i < view.voiceSources.Length; i++)
             {
                 view.voiceSources[i] = view.CreateVoice(i);
@@ -82,7 +87,9 @@ namespace DarknessRises.Game.Enemies.Tells
 
             if (!clipsByType.ContainsKey(enemy.Definition))
             {
-                clipsByType.Add(enemy.Definition, content.Clips(enemy.Definition.Audio.Footsteps.Clips));
+                var footsteps = enemy.Definition.Audio.Footsteps;
+                clipsByType.Add(enemy.Definition, content.Clips(footsteps.Clips));
+                dragClipsByType.Add(enemy.Definition, content.Clips(footsteps.DragClips));
             }
 
             enemies.Add(enemy);
@@ -98,6 +105,7 @@ namespace DarknessRises.Game.Enemies.Tells
         private void Update()
         {
             voices.Tick(Time.deltaTime);
+            FadeVoices();
             var deltaSeconds = time.Scaled(Time.deltaTime);
             var here = listener.position;
             for (var i = enemies.Count - 1; i >= 0; i--)
@@ -123,14 +131,40 @@ namespace DarknessRises.Game.Enemies.Tells
             {
                 if (stepped[i] && heard[i])
                 {
-                    Step(enemies[i]);
+                    Step(enemies[i], enemies[i].Footsteps.LastStepDragged);
                 }
             }
         }
 
-        private void Step(EnemyView enemy)
+        // Each voice plays at its step's volume until its last moment, then fades out (GunshotVoices.Gain), so a long
+        // clip cut short at the step's most seconds ends softly rather than dead.
+        private void FadeVoices()
         {
-            var clips = clipsByType[enemy.Definition];
+            if (Time.deltaTime <= 0f)
+            {
+                return;
+            }
+
+            for (var i = 0; i < voiceSources.Length; i++)
+            {
+                var source = voiceSources[i];
+                if (voices.IsPlaying(i))
+                {
+                    source.volume = voiceVolumes[i] * voices.Gain(i, endFadeSeconds);
+                }
+                else if (source.isPlaying)
+                {
+                    source.Stop();
+                }
+            }
+        }
+
+        private void Step(EnemyView enemy, bool dragged)
+        {
+            var footsteps = enemy.Definition.Audio.Footsteps;
+            var drags = dragClipsByType[enemy.Definition];
+            var useDrag = dragged && drags.Length > 0;
+            var clips = useDrag ? drags : clipsByType[enemy.Definition];
             if (clips.Length == 0)
             {
                 return;
@@ -142,25 +176,27 @@ namespace DarknessRises.Game.Enemies.Tells
                 return;
             }
 
-            var footsteps = enemy.Definition.Audio.Footsteps;
             var pitch = EnemyVoicePitch.For(random.Range(footsteps.MinPitch, footsteps.MaxPitch), time.Scale);
             if (pitch <= 0f)
             {
                 return;
             }
 
-            // A clip's length is only known once its audio data has loaded (WebGL decodes audio late).
-            var seconds = clip.loadState == AudioDataLoadState.Loaded ? clip.length / pitch : 0f;
-            var source = voiceSources[voices.Start(seconds)];
+            // A clip's length is only known once its audio data has loaded (WebGL decodes audio late); a long one is cut short.
+            var clipSeconds = clip.loadState == AudioDataLoadState.Loaded ? clip.length / pitch : footsteps.MaxStepSeconds;
+            var voice = voices.Start(Mathf.Min(clipSeconds, footsteps.MaxStepSeconds));
+            var source = voiceSources[voice];
+            voiceVolumes[voice] = useDrag ? footsteps.DragVolume : footsteps.Volume;
             source.transform.position = enemy.transform.position;
             source.maxDistance = enemy.Definition.Audio.HearingRange;
-            source.volume = footsteps.Volume;
+            source.volume = voiceVolumes[voice];
             source.pitch = pitch;
             source.clip = clip;
             source.Play();
             Stepped?.Invoke(enemy, source);
         }
 
+        // The one place footstep voices are made: route them to the sound effects' mixer group here.
         private AudioSource CreateVoice(int index)
         {
             var voice = new GameObject($"Footstep Voice {index + 1}").AddComponent<AudioSource>();

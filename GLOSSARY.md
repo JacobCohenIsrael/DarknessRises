@@ -145,6 +145,10 @@ _Avoid_: wanderer, random encounter
 A small, harmless animal, such as a rat, that darts through the dark to make the player jump: mostly while the character walks between Stations and in the quiet after a Clear, rarely during a Wave fight, never in a Boss fight. It scurries from one dark spot to another across the character's view, at the edge of the light, and is gone in a second or two. Light shows it like anything else, its small eyes glint like an Enemy's, and its scurry is heard from where it runs. It isn't an Enemy: it never hurts the character, Aim assist ignores it, and a Shot that kills it (with a squeak) counts as neither a hit nor a miss, so it earns no Score or Credits and leaves the Combo, accuracy and Grade as they were.
 _Avoid_: rat (it's one kind), animal, vermin, pest
 
+**Phantom eyes**:
+A pair of eyes that looks out of the dark but isn't really there: the character's imagination. They look just like an Enemy's glinting eyes, but they appear only far out (beyond the Aura and beyond where real eyes glint), only while the character walks or in the quiet after a Clear, and only when no real Enemy is near. They're rare and hold a few seconds at most. Any light reaching their spot (Lightning, Gunfire, a Hit spark, the Flare, a Grenade's blast) makes them vanish at once, so a flash shows nothing there; the Crosshair or a tap coming close, or the character walking nearer than they ever appear, makes them blink out; a real Enemy coming near or a fight starting sends them away at once. A faint whisper may come from them. A Shot at them hits nothing, like any miss. So eyes near the character, or in a fight, are always real.
+_Avoid_: ghost, fake eyes, false Tell, hallucination
+
 ## Skills
 
 **Skill**:

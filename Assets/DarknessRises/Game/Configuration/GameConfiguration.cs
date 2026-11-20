@@ -8,6 +8,7 @@ using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
+using DarknessRises.Game.Phantoms;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
@@ -88,6 +89,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("Critters: small, harmless animals that dart through the dark to make the player jump. Not Enemies. Leave empty for none.")]
         private CritterDefinition critters;
 
+        [SerializeField, Tooltip("Phantom eyes: eyes that look out of the dark but aren't really there, far out, when no Enemy is near. Leave empty for none.")]
+        private PhantomEyesDefinition phantomEyes;
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -117,5 +121,6 @@ namespace DarknessRises.Game.Configuration
         public ShopDefinition Shop => shop;
         public FootstepVoiceSettings FootstepVoices => footstepVoices;
         public CritterDefinition Critters => critters;
+        public PhantomEyesDefinition PhantomEyes => phantomEyes;
     }
 }

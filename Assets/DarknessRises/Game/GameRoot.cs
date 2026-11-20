@@ -20,6 +20,7 @@ using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Pausing;
+using DarknessRises.Game.Phantoms;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
@@ -139,6 +140,12 @@ namespace DarknessRises.Game
         // The Critters darting through the dark, made once the Level's content has loaded, if there are any.
         private CrittersView critters;
 
+        // The living Enemies, as they spawn: the Phantom eyes keep away while one is near.
+        private readonly LivingEnemies livingEnemies = new();
+
+        // The Phantom eyes that look out of the dark, made once the Level's content has loaded, if there are any.
+        private PhantomEyesView phantomEyes;
+
         // The lights that can reveal an Enemy, for Aim assist's idea of a visible Enemy.
         private readonly SceneLights lights = new();
 
@@ -217,6 +224,9 @@ namespace DarknessRises.Game
 
         /// <summary>The Critters darting through the dark, once the gameplay has started; null without any.</summary>
         public CrittersView Critters => critters;
+
+        /// <summary>The Phantom eyes, once the gameplay has started; null without any.</summary>
+        public PhantomEyesView PhantomEyes => phantomEyes;
 
         /// <summary>The beats of each stop at a Station, once the gameplay has started.</summary>
         public StationRhythm StationRhythm => stationRhythm;
@@ -379,6 +389,21 @@ namespace DarknessRises.Game
             if (configuration.Critters != null)
             {
                 critters = CrittersView.Create(transform, configuration.Critters, character, run, stationRhythm, lights, content);
+            }
+
+            if (configuration.PhantomEyes != null)
+            {
+                phantomEyes = PhantomEyesView.Create(
+                    transform,
+                    configuration.PhantomEyes,
+                    character,
+                    character.GetComponent<PlayerControls>(),
+                    Camera.main,
+                    run,
+                    stationRhythm,
+                    lights,
+                    livingEnemies,
+                    content);
             }
 
             if (grenadeButton != null)
@@ -701,10 +726,11 @@ namespace DarknessRises.Game
 
         private void OnEnemyDied(Enemy _) => run.CountKill();
 
-        // Every Enemy is heard walking. The first Enemy of a Run gets the shoot hint over it, if the hint is due.
+        // Every Enemy is heard walking, and keeps the Phantom eyes away while it's near. The first Enemy of a Run gets the shoot hint over it, if the hint is due.
         private void OnEnemySpawned(EnemyView enemy)
         {
             footsteps.Track(enemy);
+            livingEnemies.Add(enemy);
             if (shootHint != null)
             {
                 shootHint.Offer(enemy, run.LevelIndex, primaryWeapon.Weapon);

@@ -1,0 +1,11 @@
+# Phantom eyes, Test Room, headless and muted (#85 slice 4). Audio read from AudioSource state, never listened to.
+
+## Eyes look out of the dark, then Lightning lights the Room: nothing is there (s4-phantom-eyes.jpg, s4-same-spot-under-lightning.jpg)
+appeared, 1.01 s in: eyes at (-1.01, 1.72, 0.44), 8.6 m from the character; showing True strength 1.00 vanish None; whisper clip=Ghost Manifestation 1 playing=True vol=0.25 spatial=1.  frozen.
+before: frame 197: eyes at (-1.01, 1.72, 0.44), 8.6 m from the character; showing True strength 1.00 vanish None; whisper clip=Ghost Manifestation 1 playing=True vol=0.25 spatial=1. flash at frame 197: key light on=True intensity=0.05 (directional: lights the whole Room). vanished: Lit at frame 198. after: eyes at (-1.01, 1.72, 0.44), 8.0 m from the character; showing False strength 0.00 vanish Lit; whisper clip=Ghost Manifestation 1 playing=True vol=0.21 spatial=1; eye renderers on=False; same spot (-1.01, 0.44).
+
+## The mouse Crosshair moved onto the eyes: they blink out
+shown: eyes at (2.87, 1.72, -0.01), 11.3 m from the character; showing True strength 1.00 vanish None; whisper clip=Ghost Manifestation 1 playing=True vol=0.25 spatial=1. mouse to (1921, 985), eyes drawn at (1901, 985) on a 2400x1079 screen. vanished: AimedAt; eyes at (2.87, 1.72, -0.01), 11.2 m from the character; showing False strength 0.00 vanish AimedAt; whisper clip=Ghost Manifestation 1 playing=True vol=0.19 spatial=1.
+
+## A real Enemy comes in 7.5 m from the character: the eyes go at once, and won't come back while it's near
+shown: eyes at (0.84, 1.76, -3.76), 9.1 m from the character; showing True strength 0.83 vanish None; whisper clip=Ghost Manifestation 1 playing=True vol=0.25 spatial=1. Enemy spawned 7.5 m behind the character at frame 90. vanished: EnemyNear at frame 91; eyes at (0.84, 1.76, -3.76), 9.1 m from the character; showing False strength 0.00 vanish EnemyNear; whisper clip=Ghost Manifestation 1 playing=True vol=0.23 spatial=1. appear again with the Enemy near: False.

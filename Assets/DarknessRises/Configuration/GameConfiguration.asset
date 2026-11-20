@@ -197,3 +197,4 @@ MonoBehaviour:
     voiceCount: 4
     maxHeardEnemies: 3
   critters: {fileID: 11400000, guid: a8e167178136cf64382c23acc1ba32c1, type: 2}
+  phantomEyes: {fileID: 11400000, guid: d986782c8d30348418cfe9d08ac0d6dc, type: 2}

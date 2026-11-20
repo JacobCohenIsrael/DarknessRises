@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DarknessRises.Game.Editor.Builds
 {
@@ -38,6 +39,7 @@ namespace DarknessRises.Game.Editor.Builds
         private const string AndroidFolder = "Builds/Android";
         private const string WebGLFolder = "Builds/WebGL";
         private const string DevSuffix = "-dev";
+        private const string WebGPUSuffix = "-webgpu";
 
         public static void BuildAndroid() => BuildAndroid(false);
 
@@ -48,6 +50,30 @@ namespace DarknessRises.Game.Editor.Builds
 
         /// <summary>A development build of the same version, with the debug menu: <c>DarknessRises-{version}-dev-webgl.zip</c>.</summary>
         public static void BuildWebGLDev() => BuildWebGL(true);
+
+        /// <summary>
+        /// A release test build that renders with WebGPU where the browser has it and falls back to WebGL 2 where it
+        /// doesn't: <c>DarknessRises-{version}-webgpu-webgl.zip</c>. The project's own Web graphics APIs (WebGL 2) are
+        /// put back afterwards, so only this build uses WebGPU.
+        /// </summary>
+        public static void BuildWebGPU()
+        {
+            var target = BuildTarget.WebGL;
+            var usedDefaults = PlayerSettings.GetUseDefaultGraphicsAPIs(target);
+            var apis = PlayerSettings.GetGraphicsAPIs(target);
+            PlayerSettings.SetUseDefaultGraphicsAPIs(target, false);
+            PlayerSettings.SetGraphicsAPIs(target, new[] { GraphicsDeviceType.WebGPU, GraphicsDeviceType.OpenGLES3 });
+            try
+            {
+                BuildWebGL(false, WebGPUSuffix);
+            }
+            finally
+            {
+                PlayerSettings.SetGraphicsAPIs(target, apis);
+                PlayerSettings.SetUseDefaultGraphicsAPIs(target, usedDefaults);
+                AssetDatabase.SaveAssets();
+            }
+        }
 
         private static void BuildAndroid(bool development)
         {
@@ -62,14 +88,14 @@ namespace DarknessRises.Game.Editor.Builds
             Build(BuildTarget.Android, $"{AndroidFolder}/{ProductFileName}-{version}{Suffix(development)}.apk", development);
         }
 
-        private static void BuildWebGL(bool development)
+        private static void BuildWebGL(bool development, string variant = "")
         {
             var version = ApplyVersion();
 
             // itch.io doesn't send Content-Encoding headers for Unity's files, so the loader decompresses them itself.
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
             PlayerSettings.WebGL.decompressionFallback = true;
-            var folder = $"{WebGLFolder}/{ProductFileName}-{version}{Suffix(development)}";
+            var folder = $"{WebGLFolder}/{ProductFileName}-{version}{Suffix(development)}{variant}";
             Build(BuildTarget.WebGL, folder, development);
 
             var zip = $"{folder}-webgl.zip";

@@ -205,6 +205,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("gestures").objectReferenceValue = GestureBuilder.LoadOrCreateGestures();
             serialized.FindProperty("credits").objectReferenceValue = CreditsBuilder.LoadOrCreateCredits();
             serialized.FindProperty("critters").objectReferenceValue = Critters.CritterBuilder.LoadOrCreateRat();
+            serialized.FindProperty("phantomEyes").objectReferenceValue = Phantoms.PhantomEyesBuilder.LoadOrCreate();
             serialized.FindProperty("shop").objectReferenceValue = ShopBuilder.LoadOrCreateShop(pistol, machineGun, flamethrower);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);

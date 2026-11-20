@@ -31,14 +31,22 @@ namespace DarknessRises.Game.Weapons
         private readonly Action<RaycastHit, Vector3> onShotHit;
         private readonly Action<Vector3> onShotSpent;
         private readonly SceneLights lights;
+        private readonly Transform shooter;
         private int shotsUntilLit;
 
         /// <param name="runStats">The Weapon's numbers for this Run: its damage, and the fire rate the pools are sized for.</param>
         /// <param name="content">Where the Shot and hit spark prefabs are, already loaded. The effects never release them.</param>
         /// <param name="sceneLights">Where every Muzzle flash, lit Shot and hit spark light is registered as it's created.</param>
+        /// <param name="shotBy">Who fires: its own colliders are never hit.</param>
         public PrimaryWeaponEffects(
-            WeaponDefinition weaponDefinition, WeaponRunStats runStats, LayerMask hitLayers, ILoadedContent content, SceneLights sceneLights)
+            WeaponDefinition weaponDefinition,
+            WeaponRunStats runStats,
+            LayerMask hitLayers,
+            ILoadedContent content,
+            SceneLights sceneLights,
+            Transform shotBy)
         {
+            shooter = shotBy;
             lights = sceneLights;
             definition = weaponDefinition;
             stats = runStats;
@@ -66,8 +74,12 @@ namespace DarknessRises.Game.Weapons
         /// </summary>
         public event Action<ShotOutcome, Vector3> ShotLanded;
 
-        /// <summary>Shows one shot leaving <paramref name="muzzle"/>, aimed along <paramref name="aimDirection"/> (flattened).</summary>
-        public void Fire(Vector3 muzzle, Vector3 aimDirection)
+        /// <summary>
+        /// Shows one shot leaving <paramref name="muzzle"/>, aimed along <paramref name="aimDirection"/> (flattened).
+        /// It hits anything from <paramref name="breech"/> (the character's middle) out, so an Enemy wrapped around the
+        /// muzzle at point-blank range is still hit.
+        /// </summary>
+        public void Fire(Vector3 breech, Vector3 muzzle, Vector3 aimDirection)
         {
             aimDirection.y = 0f;
             var halfSpread = definition.SpreadDegrees * 0.5f;
@@ -76,7 +88,8 @@ namespace DarknessRises.Game.Weapons
                 aimDirection = Quaternion.AngleAxis(Random.Range(-halfSpread, halfSpread), Vector3.up) * aimDirection;
             }
 
-            shots.Get().Launch(muzzle, aimDirection, definition.ShotSpeed, definition.Range, NextShotIsLit());
+            var leadIn = ShotFlight.LeadInFrom(breech, muzzle, aimDirection);
+            shots.Get().Launch(muzzle, aimDirection, definition.ShotSpeed, definition.Range, NextShotIsLit(), leadIn);
             muzzleFlashes.Get().Flash(muzzle);
         }
 
@@ -161,7 +174,7 @@ namespace DarknessRises.Game.Weapons
         private ShotView CreateShot()
         {
             var shot = Object.Instantiate(shotPrefab, effectsRoot);
-            shot.Prepare(shots, definition.Shot, definition.ShotLight, shotGlowMaterial, shotHitLayers, onShotHit, onShotSpent);
+            shot.Prepare(shots, definition.Shot, definition.ShotLight, shotGlowMaterial, shotHitLayers, shooter, onShotHit, onShotSpent);
             shot.gameObject.SetActive(false);
             lights.Add(shot.GetComponentInChildren<Light>(true));
             return shot;

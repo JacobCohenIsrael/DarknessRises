@@ -198,7 +198,7 @@ The first-run prompt ("TAP TO SHOOT") that bobs over the first Enemy of a Run's 
 _Avoid_: tutorial, tooltip
 
 **Aim assist**:
-On touch only, Shots bend slightly toward the nearest visible Enemy close to the player's finger. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast.
+Shots bend slightly toward the nearest visible Enemy close to where the player aims: the finger on touch, the pointer with a mouse. Each input has its own pull, gentle at first and stronger in later Levels up to a cap; the mouse's is the slighter. The pull fades out toward the edge of its reach, so the aim never jumps. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast. Critters and Phantom eyes never pull the aim.
 
 ## Weapons
 
@@ -226,7 +226,7 @@ _Avoid_: special, sidearm
 A Secondary weapon the character throws. It explodes, damaging Enemies in an area and lighting it up for a moment. The character carries a few Grenade charges, which refill one at a time.
 
 **Shot**:
-One thing a Weapon fires that travels and can hit an Enemy. A Shot always glows enough to be seen; some Weapons' Shots also light their surroundings.
+One thing a Weapon fires that travels and can hit an Enemy. A Shot always glows enough to be seen; some Weapons' Shots also light their surroundings. It hits anything from the character outward, so an Enemy pressed up against the character, even leaning over the gun in its attack, is still hit point-blank.
 _Avoid_: bullet, projectile
 
 ## Structure

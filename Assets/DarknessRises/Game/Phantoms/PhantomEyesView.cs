@@ -42,6 +42,7 @@ namespace DarknessRises.Game.Phantoms
         private PhantomRelocation relocation;
         private PhantomVoicePicker voicePicker;
         private PhantomAfterFlash afterFlash;
+        private PhantomVoiceGap voiceGap;
         private PhantomEyesPair[] pairs;
         private Vector3[] otherSpots;
         private Transform character;
@@ -121,6 +122,7 @@ namespace DarknessRises.Game.Phantoms
             view.relocation = phantomDefinition.ToRelocation();
             view.voicePicker = new PhantomVoicePicker(view.random);
             view.afterFlash = phantomDefinition.ToAfterFlash();
+            view.voiceGap = phantomDefinition.ToVoiceGap();
             view.voiceClips = loadedContent.Clips(phantomDefinition.WhisperClips);
 
             // The most pairs of eyes, and one more so a lone voice can come while they're all out.
@@ -167,11 +169,11 @@ namespace DarknessRises.Game.Phantoms
             return null;
         }
 
-        /// <summary>Makes a lone voice come from a dark spot now if a pair is free and a spot can be found.</summary>
+        /// <summary>Makes a lone voice come from a dark spot now if a pair is free, a spot can be found and the last voice began long enough ago.</summary>
         /// <returns>The pair whose voice plays, or null.</returns>
         public PhantomEyesPair VoiceNow()
         {
-            if (!MayShowNow() || voiceClips.Length == 0)
+            if (!MayShowNow() || voiceClips.Length == 0 || !voiceGap.IsOpen)
             {
                 return null;
             }
@@ -213,6 +215,7 @@ namespace DarknessRises.Game.Phantoms
         private void Update()
         {
             var deltaSeconds = Time.deltaTime;
+            voiceGap.Tick(deltaSeconds);
             var moment = Moment;
             var nearest = enemies.NearestMetres(character.position);
             var mayShow = PhantomEyesSchedule.MayShow(moment, nearest, definition.EnemyClearanceMetres);
@@ -408,7 +411,8 @@ namespace DarknessRises.Game.Phantoms
             pair.Sighting.Show(random.Range(definition.MinHoldSeconds, definition.MaxHoldSeconds));
             pair.ShowStrength(pair.Sighting.Strength);
             Appeared?.Invoke(pair);
-            if (random.Range(0f, 1f) < definition.VoiceWithEyesChance)
+            // Too soon after another voice, the eyes open silent, so voices don't pile up.
+            if (random.Range(0f, 1f) < definition.VoiceWithEyesChance && voiceGap.IsOpen)
             {
                 StartVoice(pair, true);
             }
@@ -428,6 +432,7 @@ namespace DarknessRises.Game.Phantoms
             // Somewhere in its first seconds, so it isn't the same breath every time, with enough left to last the hold.
             var latestStart = Mathf.Min(definition.WhisperLatestStartSeconds, clip.length - definition.MaxHoldSeconds * pitch);
             pair.PlayVoice(clip, definition.WhisperVolume, pitch, latestStart > 0f ? random.Range(0f, latestStart) : 0f);
+            voiceGap.Started();
             Voiced?.Invoke(pair, clip, withEyes);
             return true;
         }

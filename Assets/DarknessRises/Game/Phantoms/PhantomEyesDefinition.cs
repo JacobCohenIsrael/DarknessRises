@@ -19,16 +19,16 @@ namespace DarknessRises.Game.Phantoms
 
         [Header("When")]
         [SerializeField, Min(0f), Tooltip("Fewest seconds of safe time (walking, or the quiet after a clear, with no Enemy near) between two events: a pair of eyes or a lone voice. Time in a fight or with an Enemy near doesn't count.")]
-        private float minGapSeconds = 6f;
+        private float minGapSeconds = 3f;
 
-        [SerializeField, Min(0f), Tooltip("Most seconds of safe time between two events. With the fewest and the share of lone voices, this sets how often eyes come: a 6-14 s gap with a quarter of them voices is a pair about every 13 s of safe walking.")]
-        private float maxGapSeconds = 14f;
+        [SerializeField, Min(0f), Tooltip("Most seconds of safe time between two events. With the fewest and the share of lone voices, this sets how often eyes come: a 3-7 s gap with a quarter of them voices is a pair about every 7 s of safe walking.")]
+        private float maxGapSeconds = 7f;
 
         [SerializeField, Range(0f, 1f), Tooltip("Share of events that are a lone voice from a dark spot, with no eyes.")]
         private float voiceOnlyShare = 0.25f;
 
         [SerializeField, Min(0f), Tooltip("Seconds of safe time from the Level's start before the first event.")]
-        private float firstDelaySeconds = 6f;
+        private float firstDelaySeconds = 4f;
 
         [SerializeField, Min(0f), Tooltip("Seconds of safe time before trying again when an event found no dark spot (the Room lit, or no open floor in view). Short, so a bright moment doesn't cost a whole gap.")]
         private float retrySeconds = 1f;
@@ -40,7 +40,7 @@ namespace DarknessRises.Game.Phantoms
         private float longestFlashWaitSeconds = 5f;
 
         [SerializeField, Min(1), Tooltip("Most pairs of eyes out at once, each at its own spot. A pair about to open again nearby counts.")]
-        private int maxPairs = 2;
+        private int maxPairs = 3;
 
         [SerializeField, Min(0f), Tooltip("Fewest metres between two pairs, or a pair and a lone voice, so each looks out from its own spot.")]
         private float pairSeparationMetres = 3f;
@@ -98,7 +98,7 @@ namespace DarknessRises.Game.Phantoms
 
         [Header("Opening again nearby")]
         [SerializeField, Range(0f, 1f), Tooltip("Chance that a pair that held its time, or that light sent away (Lightning shows nothing, then they are back), opens again a moment later at another dark spot nearby. One sent away by aim, by the character coming near, by an Enemy or by a fight never does.")]
-        private float hopChance = 0.45f;
+        private float hopChance = 0.55f;
 
         [SerializeField, Min(0), Tooltip("Most times one pair may open again nearby.")]
         private int maxHops = 2;
@@ -128,6 +128,9 @@ namespace DarknessRises.Game.Phantoms
 
         [SerializeField, Range(0f, 1f), Tooltip("Chance that a pair of eyes comes with a voice from its spot, each time it opens.")]
         private float voiceWithEyesChance = 0.7f;
+
+        [SerializeField, Min(0f), Tooltip("Fewest seconds between two voices starting, with eyes or alone, so they don't pile up. Eyes that open sooner open silent; a lone voice due sooner waits.")]
+        private float minVoiceGapSeconds = 4f;
 
         [SerializeField, Min(0f), Tooltip("Fewest seconds a lone voice plays before it fades.")]
         private float minVoiceOnlySeconds = 2.5f;
@@ -218,6 +221,11 @@ namespace DarknessRises.Game.Phantoms
         public PhantomAfterFlash ToAfterFlash()
         {
             return new PhantomAfterFlash(afterFlashSeconds, longestFlashWaitSeconds);
+        }
+
+        public PhantomVoiceGap ToVoiceGap()
+        {
+            return new PhantomVoiceGap(minVoiceGapSeconds);
         }
 
         public PhantomRelocation ToRelocation()

@@ -1,6 +1,7 @@
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Credits;
+using DarknessRises.Game.Critters;
 using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
@@ -84,6 +85,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The voices every Enemy's footsteps share, and how many Enemies are heard stepping at once. Each Enemy type's own steps are on its definition.")]
         private FootstepVoiceSettings footstepVoices = new();
 
+        [SerializeField, Tooltip("Critters: small, harmless animals that dart through the dark to make the player jump. Not Enemies. Leave empty for none.")]
+        private CritterDefinition critters;
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -112,5 +116,6 @@ namespace DarknessRises.Game.Configuration
         public CreditsDefinition Credits => credits;
         public ShopDefinition Shop => shop;
         public FootstepVoiceSettings FootstepVoices => footstepVoices;
+        public CritterDefinition Critters => critters;
     }
 }

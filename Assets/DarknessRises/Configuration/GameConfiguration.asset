@@ -193,3 +193,6 @@ MonoBehaviour:
     - {r: 1, g: 0.85, b: 0.2, a: 1}
   credits: {fileID: 11400000, guid: 21c37f1934d8a814eb59bf1e16416606, type: 2}
   shop: {fileID: 11400000, guid: eb81b63643629924f8b5d978422c7ca1, type: 2}
+  footstepVoices:
+    voiceCount: 4
+    maxHeardEnemies: 3

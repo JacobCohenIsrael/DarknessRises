@@ -58,6 +58,20 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     volume: 0.8
     hearingRange: 25
+    footsteps:
+      clips:
+      - m_AssetGUID: a37f44cbf8c2a7443a3c361efa2f233a
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      strideMetres: 0.75
+      limp: 0.4
+      firstStepStrides: 0.3
+      stopSpeed: 0.3
+      minPitch: 0.55
+      maxPitch: 0.7
+      volume: 0.5
   death:
     lingerSeconds: 0.5
     sinkSeconds: 1.6

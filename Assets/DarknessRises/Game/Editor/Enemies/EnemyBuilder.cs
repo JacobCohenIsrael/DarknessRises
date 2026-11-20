@@ -33,6 +33,9 @@ namespace DarknessRises.Game.Editor.Enemies
         private const string AttackClipPath = "Assets/Free Pack/Magic Spell_Simple Swoosh_6.wav";
         private static readonly string[] TellClipPaths = { "Assets/Free Pack/Monster Bite.wav" };
 
+        // A soft thud, until real footstep clips are approved. Already an Enemy sound, so it stays in the Enemies group.
+        private static readonly string[] FootstepClipPaths = { DeathClipPath };
+
         private const string LitShaderName = "Universal Render Pipeline/Lit";
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
 
@@ -104,11 +107,21 @@ namespace DarknessRises.Game.Editor.Enemies
         private const float DefaultEyeOpeningSeconds = 1.2f;
         private const float RunnerEyeOpeningSeconds = 0.75f;
 
+        // Footsteps: the definition's defaults are the Shambler's dragging step-drag; a Runner patters, light and even.
+        private const float DefaultFootstepStrideMetres = 0.75f;
+        private const float RunnerFootstepStrideMetres = 1f;
+        private const float RunnerFootstepLimp = 0f;
+        private const float RunnerFootstepMinPitch = 1.05f;
+        private const float RunnerFootstepMaxPitch = 1.3f;
+        private const float RunnerFootstepVolume = 0.4f;
+
         /// <summary>Loads the Shambler definition, creating it and its prefab if they're missing.</summary>
         public static EnemyDefinition LoadOrCreateShambler()
         {
             // The definition's defaults are the Shambler: slow and tough, slower than the character walks.
-            return LoadOrCreateEnemy(ShamblerDefinitionPath, Shambler, _ => { });
+            var shambler = LoadOrCreateEnemy(ShamblerDefinitionPath, Shambler, _ => { });
+            AuthorFootsteps(shambler, isRunner: false);
+            return shambler;
         }
 
         /// <summary>Loads the Runner definition, creating it and its prefab if they're missing.</summary>
@@ -117,6 +130,7 @@ namespace DarknessRises.Game.Editor.Enemies
             var runner = LoadOrCreateRunnerDefinition();
             Credits.CreditsBuilder.AuthorRunnerCredits(runner);
             AuthorRunnerEyeOpening(runner);
+            AuthorFootsteps(runner, isRunner: true);
             return runner;
         }
 
@@ -132,6 +146,41 @@ namespace DarknessRises.Game.Editor.Enemies
                 created.FindProperty("pathRefreshSeconds").floatValue = RunnerPathRefreshSeconds;
                 created.FindProperty("knockback.multiplier").floatValue = RunnerKnockbackMultiplier;
             });
+        }
+
+        /// <summary>
+        /// Footsteps came after both Enemy types: gives a definition without footstep clips the placeholder, and a Runner
+        /// still on the Shambler's stride the Runner's patter. Tuning done since is kept.
+        /// </summary>
+        public static void AuthorFootsteps(EnemyDefinition enemyType, bool isRunner)
+        {
+            var serialized = new SerializedObject(enemyType);
+            var clips = serialized.FindProperty("audio.footsteps.clips");
+            if (clips.arraySize == 0)
+            {
+                clips.arraySize = FootstepClipPaths.Length;
+                for (var i = 0; i < FootstepClipPaths.Length; i++)
+                {
+                    var path = FootstepClipPaths[i];
+                    AddressableContent.ReferenceIfEmpty(
+                        clips.GetArrayElementAtIndex(i),
+                        () => LoadMonoClip(path),
+                        AddressableContent.EnemiesGroup);
+                }
+            }
+
+            var stride = serialized.FindProperty("audio.footsteps.strideMetres");
+            if (isRunner && Mathf.Approximately(stride.floatValue, DefaultFootstepStrideMetres))
+            {
+                stride.floatValue = RunnerFootstepStrideMetres;
+                serialized.FindProperty("audio.footsteps.limp").floatValue = RunnerFootstepLimp;
+                serialized.FindProperty("audio.footsteps.minPitch").floatValue = RunnerFootstepMinPitch;
+                serialized.FindProperty("audio.footsteps.maxPitch").floatValue = RunnerFootstepMaxPitch;
+                serialized.FindProperty("audio.footsteps.volume").floatValue = RunnerFootstepVolume;
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(enemyType);
         }
 
         // The eye opening came after the Runner; give an asset still on the Shambler's default the Runner's quicker one.

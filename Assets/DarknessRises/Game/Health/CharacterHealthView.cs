@@ -47,17 +47,18 @@ namespace DarknessRises.Game.Health
         public bool CanBeAttacked => Health != null && Health.IsAlive;
 
         /// <summary>
-        /// Gives the character full, fresh hit points from <paramref name="player"/>. Its hurt and death sounds come from
+        /// Gives the character <paramref name="hitPoints"/> full, fresh hit points: the Run's number, Upgrades applied.
+        /// How a hit shows comes from <paramref name="player"/>; its hurt and death sounds come from
         /// <paramref name="content"/>, already loaded.
         /// </summary>
-        public CharacterHealth Show(PlayerDefinition player, ILoadedContent content)
+        public CharacterHealth Show(PlayerDefinition player, int hitPoints, ILoadedContent content)
         {
             Unbind();
 
             settings = player.HitReaction;
             hurtClip = content.Clip(settings.HurtClip);
             deathClip = content.Clip(settings.DeathClip);
-            Health = new CharacterHealth(player.HitPoints, player.InvulnerabilitySeconds);
+            Health = new CharacterHealth(hitPoints, player.InvulnerabilitySeconds);
             Health.Hurt += OnHurt;
             Health.Died += OnDied;
 

@@ -32,6 +32,38 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The button of the chosen Primary. It can't be pressed.")]
         private string equippedLabel = "EQUIPPED";
 
+        [Header("Pages")]
+        [SerializeField, Tooltip("The tab of the page with the Primary weapons and their Upgrades.")]
+        private string weaponsTab = "WEAPONS";
+
+        [SerializeField, Tooltip("The tab of the page with the Upgrades of the Grenade, the Skills and the character.")]
+        private string gearTab = "GEAR";
+
+        [SerializeField, Tooltip("The heading over the Grenade's Upgrades.")]
+        private string grenadeTitle = "GRENADE";
+
+        [SerializeField, Tooltip("The heading over the Skills' Upgrades.")]
+        private string skillsTitle = "SKILLS";
+
+        [SerializeField, Tooltip("The heading over the character's Upgrades.")]
+        private string characterTitle = "CHARACTER";
+
+        [Header("Upgrade rows")]
+        [SerializeField, Tooltip("An Upgrade's level. {0} is the level the player has, {1} how many there are.")]
+        private string levelFormat = "LV {0}/{1}";
+
+        [SerializeField, Tooltip("Between an Upgrade's number now and what the next level sets it to: \"12 > 15\".")]
+        private string stepSeparator = "  >  ";
+
+        [SerializeField, Tooltip("An Upgrade's buy button. {0} is the price of its next level.")]
+        private string priceFormat = "{0}";
+
+        [SerializeField, Tooltip("The button of an Upgrade with no level left to buy. It can't be pressed.")]
+        private string maxLabel = "MAX";
+
+        [SerializeField, Tooltip("The button of an Upgrade whose Weapon isn't unlocked yet. It can't be pressed.")]
+        private string lockedLabel = "LOCKED";
+
         [Header("Colours")]
         [SerializeField, Tooltip("A button that buys something the bank can cover.")]
         private Color buyColor = new(0.07f, 0.3f, 0.24f, 1f);
@@ -50,6 +82,12 @@ namespace DarknessRises.Game.Shop
 
         [SerializeField, Tooltip("The frame around every other card.")]
         private Color frameColor = new(0.85f, 0.85f, 0.85f, 0.18f);
+
+        [SerializeField, Tooltip("The tab of the page that is showing.")]
+        private Color activeTabColor = new(0.8f, 0.12f, 0.1f, 1f);
+
+        [SerializeField, Tooltip("The tab of the other page.")]
+        private Color inactiveTabColor = new(0.14f, 0.14f, 0.16f, 1f);
 
         [Header("Feel")]
         [SerializeField, Min(0f), Tooltip("Seconds the Credits in the bank take to count to their new number after a purchase.")]
@@ -78,12 +116,24 @@ namespace DarknessRises.Game.Shop
         public string MissingFormat => missingFormat;
         public string EquipLabel => equipLabel;
         public string EquippedLabel => equippedLabel;
+        public string WeaponsTab => weaponsTab;
+        public string GearTab => gearTab;
+        public string GrenadeTitle => grenadeTitle;
+        public string SkillsTitle => skillsTitle;
+        public string CharacterTitle => characterTitle;
+        public string LevelFormat => levelFormat;
+        public string StepSeparator => stepSeparator;
+        public string PriceFormat => priceFormat;
+        public string MaxLabel => maxLabel;
+        public string LockedLabel => lockedLabel;
         public Color BuyColor => buyColor;
         public Color CannotBuyColor => cannotBuyColor;
         public Color CannotBuyTextColor => cannotBuyTextColor;
         public Color EquipColor => equipColor;
         public Color EquippedColor => equippedColor;
         public Color FrameColor => frameColor;
+        public Color ActiveTabColor => activeTabColor;
+        public Color InactiveTabColor => inactiveTabColor;
         public float CreditsCountSeconds => creditsCountSeconds;
         public float PopScale => popScale;
         public float PopSeconds => popSeconds;

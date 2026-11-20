@@ -19,6 +19,7 @@ namespace DarknessRises.Game.Weapons
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         private readonly WeaponDefinition definition;
+        private readonly WeaponRunStats stats;
         private readonly LayerMask shotHitLayers;
         private readonly Transform effectsRoot;
         private readonly Material shotGlowMaterial;
@@ -32,12 +33,15 @@ namespace DarknessRises.Game.Weapons
         private readonly SceneLights lights;
         private int shotsUntilLit;
 
+        /// <param name="runStats">The Weapon's numbers for this Run: its damage, and the fire rate the pools are sized for.</param>
         /// <param name="content">Where the Shot and hit spark prefabs are, already loaded. The effects never release them.</param>
         /// <param name="sceneLights">Where every Muzzle flash, lit Shot and hit spark light is registered as it's created.</param>
-        public PrimaryWeaponEffects(WeaponDefinition weaponDefinition, LayerMask hitLayers, ILoadedContent content, SceneLights sceneLights)
+        public PrimaryWeaponEffects(
+            WeaponDefinition weaponDefinition, WeaponRunStats runStats, LayerMask hitLayers, ILoadedContent content, SceneLights sceneLights)
         {
             lights = sceneLights;
             definition = weaponDefinition;
+            stats = runStats;
             shotHitLayers = hitLayers;
             onShotHit = OnShotHit;
             onShotSpent = OnShotSpent;
@@ -120,7 +124,7 @@ namespace DarknessRises.Game.Weapons
             if (hit.collider.TryGetComponent<IShotTarget>(out var target))
             {
                 var knockback = definition.Knockback;
-                hurt = target.TakeShot(new ShotHit(definition.Damage, direction, knockback.Metres, knockback.Seconds));
+                hurt = target.TakeShot(new ShotHit(stats.Damage, direction, knockback.Metres, knockback.Seconds));
                 hurtEnemy = hurt;
             }
 
@@ -136,20 +140,20 @@ namespace DarknessRises.Game.Weapons
         // Enough pooled Shots for a held trigger with every Shot flying its full range.
         private int MostShotsInFlight()
         {
-            return Mathf.CeilToInt(definition.ShotsPerSecond * definition.Range / definition.ShotSpeed) + 1;
+            return Mathf.CeilToInt(stats.Firing.ShotsPerSecond * definition.Range / definition.ShotSpeed) + 1;
         }
 
         // Enough pooled Muzzle flashes for a held trigger, however short the gap between shots.
         private int MostFlashesAlive()
         {
-            return Mathf.CeilToInt(definition.ShotsPerSecond * definition.MuzzleFlash.Seconds) + 1;
+            return Mathf.CeilToInt(stats.Firing.ShotsPerSecond * definition.MuzzleFlash.Seconds) + 1;
         }
 
         // Enough pooled hit sparks for a held trigger with every Shot hitting something.
         private int MostSparksAlive()
         {
             var sparkSeconds = Mathf.Max(definition.HitSpark.Seconds, hitSparkPrefab.LifeSeconds);
-            return Mathf.CeilToInt(definition.ShotsPerSecond * sparkSeconds) + 1;
+            return Mathf.CeilToInt(stats.Firing.ShotsPerSecond * sparkSeconds) + 1;
         }
 
         private ShotView CreateShot()

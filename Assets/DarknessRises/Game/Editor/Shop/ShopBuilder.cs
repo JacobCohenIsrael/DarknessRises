@@ -3,6 +3,7 @@ using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Shop;
+using DarknessRises.Game.Upgrades;
 using DarknessRises.Game.Weapons;
 using TMPro;
 using UnityEditor;
@@ -15,10 +16,11 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Editor.Shop
 {
     /// <summary>
-    /// Builds the Shop: its definition asset (the Primary weapons it sells, with first-pass prices) and its scene, which
-    /// the boot loads through Addressables between Runs. The scene is a screen and nothing else: one overlay canvas laid
-    /// out for a landscape phone inside the safe area, an event system, a listener and a sound. It has no camera, lights
-    /// or world, so nothing of a Level is behind it. Everything is built from code; there is no imported art.
+    /// Builds the Shop: its definition asset (the Primary weapons and every Upgrade it sells, with first-pass levels and
+    /// prices) and its scene, which the boot loads through Addressables between Runs. The scene is a screen and nothing
+    /// else: one overlay canvas laid out for a landscape phone inside the safe area, an event system, a listener and a
+    /// sound. It has no camera, lights or world, so nothing of a Level is behind it. Everything is built from code; there
+    /// is no imported art.
     /// </summary>
     public static class ShopBuilder
     {
@@ -30,21 +32,35 @@ namespace DarknessRises.Game.Editor.Shop
         private const string BuyClipPath = "Assets/Free Pack/Magic Spell_Coins_2.wav";
         private const float BuyClipStartSeconds = 1.3f;
 
-        // First-pass prices. A cleared Level 1 pays about 575 Credits (1150 with the end-of-Run ad), so the Machine gun
-        // takes four or five such Runs, or two or three with the ad; the Flamethrower is the longer goal after it.
+        // First-pass prices. A new player who dies in the second Room earns about 125 Credits (250 with the end-of-Run ad)
+        // and a cleared Level 1 pays about 575 (1150 with the ad). So the cheapest Upgrades (250 to 400) come after one or
+        // two Runs, the ad halves that wait, and a Weapon takes a few Runs that clear a Level.
         private const int MachineGunPrice = 2500;
         private const int FlamethrowerPrice = 6000;
+
+        private const string PistolId = "pistol";
+        private const string MachineGunId = "machine-gun";
+        private const string FlamethrowerId = "flamethrower";
+
+        // How each kind of number reads on a row.
+        private const string Whole = "{0}";
+        private const string Seconds = "{0} s";
+        private const string PreciseSeconds = "{0:2} s";
+        private const string PerSecond = "{0}/s";
+        private const string Metres = "{0:1} m";
 
         // Above the Level's HUD order, below the boot's version label.
         private const int SortingOrder = 10;
 
         private static readonly Color BackgroundColor = new(0.025f, 0.025f, 0.035f, 1f);
         private static readonly Color CardColor = new(0.075f, 0.075f, 0.09f, 1f);
+        private static readonly Color RowColor = new(0.055f, 0.055f, 0.068f, 1f);
         private static readonly Color FrameColor = new(0.85f, 0.85f, 0.85f, 0.18f);
         private static readonly Color TextColor = new(0.85f, 0.85f, 0.85f, 1f);
         private static readonly Color DimTextColor = new(0.6f, 0.6f, 0.62f, 1f);
         private static readonly Color PlayColor = new(0.8f, 0.12f, 0.1f, 1f);
         private static readonly Color ButtonColor = new(0.2f, 0.2f, 0.22f, 1f);
+        private static readonly Color TabColor = new(0.14f, 0.14f, 0.16f, 1f);
 
         // Until the Credits definition colours them at runtime.
         private static readonly Color CreditsColor = new(0.35f, 1f, 0.78f, 1f);
@@ -55,25 +71,53 @@ namespace DarknessRises.Game.Editor.Shop
         private const float BottomBarHeight = 190f;
 
         private const float TitleFontSize = 110f;
-        private static readonly Vector2 TitleSize = new(700f, 130f);
+        private static readonly Vector2 TitleSize = new(420f, 130f);
         private const float CreditsCaptionFontSize = 34f;
         private const float CreditsValueFontSize = 88f;
-        private static readonly Vector2 CreditsSize = new(700f, 100f);
+        private static readonly Vector2 CreditsSize = new(460f, 100f);
         private const float CreditsCaptionTop = 26f;
         private const float CreditsValueTop = 58f;
 
-        private const float CardSpacing = 36f;
-        private const float CardHeight = 400f;
+        // The two pages' tabs, side by side in the middle of the top bar.
+        private static readonly Vector2 TabSize = new(290f, 78f);
+        private const float TabGap = 16f;
+        private const float TabFontSize = 38f;
+
+        // A page is columns side by side; a column stacks a card or a heading over its rows.
+        private const float ColumnSpacing = 36f;
+        private const float RowSpacing = 10f;
+
+        private const float CardHeight = 214f;
         private const float CardFrameWidth = 3f;
-        private const float CardPadding = 30f;
-        private const float CardTitleFontSize = 58f;
-        private const float CardTitleHeight = 80f;
-        private const float CardDescriptionFontSize = 30f;
-        private const float CardDescriptionHeight = 90f;
-        private const float CardButtonHeight = 92f;
-        private const float CardButtonFontSize = 40f;
-        private const float CardHintFontSize = 26f;
-        private const float CardHintHeight = 40f;
+        private const float CardPadding = 22f;
+        private const float CardTitleFontSize = 48f;
+        private const float CardTitleTop = 14f;
+        private const float CardTitleHeight = 54f;
+        private const float CardDescriptionFontSize = 25f;
+        private const float CardDescriptionTop = 70f;
+        private const float CardDescriptionHeight = 32f;
+        private const float CardButtonHeight = 64f;
+        private const float CardButtonBottom = 40f;
+        private const float CardButtonFontSize = 34f;
+        private const float CardHintFontSize = 22f;
+        private const float CardHintBottom = 8f;
+        private const float CardHintHeight = 28f;
+
+        private const float HeadingHeight = 64f;
+        private const float HeadingFontSize = 44f;
+
+        private const float UpgradeRowHeight = 112f;
+        private const float UpgradeRowPadding = 18f;
+        private const float UpgradeTitleFontSize = 30f;
+        private const float UpgradeTitleTop = 14f;
+        private const float UpgradeTitleHeight = 38f;
+        private const float UpgradeEffectFontSize = 32f;
+        private const float UpgradeEffectBottom = 14f;
+        private const float UpgradeEffectHeight = 42f;
+        private const float UpgradeLevelFontSize = 22f;
+        private const float UpgradeLevelWidth = 86f;
+        private static readonly Vector2 UpgradeButtonSize = new(170f, 76f);
+        private const float UpgradeButtonFontSize = 34f;
 
         private const float PrimaryLineFontSize = 44f;
         private static readonly Vector2 PrimaryLineSize = new(1100f, 70f);
@@ -81,8 +125,9 @@ namespace DarknessRises.Game.Editor.Shop
         private const float PlayFontSize = 84f;
 
         /// <summary>
-        /// Loads the Shop definition, creating it if it's missing. A definition with no Weapons gets the three Primaries:
-        /// the Pistol owned from the start, the Machine gun and the Flamethrower to unlock.
+        /// Loads the Shop definition, creating it if it's missing. A definition with no Weapons gets the three Primaries
+        /// (the Pistol owned from the start, the Machine gun and the Flamethrower to unlock); every list of Upgrades that
+        /// is still empty gets its first-pass levels. Lists that already hold something are left as they were tuned.
         /// </summary>
         public static ShopDefinition LoadOrCreateShop(WeaponDefinition pistol, WeaponDefinition machineGun, WeaponDefinition flamethrower)
         {
@@ -92,10 +137,13 @@ namespace DarknessRises.Game.Editor.Shop
             if (weapons.arraySize == 0)
             {
                 weapons.arraySize = 3;
-                Author(weapons.GetArrayElementAtIndex(0), "pistol", "PISTOL", "Steady and accurate. Yours from the start.", pistol, 0);
-                Author(weapons.GetArrayElementAtIndex(1), "machine-gun", "MACHINE GUN", "Fast fire and a deep magazine.", machineGun, MachineGunPrice);
-                Author(weapons.GetArrayElementAtIndex(2), "flamethrower", "FLAMETHROWER", "A stream of fire that lights the Room.", flamethrower, FlamethrowerPrice);
+                Author(weapons.GetArrayElementAtIndex(0), PistolId, "PISTOL", "Steady and accurate. Yours from the start.", pistol, 0);
+                Author(weapons.GetArrayElementAtIndex(1), MachineGunId, "MACHINE GUN", "Fast fire and a deep magazine.", machineGun, MachineGunPrice);
+                Author(weapons.GetArrayElementAtIndex(2), FlamethrowerId, "FLAMETHROWER", "A stream of fire that lights the Room.", flamethrower, FlamethrowerPrice);
             }
+
+            AuthorWeaponUpgrades(weapons);
+            AuthorGearUpgrades(serialized);
 
             var clip = serialized.FindProperty("screen.buyClip");
             if (AddressableContent.Referenced<AudioClip>(clip) == null)
@@ -119,6 +167,103 @@ namespace DarknessRises.Game.Editor.Shop
             offer.FindPropertyRelative("description").stringValue = description;
             offer.FindPropertyRelative("weapon").objectReferenceValue = weapon;
             offer.FindPropertyRelative("price").intValue = price;
+        }
+
+        // Each Weapon's Upgrades, by the Weapon's id. Each level sets the number to a value; the starting value is the
+        // Weapon definition's own (Pistol 1 damage, 12 Shots, 1.2 s, 4/s; Machine gun 1, 30, 2.5 s, 10/s; Flamethrower
+        // 1, 60, 2.5 s). Damage is a whole number, so a level of it is a big step and priced like one. The Flamethrower
+        // has no fire rate Upgrade: its stream is its look.
+        private static void AuthorWeaponUpgrades(SerializedProperty weapons)
+        {
+            for (var i = 0; i < weapons.arraySize; i++)
+            {
+                var offer = weapons.GetArrayElementAtIndex(i);
+                var upgrades = offer.FindPropertyRelative("upgrades");
+                if (upgrades.arraySize > 0)
+                {
+                    continue;
+                }
+
+                switch (offer.FindPropertyRelative("id").stringValue)
+                {
+                    case PistolId:
+                        Author(upgrades,
+                            ("pistol.damage", UpgradeStat.Damage, "DAMAGE", Whole, new[] { (900, 2f), (2400, 3f) }),
+                            ("pistol.magazine", UpgradeStat.MagazineSize, "MAGAZINE", Whole, new[] { (250, 15f), (500, 18f), (900, 22f) }),
+                            ("pistol.reload", UpgradeStat.ReloadSeconds, "RELOAD", PreciseSeconds, new[] { (300, 1f), (600, 0.85f), (1000, 0.7f) }),
+                            ("pistol.fire-rate", UpgradeStat.ShotsPerSecond, "FIRE RATE", PerSecond, new[] { (350, 5f), (700, 6f), (1200, 7f) }));
+                        break;
+                    case MachineGunId:
+                        Author(upgrades,
+                            ("machine-gun.damage", UpgradeStat.Damage, "DAMAGE", Whole, new[] { (2000, 2f), (4500, 3f) }),
+                            ("machine-gun.magazine", UpgradeStat.MagazineSize, "MAGAZINE", Whole, new[] { (400, 40f), (800, 50f), (1400, 60f) }),
+                            ("machine-gun.reload", UpgradeStat.ReloadSeconds, "RELOAD", PreciseSeconds, new[] { (400, 2.1f), (800, 1.8f), (1300, 1.5f) }),
+                            ("machine-gun.fire-rate", UpgradeStat.ShotsPerSecond, "FIRE RATE", PerSecond, new[] { (500, 11f), (1000, 13f), (1600, 15f) }));
+                        break;
+                    case FlamethrowerId:
+                        Author(upgrades,
+                            ("flamethrower.damage", UpgradeStat.Damage, "DAMAGE", Whole, new[] { (3000, 2f), (6000, 3f) }),
+                            ("flamethrower.tank", UpgradeStat.MagazineSize, "TANK", Whole, new[] { (500, 80f), (1000, 100f), (1700, 120f) }),
+                            ("flamethrower.reload", UpgradeStat.ReloadSeconds, "RELOAD", PreciseSeconds, new[] { (500, 2.1f), (900, 1.8f), (1500, 1.5f) }));
+                        break;
+                }
+            }
+        }
+
+        // The Grenade (3 charges, 20 s refill, 3.5 m blast), the Skills (Flare and Slow-mo: 4 s, 15 s cooldown) and the
+        // character (5 hit points, Aura 4.5 m). The Aura's levels are small on purpose: 0.3 m each, 20% in all, so
+        // Darkness stays dark.
+        private static void AuthorGearUpgrades(SerializedObject serialized)
+        {
+            var grenade = serialized.FindProperty("grenadeUpgrades");
+            if (grenade.arraySize == 0)
+            {
+                Author(grenade,
+                    ("grenade.charges", UpgradeStat.GrenadeCharges, "CHARGES", Whole, new[] { (600, 4f), (1500, 5f) }),
+                    ("grenade.refill", UpgradeStat.GrenadeRefillSeconds, "REFILL", Seconds, new[] { (300, 17f), (700, 14f), (1200, 11f) }),
+                    ("grenade.blast", UpgradeStat.GrenadeBlastRadius, "BLAST RADIUS", Metres, new[] { (400, 4f), (900, 4.5f), (1500, 5f) }));
+            }
+
+            var skills = serialized.FindProperty("skillUpgrades");
+            if (skills.arraySize == 0)
+            {
+                Author(skills,
+                    ("flare.duration", UpgradeStat.FlareDurationSeconds, "FLARE TIME", Seconds, new[] { (300, 5f), (700, 6f), (1200, 7f) }),
+                    ("flare.cooldown", UpgradeStat.FlareCooldownSeconds, "FLARE COOLDOWN", Seconds, new[] { (300, 13f), (700, 11f), (1200, 9f) }),
+                    ("slow-mo.duration", UpgradeStat.SlowMoDurationSeconds, "SLOW-MO TIME", Seconds, new[] { (300, 5f), (700, 6f), (1200, 7f) }),
+                    ("slow-mo.cooldown", UpgradeStat.SlowMoCooldownSeconds, "SLOW-MO COOLDOWN", Seconds, new[] { (300, 13f), (700, 11f), (1200, 9f) }));
+            }
+
+            var character = serialized.FindProperty("characterUpgrades");
+            if (character.arraySize == 0)
+            {
+                Author(character,
+                    ("character.hit-points", UpgradeStat.MaxHitPoints, "HIT POINTS", Whole, new[] { (500, 6f), (1200, 7f), (2200, 8f) }),
+                    ("character.aura", UpgradeStat.AuraRange, "AURA", Metres, new[] { (400, 4.8f), (900, 5.1f), (1600, 5.4f) }));
+            }
+        }
+
+        private static void Author(
+            SerializedProperty list, params (string id, UpgradeStat stat, string name, string format, (int price, float value)[] levels)[] upgrades)
+        {
+            list.arraySize = upgrades.Length;
+            for (var i = 0; i < upgrades.Length; i++)
+            {
+                var (id, stat, name, format, levels) = upgrades[i];
+                var upgrade = list.GetArrayElementAtIndex(i);
+                upgrade.FindPropertyRelative("id").stringValue = id;
+                upgrade.FindPropertyRelative("stat").intValue = (int)stat;
+                upgrade.FindPropertyRelative("displayName").stringValue = name;
+                upgrade.FindPropertyRelative("valueFormat").stringValue = format;
+                var levelList = upgrade.FindPropertyRelative("levels");
+                levelList.arraySize = levels.Length;
+                for (var level = 0; level < levels.Length; level++)
+                {
+                    var authored = levelList.GetArrayElementAtIndex(level);
+                    authored.FindPropertyRelative("price").intValue = levels[level].price;
+                    authored.FindPropertyRelative("value").floatValue = levels[level].value;
+                }
+            }
         }
 
         [MenuItem("Darkness Rises/Rebuild Shop Scene")]
@@ -178,10 +323,17 @@ namespace DarknessRises.Game.Editor.Shop
             var safeArea = AddRect("Safe Area", canvasObject.transform);
             Stretch(safeArea, 0f, 0f, 0f, 0f);
 
-            // The top bar: the title on the left, the Credits in the bank on the right.
+            // The top bar: the title on the left, the pages' tabs in the middle, the Credits in the bank on the right.
             var title = AddText(safeArea, "Title", "SHOP", TitleFontSize, HealthBuilder.TitleColor, TextAlignmentOptions.Left);
             Corner(title.rectTransform, new Vector2(0f, 1f), new Vector2(SideMargin, -(TopBarHeight - TitleSize.y) / 2f), TitleSize);
             title.fontStyle = FontStyles.Bold;
+
+            var tabY = -(TopBarHeight - TabSize.y) / 2f;
+            var weaponsTab = AddButton(safeArea, "Weapons Tab", "WEAPONS", TabFontSize, TabColor, Color.white, out var weaponsTabLabel);
+            Corner((RectTransform)weaponsTab.transform, new Vector2(0.5f, 1f), new Vector2(-(TabSize.x + TabGap) / 2f, tabY), TabSize);
+            var gearTab = AddButton(safeArea, "Gear Tab", "GEAR", TabFontSize, TabColor, Color.white, out var gearTabLabel);
+            Corner((RectTransform)gearTab.transform, new Vector2(0.5f, 1f), new Vector2((TabSize.x + TabGap) / 2f, tabY), TabSize);
+            weaponsTabLabel.fontStyle = gearTabLabel.fontStyle = FontStyles.Bold;
 
             var creditsCaption = AddText(safeArea, "Credits Caption", "CREDITS", CreditsCaptionFontSize, CreditsColor, TextAlignmentOptions.Right);
             Corner(creditsCaption.rectTransform, new Vector2(1f, 1f), new Vector2(-SideMargin, -CreditsCaptionTop), new Vector2(CreditsSize.x, CreditsCaptionFontSize * 1.3f));
@@ -189,16 +341,16 @@ namespace DarknessRises.Game.Editor.Shop
             Corner(creditsValue.rectTransform, new Vector2(1f, 1f), new Vector2(-SideMargin, -CreditsValueTop), CreditsSize);
             creditsValue.fontStyle = FontStyles.Bold;
 
-            // The Weapons' cards, side by side between the bars, sharing the width.
-            var cards = AddRect("Cards", safeArea);
-            Stretch(cards, SideMargin, SideMargin, TopBarHeight, BottomBarHeight);
-            var row = cards.gameObject.AddComponent<HorizontalLayoutGroup>();
-            row.spacing = CardSpacing;
-            row.childAlignment = TextAnchor.UpperCenter;
-            row.childControlWidth = row.childControlHeight = true;
-            row.childForceExpandWidth = true;
-            row.childForceExpandHeight = false;
-            var cardTemplate = BuildCardTemplate(cards);
+            // The pages, between the bars. Only one shows at a time; each is columns side by side, sharing the width.
+            var weaponsPage = AddPage(safeArea, "Weapons Page");
+            var gearPage = AddPage(safeArea, "Gear Page");
+
+            // What the Shop copies into the pages when it opens. Hidden, and never shown themselves.
+            var templates = AddRect("Templates", safeArea);
+            var columnTemplate = BuildColumnTemplate(templates);
+            var cardTemplate = BuildCardTemplate(templates);
+            var headingTemplate = BuildHeadingTemplate(templates);
+            var rowTemplate = BuildRowTemplate(templates);
 
             // The bottom bar: the Primary the next Run carries on the left, the big PLAY on the right.
             var primaryLine = AddText(safeArea, "Primary Line", "NEXT RUN: PISTOL", PrimaryLineFontSize, TextColor, TextAlignmentOptions.Left);
@@ -220,8 +372,16 @@ namespace DarknessRises.Game.Editor.Shop
             serialized.FindProperty("creditsCaption").objectReferenceValue = creditsCaption;
             serialized.FindProperty("creditsValue").objectReferenceValue = creditsValue;
             serialized.FindProperty("primaryLine").objectReferenceValue = primaryLine;
-            serialized.FindProperty("cards").objectReferenceValue = cards;
+            serialized.FindProperty("weaponsPage").objectReferenceValue = weaponsPage;
+            serialized.FindProperty("gearPage").objectReferenceValue = gearPage;
+            serialized.FindProperty("weaponsTab").objectReferenceValue = weaponsTab;
+            serialized.FindProperty("weaponsTabLabel").objectReferenceValue = weaponsTabLabel;
+            serialized.FindProperty("gearTab").objectReferenceValue = gearTab;
+            serialized.FindProperty("gearTabLabel").objectReferenceValue = gearTabLabel;
+            serialized.FindProperty("columnTemplate").objectReferenceValue = columnTemplate;
             serialized.FindProperty("cardTemplate").objectReferenceValue = cardTemplate;
+            serialized.FindProperty("headingTemplate").objectReferenceValue = headingTemplate;
+            serialized.FindProperty("rowTemplate").objectReferenceValue = rowTemplate;
             serialized.FindProperty("playButton").objectReferenceValue = playButton;
             serialized.FindProperty("playLabel").objectReferenceValue = playLabel;
             serialized.FindProperty("sound").objectReferenceValue = sound;
@@ -229,17 +389,46 @@ namespace DarknessRises.Game.Editor.Shop
             return view;
         }
 
-        // One Weapon's card: a framed panel with its name, its pitch, one button and a hint under it. The Shop copies it
-        // for each Weapon; the template itself stays hidden.
-        private static WeaponCardView BuildCardTemplate(RectTransform cards)
+        private static RectTransform AddPage(RectTransform safeArea, string name)
         {
-            var card = AddRect("Weapon Card", cards);
+            var page = AddRect(name, safeArea);
+            Stretch(page, SideMargin, SideMargin, TopBarHeight, BottomBarHeight);
+            var columns = page.gameObject.AddComponent<HorizontalLayoutGroup>();
+            columns.spacing = ColumnSpacing;
+            columns.childAlignment = TextAnchor.UpperCenter;
+            columns.childControlWidth = columns.childControlHeight = true;
+            columns.childForceExpandWidth = columns.childForceExpandHeight = true;
+            return page;
+        }
+
+        // A column: what's put in it stacks from the top, each as wide as the column and as tall as it asks to be.
+        private static RectTransform BuildColumnTemplate(RectTransform templates)
+        {
+            var column = AddRect("Column", templates);
+            var stack = column.gameObject.AddComponent<VerticalLayoutGroup>();
+            stack.spacing = RowSpacing;
+            stack.childAlignment = TextAnchor.UpperCenter;
+            stack.childControlWidth = stack.childControlHeight = true;
+            stack.childForceExpandWidth = true;
+            stack.childForceExpandHeight = false;
+
+            // Every column gets the same share of the page, whatever is written in it.
+            var share = column.gameObject.AddComponent<LayoutElement>();
+            share.minWidth = 0f;
+            share.preferredWidth = 0f;
+            share.flexibleWidth = 1f;
+            column.gameObject.SetActive(false);
+            return column;
+        }
+
+        // One Weapon's card: a framed panel with its name, its pitch, one button and a hint under it.
+        private static WeaponCardView BuildCardTemplate(RectTransform templates)
+        {
+            var card = AddRect("Weapon Card", templates);
             var frame = card.gameObject.AddComponent<Image>();
             frame.color = FrameColor;
             frame.raycastTarget = false;
-            var layout = card.gameObject.AddComponent<LayoutElement>();
-            layout.preferredHeight = CardHeight;
-            layout.flexibleWidth = 1f;
+            card.gameObject.AddComponent<LayoutElement>().preferredHeight = CardHeight;
 
             var fill = AddRect("Fill", card);
             Stretch(fill, CardFrameWidth, CardFrameWidth, CardFrameWidth, CardFrameWidth);
@@ -248,22 +437,20 @@ namespace DarknessRises.Game.Editor.Shop
             fillImage.raycastTarget = false;
 
             var title = AddText(card, "Title", "WEAPON", CardTitleFontSize, Color.white, TextAlignmentOptions.Left);
-            TopStrip(title.rectTransform, CardPadding, CardPadding, CardTitleHeight);
+            TopStrip(title.rectTransform, CardPadding, CardPadding, CardTitleTop, CardTitleHeight);
             title.fontStyle = FontStyles.Bold;
-            title.enableAutoSizing = true;
-            title.fontSizeMin = CardTitleFontSize * 0.6f;
-            title.fontSizeMax = CardTitleFontSize;
-            title.textWrappingMode = TextWrappingModes.NoWrap;
+            FitOnOneLine(title, CardTitleFontSize);
 
-            var description = AddText(card, "Description", "What it's like to fire.", CardDescriptionFontSize, DimTextColor, TextAlignmentOptions.TopLeft);
-            TopStrip(description.rectTransform, CardPadding, CardPadding + CardTitleHeight + 10f, CardDescriptionHeight);
+            var description = AddText(card, "Description", "What it's like to fire.", CardDescriptionFontSize, DimTextColor, TextAlignmentOptions.Left);
+            TopStrip(description.rectTransform, CardPadding, CardPadding, CardDescriptionTop, CardDescriptionHeight);
+            FitOnOneLine(description, CardDescriptionFontSize);
 
             var button = AddButton(card, "Button", "UNLOCK", CardButtonFontSize, ButtonColor, Color.white, out var buttonLabel);
-            BottomStrip((RectTransform)button.transform, CardPadding, CardPadding + CardHintHeight, CardButtonHeight);
+            BottomStrip((RectTransform)button.transform, CardPadding, CardPadding, CardButtonBottom, CardButtonHeight);
             buttonLabel.fontStyle = FontStyles.Bold;
 
             var hint = AddText(card, "Hint", string.Empty, CardHintFontSize, DimTextColor, TextAlignmentOptions.Center);
-            BottomStrip(hint.rectTransform, CardPadding, CardPadding * 0.5f, CardHintHeight);
+            BottomStrip(hint.rectTransform, CardPadding, CardPadding, CardHintBottom, CardHintHeight);
 
             var view = card.gameObject.AddComponent<WeaponCardView>();
             var serialized = new SerializedObject(view);
@@ -276,6 +463,61 @@ namespace DarknessRises.Game.Editor.Shop
             serialized.FindProperty("hint").objectReferenceValue = hint;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             card.gameObject.SetActive(false);
+            return view;
+        }
+
+        // The heading over a Gear column: as tall as it needs, so the rows under it line up across columns.
+        private static TextMeshProUGUI BuildHeadingTemplate(RectTransform templates)
+        {
+            var heading = AddText(templates, "Heading", "GEAR", HeadingFontSize, TextColor, TextAlignmentOptions.Left);
+            heading.fontStyle = FontStyles.Bold;
+            heading.gameObject.AddComponent<LayoutElement>().preferredHeight = HeadingHeight;
+            heading.gameObject.SetActive(false);
+            return heading;
+        }
+
+        // One Upgrade's row: its name over its numbers on the left ("12 > 15", with its level at the end of the line),
+        // and the buy button with the price on the right.
+        private static UpgradeRowView BuildRowTemplate(RectTransform templates)
+        {
+            var row = AddRect("Upgrade Row", templates);
+            var panel = row.gameObject.AddComponent<Image>();
+            panel.color = RowColor;
+            panel.raycastTarget = false;
+            row.gameObject.AddComponent<LayoutElement>().preferredHeight = UpgradeRowHeight;
+
+            // Everything left of the button.
+            var textRight = UpgradeRowPadding + UpgradeButtonSize.x + UpgradeRowPadding;
+
+            var title = AddText(row, "Title", "UPGRADE", UpgradeTitleFontSize, Color.white, TextAlignmentOptions.Left);
+            TopStrip(title.rectTransform, UpgradeRowPadding, textRight, UpgradeTitleTop, UpgradeTitleHeight);
+            title.fontStyle = FontStyles.Bold;
+            FitOnOneLine(title, UpgradeTitleFontSize);
+
+            var effect = AddText(row, "Effect", "0 > 0", UpgradeEffectFontSize, Color.white, TextAlignmentOptions.Left);
+            BottomStrip(effect.rectTransform, UpgradeRowPadding, textRight + UpgradeLevelWidth, UpgradeEffectBottom, UpgradeEffectHeight);
+            FitOnOneLine(effect, UpgradeEffectFontSize);
+
+            var level = AddText(row, "Level", "LV 0/3", UpgradeLevelFontSize, DimTextColor, TextAlignmentOptions.Right);
+            BottomStrip(level.rectTransform, UpgradeRowPadding, textRight, UpgradeEffectBottom, UpgradeEffectHeight);
+
+            var button = AddButton(row, "Button", "0", UpgradeButtonFontSize, ButtonColor, Color.white, out var buttonLabel);
+            var buttonRect = (RectTransform)button.transform;
+            buttonRect.anchorMin = buttonRect.anchorMax = buttonRect.pivot = new Vector2(1f, 0.5f);
+            buttonRect.anchoredPosition = new Vector2(-UpgradeRowPadding, 0f);
+            buttonRect.sizeDelta = UpgradeButtonSize;
+            buttonLabel.fontStyle = FontStyles.Bold;
+
+            var view = row.gameObject.AddComponent<UpgradeRowView>();
+            var serialized = new SerializedObject(view);
+            serialized.FindProperty("title").objectReferenceValue = title;
+            serialized.FindProperty("level").objectReferenceValue = level;
+            serialized.FindProperty("effect").objectReferenceValue = effect;
+            serialized.FindProperty("button").objectReferenceValue = button;
+            serialized.FindProperty("buttonImage").objectReferenceValue = button.targetGraphic;
+            serialized.FindProperty("buttonLabel").objectReferenceValue = buttonLabel;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            row.gameObject.SetActive(false);
             return view;
         }
 
@@ -295,7 +537,7 @@ namespace DarknessRises.Game.Editor.Shop
             rect.offsetMax = new Vector2(-right, -top);
         }
 
-        // Sits in a corner of its parent: anchored and pivoted there, offset inwards.
+        // Sits in a corner or on an edge of its parent: anchored and pivoted there, offset from it.
         private static void Corner(RectTransform rect, Vector2 corner, Vector2 offset, Vector2 size)
         {
             rect.anchorMin = rect.anchorMax = rect.pivot = corner;
@@ -304,23 +546,32 @@ namespace DarknessRises.Game.Editor.Shop
         }
 
         // Spans its parent's width, inset at the sides, a fixed height down from the top.
-        private static void TopStrip(RectTransform rect, float side, float top, float height)
+        private static void TopStrip(RectTransform rect, float left, float right, float top, float height)
         {
             rect.anchorMin = new Vector2(0f, 1f);
             rect.anchorMax = Vector2.one;
             rect.pivot = new Vector2(0.5f, 1f);
-            rect.offsetMin = new Vector2(side, -top - height);
-            rect.offsetMax = new Vector2(-side, -top);
+            rect.offsetMin = new Vector2(left, -top - height);
+            rect.offsetMax = new Vector2(-right, -top);
         }
 
         // Spans its parent's width, inset at the sides, a fixed height up from the bottom.
-        private static void BottomStrip(RectTransform rect, float side, float bottom, float height)
+        private static void BottomStrip(RectTransform rect, float left, float right, float bottom, float height)
         {
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = new Vector2(1f, 0f);
             rect.pivot = new Vector2(0.5f, 0f);
-            rect.offsetMin = new Vector2(side, bottom);
-            rect.offsetMax = new Vector2(-side, bottom + height);
+            rect.offsetMin = new Vector2(left, bottom);
+            rect.offsetMax = new Vector2(-right, bottom + height);
+        }
+
+        // Stays on one line, shrinking where a narrow screen leaves it less room.
+        private static void FitOnOneLine(TextMeshProUGUI label, float fontSize)
+        {
+            label.enableAutoSizing = true;
+            label.fontSizeMin = fontSize * 0.55f;
+            label.fontSizeMax = fontSize;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
         }
 
         private static TextMeshProUGUI AddText(

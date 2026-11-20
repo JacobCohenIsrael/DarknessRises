@@ -46,6 +46,7 @@ namespace DarknessRises.Game.Grenades
         private readonly IShotTarget[] blastTargets = new IShotTarget[MaxBlastColliders];
 
         private GrenadeDefinition definition;
+        private GrenadeRunStats stats;
         private CharacterAnimationView characterAnimation;
         private ObjectPool<GrenadeView> grenades;
         private ObjectPool<GrenadeExplosionView> explosions;
@@ -61,22 +62,28 @@ namespace DarknessRises.Game.Grenades
         public GrenadeCharges Charges { get; private set; }
 
         /// <summary>
-        /// Gives the character a full set of Grenades built from <paramref name="grenadeDefinition"/>,
+        /// Gives the character a full set of Grenades built from <paramref name="grenadeDefinition"/>, with the charges,
+        /// refill time and blast radius of <paramref name="runStats"/> (the Run's numbers, Upgrades applied),
         /// thrown with <paramref name="animation"/>'s throw. Its prefabs and bang come from
         /// <paramref name="content"/>, already loaded. Explosion lights are added to <paramref name="lights"/>.
         /// </summary>
         public GrenadeCharges Equip(
-            GrenadeDefinition grenadeDefinition, CharacterAnimationView animation, ILoadedContent content, SceneLights lights)
+            GrenadeDefinition grenadeDefinition,
+            GrenadeRunStats runStats,
+            CharacterAnimationView animation,
+            ILoadedContent content,
+            SceneLights lights)
         {
             Unequip();
 
             sceneLights = lights;
             definition = grenadeDefinition;
+            stats = runStats;
             characterAnimation = animation;
             grenadePrefab = content.Prefab<GrenadeView>(grenadeDefinition.Body.Prefab);
             explosionPrefab = content.Prefab<GrenadeExplosionView>(grenadeDefinition.Explosion.Prefab);
             bangClip = content.Clip(grenadeDefinition.Explosion.Clip);
-            Charges = new GrenadeCharges(definition.ChargeStats);
+            Charges = new GrenadeCharges(stats.Charges);
             characterAnimation.GrenadeReleased += OnGrenadeReleased;
 
             effectsRoot = new GameObject($"{definition.name} Effects").transform;
@@ -169,7 +176,7 @@ namespace DarknessRises.Game.Grenades
             explosions.Get().Explode(position);
 
             var found = Physics.OverlapSphereNonAlloc(
-                position, definition.BlastRadius, blastColliders, blastLayers, QueryTriggerInteraction.Ignore);
+                position, stats.BlastRadius, blastColliders, blastLayers, QueryTriggerInteraction.Ignore);
             var hit = 0;
             for (var i = 0; i < found; i++)
             {
@@ -194,7 +201,7 @@ namespace DarknessRises.Game.Grenades
             var outwards = targetPosition - centre;
             outwards.y = 0f;
             var knockback = definition.Knockback;
-            var metres = knockback.MetresAt(outwards.magnitude, definition.BlastRadius);
+            var metres = knockback.MetresAt(outwards.magnitude, stats.BlastRadius);
             return new ShotHit(definition.Damage, outwards, metres, knockback.Seconds);
         }
 
@@ -214,7 +221,7 @@ namespace DarknessRises.Game.Grenades
         // Every charge in the air or going off at once.
         private int MostAlive()
         {
-            return definition.ChargeStats.MaxCharges + 1;
+            return stats.Charges.MaxCharges + 1;
         }
 
         private GrenadeView CreateGrenade()

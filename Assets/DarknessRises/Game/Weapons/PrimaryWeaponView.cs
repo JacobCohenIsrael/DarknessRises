@@ -55,11 +55,19 @@ namespace DarknessRises.Game.Weapons
 
         /// <summary>
         /// Arms the character with a fresh, fully loaded Primary for each of <paramref name="definitions"/>,
-        /// in switching order, and equips the first. Their Shots and hit sparks come from <paramref name="content"/>, already loaded.
+        /// in switching order, and equips the first. Each fires, reloads and damages by its entry in
+        /// <paramref name="runStats"/>: the Run's numbers, with the player's Upgrades applied.
+        /// Their Shots and hit sparks come from <paramref name="content"/>, already loaded.
         /// Their lights are added to <paramref name="lights"/>, so what Gunfire lights counts as visible.
         /// </summary>
-        public PrimaryWeaponLoadout Arm(IReadOnlyList<WeaponDefinition> definitions, ILoadedContent content, SceneLights lights)
+        public PrimaryWeaponLoadout Arm(
+            IReadOnlyList<WeaponDefinition> definitions, IReadOnlyList<WeaponRunStats> runStats, ILoadedContent content, SceneLights lights)
         {
+            if (runStats == null || runStats.Count != definitions.Count)
+            {
+                throw new ArgumentException("Each carried Primary needs its numbers for the Run.", nameof(runStats));
+            }
+
             Disarm();
 
             onShotLanded ??= OnShotLanded;
@@ -68,8 +76,8 @@ namespace DarknessRises.Game.Weapons
             onFired = new Action[definitions.Count];
             for (var i = 0; i < definitions.Count; i++)
             {
-                stats[i] = definitions[i].PrimaryStats;
-                effects[i] = new PrimaryWeaponEffects(definitions[i], shotHitLayers, content, lights);
+                stats[i] = runStats[i].Firing;
+                effects[i] = new PrimaryWeaponEffects(definitions[i], runStats[i], shotHitLayers, content, lights);
                 effects[i].ShotLanded += onShotLanded;
             }
 

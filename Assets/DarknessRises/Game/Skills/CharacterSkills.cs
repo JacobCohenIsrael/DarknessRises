@@ -7,10 +7,13 @@ namespace DarknessRises.Game.Skills
     /// </summary>
     public sealed class CharacterSkills
     {
-        public CharacterSkills(FlareDefinition flare, SlowMoDefinition slowMo, EnemyTime enemyTime)
+        /// <param name="flareTiming">The Flare's duration and cooldown for this Run, Upgrades applied.</param>
+        /// <param name="slowMoTiming">Slow-mo's duration and cooldown for this Run, Upgrades applied.</param>
+        public CharacterSkills(
+            FlareDefinition flare, SlowMoDefinition slowMo, SkillTiming flareTiming, SkillTiming slowMoTiming, EnemyTime enemyTime)
         {
-            Flare = new Flare(flare.Timing, flare.FadeInSeconds, flare.FadeOutSeconds);
-            SlowMo = new SlowMo(slowMo.Timing, slowMo.EnemyTimeScale, slowMo.EaseSeconds, enemyTime);
+            Flare = new Flare(flareTiming, flare.FadeInSeconds, flare.FadeOutSeconds);
+            SlowMo = new SlowMo(slowMoTiming, slowMo.EnemyTimeScale, slowMo.EaseSeconds, enemyTime);
         }
 
         public Flare Flare { get; }

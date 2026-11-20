@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Hud;
+using DarknessRises.Game.Upgrades;
+using DarknessRises.Game.Weapons;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,14 +13,16 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Shop
 {
     /// <summary>
-    /// The Shop screen: the Credits in the bank at the top, a card for each Primary weapon (unlock it, or choose it as the
-    /// Primary the next Run carries), and a big PLAY that starts the Run. Buying is instant: the card pops, the Credits
-    /// count down and a sound plays. The <see cref="ShopKeeper"/> holds the rules; this shows them, inside the screen's
-    /// safe area, with buttons that work by touch and by mouse.
+    /// The Shop screen: the Credits in the bank at the top, two pages of wares, and a big PLAY that starts the Run.
+    /// The Weapons page has a column for each Primary weapon: its card (unlock it, or choose it as the Primary the next
+    /// Run carries) over its Upgrades. The Gear page has the Upgrades of the Grenade, the Skills and the character.
+    /// Buying is instant: the card or row pops, the Credits count down and a sound plays. The
+    /// <see cref="ShopKeeper"/> holds the rules; this shows them, inside the screen's safe area, with buttons that work
+    /// by touch and by mouse.
     /// </summary>
     /// <remarks>
-    /// Cards are made once, when the Shop opens. Afterwards texts are rewritten only when something is bought or
-    /// chosen; the Credits are written with TMP's number formatting as they count, so nothing is allocated per frame.
+    /// Cards and rows are made once, when the Shop opens. Afterwards texts are rewritten only when something is bought
+    /// or chosen; numbers are written with TMP's number formatting, so nothing is allocated per frame.
     /// </remarks>
     public sealed class ShopView : MonoBehaviour
     {
@@ -35,12 +40,32 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("Names the Primary weapon the next Run carries.")]
         private TMP_Text primaryLine;
 
-        [SerializeField, Tooltip("Where the Weapons' cards go, side by side.")]
-        private RectTransform cards;
+        [Header("Pages")]
+        [SerializeField, Tooltip("The page of the Primary weapons: a column for each goes here, side by side.")]
+        private RectTransform weaponsPage;
 
-        [SerializeField, Tooltip("The card each Weapon's card is copied from. Hidden itself.")]
+        [SerializeField, Tooltip("The page of the Grenade's, the Skills' and the character's Upgrades, a column each.")]
+        private RectTransform gearPage;
+
+        [SerializeField] private Button weaponsTab;
+        [SerializeField] private TMP_Text weaponsTabLabel;
+        [SerializeField] private Button gearTab;
+        [SerializeField] private TMP_Text gearTabLabel;
+
+        [Header("Templates (hidden; copied when the Shop opens)")]
+        [SerializeField, Tooltip("A column of a page: what's put in it stacks from the top.")]
+        private RectTransform columnTemplate;
+
+        [SerializeField, Tooltip("A Primary weapon's card, at the top of its column.")]
         private WeaponCardView cardTemplate;
 
+        [SerializeField, Tooltip("The heading of a Gear column.")]
+        private TMP_Text headingTemplate;
+
+        [SerializeField, Tooltip("One Upgrade's row.")]
+        private UpgradeRowView rowTemplate;
+
+        [Header("Play")]
         [SerializeField, Tooltip("Starts a new Run.")]
         private Button playButton;
 
@@ -50,17 +75,19 @@ namespace DarknessRises.Game.Shop
         private AudioSource sound;
 
         private readonly List<WeaponCardView> weaponCards = new();
+        private readonly List<UpgradeRowView> rows = new();
         private readonly CountUp creditsCount = new();
 
-        private ShopDefinition definition;
+        private GameConfiguration configuration;
         private ShopScreenSettings settings;
+        private ShopCatalog catalog;
         private ShopKeeper keeper;
-        private ShopItem[] weaponItems;
         private Color creditsColor;
         private AudioClip buyClip;
         private ShopItem shownPrimary;
         private Rect fittedSafeArea;
         private Action<WeaponCardView> onCardPressed;
+        private Action<UpgradeRowView> onRowPressed;
         private Action<int> onCreditsChanged;
         private bool isShown;
 
@@ -68,20 +95,22 @@ namespace DarknessRises.Game.Shop
         public bool IsShown => isShown;
 
         /// <summary>
-        /// Opens the Shop: lays out <paramref name="shop"/>'s wares as <paramref name="shopKeeper"/> has them, with
-        /// Credits in <paramref name="creditsTint"/> and <paramref name="buySound"/> for a purchase.
+        /// Opens the Shop: lays out <paramref name="shopCatalog"/> as <paramref name="shopKeeper"/> has it. Each
+        /// Upgrade's starting value is read from <paramref name="gameConfiguration"/>'s definitions;
+        /// <paramref name="buySound"/> plays for a purchase.
         /// </summary>
-        public void Show(ShopDefinition shop, ShopKeeper shopKeeper, Color creditsTint, AudioClip buySound)
+        public void Show(GameConfiguration gameConfiguration, ShopCatalog shopCatalog, ShopKeeper shopKeeper, AudioClip buySound)
         {
             if (isShown)
             {
                 throw new InvalidOperationException("The Shop is already open.");
             }
 
-            definition = shop ? shop : throw new ArgumentNullException(nameof(shop));
+            configuration = gameConfiguration ? gameConfiguration : throw new ArgumentNullException(nameof(gameConfiguration));
+            catalog = shopCatalog ?? throw new ArgumentNullException(nameof(shopCatalog));
             keeper = shopKeeper ?? throw new ArgumentNullException(nameof(shopKeeper));
-            settings = definition.Screen;
-            creditsColor = creditsTint;
+            settings = configuration.Shop.Screen;
+            creditsColor = configuration.Credits.Color;
             buyClip = buySound;
             isShown = true;
 
@@ -90,19 +119,16 @@ namespace DarknessRises.Game.Shop
             creditsCaption.text = settings.CreditsCaption;
             creditsCaption.color = creditsColor;
             creditsValue.color = creditsColor;
+            weaponsTabLabel.text = settings.WeaponsTab;
+            gearTabLabel.text = settings.GearTab;
 
-            weaponItems = definition.ToWeaponItems();
             onCardPressed = OnCardPressed;
-            cardTemplate.gameObject.SetActive(false);
-            for (var i = 0; i < weaponItems.Length; i++)
-            {
-                var card = Instantiate(cardTemplate, cards);
-                card.name = $"{definition.Weapons[i].DisplayName} Card";
-                card.Bind(definition.Weapons[i], weaponItems[i]);
-                card.Pressed += onCardPressed;
-                card.gameObject.SetActive(true);
-                weaponCards.Add(card);
-            }
+            onRowPressed = OnRowPressed;
+            BuildWeaponsPage();
+            BuildGearPage();
+            weaponsTab.onClick.AddListener(ShowWeaponsPage);
+            gearTab.onClick.AddListener(ShowGearPage);
+            ShowWeaponsPage();
 
             creditsCount.ValueChanged += ShowCredits;
             creditsCount.Set(keeper.Credits);
@@ -117,6 +143,76 @@ namespace DarknessRises.Game.Shop
         public UniTask PlayAsync(CancellationToken cancellationToken)
         {
             return playButton.OnClickAsync(cancellationToken);
+        }
+
+        // A column per Primary weapon: its card, then its Upgrades.
+        private void BuildWeaponsPage()
+        {
+            for (var i = 0; i < catalog.Weapons.Count; i++)
+            {
+                var weapon = catalog.Weapons[i];
+                var column = AddColumn(weaponsPage, weapon.Offer.DisplayName);
+                var card = Instantiate(cardTemplate, column);
+                card.name = $"{weapon.Offer.DisplayName} Card";
+                card.Bind(weapon.Offer, weapon.Item);
+                card.Pressed += onCardPressed;
+                card.gameObject.SetActive(true);
+                weaponCards.Add(card);
+                AddRows(column, weapon.Upgrades, weapon.Offer.Weapon);
+            }
+        }
+
+        // A column each for the Grenade, the Skills and the character: a heading, then its Upgrades.
+        private void BuildGearPage()
+        {
+            AddGearColumn(settings.GrenadeTitle, catalog.Grenade);
+            AddGearColumn(settings.SkillsTitle, catalog.Skills);
+            AddGearColumn(settings.CharacterTitle, catalog.Character);
+        }
+
+        private void AddGearColumn(string heading, IReadOnlyList<ShopCatalog.UpgradeEntry> upgrades)
+        {
+            var column = AddColumn(gearPage, heading);
+            var label = Instantiate(headingTemplate, column);
+            label.name = "Heading";
+            label.text = heading;
+            label.gameObject.SetActive(true);
+            AddRows(column, upgrades, null);
+        }
+
+        private RectTransform AddColumn(RectTransform page, string columnName)
+        {
+            var column = Instantiate(columnTemplate, page);
+            column.name = $"{columnName} Column";
+            column.gameObject.SetActive(true);
+            return column;
+        }
+
+        private void AddRows(RectTransform column, IReadOnlyList<ShopCatalog.UpgradeEntry> upgrades, WeaponDefinition weapon)
+        {
+            for (var i = 0; i < upgrades.Count; i++)
+            {
+                var entry = upgrades[i];
+                var row = Instantiate(rowTemplate, column);
+                row.name = $"{entry.Definition.DisplayName} Row";
+                row.Bind(
+                    entry.Definition, entry.Upgrade, ConfiguredRunStats.BaseValue(entry.Upgrade.Stat, configuration, weapon), settings);
+                row.Pressed += onRowPressed;
+                row.gameObject.SetActive(true);
+                rows.Add(row);
+            }
+        }
+
+        private void ShowWeaponsPage() => ShowPage(true);
+
+        private void ShowGearPage() => ShowPage(false);
+
+        private void ShowPage(bool showsWeapons)
+        {
+            weaponsPage.gameObject.SetActive(showsWeapons);
+            gearPage.gameObject.SetActive(!showsWeapons);
+            weaponsTab.targetGraphic.color = showsWeapons ? settings.ActiveTabColor : settings.InactiveTabColor;
+            gearTab.targetGraphic.color = showsWeapons ? settings.InactiveTabColor : settings.ActiveTabColor;
         }
 
         private void Update()
@@ -135,6 +231,11 @@ namespace DarknessRises.Game.Shop
             {
                 weaponCards[i].Tick(deltaSeconds);
             }
+
+            for (var i = 0; i < rows.Count; i++)
+            {
+                rows[i].Tick(deltaSeconds);
+            }
         }
 
         private void OnDestroy()
@@ -146,11 +247,21 @@ namespace DarknessRises.Game.Shop
 
             creditsCount.ValueChanged -= ShowCredits;
             keeper.CreditsChanged -= onCreditsChanged;
+            weaponsTab.onClick.RemoveListener(ShowWeaponsPage);
+            gearTab.onClick.RemoveListener(ShowGearPage);
             for (var i = 0; i < weaponCards.Count; i++)
             {
                 if (weaponCards[i] != null)
                 {
                     weaponCards[i].Pressed -= onCardPressed;
+                }
+            }
+
+            for (var i = 0; i < rows.Count; i++)
+            {
+                if (rows[i] != null)
+                {
+                    rows[i].Pressed -= onRowPressed;
                 }
             }
         }
@@ -178,6 +289,19 @@ namespace DarknessRises.Game.Shop
             Refresh();
         }
 
+        // An Upgrade's button buys its next level.
+        private void OnRowPressed(UpgradeRowView row)
+        {
+            if (!keeper.Buy(row.Upgrade.Item))
+            {
+                return;
+            }
+
+            PlayBuySound();
+            row.Pop(settings.PopScale, settings.PopSeconds);
+            Refresh();
+        }
+
         // The bank changed, by a purchase here or from outside: the number counts to it, and what can be afforded may differ.
         private void OnCreditsChanged(int credits)
         {
@@ -185,19 +309,30 @@ namespace DarknessRises.Game.Shop
             Refresh();
         }
 
-        // Everything that depends on the bank or the chosen Primary. Called when something was bought or chosen.
+        // Everything that depends on the bank, on what is owned or on the chosen Primary. Called when one of them changed.
         private void Refresh()
         {
-            var primary = keeper.PrimaryOf(weaponItems);
+            var primary = keeper.PrimaryOf(catalog.WeaponItems);
             for (var i = 0; i < weaponCards.Count; i++)
             {
-                weaponCards[i].Show(keeper, weaponItems[i] == primary, settings, creditsColor);
+                weaponCards[i].Show(keeper, weaponCards[i].Item == primary, settings, creditsColor);
+            }
+
+            for (var i = 0; i < rows.Count; i++)
+            {
+                rows[i].Show(keeper, settings, creditsColor);
             }
 
             if (primary != shownPrimary)
             {
                 shownPrimary = primary;
-                primaryLine.text = string.Format(settings.PrimaryFormat, definition.Weapons[Array.IndexOf(weaponItems, primary)].DisplayName);
+                for (var i = 0; i < catalog.Weapons.Count; i++)
+                {
+                    if (catalog.Weapons[i].Item == primary)
+                    {
+                        primaryLine.text = string.Format(settings.PrimaryFormat, catalog.Weapons[i].Offer.DisplayName);
+                    }
+                }
             }
         }
 

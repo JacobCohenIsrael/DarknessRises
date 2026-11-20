@@ -27,6 +27,7 @@ using DarknessRises.Game.Saving;
 using DarknessRises.Game.Scoring;
 using DarknessRises.Game.Shop;
 using DarknessRises.Game.Skills;
+using DarknessRises.Game.Upgrades;
 using DarknessRises.Game.Visibility;
 using DarknessRises.Game.Waves;
 using DarknessRises.Game.Weapons;
@@ -175,6 +176,9 @@ namespace DarknessRises.Game
 
         // What a cleared Level pays on top of its kills.
         private LevelClearBonus levelClearBonus;
+
+        // The Run's effective stats: the definitions' numbers with the player's Upgrades applied. Every system reads these.
+        private RunStats stats;
         private bool reportsToRun;
 
         // Whether the scene runs a Level (or the Test Room's Waves). Kept from Awake: on unload the Level may be destroyed first.
@@ -202,6 +206,9 @@ namespace DarknessRises.Game
 
         /// <summary>The Run this scene plays a Level of, once it has one.</summary>
         public RunFlow Run => run;
+
+        /// <summary>The Run's effective stats (the authored numbers with the player's Upgrades applied), once the gameplay has started.</summary>
+        public RunStats Stats => stats;
 
         /// <summary>The beats of each stop at a Station, once the gameplay has started.</summary>
         public StationRhythm StationRhythm => stationRhythm;
@@ -251,9 +258,14 @@ namespace DarknessRises.Game
             var ramp = configuration.Ramp.ToRamp();
             var rampStep = ramp.StepAt(run.LevelIndex);
             // One Primary per Run: the one chosen in the Shop. Only what the character carries is loaded.
-            var chosenPrimary = configuration.Shop.PrimaryWeapon(new ShopKeeper(save));
+            var keeper = new ShopKeeper(save);
+            var chosenPrimary = configuration.Shop.PrimaryWeapon(keeper);
             var primaryWeapons = CarriedPrimaries.For(
                 configuration.Shop.ToPrimaryWeapons(), chosenPrimary, CarriesEveryPrimary, out var equippedPrimary);
+
+            // What was bought in the Shop shows up here: the definitions never change, the Run's stats are built from
+            // them and the levels the player owns.
+            stats = ConfiguredRunStats.For(configuration, configuration.Shop.ToCatalog(), keeper, primaryWeapons);
             await GameContent.For(configuration, primaryWeapons, level != null, rampStep).LoadAsync(content, cancellationToken);
 
             // Runtime objects (pools, effects) are created in the active scene, so they go when this scene does.
@@ -279,6 +291,7 @@ namespace DarknessRises.Game
 
         private void Begin(WeaponDefinition[] primaryWeapons, int equippedPrimary, Ramp<EnemyDefinition> ramp)
         {
+            aura.Reach(stats.AuraRange);
             routeWalker.Walk(configuration.Player, character, configuration.StationRhythm.ToWalkEasing());
             stationRhythm = new StationRhythm(configuration.StationRhythm.ToTiming());
             rideCamera.Ride(routeWalker.Progress, stationRhythm, room);
@@ -299,7 +312,7 @@ namespace DarknessRises.Game
             lights.Add(aura.Light);
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
-            var loadout = primaryWeapon.Arm(primaryWeapons, content, lights);
+            var loadout = primaryWeapon.Arm(primaryWeapons, stats.Primaries, content, lights);
             loadout.Switch(equippedPrimary);
             gunshotSound.Use(configuration.GunshotVoices, primaryWeapons, loadout, content);
             ammoHud.Show(primaryWeapon.Weapon);
@@ -318,7 +331,7 @@ namespace DarknessRises.Game
             }
 
             characterAnimation.Show(configuration.Player.Animation, routeWalker.Progress, primaryWeapon.Weapon, stationRhythm);
-            var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, characterAnimation, content, lights);
+            var grenadeCharges = grenadeThrower.Equip(configuration.Grenade, stats.Grenade, characterAnimation, content, lights);
             grenadeHud.Show(grenadeCharges);
             if (grenadeButton != null)
             {
@@ -342,7 +355,7 @@ namespace DarknessRises.Game
             }
 
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, lightningRandom);
-            var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, enemyTime);
+            var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, stats.Flare, stats.SlowMo, enemyTime);
             flareSkill = skills.Flare.Skill;
             flareHud.Show(skills.Flare.Skill);
             slowMoHud.Show(skills.SlowMo.Skill);
@@ -460,7 +473,7 @@ namespace DarknessRises.Game
 
         private void ShowHealthAndDeath()
         {
-            var health = characterHealth.Show(configuration.Player, content);
+            var health = characterHealth.Show(configuration.Player, stats.MaxHitPoints, content);
             hitPointsHud.Show(health);
             ReportToRun(true);
             var continueDefinition = configuration.Continue;

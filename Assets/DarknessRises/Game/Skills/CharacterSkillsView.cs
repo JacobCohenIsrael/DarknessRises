@@ -18,10 +18,18 @@ namespace DarknessRises.Game.Skills
         /// <summary>The Flare's light on the character.</summary>
         public Light FlareLight => flare.Light;
 
-        /// <summary>Gives the character fresh, ready Skills built from the definitions. Slow-mo slows <paramref name="enemyTime"/>.</summary>
-        public CharacterSkills Use(FlareDefinition flareDefinition, SlowMoDefinition slowMoDefinition, EnemyTime enemyTime)
+        /// <summary>
+        /// Gives the character fresh, ready Skills built from the definitions, lasting and cooling down by the Run's
+        /// timings (Upgrades applied). Slow-mo slows <paramref name="enemyTime"/>.
+        /// </summary>
+        public CharacterSkills Use(
+            FlareDefinition flareDefinition,
+            SlowMoDefinition slowMoDefinition,
+            SkillTiming flareTiming,
+            SkillTiming slowMoTiming,
+            EnemyTime enemyTime)
         {
-            Skills = new CharacterSkills(flareDefinition, slowMoDefinition, enemyTime);
+            Skills = new CharacterSkills(flareDefinition, slowMoDefinition, flareTiming, slowMoTiming, enemyTime);
             flare.Show(flareDefinition);
             return Skills;
         }

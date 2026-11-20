@@ -22,6 +22,12 @@ namespace DarknessRises.Game.Player
             transform.localPosition = Vector3.up * settings.Height;
         }
 
+        /// <summary>Sets how far the Aura's light reaches: the Run's number, Upgrades applied.</summary>
+        public void Reach(float metres)
+        {
+            auraLight.range = metres;
+        }
+
         private void Reset()
         {
             auraLight = GetComponent<Light>();

@@ -153,6 +153,7 @@ namespace DarknessRises.Game.Editor
             var cameraView = BuildCameras(start);
             var lightning = BuildLightning();
             var gameRoot = BuildGameRoot(configuration, character, aura, cameraView, routeWalker);
+            SetReference(gameRoot, "audioVolumes", volumes);
             var primaryWeapon = PistolBuilder.BuildPrimaryWeapon(character, Camera.main);
             SetReference(gameRoot, "primaryWeapon", primaryWeapon);
             EarsBuilder.BuildEars(character, Camera.main);
@@ -294,6 +295,24 @@ namespace DarknessRises.Game.Editor
             }
 
             throw new System.InvalidOperationException($"No action reference for {LightningDebugToggle.ActionPath} in {controlsPath}.");
+        }
+
+        /// <summary>
+        /// A storm player under <paramref name="parent"/>: the storm bed's looping source, in the Ambient category. The
+        /// boot scene has one that carries the storm across Levels; every Level scene has its own for playing alone.
+        /// </summary>
+        internal static StormPlayer BuildStormPlayer(Transform parent)
+        {
+            var stormObject = new GameObject("Storm Bed", typeof(AudioSource), typeof(StormPlayer));
+            stormObject.transform.SetParent(parent);
+            var source = stormObject.GetComponent<AudioSource>();
+            source.playOnAwake = false;
+            source.loop = true;
+            source.spatialBlend = 0f;
+            AudioRouting.Route(source, AudioCategory.Ambient);
+            var player = stormObject.GetComponent<StormPlayer>();
+            SetReference(player, "source", source);
+            return player;
         }
 
         internal static void MakeDark()
@@ -474,12 +493,9 @@ namespace DarknessRises.Game.Editor
             fillLight.type = LightType.Directional;
             fillLight.GetUniversalAdditionalLightData();
 
-            // The storm bed loops on its own source; two more for the Boss's warning, so a new one lets a fading one roll on.
-            var storm = new GameObject("Storm Bed", typeof(AudioSource)).GetComponent<AudioSource>();
-            storm.transform.SetParent(lightning.transform);
-            storm.playOnAwake = false;
-            storm.loop = true;
-            AudioRouting.Route(storm, AudioCategory.Ambient);
+            // The scene's own storm player, for when it plays without the boot (whose player carries the storm across
+            // Levels); two sources for the Boss's warning, so a new one lets a fading one roll on.
+            var storm = BuildStormPlayer(lightning.transform);
 
             var warnings = new AudioSource[2];
             for (var i = 0; i < warnings.Length; i++)
@@ -498,7 +514,7 @@ namespace DarknessRises.Game.Editor
             var view = lightning.GetComponent<LightningView>();
             SetReference(view, "keyLight", keyLight);
             SetReference(view, "fillLight", fillLight);
-            SetReference(view, "stormSource", storm);
+            SetReference(view, "ownStorm", storm);
             var serialized = new SerializedObject(view);
             var sources = serialized.FindProperty("warningSources");
             sources.arraySize = warnings.Length;

@@ -1,0 +1,61 @@
+# Storm across a Level change (headless, muted batch-mode Editor; read from AudioSource state, never listened to)
+# Booted from Boot.unity, PLAY in the Shop, Level 1 with god mode, then Run.JumpToLevel(2). Sampled every 20 frames.
+
+storm player: Storm Bed in scene 'Boot', AudioSource instance 25015:256
+        frame  13046  level scene Level (Level 1)              storm isPlaying True  time  10.779s (Δ  0.041)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13066  level scene Level (Level 1)              storm isPlaying True  time  10.800s (Δ  0.021)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13086  level scene Level (Level 1)              storm isPlaying True  time  10.820s (Δ  0.021)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13106  level scene Level (Level 1)              storm isPlaying True  time  10.841s (Δ  0.021)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13126  level scene Level (Level 1)              storm isPlaying True  time  10.862s (Δ  0.021)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13146  level scene Level (Level 1)              storm isPlaying True  time  10.882s (Δ  0.021)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13166  level scene Level (Level 1)              storm isPlaying True  time  10.923s (Δ  0.041)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13186  level scene Level (Level 1)              storm isPlaying True  time  10.944s (Δ  0.021)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13206  level scene Level (Level 1)              storm isPlaying True  time  10.964s (Δ  0.021)  bed volume 0.950 audible True  AudioSource.volume 0.950  boot volumes follow Level
+        frame  13226  level scene Level (Level 1)              storm isPlaying True  time  11.005s (Δ  0.041)  bed volume 0.947 audible True  AudioSource.volume 0.947  boot volumes follow Level
+        frame  13246  level scene Level (Level 1)              storm isPlaying True  time  11.026s (Δ  0.021)  bed volume 0.940 audible True  AudioSource.volume 0.940  boot volumes follow Level
+        frame  13266  level scene Level (Level 1)              storm isPlaying True  time  11.067s (Δ  0.041)  bed volume 0.933 audible True  AudioSource.volume 0.933  boot volumes follow Level
+        --- JumpToLevel(2) at frame 13266: the Level 1 scene unloads and the next loads ---
+        frame  13286  level scene Level (Level 2)              storm isPlaying True  time  11.252s (Δ  0.185)  bed volume 0.884 audible True  AudioSource.volume 0.884  boot volumes follow Level
+        frame  13306  level scene Level (Level 2)              storm isPlaying True  time  11.273s (Δ  0.021)  bed volume 0.879 audible True  AudioSource.volume 0.879  boot volumes follow Level
+        frame  13326  level scene Level (Level 2)              storm isPlaying True  time  11.294s (Δ  0.021)  bed volume 0.873 audible True  AudioSource.volume 0.873  boot volumes follow Level
+        frame  13346  level scene Level (Level 2)              storm isPlaying True  time  11.314s (Δ  0.021)  bed volume 0.868 audible True  AudioSource.volume 0.868  boot volumes follow Level
+        frame  13366  level scene Level (Level 2)              storm isPlaying True  time  11.645s (Δ  0.331)  bed volume 0.780 audible True  AudioSource.volume 0.780  boot volumes follow Level
+        frame  13386  level scene Level (Level 2)              storm isPlaying True  time  11.666s (Δ  0.021)  bed volume 0.772 audible True  AudioSource.volume 0.772  boot volumes follow Level
+        frame  13406  level scene Level (Level 2)              storm isPlaying True  time  11.708s (Δ  0.042)  bed volume 0.765 audible True  AudioSource.volume 0.765  boot volumes follow Level
+        frame  13426  level scene Level (Level 2)              storm isPlaying True  time  11.729s (Δ  0.021)  bed volume 0.759 audible True  AudioSource.volume 0.759  boot volumes follow Level
+        frame  13446  level scene Level (Level 2)              storm isPlaying True  time  11.750s (Δ  0.021)  bed volume 0.751 audible True  AudioSource.volume 0.751  boot volumes follow Level
+        frame  13466  level scene Level (Level 2)              storm isPlaying True  time  11.792s (Δ  0.042)  bed volume 0.744 audible True  AudioSource.volume 0.744  boot volumes follow Level
+        frame  13486  level scene Level (Level 2)              storm isPlaying True  time  11.812s (Δ  0.021)  bed volume 0.737 audible True  AudioSource.volume 0.737  boot volumes follow Level
+        frame  13506  level scene Level (Level 2)              storm isPlaying True  time  11.854s (Δ  0.042)  bed volume 0.729 audible True  AudioSource.volume 0.729  boot volumes follow Level
+        frame  13526  level scene Level (Level 2)              storm isPlaying True  time  11.875s (Δ  0.021)  bed volume 0.722 audible True  AudioSource.volume 0.722  boot volumes follow Level
+        frame  13546  level scene Level (Level 2)              storm isPlaying True  time  11.917s (Δ  0.042)  bed volume 0.715 audible True  AudioSource.volume 0.715  boot volumes follow Level
+        frame  13566  level scene Level (Level 2)              storm isPlaying True  time  11.938s (Δ  0.021)  bed volume 0.707 audible True  AudioSource.volume 0.707  boot volumes follow Level
+        frame  13586  level scene Level (Level 2)              storm isPlaying True  time  11.959s (Δ  0.021)  bed volume 0.700 audible True  AudioSource.volume 0.700  boot volumes follow Level
+        frame  13606  level scene Level (Level 2)              storm isPlaying True  time  11.980s (Δ  0.021)  bed volume 0.693 audible True  AudioSource.volume 0.693  boot volumes follow Level
+        frame  13626  level scene Level (Level 2)              storm isPlaying True  time  12.022s (Δ  0.042)  bed volume 0.686 audible True  AudioSource.volume 0.686  boot volumes follow Level
+        frame  13646  level scene Level (Level 2)              storm isPlaying True  time  12.043s (Δ  0.021)  bed volume 0.679 audible True  AudioSource.volume 0.679  boot volumes follow Level
+        frame  13666  level scene Level (Level 2)              storm isPlaying True  time  12.064s (Δ  0.021)  bed volume 0.673 audible True  AudioSource.volume 0.673  boot volumes follow Level
+        frame  13686  level scene Level (Level 2)              storm isPlaying True  time  12.106s (Δ  0.042)  bed volume 0.665 audible True  AudioSource.volume 0.665  boot volumes follow Level
+        frame  13706  level scene Level (Level 2)              storm isPlaying True  time  12.127s (Δ  0.021)  bed volume 0.658 audible True  AudioSource.volume 0.658  boot volumes follow Level
+        frame  13726  level scene Level (Level 2)              storm isPlaying True  time  12.169s (Δ  0.042)  bed volume 0.651 audible True  AudioSource.volume 0.651  boot volumes follow Level
+        frame  13746  level scene Level (Level 2)              storm isPlaying True  time  12.190s (Δ  0.021)  bed volume 0.644 audible True  AudioSource.volume 0.644  boot volumes follow Level
+
+# Pause, the Volume panel and the Ambient slider reach the boot's storm (its volumes follow the Level's)
+### T87.Pause 
+paused: timeScale 0, listener paused True
+### boot storm, paused, panel closed
+boot storm: listener paused True, ignoreListenerPause False, own 0.944 x Ambient gain 1.0000 = AudioSource.volume 0.9437
+### T87.Click ["Sound Button"]
+clicked Sound Button; panel open: True
+### boot storm, panel open
+boot storm: listener paused True, ignoreListenerPause True, own 0.944 x Ambient gain 1.0000 = AudioSource.volume 0.9437
+### T87.Move ["Ambient",30]
+moved Ambient to 30%
+### boot storm after Ambient 30%
+boot storm: listener paused True, ignoreListenerPause True, own 0.944 x Ambient gain 0.0385 = AudioSource.volume 0.0364
+### T87.Move ["Ambient",100]
+moved Ambient to 100%
+### T87.Click ["Back Button"]
+clicked Back Button; panel open: False
+### boot storm, panel closed
+boot storm: listener paused True, ignoreListenerPause False, own 0.944 x Ambient gain 1.0000 = AudioSource.volume 0.9437

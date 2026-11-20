@@ -10,10 +10,11 @@ namespace DarknessRises.Game.Lightning
     /// <summary>
     /// Shows Lightning: flashes an electric-blue key light through the Room's windows (the only real-time
     /// shadow-casting light in the game) from a slightly different angle each strike, a shadowless fill and the window
-    /// sky, and fades them back to Darkness. Plays the storm: a thunder loop that runs all the time Lightning reaches
-    /// the character and swells after each flash (the Rumble). In a Boss fight it also plays the Boss's warning (its
-    /// growl) before a flash. When does the <see cref="LightningScheduler"/>'s job; how the storm's volume and pitch
-    /// move does the <see cref="StormBed"/>'s.
+    /// sky, and fades them back to Darkness. Drives the storm: a thunder loop that runs all the time Lightning reaches
+    /// the character and swells after each flash (the Rumble), played by a <see cref="StormPlayer"/> (the boot's, which
+    /// carries the storm from Level to Level, or the scene's own when it's played alone). In a Boss fight it also plays
+    /// the Boss's warning (its growl) before a flash. When does the <see cref="LightningScheduler"/>'s job; how the
+    /// storm's volume and pitch move does the <see cref="StormBed"/>'s.
     /// </summary>
     /// <remarks>
     /// Audio is plain AudioSource volume and pitch, with no AudioMixer, so it works on WebGL. The storm's pitch follows
@@ -32,8 +33,8 @@ namespace DarknessRises.Game.Lightning
         [SerializeField, Tooltip("Shadowless directional light that lets the whole Room show during the flash.")]
         private Light fillLight;
 
-        [SerializeField, Tooltip("Plays the storm bed: the thunder loop, all the time, swelling after each flash.")]
-        private AudioSource stormSource;
+        [SerializeField, Tooltip("The scene's own storm player, used when the scene is played without the boot, whose player carries the storm across Levels.")]
+        private StormPlayer ownStorm;
 
         [SerializeField, FormerlySerializedAs("rumbleSources"),
          Tooltip("Boss warning sources. A new warning plays on a free one, so it doesn't cut off a fading one.")]
@@ -42,11 +43,9 @@ namespace DarknessRises.Game.Lightning
         private LightningFlashSettings flash;
         private BossWarningSettings warning;
         private LightningAngles angles;
-        private StormBed stormBed;
-        private AudioClip stormClip;
+        private StormPlayer storm;
         private IRandom random;
         private EnemyTime enemyTime;
-        private bool stormStarted;
         private AudioClip warningClip;
         private float warningClipStartSeconds;
         private Room room;
@@ -59,8 +58,11 @@ namespace DarknessRises.Game.Lightning
         /// <summary>The directional light that shines through the windows while Lightning flashes.</summary>
         public Light KeyLight => keyLight;
 
-        /// <summary>The source the storm bed plays on.</summary>
-        public AudioSource StormSource => stormSource;
+        /// <summary>The scene's own storm player.</summary>
+        public StormPlayer OwnStorm => ownStorm;
+
+        /// <summary>The storm player this Level drives, once it has one.</summary>
+        public StormPlayer Storm => storm;
 
         /// <summary>When (Unity time) Lightning last flashed, or -1 before the first flash.</summary>
         public float LastFlashTime { get; private set; } = -1f;
@@ -108,30 +110,20 @@ namespace DarknessRises.Game.Lightning
                 source.spatialBlend = 0f;
             }
 
-            // The bed carries on from Room to Room; only the first Show makes it.
-            stormBed ??= new StormBed(definition.Storm.Envelope);
-            stormSource.playOnAwake = false;
-            stormSource.loop = true;
-            stormSource.spatialBlend = 0f;
-
             StopFlash();
         }
 
         /// <summary>
-        /// The storm's thunder loop, loaded with the Level's content; where each strike's angle and Rumble's pitch nudge
-        /// come from; and the Enemy time whose Slow-mo the storm's pitch follows. Without a clip, Lightning comes silently.
+        /// Drives the storm on <paramref name="player"/> (the boot's, or null for the scene's own) with the storm of
+        /// <paramref name="settings"/>; where each strike's angle and Rumble's pitch nudge come from; and the Enemy time
+        /// whose Slow-mo the storm's pitch follows. Without a clip, Lightning comes silently.
         /// </summary>
-        public void UseStorm(AudioClip clip, IRandom strikeRandom, EnemyTime time)
+        public void UseStorm(StormPlayer player, StormSettings settings, IRandom strikeRandom, EnemyTime time)
         {
-            stormClip = clip;
+            storm = player != null ? player : ownStorm;
             random = strikeRandom;
             enemyTime = time;
-            stormStarted = false;
-            if (clip != null)
-            {
-                // The Level's content loads it already; this only makes sure (WebGL decodes audio late).
-                clip.LoadAudioData();
-            }
+            storm.Play(settings.Clip, settings.Envelope);
         }
 
         /// <summary>
@@ -154,18 +146,21 @@ namespace DarknessRises.Game.Lightning
         /// </summary>
         public void SetStormAudible(bool audible)
         {
-            stormBed?.SetAudible(audible);
+            if (storm != null)
+            {
+                storm.SetAudible(audible);
+            }
         }
 
         /// <summary>The Rumble: the storm bed swells, with a small pitch nudge, then settles back.</summary>
         public void PlayRumble()
         {
-            if (stormBed == null || random == null)
+            if (storm == null || random == null)
             {
                 return;
             }
 
-            stormBed.Rumble(random);
+            storm.Rumble(random);
             LastRumbleTime = Time.time;
         }
 
@@ -236,28 +231,20 @@ namespace DarknessRises.Game.Lightning
                 SetBrightness(flash.Brightness(flashElapsedSeconds));
             }
 
-            UpdateStorm(deltaSeconds);
+            if (storm != null)
+            {
+                storm.PitchScale = enemyTime?.Scale ?? EnemyTime.NormalScale;
+            }
+
             UpdateWarnings(deltaSeconds);
         }
 
-        private void UpdateStorm(float deltaSeconds)
+        // The boot's storm outlives this Level: the next one picks it up as this one leaves it, at normal pitch.
+        private void OnDestroy()
         {
-            if (stormBed == null || stormClip == null)
+            if (storm != null && storm != ownStorm)
             {
-                return;
-            }
-
-            stormBed.Tick(deltaSeconds);
-            stormSource.SetVolume(stormBed.Volume);
-            stormSource.pitch = EnemyVoicePitch.For(stormBed.Pitch, enemyTime?.Scale ?? EnemyTime.NormalScale);
-
-            // Started once, when the clip is ready (WebGL decodes audio late), and never stopped: it loops on, silent
-            // while faded out, so fading back in carries on the storm instead of restarting it.
-            if (!stormStarted && stormClip.loadState == AudioDataLoadState.Loaded)
-            {
-                stormStarted = true;
-                stormSource.clip = stormClip;
-                stormSource.Play();
+                storm.PitchScale = EnemyTime.NormalScale;
             }
         }
 

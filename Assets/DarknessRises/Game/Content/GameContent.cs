@@ -52,7 +52,6 @@ namespace DarknessRises.Game.Content
             var hitReaction = configuration.Player.HitReaction;
             content.Add(hitReaction.HurtClip);
             content.Add(hitReaction.DeathClip);
-            content.Add(configuration.Lightning.Storm.Clip);
             content.Add(configuration.Credits.EndScreen.BonusClip);
             content.Add(configuration.AudioVolumes.SampleClip);
 

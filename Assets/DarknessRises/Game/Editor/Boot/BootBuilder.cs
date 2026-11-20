@@ -1,4 +1,5 @@
 using DarknessRises.Game.Boot;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
 using DarknessRises.Game.Editor.Shop;
@@ -11,7 +12,8 @@ namespace DarknessRises.Game.Editor.Boot
 {
     /// <summary>
     /// Builds the boot scene, the only scene in Build Settings: a Bootstrap that loads the Level and the Shop through
-    /// Addressables, a camera that keeps the screen black while no Level is showing, and the build version label.
+    /// Addressables, a camera that keeps the screen black while no Level is showing, the build version label, and the
+    /// sounds that carry across scenes: the storm player, with the boot's volumes (which follow the scene that shows).
     /// Build the Level, the Shop and the Test Room first.
     /// </summary>
     public static class BootBuilder
@@ -48,12 +50,20 @@ namespace DarknessRises.Game.Editor.Boot
 
             var versionLabel = VersionLabelBuilder.Build();
 
+            // No configuration: the boot's volumes follow the Level's or the Shop's (ADR 0011).
+            var volumes = AudioVolumesBuilder.Build(null);
+            var storm = TestRoomBuilder.BuildStormPlayer(null);
+
             var bootstrap = new GameObject("Bootstrap", typeof(Bootstrap)).GetComponent<Bootstrap>();
             var serialized = new SerializedObject(bootstrap);
             serialized.FindProperty("definition").objectReferenceValue = definition;
             serialized.FindProperty("loadingCamera").objectReferenceValue = loadingCamera;
             serialized.FindProperty("versionLabel").objectReferenceValue = versionLabel;
+            serialized.FindProperty("storm").objectReferenceValue = storm;
+            serialized.FindProperty("audioVolumes").objectReferenceValue = volumes;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            AudioRouting.RequireRouted(scene);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             BuildScenes.OnlyBoot(ScenePath);

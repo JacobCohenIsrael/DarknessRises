@@ -80,6 +80,12 @@ MonoBehaviour:
       range: 7
       fadeDistance: 1.5
       color: {r: 3, g: 0.7, b: 0.15, a: 1}
+      opening:
+        seconds: 0.75
+        shutShare: 0.2
+        peekShare: 0.3
+        peekStrength: 0.35
+        blinkShare: 0.15
     sounds:
       clips:
       - m_AssetGUID: ac6034ade498bb94b87620cdf6eac48b

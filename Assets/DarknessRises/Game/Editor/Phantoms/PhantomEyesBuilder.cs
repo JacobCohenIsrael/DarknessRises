@@ -21,8 +21,16 @@ namespace DarknessRises.Game.Editor.Phantoms
         private const string PrefabPath = PrefabsFolder + "/PhantomEyes.prefab";
         private const string EyeMaterialPath = Root + "/Materials/ShamblerEyeGlint.mat";
 
-        // An approved Free Pack placeholder: a ghostly breath, played faintly from a random point in its first seconds.
-        private static readonly string[] WhisperClipPaths = { "Assets/Free Pack/Ghost Manifestation 1.wav" };
+        // The Free Pack placeholder of the first build, replaced by the clips approved on 2026-11-20: a whisper, a
+        // breath and a hush, played faintly from a random point. The whisper and breath are long: they stream.
+        public static readonly string[] WhisperPlaceholderPaths = { "Assets/Free Pack/Ghost Manifestation 1.wav" };
+        private static readonly string[] WhisperClipPaths =
+        {
+            "Assets/Horror Elements/Misc/Misc_Whisper.wav",
+            "Assets/Horror Elements/Misc/Misc_breath.wav",
+        };
+
+        private static readonly string[] HushClipPaths = { "Assets/Horror Elements/Misc/Misc_Shh.wav" };
 
         // A Shambler's eyes, in metres: the same height, spacing and size.
         private const float EyeSize = 0.11f;
@@ -46,22 +54,25 @@ namespace DarknessRises.Game.Editor.Phantoms
                 () => LoadOrCreatePrefab().gameObject,
                 AddressableContent.EnemiesGroup);
             var clips = serialized.FindProperty("whisperClips");
-            if (clips.arraySize == 0)
+            var swapping = clips.arraySize == 0 || IsOnlyPlaceholder(clips);
+            HorrorSoundImport.ReplacePlaceholders(clips, WhisperPlaceholderPaths, WhisperClipPaths, HorrorClipLength.Long, AddressableContent.EnemiesGroup);
+            var hush = HorrorSoundImport.Load(HushClipPaths[0], HorrorClipLength.Medium);
+            if (swapping)
             {
-                clips.arraySize = WhisperClipPaths.Length;
+                HorrorSoundImport.ResetToDefaults<PhantomEyesDefinition>(serialized, "whisperMinPitch", "whisperMaxPitch");
             }
 
-            for (var i = 0; i < clips.arraySize; i++)
+            if (swapping && hush != null)
             {
-                var path = i < WhisperClipPaths.Length ? WhisperClipPaths[i] : null;
-                AddressableContent.ReferenceIfEmpty(
-                    clips.GetArrayElementAtIndex(i),
-                    () => path != null ? LoadMonoClip(path) : null,
-                    AddressableContent.EnemiesGroup);
+                clips.arraySize++;
+                AddressableContent.Reference(clips.GetArrayElementAtIndex(clips.arraySize - 1), hush, AddressableContent.EnemiesGroup);
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(definition);
+
+            // Nothing plays the placeholder any more: no bundle should carry it.
+            HorrorSoundImport.Unmark(WhisperPlaceholderPaths[0]);
             return definition;
         }
 
@@ -114,16 +125,18 @@ namespace DarknessRises.Game.Editor.Phantoms
             return prefab.GetComponent<PhantomEyesView>();
         }
 
-        // A positional sound: a mono clip places cleanly in 3D.
-        private static AudioClip LoadMonoClip(string path)
+        private static bool IsOnlyPlaceholder(SerializedProperty clips)
         {
-            if (AssetImporter.GetAtPath(path) is AudioImporter importer && !importer.forceToMono)
+            for (var i = 0; i < clips.arraySize; i++)
             {
-                importer.forceToMono = true;
-                importer.SaveAndReimport();
+                var clip = AddressableContent.Referenced<AudioClip>(clips.GetArrayElementAtIndex(i));
+                if (clip != null && AssetDatabase.GetAssetPath(clip) != WhisperPlaceholderPaths[0])
+                {
+                    return false;
+                }
             }
 
-            return AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+            return true;
         }
 
         private static void EnsureFolder(string path)

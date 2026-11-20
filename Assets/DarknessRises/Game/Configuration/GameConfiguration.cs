@@ -1,3 +1,4 @@
+using DarknessRises.Game.Ambience;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Credits;
@@ -92,6 +93,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("Phantom eyes: eyes that look out of the dark but aren't really there, far out, when no Enemy is near. Leave empty for none.")]
         private PhantomEyesDefinition phantomEyes;
 
+        [SerializeField, Tooltip("The ambient bed: now and then a quiet sound from the dark up near the ceiling, such as bats. Leave empty for none.")]
+        private AmbienceDefinition ambience;
+
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
         public RouteDefinition Route => route;
@@ -122,5 +126,6 @@ namespace DarknessRises.Game.Configuration
         public FootstepVoiceSettings FootstepVoices => footstepVoices;
         public CritterDefinition Critters => critters;
         public PhantomEyesDefinition PhantomEyes => phantomEyes;
+        public AmbienceDefinition Ambience => ambience;
     }
 }

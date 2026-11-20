@@ -93,6 +93,36 @@ namespace DarknessRises.Game.EditModeTests.Enemies.Tells
         }
 
         [Test]
+        public void With_a_limp_every_other_step_is_the_dragged_foot()
+        {
+            var cadence = new FootstepCadence(1f, 0.5f, 0f, 0.1f);
+            var dragged = new System.Collections.Generic.List<bool>();
+            for (var t = 0f; t < 10f && dragged.Count < 4; t += Frame)
+            {
+                if (cadence.Tick(Frame, 1f))
+                {
+                    dragged.Add(cadence.LastStepDragged);
+                }
+            }
+
+            // The good foot, then the dragged one that comes after the short stride, and so on.
+            Assert.That(dragged, Is.EqualTo(new[] { false, true, false, true }));
+        }
+
+        [Test]
+        public void An_even_gait_never_drags_a_foot()
+        {
+            var cadence = new FootstepCadence(0.5f, 0f, 0f, 0.1f);
+            for (var t = 0f; t < 5f; t += Frame)
+            {
+                if (cadence.Tick(Frame, 1f))
+                {
+                    Assert.That(cadence.LastStepDragged, Is.False);
+                }
+            }
+        }
+
+        [Test]
         public void Steps_stop_when_the_Enemy_stands_still()
         {
             var cadence = new FootstepCadence(0.5f, 0f, 0f, 0.3f);

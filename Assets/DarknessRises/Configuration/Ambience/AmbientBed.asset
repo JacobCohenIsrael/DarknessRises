@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec8a42878fea46c4fbc0cbd51c319e9e, type: 3}
+  m_Name: AmbientBed
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Ambience.AmbienceDefinition
+  clips:
+  - m_AssetGUID: 2d449749c6378284895865786c6ea9be
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  minGapSeconds: 20
+  maxGapSeconds: 45
+  firstDelaySeconds: 8
+  minSliceSeconds: 6
+  maxSliceSeconds: 12
+  fadeSeconds: 2.5
+  cutFadeSeconds: 1
+  minMetres: 10
+  maxMetres: 16
+  heightMetres: 3.5
+  volume: 0.2
+  minPitch: 0.95
+  maxPitch: 1.05
+  hearingRange: 30

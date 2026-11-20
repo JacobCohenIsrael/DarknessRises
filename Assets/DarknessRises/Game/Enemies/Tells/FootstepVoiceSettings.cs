@@ -16,7 +16,11 @@ namespace DarknessRises.Game.Enemies.Tells
         [SerializeField, Min(0), Tooltip("How many Enemies are heard stepping at once: the nearest ones that walk within hearing range. 0 silences every footstep.")]
         private int maxHeardEnemies = 3;
 
+        [SerializeField, Min(0f), Tooltip("Seconds a step fades out over at its end, or when it's cut short, so no step stops dead.")]
+        private float endFadeSeconds = 0.06f;
+
         public int VoiceCount => voiceCount;
+        public float EndFadeSeconds => endFadeSeconds;
         public int MaxHeardEnemies => maxHeardEnemies;
     }
 }

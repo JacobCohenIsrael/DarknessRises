@@ -25,10 +25,19 @@ namespace DarknessRises.Game.Editor.Critters
         private const string EyeMaterialPath = MaterialsFolder + "/ShamblerEyeGlint.mat";
         private const string LitShaderName = "Universal Render Pipeline/Lit";
 
-        // Approved Free Pack placeholders, until real scurry and squeak clips are approved: a rattle of small impacts
-        // pitched up reads as claws on the floor; a light zap pitched up as a squeak.
-        private static readonly string[] ScurryClipPaths = { "Assets/Free Pack/Bullet Impacts - Multiple 1.wav" };
-        private static readonly string[] SqueakClipPaths = { "Assets/Free Pack/Laser Impact Light_6.wav" };
+        // The Free Pack placeholders of the first build, replaced by the clips approved on 2026-11-20.
+        public static readonly string[] ScurryPlaceholderPaths = { "Assets/Free Pack/Bullet Impacts - Multiple 1.wav" };
+        public static readonly string[] SqueakPlaceholderPaths = { "Assets/Free Pack/Laser Impact Light_6.wav" };
+
+        // Short and medium clips, kept in memory; the long scratching recording streams (15 MB on disk).
+        private static readonly string[] ScurryClipPaths =
+        {
+            "Assets/Game Sound Solutions - 8 bits Elements/OTHER SOUND PACK DEMO/Fantasy Creatures Demo/rats_1.wav",
+            "Assets/Animals!/Wavs/Sneek/sneek_hiss_01.wav",
+        };
+
+        private const string ScratchClipPath = "Assets/music/darkness/dk-scratch.aif";
+        private static readonly string[] SqueakClipPaths = { "Assets/Animals!/Ogg/Owl/owl_squeak_01.ogg" };
 
         // Placeholder rat, in metres and degrees: about 40 cm nose to tail, low to the floor, nearly black.
         private static readonly Color BodyColor = new(0.07f, 0.06f, 0.055f);
@@ -63,28 +72,70 @@ namespace DarknessRises.Game.Editor.Critters
                 serialized.FindProperty("prefab"),
                 () => LoadOrCreatePrefab().gameObject,
                 AddressableContent.EnemiesGroup);
-            ReferenceClips(serialized.FindProperty("sounds.scurryClips"), ScurryClipPaths);
-            ReferenceClips(serialized.FindProperty("sounds.squeakClips"), SqueakClipPaths);
+            var scurries = serialized.FindProperty("sounds.scurryClips");
+            var swapping = OnlyPlaceholders(scurries, ScurryPlaceholderPaths);
+            HorrorSoundImport.ReplacePlaceholders(scurries, ScurryPlaceholderPaths, ScurryClipPaths, HorrorClipLength.Medium, AddressableContent.EnemiesGroup);
+            if (swapping)
+            {
+                AddScratch(scurries);
+                HorrorSoundImport.ResetToDefaults<CritterDefinition>(
+                    serialized,
+                    "sounds.scurryLatestStartSeconds",
+                    "sounds.scurryMinPitch",
+                    "sounds.scurryMaxPitch",
+                    "sounds.scurryVolume",
+                    "sounds.squeakMinPitch",
+                    "sounds.squeakMaxPitch");
+            }
+
+            HorrorSoundImport.ReplacePlaceholders(
+                serialized.FindProperty("sounds.squeakClips"),
+                SqueakPlaceholderPaths,
+                SqueakClipPaths,
+                HorrorClipLength.Short,
+                AddressableContent.EnemiesGroup);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(rat);
+
+            // Nothing plays the placeholders any more: no bundle should carry them.
+            HorrorSoundImport.Unmark(ScurryPlaceholderPaths[0]);
+            HorrorSoundImport.Unmark(SqueakPlaceholderPaths[0]);
             return rat;
         }
 
-        private static void ReferenceClips(SerializedProperty clips, string[] paths)
+        private static bool OnlyPlaceholders(SerializedProperty clips, string[] placeholderPaths)
         {
-            if (clips.arraySize == 0)
-            {
-                clips.arraySize = paths.Length;
-            }
-
             for (var i = 0; i < clips.arraySize; i++)
             {
-                var path = i < paths.Length ? paths[i] : null;
-                AddressableContent.ReferenceIfEmpty(
-                    clips.GetArrayElementAtIndex(i),
-                    () => path != null ? LoadMonoClip(path) : null,
-                    AddressableContent.EnemiesGroup);
+                var clip = AddressableContent.Referenced<AudioClip>(clips.GetArrayElementAtIndex(i));
+                if (clip != null && System.Array.IndexOf(placeholderPaths, AssetDatabase.GetAssetPath(clip)) < 0)
+                {
+                    return false;
+                }
             }
+
+            return true;
+        }
+
+        // The long scratching recording joins the scurries, streamed, if the list doesn't hold it yet.
+        private static void AddScratch(SerializedProperty scurries)
+        {
+            var scratch = HorrorSoundImport.Load(ScratchClipPath, HorrorClipLength.Long);
+            if (scratch == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < scurries.arraySize; i++)
+            {
+                if (AddressableContent.Referenced<AudioClip>(scurries.GetArrayElementAtIndex(i)) == scratch)
+                {
+                    return;
+                }
+            }
+
+            scurries.arraySize++;
+            AddressableContent.Reference(scurries.GetArrayElementAtIndex(scurries.arraySize - 1), scratch, AddressableContent.EnemiesGroup);
         }
 
         private static CritterView LoadOrCreatePrefab()
@@ -178,17 +229,6 @@ namespace DarknessRises.Game.Editor.Critters
             return material;
         }
 
-        // Positional sounds: a mono clip places cleanly in 3D.
-        private static AudioClip LoadMonoClip(string path)
-        {
-            if (AssetImporter.GetAtPath(path) is AudioImporter importer && !importer.forceToMono)
-            {
-                importer.forceToMono = true;
-                importer.SaveAndReimport();
-            }
-
-            return AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-        }
 
         private static void EnsureFolder(string path)
         {

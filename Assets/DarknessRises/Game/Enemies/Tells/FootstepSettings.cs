@@ -15,6 +15,15 @@ namespace DarknessRises.Game.Enemies.Tells
         [SerializeField, Tooltip("One of these is picked at random for each step. Leave empty for an Enemy type that walks silently.")]
         private AssetReferenceT<AudioClip>[] clips = new AssetReferenceT<AudioClip>[0];
 
+        [SerializeField, Tooltip("Played for the dragged foot instead of a step, when the gait limps: a scrape or a drag. Leave empty to use the steps for every foot.")]
+        private AssetReferenceT<AudioClip>[] dragClips = new AssetReferenceT<AudioClip>[0];
+
+        [SerializeField, Range(0f, 1f), Tooltip("Volume of a dragged foot at the Enemy.")]
+        private float dragVolume = 0.45f;
+
+        [SerializeField, Min(0.05f), Tooltip("Longest a step or a drag plays, in seconds, before it fades out: long clips are cut short so steps don't pile up on the few voices.")]
+        private float maxStepSeconds = 0.8f;
+
         [SerializeField, Min(0.05f), Tooltip("Metres covered per step. Steps per second = speed / stride, so a fast Enemy patters and a slow one plods.")]
         private float strideMetres = 0.75f;
 
@@ -28,15 +37,18 @@ namespace DarknessRises.Game.Enemies.Tells
         private float stopSpeed = 0.3f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Lowest pitch a step plays at. Each step picks its own, so no two sound alike.")]
-        private float minPitch = 0.55f;
+        private float minPitch = 0.9f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Highest pitch a step plays at.")]
-        private float maxPitch = 0.7f;
+        private float maxPitch = 1.05f;
 
         [SerializeField, Range(0f, 1f), Tooltip("Volume of a step at the Enemy.")]
-        private float volume = 0.5f;
+        private float volume = 0.55f;
 
         public AssetReferenceT<AudioClip>[] Clips => clips;
+        public AssetReferenceT<AudioClip>[] DragClips => dragClips;
+        public float DragVolume => dragVolume;
+        public float MaxStepSeconds => maxStepSeconds;
         public float StrideMetres => strideMetres;
         public float Limp => limp;
         public float FirstStepStrides => firstStepStrides;

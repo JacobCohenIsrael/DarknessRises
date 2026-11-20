@@ -65,6 +65,10 @@ _Avoid_: strike, flash
 The swell of the storm after Lightning: the storm bed rises, holds and settles back, a short random delay after each flash, as from a strike at a varying distance, with a small pitch change so no two sound quite alike. It never warns of a flash.
 _Avoid_: thunder (as a name in code)
 
+**Ambient bed**:
+Now and then, a quiet sound from somewhere out in the dark, up near the ceiling, such as bats stirring: a few seconds cut from a long recording, fading in and out, and staying where it started while the character walks past. Background, not a Tell: it never comes from an Enemy or a Critter. It plays while the character walks, fights a Wave or takes the quiet after a Clear, never in a Boss fight. Not the storm bed, which is Lightning's.
+_Avoid_: ambience loop, background music
+
 **Gunfire**:
 The light made by the player's Weapon: always its Muzzle flash, and for some Weapons its Shots too.
 

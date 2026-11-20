@@ -37,14 +37,24 @@ MonoBehaviour:
   aimRadiusShare: 0.08
   color: {r: 3, g: 0.7, b: 0.15, a: 1}
   whisperClips:
-  - m_AssetGUID: 26fbf6bb6963666478f6992bc53b9145
+  - m_AssetGUID: 727c90cef4c97c545a8860dda29b53b1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: af6edb08e1f686041a968120f681aff9
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 57f5f9fc49e59cb4ca4ae0d069d09f33
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   whisperLatestStartSeconds: 8
-  whisperMinPitch: 0.85
-  whisperMaxPitch: 1
+  whisperMinPitch: 0.95
+  whisperMaxPitch: 1.05
   whisperVolume: 0.25
   whisperFadeSeconds: 0.4
   hearingRange: 25

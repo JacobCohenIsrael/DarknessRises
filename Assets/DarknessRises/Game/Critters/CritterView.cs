@@ -57,6 +57,7 @@ namespace DarknessRises.Game.Critters
         public float Glint => Mathf.Max(0f, glint);
 
         /// <summary>Called once, when the pool creates the Critter. Its sounds come from <paramref name="content"/>, already loaded.</summary>
+        /// <remarks>The one place a Critter's voice is set up: route it to the sound effects' mixer group here.</remarks>
         public void Prepare(IObjectPool<CritterView> owner, CritterDefinition critterDefinition, ILoadedContent content, IRandom randomness)
         {
             pool = owner;
@@ -110,7 +111,10 @@ namespace DarknessRises.Game.Critters
             {
                 voice.clip = clip;
                 voice.pitch = random.Range(sounds.ScurryMinPitch, sounds.ScurryMaxPitch);
-                voice.time = sounds.ScurryStartSeconds < clip.length ? sounds.ScurryStartSeconds : 0f;
+
+                // Somewhere early in the clip, but with enough of it left to last the dash.
+                var latestStart = Mathf.Min(sounds.ScurryLatestStartSeconds, clip.length - dash.Seconds * voice.pitch);
+                voice.time = latestStart > 0f ? random.Range(0f, latestStart) : 0f;
                 scurry.Start(sounds.ScurryVolume);
                 voice.volume = scurry.Volume;
                 voice.Play();

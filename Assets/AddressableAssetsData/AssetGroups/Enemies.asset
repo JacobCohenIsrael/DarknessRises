@@ -15,14 +15,14 @@ MonoBehaviour:
   m_GroupName: Enemies
   m_GUID: 34385de548ff8c6498f6e7680afac694
   m_SerializeEntries:
-  - m_GUID: 0b93f9af63befa2478916a5396131fff
-    m_Address: Bullet Impacts - Multiple 1
+  - m_GUID: 1e2dcbea73060294491fd210015c682c
+    m_Address: sneek_hiss_01
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: 26fbf6bb6963666478f6992bc53b9145
-    m_Address: Ghost Manifestation 1
+  - m_GUID: 2d449749c6378284895865786c6ea9be
+    m_Address: Bat Short
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -33,8 +33,32 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 490995ba23424453b8421153f19e5d1b
+    m_Address: Foley_Crawling_A_001
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 5027c464c917eb14cb042556fb054951
+    m_Address: rats_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 5284711aa67500542b63905f5ce09355
     m_Address: PhantomEyes
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 57f5f9fc49e59cb4ca4ae0d069d09f33
+    m_Address: Misc_Shh
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 5bfbb652e8a734eb0a68fcb972453274
+    m_Address: dk-scratch
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -45,8 +69,20 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 727c90cef4c97c545a8860dda29b53b1
+    m_Address: Misc_Whisper
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 75adfe9a619833445a701305b983e548
     m_Address: Bullet Impact 14
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 7c518e8469a403b4c981664ecb28a79a
+    m_Address: Footsteps_DirtyGround_Run_03
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -57,14 +93,26 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 80e9f3f626b53418ebb33bcc0bf2e7fd
+    m_Address: Footsteps_Zombie_concret_003
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 8503c42970d2247a89300b4be374668c
+    m_Address: Footsteps_Zombie_concret_004
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: a37f44cbf8c2a7443a3c361efa2f233a
     m_Address: Bloody punch
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: bb6cdd13aeb95f743847b1cd460889bc
-    m_Address: Laser Impact Light_6
+  - m_GUID: af6edb08e1f686041a968120f681aff9
+    m_Address: Misc_breath
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -75,8 +123,26 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: cfaa31361f7ba4a23b747862467ff938
+    m_Address: Footsteps_Zombie_concret_001
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: d4358666844e212469c7bc3ba4bd5918
+    m_Address: owl_squeak_01
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: d87a6a7cb9efa0e4d9fa08f2888c3274
     m_Address: Rat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: dcfc7dfb0dfd04a50a68e5c5d29e67c0
+    m_Address: Footsteps_Zombie_concret_002
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

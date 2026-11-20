@@ -53,6 +53,12 @@ namespace DarknessRises.Game.Enemies.Tells
         /// <summary>Whether the Enemy is walking: its steps are counting.</summary>
         public bool IsWalking { get; private set; }
 
+        /// <summary>
+        /// Whether the last step was the dragged foot: the one that comes after a short stride, every other step when
+        /// it limps. Never with an even gait.
+        /// </summary>
+        public bool LastStepDragged { get; private set; }
+
         /// <summary>Steps at an even gait per second of Enemy time at <paramref name="speed"/> metres per second.</summary>
         public float StepsPerSecond(float speed)
         {
@@ -96,6 +102,7 @@ namespace DarknessRises.Game.Enemies.Tells
             }
 
             // A short stride after the good foot, a long one after the dragged foot: same ground over each pair.
+            LastStepDragged = nextIsDragged && limp > 0f;
             metresToNextStep = strideMetres * (nextIsDragged ? 1f + limp : 1f - limp);
             nextIsDragged = !nextIsDragged;
             return true;

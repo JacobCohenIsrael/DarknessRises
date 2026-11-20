@@ -91,6 +91,8 @@ MonoBehaviour:
     swellReleaseSeconds: 1.8
     minSwellPitch: 0.94
     maxSwellPitch: 1.06
+    hushFadeOutSeconds: 2.5
+    hushFadeInSeconds: 4
   bossWarning:
     volume: 0.9
     fadeOutSeconds: 3.5

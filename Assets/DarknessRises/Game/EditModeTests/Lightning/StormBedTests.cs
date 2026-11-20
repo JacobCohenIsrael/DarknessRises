@@ -14,10 +14,12 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         private const float Attack = 0.25f;
         private const float Hold = 0.5f;
         private const float Release = 1f;
+        private const float HushFadeOut = 4f;
+        private const float HushFadeIn = 8f;
         private const float Tolerance = 1e-4f;
         private const float Frame = 1f / 60f;
 
-        private static StormEnvelope Envelope() => new(BaseVolume, FadeIn, FadeOut, Peak, Attack, Hold, Release, 0.9f, 1.1f);
+        private static StormEnvelope Envelope() => new(BaseVolume, FadeIn, FadeOut, Peak, Attack, Hold, Release, 0.9f, 1.1f, HushFadeOut, HushFadeIn);
 
         private static StormBed AudibleBed()
         {
@@ -129,36 +131,69 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         }
 
         [Test]
-        public void AHushedBedFadesOutOverTheFadeOutTime_EvenWhileLightningStillReachesTheCharacter()
+        public void AHushedBedFadesOutOverTheHushFadeOutTime_EvenWhileLightningStillReachesTheCharacter()
         {
             var bed = AudibleBed();
 
             bed.Hush(true);
             bed.SetAudible(true);
             Assert.That(bed.IsAudible, NUnit.Framework.Is.False);
-            bed.Tick(FadeOut / 2f);
+            bed.Tick(HushFadeOut / 2f);
             Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(BaseVolume / 2f).Within(Tolerance));
-            bed.Tick(FadeOut / 2f);
+            bed.Tick(HushFadeOut / 2f);
             Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(0f));
         }
 
         [Test]
-        public void LettingAHushGoFadesTheBedBackInFromWhereItIs_IfLightningReachesTheCharacter()
+        public void ARumbleWhileHushedOnlyRidesOnWhatIsLeftOfTheFadingBed()
         {
             var bed = AudibleBed();
             bed.Hush(true);
-            bed.Tick(FadeOut / 4f);
-            var volume = bed.Volume;
+            bed.Rumble(new FixedRandom(1f));
+            for (var elapsed = Frame; elapsed <= HushFadeOut; elapsed += Frame)
+            {
+                // A swell can only ride on what's left of the bed, which falls to nothing over the hush fade.
+                bed.Tick(Frame);
+                var ceiling = Peak * System.Math.Max(0f, 1f - elapsed / HushFadeOut);
+                Assert.That(bed.Volume, NUnit.Framework.Is.LessThanOrEqualTo(ceiling + Tolerance));
+            }
+
+            bed.Tick(Frame);
+
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void LettingAHushGoFadesTheBedBackInOverTheGentlerHushFadeInTime()
+        {
+            var bed = AudibleBed();
+            bed.Hush(true);
+            bed.Tick(HushFadeOut);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(0f));
 
             bed.Hush(false);
-            bed.Tick(Frame);
-            Assert.That(bed.Volume, NUnit.Framework.Is.GreaterThan(volume));
+            bed.Tick(HushFadeIn / 2f);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(BaseVolume / 2f).Within(Tolerance));
+            bed.Tick(HushFadeIn / 2f);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(BaseVolume).Within(Tolerance));
 
+            // Once fully back, a Room without windows and one with them use the Room fades again.
+            bed.SetAudible(false);
+            bed.Tick(FadeOut);
+            bed.SetAudible(true);
+            bed.Tick(FadeIn);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(BaseVolume).Within(Tolerance));
+        }
+
+        [Test]
+        public void LettingAHushGoKeepsTheBedOut_InARoomWithoutWindows()
+        {
+            var bed = AudibleBed();
             bed.SetAudible(false);
             bed.Hush(true);
             bed.Hush(false);
-            bed.Tick(FadeOut);
-            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(0f), "A Room without windows keeps it out after the hush.");
+            bed.Tick(HushFadeOut + FadeOut);
+            Assert.That(bed.Volume, NUnit.Framework.Is.EqualTo(0f));
         }
 
         [Test]
@@ -204,7 +239,7 @@ namespace DarknessRises.Game.EditModeTests.Lightning
         public void EnvelopeRejectsImpossibleValues(float baseVolume, float peak, float minPitch, float maxPitch)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                _ = new StormEnvelope(baseVolume, FadeIn, FadeOut, peak, Attack, Hold, Release, minPitch, maxPitch));
+                _ = new StormEnvelope(baseVolume, FadeIn, FadeOut, peak, Attack, Hold, Release, minPitch, maxPitch, HushFadeOut, HushFadeIn));
         }
 
         [Test]

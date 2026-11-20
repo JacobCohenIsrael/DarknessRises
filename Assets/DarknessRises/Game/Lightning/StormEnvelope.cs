@@ -17,7 +17,9 @@ namespace DarknessRises.Game.Lightning
             float swellHoldSeconds,
             float swellReleaseSeconds,
             float minSwellPitch,
-            float maxSwellPitch)
+            float maxSwellPitch,
+            float hushFadeOutSeconds,
+            float hushFadeInSeconds)
         {
             if (baseVolume < 0f || baseVolume > 1f)
             {
@@ -29,7 +31,8 @@ namespace DarknessRises.Game.Lightning
                 throw new ArgumentOutOfRangeException(nameof(swellPeakVolume), swellPeakVolume, "The swell's peak is between the base volume and 1.");
             }
 
-            if (fadeInSeconds < 0f || fadeOutSeconds < 0f || swellAttackSeconds < 0f || swellHoldSeconds < 0f || swellReleaseSeconds < 0f)
+            if (fadeInSeconds < 0f || fadeOutSeconds < 0f || swellAttackSeconds < 0f || swellHoldSeconds < 0f || swellReleaseSeconds < 0f
+                || hushFadeOutSeconds < 0f || hushFadeInSeconds < 0f)
             {
                 throw new ArgumentOutOfRangeException(nameof(fadeInSeconds), "The storm's fades and swell can't take negative time.");
             }
@@ -53,6 +56,8 @@ namespace DarknessRises.Game.Lightning
             SwellReleaseSeconds = swellReleaseSeconds;
             MinSwellPitch = minSwellPitch;
             MaxSwellPitch = maxSwellPitch;
+            HushFadeOutSeconds = hushFadeOutSeconds;
+            HushFadeInSeconds = hushFadeInSeconds;
         }
 
         /// <summary>The bed's volume between Rumbles.</summary>
@@ -81,5 +86,11 @@ namespace DarknessRises.Game.Lightning
 
         /// <summary>The highest pitch a Rumble nudges the bed to.</summary>
         public float MaxSwellPitch { get; }
+
+        /// <summary>Seconds to fade out to silence once hushed: at the end of a Level, and on the way to the Shop.</summary>
+        public float HushFadeOutSeconds { get; }
+
+        /// <summary>Seconds to fade back in after a hush, once the next Level plays: gentler than a Room's fade in.</summary>
+        public float HushFadeInSeconds { get; }
     }
 }

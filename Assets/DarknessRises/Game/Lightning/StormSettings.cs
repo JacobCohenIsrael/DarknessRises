@@ -45,6 +45,15 @@ namespace DarknessRises.Game.Lightning
         [SerializeField, Min(0.1f), Tooltip("Highest pitch a Rumble nudges the bed to, eased back afterwards.")]
         private float maxSwellPitch = 1.06f;
 
+        [Header("Between Levels")]
+        [SerializeField, Min(0f), Tooltip("Seconds the bed takes to fade to silence once the Level ends (the calm before the " +
+                                          "far door) and on the way to the Shop, so no storm rolls over the Level change.")]
+        private float hushFadeOutSeconds = 2.5f;
+
+        [SerializeField, Min(0f), Tooltip("Seconds the bed takes to fade back in once the next Level plays. Gentler than a " +
+                                          "Room's fade in, so the storm creeps back rather than arriving.")]
+        private float hushFadeInSeconds = 4f;
+
         public AssetReferenceT<AudioClip> Clip => clip;
 
         public StormEnvelope Envelope => new(
@@ -56,7 +65,9 @@ namespace DarknessRises.Game.Lightning
             swellHoldSeconds,
             swellReleaseSeconds,
             minSwellPitch,
-            maxSwellPitch);
+            maxSwellPitch,
+            hushFadeOutSeconds,
+            hushFadeInSeconds);
 
         /// <summary>Keeps every range the right way round while it's edited.</summary>
         public void Validate()

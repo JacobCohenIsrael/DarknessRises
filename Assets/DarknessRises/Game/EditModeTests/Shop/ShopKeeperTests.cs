@@ -244,6 +244,34 @@ namespace DarknessRises.Game.EditModeTests.Shop
         }
 
         [Test]
+        public void A_Weapons_Upgrade_is_locked_until_the_Weapon_is_unlocked()
+        {
+            var machineGunMagazine = new ShopItem("machine-gun.magazine", new[] { 400, 800 }, startLevel: 0, requires: machineGun);
+            Earn(5000);
+
+            Assert.That(keeper.IsLocked(machineGunMagazine), Is.True);
+            Assert.That(keeper.CanBuy(machineGunMagazine), Is.False);
+            Assert.That(keeper.Buy(machineGunMagazine), Is.False);
+            Assert.That(keeper.Credits, Is.EqualTo(5000));
+
+            keeper.Buy(machineGun);
+
+            Assert.That(keeper.IsLocked(machineGunMagazine), Is.False);
+            Assert.That(keeper.Buy(machineGunMagazine), Is.True);
+            Assert.That(keeper.LevelOf(machineGunMagazine), Is.EqualTo(1));
+            Assert.That(keeper.Credits, Is.EqualTo(5000 - 2500 - 400));
+        }
+
+        [Test]
+        public void The_starting_Weapons_Upgrades_are_never_locked()
+        {
+            var pistolMagazine = new ShopItem("pistol.magazine", new[] { 250 }, startLevel: 0, requires: pistol);
+
+            Assert.That(keeper.IsLocked(pistolMagazine), Is.False);
+            Assert.That(keeper.IsLocked(magazine), Is.False, "An item that requires nothing.");
+        }
+
+        [Test]
         public void One_Primary_must_be_owned_from_the_start()
         {
             var locked = new[] { machineGun, flamethrower };

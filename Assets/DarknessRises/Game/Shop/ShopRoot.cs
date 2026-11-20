@@ -16,7 +16,7 @@ namespace DarknessRises.Game.Shop
     /// </summary>
     public sealed class ShopRoot : MonoBehaviour
     {
-        [SerializeField, Tooltip("The root configuration: the Shop's catalog, and the Credits' colour.")]
+        [SerializeField, Tooltip("The root configuration: the Shop's catalog, the definitions its Upgrades start from, and the Credits' colour.")]
         private GameConfiguration configuration;
 
         [SerializeField] private ShopView view;
@@ -25,6 +25,9 @@ namespace DarknessRises.Game.Shop
 
         /// <summary>The Shop's rules over the save it was opened with, once it's open.</summary>
         public ShopKeeper Keeper { get; private set; }
+
+        /// <summary>Everything the open Shop sells.</summary>
+        public ShopCatalog Catalog { get; private set; }
 
         /// <summary>Whether the Shop's content has loaded and its screen is up.</summary>
         public bool IsOpen => Keeper != null;
@@ -51,8 +54,9 @@ namespace DarknessRises.Game.Shop
             list.Add(shop.Screen.BuyClip);
             await list.LoadAsync(content, cancellationToken);
 
+            Catalog = shop.ToCatalog();
             Keeper = new ShopKeeper(save);
-            view.Show(shop, Keeper, configuration.Credits.Color, content.Clip(shop.Screen.BuyClip));
+            view.Show(configuration, Catalog, Keeper, content.Clip(shop.Screen.BuyClip));
             await view.PlayAsync(cancellationToken);
         }
 

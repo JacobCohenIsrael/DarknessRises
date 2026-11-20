@@ -48,6 +48,16 @@ namespace DarknessRises.Game.Shop
         /// <summary>Whether the player has <paramref name="item"/> at all: a Weapon that's unlocked, an Upgrade with a level.</summary>
         public bool Owns(ShopItem item) => LevelOf(item) > 0;
 
+        /// <summary>
+        /// Whether <paramref name="item"/> can't be bought yet because what it requires isn't owned: a Weapon's Upgrade
+        /// while the Weapon is still to unlock.
+        /// </summary>
+        public bool IsLocked(ShopItem item)
+        {
+            Require(item);
+            return item.Requires != null && !Owns(item.Requires);
+        }
+
         /// <summary>Whether there is nothing more of <paramref name="item"/> to buy.</summary>
         public bool IsMaxed(ShopItem item) => LevelOf(item) >= item.MaxLevel;
 
@@ -57,15 +67,18 @@ namespace DarknessRises.Game.Shop
             return IsMaxed(item) ? 0 : item.PriceOf(LevelOf(item) + 1);
         }
 
-        /// <summary>Whether the next level of <paramref name="item"/> can be bought now: there is one, and the bank covers it.</summary>
+        /// <summary>
+        /// Whether the next level of <paramref name="item"/> can be bought now: there is one, what it requires is
+        /// owned, and the bank covers it.
+        /// </summary>
         public bool CanBuy(ShopItem item)
         {
-            return !IsMaxed(item) && save.Credits >= NextPrice(item);
+            return !IsMaxed(item) && !IsLocked(item) && save.Credits >= NextPrice(item);
         }
 
         /// <summary>
         /// Buys the next level of <paramref name="item"/>: takes its price from the bank, raises the level by one and
-        /// writes the save. Does nothing when it's maxed or the bank can't cover it.
+        /// writes the save. Does nothing when it's maxed, locked or the bank can't cover it.
         /// </summary>
         /// <returns>Whether it was bought.</returns>
         public bool Buy(ShopItem item)

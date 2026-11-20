@@ -264,9 +264,17 @@ The player's durable progress on the device: the bank, and what was bought in th
 _Avoid_: profile, account, progress (that's how far along the Route the character is)
 
 **Shop**:
-Where Credits are spent: the player unlocks Weapons there and chooses the Primary weapon for the next Run. It is open only between Runs, never between Levels: the end screen leads to it, and its PLAY starts the next Run. A first install goes straight into the first Level; once a Run has been finished, the app opens in the Shop.
+Where Credits are spent: the player unlocks Weapons there, chooses the Primary weapon for the next Run, and buys Upgrades. It is open only between Runs, never between Levels: the end screen leads to it, and its PLAY starts the next Run. A first install goes straight into the first Level; once a Run has been finished, the app opens in the Shop.
 _Avoid_: store, upgrade screen, menu, lobby
 
 **Unlock**:
 Buying a Weapon in the Shop, once, with Credits. An unlocked Weapon is owned for good and can be chosen as the Primary weapon.
 _Avoid_: purchase (for a Weapon), acquire
+
+**Upgrade**:
+A lasting improvement bought in the Shop with Credits, level by level, each level dearer than the last. An Upgrade sets one number: a Primary weapon's damage, magazine, reload time or fire rate; the Grenade's charges, refill time or blast radius; the Flare's or Slow-mo's duration or cooldown; the character's hit points or the reach of the Aura. A Weapon's Upgrades can be bought only once the Weapon is unlocked. Upgrades apply from the next Run; the Aura's are kept small so Darkness stays dark.
+_Avoid_: perk, boost, power-up, skill tree, level-up
+
+**Run's stats**:
+The numbers a Run plays with: the authored ones with the player's Upgrades applied. They're worked out when the Run's Level starts and never change what was authored.
+_Avoid_: buffs, modifiers, build

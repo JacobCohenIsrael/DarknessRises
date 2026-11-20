@@ -6,7 +6,8 @@ namespace DarknessRises.Game.Shop
     /// <summary>
     /// One thing the Shop sells: a ladder of levels, each bought with Credits, one at a time. A Weapon to unlock has one
     /// level (owned or not); an Upgrade has several, each dearer than the last. An item can start above level 0, as the
-    /// Weapon the player owns from the start does. Plain C# (ADR 0003), copied out of the authored Shop definition.
+    /// Weapon the player owns from the start does, and it can require another item, as a Weapon's Upgrades require the
+    /// Weapon. Plain C# (ADR 0003), copied out of the authored Shop definition.
     /// </summary>
     public sealed class ShopItem
     {
@@ -15,7 +16,8 @@ namespace DarknessRises.Game.Shop
         /// <param name="id">The id the item is saved under. Stable: players' saves hold it.</param>
         /// <param name="prices">The price of each level above the starting level, in order.</param>
         /// <param name="startLevel">The level the player has without buying anything.</param>
-        public ShopItem(string id, IReadOnlyList<int> prices, int startLevel = 0)
+        /// <param name="requires">An item that must be owned before this one can be bought: the Weapon an Upgrade belongs to.</param>
+        public ShopItem(string id, IReadOnlyList<int> prices, int startLevel = 0, ShopItem requires = null)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -45,12 +47,16 @@ namespace DarknessRises.Game.Shop
 
             Id = id;
             StartLevel = startLevel;
+            Requires = requires;
         }
 
         public string Id { get; }
 
         /// <summary>The level the player has without buying anything.</summary>
         public int StartLevel { get; }
+
+        /// <summary>The item that must be owned before this one can be bought, or null when it needs none.</summary>
+        public ShopItem Requires { get; }
 
         /// <summary>The highest level there is to buy.</summary>
         public int MaxLevel => StartLevel + prices.Length;

@@ -5,6 +5,7 @@ using DarknessRises.Game.Content;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Saving;
+using DarknessRises.Game.Shop;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -12,19 +13,32 @@ using UnityEngine.SceneManagement;
 namespace DarknessRises.Game.Boot
 {
     /// <summary>
-    /// The boot scene's job: own the <see cref="RunFlow"/> and play its Levels, endlessly (ADR 0005). Each time the Run
-    /// starts a Level (the first of a new Run, the next in the chain, or a debug jump) the Level scene before it unloads
-    /// (its <see cref="GameRoot"/> releases the Level's content with it) and the Level scene loads again, additively
-    /// through Addressables, to play that Level with the Ramp at its index. Until more Levels exist, every Level of the
-    /// chain is the same Level scene.
+    /// The boot scene's job: own the <see cref="RunFlow"/> and play its Levels, endlessly (ADR 0005), with the Shop
+    /// between Runs. Each time the Run starts a Level (the first of a new Run, the next in the chain, or a debug jump)
+    /// the Level scene before it unloads (its <see cref="GameRoot"/> releases the Level's content with it) and the Level
+    /// scene loads again, additively through Addressables, to play that Level with the Ramp at its index. Until more
+    /// Levels exist, every Level of the chain is the same Level scene.
+    /// When the player leaves a Run's end screen, the Level unloads and the Shop scene loads the same way; PLAY there
+    /// unloads it and starts a new Run. Only one of the two is ever loaded. A first install goes straight into Level 1;
+    /// once a Run has been finished, the app opens in the Shop (<see cref="BootDestinations"/>).
     /// It also owns the player's save, which outlives every Run: it reads it from the device at start, banks each Run's
     /// Credits in it, and writes it when the app goes to the background or quits.
     /// </summary>
     public sealed class Bootstrap : MonoBehaviour
     {
+        // What follows the Level that is playing.
+        private enum Next
+        {
+            // Another Level of the Run: the next in the chain, a jump, or the first of a new Run after Restart.
+            Level,
+
+            // The player left the Run's end screen: the Shop, then a new Run.
+            Shop,
+        }
+
         [SerializeField] private BootDefinition definition;
 
-        [SerializeField, Tooltip("Keeps the screen black while no Level is showing. Off while a Level is, so it costs nothing then.")]
+        [SerializeField, Tooltip("Keeps the screen black while no Level is showing, and behind the Shop. Off while a Level is, so it costs nothing then.")]
         private Camera loadingCamera;
 
         [SerializeField, Tooltip("The build version in a corner of the screen, shown for as long as the app runs.")]
@@ -33,11 +47,11 @@ namespace DarknessRises.Game.Boot
         // Owns the boot's lifetime: the app's.
         private CancellationTokenSource lifetime;
 
-        // The running Level's scene, released when the Level ends.
-        private ContentScope levelScope;
+        // The scene that is showing (a Level, or the Shop), released when it's left.
+        private ContentScope sceneScope;
 
-        // Completed when the Run starts another Level, so the current one goes.
-        private UniTaskCompletionSource levelChanged;
+        // Completed when the Level that is playing is over, with what comes next.
+        private UniTaskCompletionSource<Next> levelLeft;
 
         private readonly IContentSource source = new AddressablesContentSource();
 
@@ -49,6 +63,12 @@ namespace DarknessRises.Game.Boot
 
         /// <summary>Raised each time a Level scene has unloaded and its content has been released.</summary>
         public event Action LevelUnloaded;
+
+        /// <summary>Raised each time the Shop scene has loaded and is the active scene, before it opens.</summary>
+        public event Action<ShopRoot> ShopLoaded;
+
+        /// <summary>Raised each time the Shop scene has unloaded and its content has been released.</summary>
+        public event Action ShopUnloaded;
 
         /// <summary>The Run being played. It lives as long as the app; Restart starts a new Run in it.</summary>
         public RunFlow Run { get; } = new();
@@ -63,6 +83,7 @@ namespace DarknessRises.Game.Boot
             Save = PlayerSave.Load(FileSaveStorage.InPersistentData());
             banking = new RunBanking(Run, Save);
             Run.LevelStarted += OnLevelStarted;
+            Run.Left += OnRunLeft;
             RunAsync(lifetime.Token).Forget();
         }
 
@@ -84,45 +105,91 @@ namespace DarknessRises.Game.Boot
         {
             banking?.Dispose();
             Run.LevelStarted -= OnLevelStarted;
+            Run.Left -= OnRunLeft;
             lifetime?.Cancel();
             lifetime?.Dispose();
-            levelScope?.Dispose();
+            sceneScope?.Dispose();
         }
 
         private async UniTaskVoid RunAsync(CancellationToken cancellationToken)
         {
-            var sceneKey = ChooseScene().RuntimeKey;
+            var levelKey = ChooseScene().RuntimeKey;
+            if (BootDestinations.For(Save) == BootDestination.Shop)
+            {
+                await ShowShopAsync(cancellationToken);
+            }
+
             Run.StartNewRun();
             while (true)
             {
-                levelChanged = new UniTaskCompletionSource();
-                loadingCamera.enabled = true;
-                levelScope = new ContentScope(source);
-                var scene = await levelScope.LoadSceneAsync(sceneKey, cancellationToken);
-                SceneManager.SetActiveScene(scene);
-                loadingCamera.enabled = false;
-                var gameRoot = FindGameRoot(scene);
-                gameRoot.Play(Run, Save);
-                LevelLoaded?.Invoke(gameRoot);
-
-                await levelChanged.Task.AttachExternalCancellation(cancellationToken);
-
-                // Out of whatever callback started the next Level (often the Level's own) before its scene goes.
-                await UniTask.Yield(cancellationToken);
-                loadingCamera.enabled = true;
-                await levelScope.EndAsync();
-                levelScope = null;
-
-                // Whatever the Level made at runtime and nothing holds any more goes too.
-                await Resources.UnloadUnusedAssets().ToUniTask(cancellationToken: cancellationToken);
-                LevelUnloaded?.Invoke();
+                var next = await PlayLevelAsync(levelKey, cancellationToken);
+                if (next == Next.Shop)
+                {
+                    await ShowShopAsync(cancellationToken);
+                    Run.StartNewRun();
+                }
             }
+        }
+
+        // Loads the Level scene and plays the Run's current Level in it until the Run moves on, then unloads it.
+        private async UniTask<Next> PlayLevelAsync(object levelKey, CancellationToken cancellationToken)
+        {
+            levelLeft = new UniTaskCompletionSource<Next>();
+            var scene = await LoadSceneAsync(levelKey, cancellationToken);
+            loadingCamera.enabled = false;
+            var gameRoot = Find<GameRoot>(scene);
+            gameRoot.Play(Run, Save);
+            LevelLoaded?.Invoke(gameRoot);
+
+            var next = await levelLeft.Task.AttachExternalCancellation(cancellationToken);
+            levelLeft = null;
+
+            // Out of whatever callback moved the Run on (often the Level's own) before its scene goes.
+            await UniTask.Yield(cancellationToken);
+            await UnloadSceneAsync(cancellationToken);
+            LevelUnloaded?.Invoke();
+            return next;
+        }
+
+        // Loads the Shop scene, with nothing of a Level left loaded behind it, and shows it until the player presses PLAY.
+        private async UniTask ShowShopAsync(CancellationToken cancellationToken)
+        {
+            var scene = await LoadSceneAsync(definition.ShopScene.RuntimeKey, cancellationToken);
+            var shop = Find<ShopRoot>(scene);
+            ShopLoaded?.Invoke(shop);
+            await shop.RunAsync(Save, cancellationToken);
+            await UnloadSceneAsync(cancellationToken);
+            ShopUnloaded?.Invoke();
+        }
+
+        private async UniTask<Scene> LoadSceneAsync(object key, CancellationToken cancellationToken)
+        {
+            loadingCamera.enabled = true;
+            sceneScope = new ContentScope(source);
+            var scene = await sceneScope.LoadSceneAsync(key, cancellationToken);
+            SceneManager.SetActiveScene(scene);
+            return scene;
+        }
+
+        private async UniTask UnloadSceneAsync(CancellationToken cancellationToken)
+        {
+            loadingCamera.enabled = true;
+            await sceneScope.EndAsync();
+            sceneScope = null;
+
+            // Whatever the scene made at runtime and nothing holds any more goes too.
+            await Resources.UnloadUnusedAssets().ToUniTask(cancellationToken: cancellationToken);
         }
 
         private void OnLevelStarted(int _)
         {
-            // Before the first Level loads there is nothing to leave.
-            levelChanged?.TrySetResult();
+            // Before a Level is playing (the first of a Run) there is nothing to leave.
+            levelLeft?.TrySetResult(Next.Level);
+        }
+
+        private void OnRunLeft()
+        {
+            levelLeft?.TrySetResult(Next.Shop);
         }
 
         private AssetReference ChooseScene()
@@ -136,18 +203,18 @@ namespace DarknessRises.Game.Boot
             return definition.LevelScene;
         }
 
-        private static GameRoot FindGameRoot(Scene scene)
+        private static T Find<T>(Scene scene) where T : Component
         {
             foreach (var root in scene.GetRootGameObjects())
             {
-                var gameRoot = root.GetComponentInChildren<GameRoot>(true);
-                if (gameRoot != null)
+                var found = root.GetComponentInChildren<T>(true);
+                if (found != null)
                 {
-                    return gameRoot;
+                    return found;
                 }
             }
 
-            throw new InvalidOperationException($"The scene '{scene.name}' has no Game Root.");
+            throw new InvalidOperationException($"The scene '{scene.name}' has no {typeof(T).Name}.");
         }
     }
 }

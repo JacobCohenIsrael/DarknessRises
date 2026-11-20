@@ -1,0 +1,73 @@
+Issue #78, slice 2: the Shop screen and the flow between Runs. Headless check.
+
+A batch-mode Editor (no window, master volume 0) played from the boot scene. A probe killed Enemies through
+Enemy.TakeHit, killed the character, clicked the screens' buttons through Button.onClick, and read the Shop's texts back
+from its TMP labels. Credits were put in the bank through PlayerSave.Bank where a step needed more than a Run earned.
+"save.json" is the file under Application.persistentDataPath, read back from disk. It was deleted afterwards.
+
+FIRST INSTALL (no save file)
+  boot                                  -> scenes [Boot, Level]: straight into Level 1, no Shop
+  30 kills, the character dies, Exit    -> end screen: "Credits earned +150", "CREDITS 150", the ad's offer, and a SHOP button
+                                           save.json: {"version":2,"credits":150,"runsFinished":1,"items":[],"primaryWeapon":""}
+  SHOP                                  -> scenes [Boot, Shop]; no GameRoot, no Enemies, 47 GameObjects
+  the Shop reads                           CREDITS 150 | NEXT RUN: PISTOL
+                                           PISTOL: EQUIPPED (can't be pressed)
+                                           MACHINE GUN: UNLOCK 2500 (can't be pressed), "2350 more Credits needed"
+                                           FLAMETHROWER: UNLOCK 6000 (can't be pressed), "5850 more Credits needed"
+  pressing MACHINE GUN's button         -> nothing: the button isn't interactable
+
+AFFORDABLE AND NOT
+  2600 Credits arrive in the bank       -> the open Shop counts up to 2750 and re-reads what can be afforded:
+                                           MACHINE GUN: UNLOCK 2500 (can be pressed), no hint
+                                           FLAMETHROWER: UNLOCK 6000 (can't be pressed), "3250 more Credits needed"
+
+UNLOCK (instant, no confirmation)
+  UNLOCK 2500 pressed                   -> CREDITS 250 | NEXT RUN: MACHINE GUN
+                                           PISTOL: EQUIP | MACHINE GUN: EQUIPPED | FLAMETHROWER: UNLOCK 6000, "5750 more Credits needed"
+                                           buy sound: AudioSource playing "Magic Spell_Coins_2"
+                                           save.json, written at once: {"version":2,"credits":250,"runsFinished":1,
+                                             "items":[{"id":"machine-gun","level":1}],"primaryWeapon":"machine-gun"}
+
+CHOOSING THE PRIMARY
+  PISTOL's EQUIP                        -> NEXT RUN: PISTOL | PISTOL: EQUIPPED | MACHINE GUN: EQUIP
+  MACHINE GUN's EQUIP                   -> NEXT RUN: MACHINE GUN | PISTOL: EQUIP | MACHINE GUN: EQUIPPED
+
+PLAY
+  PLAY pressed                          -> scenes [Boot, Level]; a new Run, Level 1
+                                           the equipped Primary is the Machine gun: the HUD's magazine reads 30 / 30
+                                           (a dev build carries all three Primaries for the debug switch; a release build carries the one)
+
+RESTART SKIPS THE SHOP
+  2 kills; pause, Restart               -> straight into a new Run, scenes [Boot, Level], still the Machine gun
+                                           the Run's 10 Credits banked first: bank 260, 2 Runs finished
+
+EXIT LEADS TO THE SHOP
+  3 kills; pause, Exit, SHOP            -> the Shop with CREDITS 275, MACHINE GUN: EQUIPPED
+
+SECOND LAUNCH (Play Mode stopped and started: a new boot reads the save)
+  boot                                  -> scenes [Boot, Shop]: the app opens in the Shop, RunPhase.NotStarted
+                                           CREDITS 275 | NEXT RUN: MACHINE GUN
+  PLAY                                  -> Level 1 with the Machine gun, 30 / 30
+
+A SAVE FROM SLICE 1 (version 1, written before the Shop existed)
+  save.json: {"version":1,"credits":375,"runsFinished":3}
+  boot                                  -> the Shop with CREDITS 375, PISTOL: EQUIPPED, nothing unlocked
+
+THE FLAMETHROWER
+  save with 9000 Credits; UNLOCK 6000   -> CREDITS 3000, NEXT RUN: FLAMETHROWER; PLAY: the HUD's magazine reads 60 / 60
+
+NO LEVEL CONTENT BEHIND THE SHOP (real bundles: Addressables content built, Play Mode set to "Use Existing Build")
+                                           bundles  GameObjects  AudioClips  Enemies (pooled)  cameras
+  Level 1 playing                            11        745          21            16             2
+  end screen over the Level                  11        745          21            16             2
+  the Shop open                               4         47           1             0             1
+  PLAY, Level 1 playing again                11        745          21            16             2
+
+  The 4 bundles under the Shop: the Shop's scene, Shared (the definitions and the buy sound), and the two built-in
+  bundles (MonoScripts, Unity built-in assets). Released with the Level: its scene, its assets and five Enemy bundles
+  (the Shambler's prefab and sounds). The one AudioClip is the buy sound, loaded by the Shop and released with it.
+  The one camera is the boot scene's black loading camera.
+  (Those bundles were built for the WebGL build target, so the Windows Editor logged "Unsupported file or audio format"
+  for the Enemy sounds during that one session. The counts don't depend on it.)
+
+Console in the normal (Asset Database) sessions: no game errors. EditMode: 891/891 passed in the same Editor.

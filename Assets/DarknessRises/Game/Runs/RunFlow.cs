@@ -6,7 +6,7 @@ namespace DarknessRises.Game.Runs
     /// The state machine of a Run (ADR 0005): each Level's start beat, walking, Station fights, the Boss fight and the
     /// end beat, then straight into the next Level, endlessly, until the character dies. Death leads to Continue
     /// (back into the same Level, a limited number of times per Run), Restart (a new Run from Level 1) or Exit (the end
-    /// screen). It tracks the Level index, which drives the Ramp, and the Run's <see cref="RunRecord"/>.
+    /// screen, which the player then leaves for the Shop). It tracks the Level index, which drives the Ramp, and the Run's <see cref="RunRecord"/>.
     /// Plain C# (ADR 0003): whoever shows the Level reports what happens there.
     /// </summary>
     /// <remarks>
@@ -29,6 +29,12 @@ namespace DarknessRises.Game.Runs
         /// </summary>
         public event Action<RunRecord> RunEnded;
 
+        /// <summary>
+        /// Raised when the player leaves the end screen of a Run that ended with Exit. Whoever owns the Run decides
+        /// what comes next: the Shop, then a new Run.
+        /// </summary>
+        public event Action Left;
+
         public RunPhase Phase { get; private set; } = RunPhase.NotStarted;
 
         /// <summary>The current Level, counted from 1. It drives the Ramp.</summary>
@@ -42,6 +48,9 @@ namespace DarknessRises.Game.Runs
 
         // The phase of the Level the character is dead in: where a Continue goes back to.
         private RunPhase resumePhase;
+
+        // Whether the player has left the ended Run's end screen.
+        private bool hasLeft;
 
         /// <summary>Whether a Level of the Run is in play: from its start beat to its end beat, alive or dead.</summary>
         public bool IsInRun => Phase != RunPhase.NotStarted && Phase != RunPhase.Ended;
@@ -79,8 +88,25 @@ namespace DarknessRises.Game.Runs
                 return false;
             }
 
+            hasLeft = false;
             Enter(RunPhase.Ended);
             RunEnded?.Invoke(Record);
+            return true;
+        }
+
+        /// <summary>
+        /// The player moved on from the end screen: the Run is left behind, once. Only after Exit; Restart never comes
+        /// here, it starts the new Run at once.
+        /// </summary>
+        public bool Leave()
+        {
+            if (Phase != RunPhase.Ended || hasLeft)
+            {
+                return false;
+            }
+
+            hasLeft = true;
+            Left?.Invoke();
             return true;
         }
 

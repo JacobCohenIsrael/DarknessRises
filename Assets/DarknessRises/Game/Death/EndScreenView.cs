@@ -15,8 +15,8 @@ namespace DarknessRises.Game.Death
     /// <summary>
     /// The end screen after Exit: the Run's Score, the Level reached and the Enemies killed, then the Credits the Run
     /// earned and the new total in the bank, counted up arcade-style. It offers the end-of-Run ad, which multiplies the
-    /// Run's Credits (<see cref="EndOfRunAd"/> decides when and how much), and never blocks moving on. It leads to a
-    /// new Run for now, and to the Shop once the Shop exists.
+    /// Run's Credits (<see cref="EndOfRunAd"/> decides when and how much), and never blocks moving on. It leads to the
+    /// Shop, where a new Run starts.
     /// </summary>
     /// <remarks>
     /// It counts in real time: the Level behind it may be frozen (Exit from the pause menu). Numbers are written only
@@ -61,7 +61,8 @@ namespace DarknessRises.Game.Death
         [SerializeField, Tooltip("Plays the bonus landing.")]
         private AudioSource sound;
 
-        [SerializeField] private Button newRunButton;
+        [SerializeField, Tooltip("Leaves the end screen for the Shop.")]
+        private Button shopButton;
 
         private readonly CountUp earnedCount = new();
         private readonly CountUp bonusCount = new();
@@ -88,7 +89,7 @@ namespace DarknessRises.Game.Death
             // Exit from the pause menu leaves the Level frozen and the listener paused; the screen's sound still plays.
             sound.ignoreListenerPause = true;
 
-            var color = settings.EndScreen.Color;
+            var color = settings.Color;
             for (var i = 0; i < creditsTexts.Length; i++)
             {
                 creditsTexts[i].color = color;
@@ -154,7 +155,7 @@ namespace DarknessRises.Game.Death
             try
             {
                 return await UniTask.WhenAny(
-                    newRunButton.OnClickAsync(picking.Token),
+                    shopButton.OnClickAsync(picking.Token),
                     isAdOffered ? adButton.OnClickAsync(picking.Token) : UniTask.Never(picking.Token));
             }
             finally

@@ -187,7 +187,7 @@ What the character fires. Each Weapon has its own fire rate, ammo, Muzzle flash 
 _Avoid_: gun
 
 **Primary weapon**:
-The Weapon fired most of the time, such as the Pistol, Machine gun or Flamethrower. It uses a magazine and reloads.
+The Weapon fired most of the time, such as the Pistol, Machine gun or Flamethrower. It uses a magazine and reloads. A Run has one Primary: the one chosen in the Shop from the Weapons the player has unlocked. The Pistol is owned from the start.
 _Avoid_: main weapon
 
 **Secondary weapon**:
@@ -216,11 +216,11 @@ Coming back to life where the character died, with full hit points and a burst o
 _Avoid_: revive, respawn, second chance
 
 **Restart**:
-Ending the current Run and starting a new one from the first Level.
+Ending the current Run and starting a new one from the first Level, straight away: it skips the end screen and the Shop, and its Credits are banked first.
 _Avoid_: retry
 
 **Exit**:
-Ending the Run, after dying or from the pause menu. The end screen shows the Run's Score, the Level reached and Enemies killed, then the Credits the Run earned and the new total in the bank, counted up. It offers the end-of-Run ad, and it leads to the Shop once the Shop exists.
+Ending the Run, after dying or from the pause menu. The end screen shows the Run's Score, the Level reached and Enemies killed, then the Credits the Run earned and the new total in the bank, counted up. It offers the end-of-Run ad, and it leads to the Shop.
 _Avoid_: quit, give up
 
 **Pause**:
@@ -264,5 +264,9 @@ The player's durable progress on the device: the bank, and what was bought in th
 _Avoid_: profile, account, progress (that's how far along the Route the character is)
 
 **Shop**:
-Where Credits are spent. It is open only between Runs, never between Levels.
-_Avoid_: store, upgrade screen
+Where Credits are spent: the player unlocks Weapons there and chooses the Primary weapon for the next Run. It is open only between Runs, never between Levels: the end screen leads to it, and its PLAY starts the next Run. A first install goes straight into the first Level; once a Run has been finished, the app opens in the Shop.
+_Avoid_: store, upgrade screen, menu, lobby
+
+**Unlock**:
+Buying a Weapon in the Shop, once, with Credits. An unlocked Weapon is owned for good and can be chosen as the Primary weapon.
+_Avoid_: purchase (for a Weapon), acquire

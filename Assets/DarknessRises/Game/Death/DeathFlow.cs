@@ -18,7 +18,8 @@ namespace DarknessRises.Game.Death
     /// Restart or Exit. All three go through the <see cref="RunFlow"/>.
     /// Continue shows a rewarded ad; once it's watched, the character comes back where it died with full hit points
     /// and a burst of light that pushes nearby Enemies back, and the Level carries on. Restart starts a new Run at once;
-    /// Exit ends the Run and shows the end screen, which then starts a new Run. Whoever runs the Levels (the boot) loads it.
+    /// Exit ends the Run and shows the end screen, which the player leaves for the Shop. Whoever runs the Levels (the boot)
+    /// loads what comes next.
     /// </summary>
     public sealed class DeathFlow : MonoBehaviour
     {
@@ -133,7 +134,7 @@ namespace DarknessRises.Game.Death
                     default:
                         run.Exit();
                         await endScreen.ShowAsync(run.Record, cancellationToken);
-                        run.StartNewRun();
+                        run.Leave();
                         return;
                 }
             }

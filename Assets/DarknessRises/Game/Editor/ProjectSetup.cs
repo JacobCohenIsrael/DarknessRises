@@ -64,21 +64,23 @@ namespace DarknessRises.Game.Editor
             }
         }
 
-        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room and the boot scene.</summary>
+        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room, the Shop and the boot scene.</summary>
         public static void ApplyAndBuildTestRoom()
         {
             Apply();
             TestRoomBuilder.Build();
+            Shop.ShopBuilder.Build();
             MarkSharedContent();
             BootBuilder.Build();
         }
 
-        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room, the Level and the boot scene.</summary>
+        /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room, the Level, the Shop and the boot scene.</summary>
         public static void ApplyAndBuildAll()
         {
             Apply();
             TestRoomBuilder.Build();
             Levels.LevelBuilder.Build();
+            Shop.ShopBuilder.Build();
             MarkSharedContent();
             BootBuilder.Build();
         }

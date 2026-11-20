@@ -10,6 +10,9 @@ namespace DarknessRises.Game.Credits
     [CreateAssetMenu(menuName = "Darkness Rises/Credits Definition", fileName = "CreditsDefinition", order = 95)]
     public sealed class CreditsDefinition : ScriptableObject
     {
+        [SerializeField, Tooltip("Credits have their own colour everywhere they show (the end screen, the Shop), so they never read as the Score.")]
+        private Color color = new(0.35f, 1f, 0.78f, 1f);
+
         [SerializeField, Tooltip("The Credits a cleared Level (its Boss beaten) pays on top of its kills, growing with the Level number.")]
         private LevelClearBonusSettings levelClearBonus = new();
 
@@ -19,6 +22,7 @@ namespace DarknessRises.Game.Credits
         [SerializeField, Tooltip("How the end screen shows the Credits a Run earned and the new total.")]
         private CreditsEndScreenSettings endScreen = new();
 
+        public Color Color => color;
         public LevelClearBonusSettings LevelClearBonus => levelClearBonus;
         public EndOfRunAdSettings EndOfRunAd => endOfRunAd;
         public CreditsEndScreenSettings EndScreen => endScreen;

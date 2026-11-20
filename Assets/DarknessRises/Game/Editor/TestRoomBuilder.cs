@@ -16,6 +16,7 @@ using DarknessRises.Game.Editor.Levels;
 using DarknessRises.Game.Editor.Pausing;
 using DarknessRises.Game.Editor.Player;
 using DarknessRises.Game.Editor.Runs;
+using DarknessRises.Game.Editor.Shop;
 using DarknessRises.Game.Editor.Skills;
 using DarknessRises.Game.Editor.Waves;
 using DarknessRises.Game.Editor.Weapons;
@@ -189,9 +190,11 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("rideCamera").objectReferenceValue = rideCamera;
             serialized.FindProperty("route").objectReferenceValue = route;
             var pistol = PistolBuilder.LoadOrCreatePistol();
+            var machineGun = PrimaryWeaponsBuilder.LoadOrCreateMachineGun(pistol);
+            var flamethrower = PrimaryWeaponsBuilder.LoadOrCreateFlamethrower(pistol);
             serialized.FindProperty("pistol").objectReferenceValue = pistol;
-            serialized.FindProperty("machineGun").objectReferenceValue = PrimaryWeaponsBuilder.LoadOrCreateMachineGun(pistol);
-            serialized.FindProperty("flamethrower").objectReferenceValue = PrimaryWeaponsBuilder.LoadOrCreateFlamethrower(pistol);
+            serialized.FindProperty("machineGun").objectReferenceValue = machineGun;
+            serialized.FindProperty("flamethrower").objectReferenceValue = flamethrower;
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
             serialized.FindProperty("flare").objectReferenceValue = SkillsBuilder.LoadOrCreateFlare();
             serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();
@@ -200,6 +203,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("continue").objectReferenceValue = ContinueBuilder.LoadOrCreateContinue();
             serialized.FindProperty("gestures").objectReferenceValue = GestureBuilder.LoadOrCreateGestures();
             serialized.FindProperty("credits").objectReferenceValue = CreditsBuilder.LoadOrCreateCredits();
+            serialized.FindProperty("shop").objectReferenceValue = ShopBuilder.LoadOrCreateShop(pistol, machineGun, flamethrower);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             WavesBuilder.AuthorPlaceholderWaves(route);
 

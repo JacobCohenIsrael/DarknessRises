@@ -20,6 +20,7 @@ namespace DarknessRises.Game.Editor.Content
     /// <item><b>Enemies</b>: each Enemy type's prefab and sounds, packed one asset per bundle so a Level loads only the
     /// Enemy types it uses. Can change after release.</item>
     /// <item><b>Level 1</b> (one group per Level): the Level's scene. Can change after release.</item>
+    /// <item><b>Shop</b>: the Shop's scene, loaded between Runs. Can change after release.</item>
     /// <item><b>Sandbox</b>: the Test Room.</item>
     /// </list>
     /// Groups that can change after release build and load through the profile's Remote paths, and the catalog is built
@@ -32,6 +33,7 @@ namespace DarknessRises.Game.Editor.Content
         public const string SharedGroup = "Shared";
         public const string EnemiesGroup = "Enemies";
         public const string SandboxGroup = "Sandbox";
+        private const string ShopGroupName = "Shop";
 
         private const string DefaultLocalGroupName = "Default Local Group";
         private const string AssetGuidProperty = "m_AssetGUID";
@@ -97,6 +99,13 @@ namespace DarknessRises.Game.Editor.Content
             var name = levelName;
             Group(name, remote: true, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
             return name;
+        }
+
+        /// <summary>The group holding the Shop's scene, set up for content updates like a Level's.</summary>
+        public static string ShopGroup()
+        {
+            Group(ShopGroupName, remote: true, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
+            return ShopGroupName;
         }
 
         /// <summary>Marks <paramref name="asset"/> addressable in <paramref name="groupName"/>, addressed by its file name.</summary>

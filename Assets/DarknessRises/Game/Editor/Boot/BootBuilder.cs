@@ -1,6 +1,7 @@
 using DarknessRises.Game.Boot;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
+using DarknessRises.Game.Editor.Shop;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -9,8 +10,9 @@ using UnityEngine.Rendering.Universal;
 namespace DarknessRises.Game.Editor.Boot
 {
     /// <summary>
-    /// Builds the boot scene, the only scene in Build Settings: a Bootstrap that loads the Level through Addressables,
-    /// a camera that keeps the screen black while no Level is showing, and the build version label. Build the Level and the Test Room first.
+    /// Builds the boot scene, the only scene in Build Settings: a Bootstrap that loads the Level and the Shop through
+    /// Addressables, a camera that keeps the screen black while no Level is showing, and the build version label.
+    /// Build the Level, the Shop and the Test Room first.
     /// </summary>
     public static class BootBuilder
     {
@@ -64,6 +66,7 @@ namespace DarknessRises.Game.Editor.Boot
             var definition = TestRoomBuilder.LoadOrCreate<BootDefinition>(BootDefinitionPath);
             var serialized = new SerializedObject(definition);
             SetScene(serialized.FindProperty("levelScene"), LevelBuilder.ScenePath);
+            SetScene(serialized.FindProperty("shopScene"), ShopBuilder.ScenePath);
             SetScene(serialized.FindProperty("testRoomScene"), TestRoomBuilder.ScenePath);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(definition);

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f2a11f9e732782428ef7ad6ee8c12d0, type: 3}
+  m_Name: Rat
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Critters.CritterDefinition
+  prefab:
+    m_AssetGUID: d87a6a7cb9efa0e4d9fa08f2888c3274
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  schedule:
+    walkingChancePerSecond: 0.05
+    afterClearChancePerSecond: 0.25
+    waveFightChancePerSecond: 0.01
+    cooldownSeconds: 14
+    firstDelaySeconds: 6
+    maxAlive: 1
+  dash:
+    aheadDegrees: 60
+    minPassMetres: 4.5
+    maxPassMetres: 7
+    minLengthMetres: 5
+    maxLengthMetres: 8
+    minSpeed: 4.5
+    maxSpeed: 6.5
+    placementAttempts: 6
+    floorSearchMetres: 1
+  eyes:
+    range: 7.5
+    fadeDistance: 1.5
+    color: {r: 2.2, g: 1.4, b: 0.35, a: 1}
+  sounds:
+    scurryClips:
+    - m_AssetGUID: 5027c464c917eb14cb042556fb054951
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    - m_AssetGUID: 1e2dcbea73060294491fd210015c682c
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    - m_AssetGUID: 5bfbb652e8a734eb0a68fcb972453274
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    scurryLatestStartSeconds: 6
+    scurryMinPitch: 0.95
+    scurryMaxPitch: 1.15
+    scurryVolume: 0.45
+    scurryFadeSeconds: 0.2
+    squeakClips:
+    - m_AssetGUID: d4358666844e212469c7bc3ba4bd5918
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    squeakMinPitch: 1
+    squeakMaxPitch: 1.2
+    squeakVolume: 0.6
+    hearingRange: 18

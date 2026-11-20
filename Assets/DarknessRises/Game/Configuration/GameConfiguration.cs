@@ -1,12 +1,16 @@
+using DarknessRises.Game.Ambience;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Continues;
 using DarknessRises.Game.Credits;
+using DarknessRises.Game.Critters;
+using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
+using DarknessRises.Game.Phantoms;
 using DarknessRises.Game.Player;
 using DarknessRises.Game.Routes;
 using DarknessRises.Game.Runs;
@@ -83,6 +87,17 @@ namespace DarknessRises.Game.Configuration
 
         [SerializeField, Tooltip("The volume sliders for Music, Sound and Ambient: their defaults, how loudness follows them, the sample sound and their panel's wording.")]
         private AudioVolumeSettings audioVolumes = new();
+        [SerializeField, Tooltip("The voices every Enemy's footsteps share, and how many Enemies are heard stepping at once. Each Enemy type's own steps are on its definition.")]
+        private FootstepVoiceSettings footstepVoices = new();
+
+        [SerializeField, Tooltip("Critters: small, harmless animals that dart through the dark to make the player jump. Not Enemies. Leave empty for none.")]
+        private CritterDefinition critters;
+
+        [SerializeField, Tooltip("Phantom eyes: eyes that look out of the dark but aren't really there, far out, when no Enemy is near. Leave empty for none.")]
+        private PhantomEyesDefinition phantomEyes;
+
+        [SerializeField, Tooltip("The ambient bed: now and then a quiet sound from the dark up near the ceiling, such as bats. Leave empty for none.")]
+        private AmbienceDefinition ambience;
 
         public PlayerDefinition Player => player;
         public CameraDefinition RideCamera => rideCamera;
@@ -112,5 +127,9 @@ namespace DarknessRises.Game.Configuration
         public CreditsDefinition Credits => credits;
         public ShopDefinition Shop => shop;
         public AudioVolumeSettings AudioVolumes => audioVolumes;
+        public FootstepVoiceSettings FootstepVoices => footstepVoices;
+        public CritterDefinition Critters => critters;
+        public PhantomEyesDefinition PhantomEyes => phantomEyes;
+        public AmbienceDefinition Ambience => ambience;
     }
 }

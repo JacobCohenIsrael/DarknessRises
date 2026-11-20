@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Enemies.Tells;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -29,6 +30,9 @@ namespace DarknessRises.Game.Enemies
         [SerializeField, Min(0.1f), Tooltip("Metres beyond which the Enemy can't be heard.")]
         private float hearingRange = 25f;
 
+        [SerializeField, Tooltip("Its footsteps while it walks: a Tell heard from where it is before it can be seen.")]
+        private FootstepSettings footsteps = new();
+
         public AssetReferenceT<AudioClip> SpawnClip => spawnClip;
         public AssetReferenceT<AudioClip> HurtClip => hurtClip;
         public AssetReferenceT<AudioClip> DeathClip => deathClip;
@@ -36,5 +40,6 @@ namespace DarknessRises.Game.Enemies
         public AssetReferenceT<AudioClip> AttackClip => attackClip;
         public float Volume => volume;
         public float HearingRange => hearingRange;
+        public FootstepSettings Footsteps => footsteps;
     }
 }

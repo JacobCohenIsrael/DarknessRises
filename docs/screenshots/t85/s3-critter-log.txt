@@ -1,0 +1,11 @@
+# Critters, Test Room, headless and muted (#85 slice 3). Audio read from AudioSource state, never listened to.
+
+## A rat in the dark: only its eyes show (s3-critter-in-the-dark.jpg)
+dash (-9.32, 1.01) -> (-2.87, -0.91), 6.73 m at 5.96 m/s = 1.13 s; moment Walking. scurry: clip=Bullet Impacts - Multiple 1 playing=True pitch=1.82 vol=0.35 spatial=1. after 0.46 s: rat at (-6.68, 0.22), 5.33 m from the character, glint 1.00, alive True, out True. frozen.
+
+## Another rat caught in a Lightning flash (s3-critter-in-lightning.jpg)
+dash (-7.55, 2.88) -> (-1.32, -0.82), 7.25 m at 6.29 m/s = 1.15 s; moment Walking. scurry: clip=Bullet Impacts - Multiple 1 playing=True pitch=1.87 vol=0.35 spatial=1. after 0.45 s: rat at (-5.10, 1.43), 5.81 m from the character, glint 1.00, alive True, out True. flash: key light on=True intensity=1.86. frozen: rat at (-4.79, 1.24), 5.67 m from the character, glint 1.00, alive True, out True.
+
+## One real Shot of the Pistol at a rat, with a 5-hit streak to lose: before and after
+before: combo streak 5 x2, tallying False hits 0 misses 0, run kills 0 score 0 credits 0; rat at (4.53, 2.73), 6.74 m from the character, glint 0.51, alive True, out True. Shot landed: Neutral at (3.50, 3.50). rat at (3.65, 3.54), 6.50 m from the character, glint 0.00, alive False, out True; voice playing=True pitch=1.95. after: combo streak 5 x2, tallying False hits 0 misses 0, run kills 0 score 0 credits 0.
+before: combo streak 10 x3, tallying True hits 0 misses 0, run kills 0 score 0 credits 0; rat at (0.55, 4.38), 5.60 m from the character, glint 1.00, alive True, out True. Shot landed: Neutral at (1.33, 3.78). rat at (1.43, 3.89), 5.46 m from the character, glint 0.00, alive False, out True; voice playing=True pitch=1.93. after: combo streak 10 x3, tallying True hits 0 misses 0, run kills 0 score 0 credits 0.

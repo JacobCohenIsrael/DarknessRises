@@ -10,8 +10,8 @@ namespace DarknessRises.Game.Content
     /// <summary>
     /// The content a playable scene loads before it starts, read from the definitions' Addressables references:
     /// the Primary weapons' Shots, hit sparks, Gunshots, Firing loops and reload sounds, the Station banners' sounds, the Grenade,
-    /// the character's sounds, the storm loop, the end screen's Credits sound, the prefab and sounds of every Enemy type its
-    /// fights use, and its Boss's sounds.
+    /// the character's sounds, the storm loop, the end screen's Credits sound, the prefab and sounds (footsteps included) of
+    /// every Enemy type its fights use, the Critters, the Phantom eyes, the ambient bed, and its Boss's sounds.
     /// </summary>
     public static class GameContent
     {
@@ -56,6 +56,26 @@ namespace DarknessRises.Game.Content
             content.Add(configuration.Credits.EndScreen.BonusClip);
             content.Add(configuration.AudioVolumes.SampleClip);
 
+            var critters = configuration.Critters;
+            if (critters != null)
+            {
+                content.Add(critters.Prefab);
+                content.Add(critters.Sounds.ScurryClips);
+                content.Add(critters.Sounds.SqueakClips);
+            }
+
+            var phantomEyes = configuration.PhantomEyes;
+            if (phantomEyes != null)
+            {
+                content.Add(phantomEyes.Prefab);
+                content.Add(phantomEyes.WhisperClips);
+            }
+
+            if (configuration.Ambience != null)
+            {
+                content.Add(configuration.Ambience.Clips);
+            }
+
             var boss = runsLevel ? configuration.Level.Boss : null;
             if (boss != null)
             {
@@ -76,6 +96,8 @@ namespace DarknessRises.Game.Content
                 content.Add(audio.WindUpClip);
                 content.Add(audio.AttackClip);
                 content.Add(enemyType.Tells.Sounds.Clips);
+                content.Add(audio.Footsteps.Clips);
+                content.Add(audio.Footsteps.DragClips);
             }
 
             return content;

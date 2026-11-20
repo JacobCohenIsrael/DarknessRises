@@ -58,6 +58,43 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     volume: 0.8
     hearingRange: 25
+    footsteps:
+      clips:
+      - m_AssetGUID: cfaa31361f7ba4a23b747862467ff938
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: dcfc7dfb0dfd04a50a68e5c5d29e67c0
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 80e9f3f626b53418ebb33bcc0bf2e7fd
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      - m_AssetGUID: 8503c42970d2247a89300b4be374668c
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      dragClips:
+      - m_AssetGUID: 490995ba23424453b8421153f19e5d1b
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      dragVolume: 0.45
+      maxStepSeconds: 0.8
+      strideMetres: 0.75
+      limp: 0.4
+      firstStepStrides: 0.3
+      stopSpeed: 0.3
+      minPitch: 0.9
+      maxPitch: 1.05
+      volume: 0.55
   death:
     lingerSeconds: 0.5
     sinkSeconds: 1.6
@@ -80,6 +117,12 @@ MonoBehaviour:
       range: 7
       fadeDistance: 1.5
       color: {r: 3, g: 0.7, b: 0.15, a: 1}
+      opening:
+        seconds: 1.2
+        shutShare: 0.2
+        peekShare: 0.3
+        peekStrength: 0.35
+        blinkShare: 0.15
     sounds:
       clips:
       - m_AssetGUID: ac6034ade498bb94b87620cdf6eac48b

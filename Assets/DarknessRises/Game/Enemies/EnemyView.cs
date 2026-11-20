@@ -87,6 +87,15 @@ namespace DarknessRises.Game.Enemies
 
         public EnemyKnockback Knockback { get; private set; }
 
+        /// <summary>When its feet come down while it walks. Ticked by the footsteps view, from <see cref="WalkingSpeed"/>.</summary>
+        public FootstepCadence Footsteps { get; private set; }
+
+        /// <summary>
+        /// Metres per second of Enemy time it walks at under its own power: 0 while it stands (a Wind-up, an attack, a
+        /// Stagger), slides from a push-back, or is dead.
+        /// </summary>
+        public float WalkingSpeed { get; private set; }
+
         /// <summary>
         /// Called once, when the pool creates this Enemy. Its sounds come from <paramref name="content"/>, already loaded.
         /// <paramref name="ramp"/> scales its authored hit points and speed for the Level it fights in.
@@ -149,6 +158,7 @@ namespace DarknessRises.Game.Enemies
 
             var knockback = definition.Knockback;
             Knockback = new EnemyKnockback(knockback.Multiplier, knockback.MaxMetres, knockback.MaxMetresPerSecond);
+            Footsteps = audio.Footsteps.CreateCadence();
 
             Enemy.Hurt += OnHurt;
             Enemy.Died += OnDied;
@@ -195,6 +205,8 @@ namespace DarknessRises.Game.Enemies
             secondsUntilPathRefresh = 0f;
             pushSecondsLeft = 0f;
             Knockback.Clear();
+            Footsteps.Stop();
+            WalkingSpeed = 0f;
 
             Enemy.Spawn(hitPoints);
             Behaviour.Begin();
@@ -249,6 +261,7 @@ namespace DarknessRises.Game.Enemies
             Behaviour.Tick(deltaSeconds, IsCharacterInRange());
             ShowWindUp(Behaviour.State == EnemyBehaviourState.WindingUp);
 
+            var walks = false;
             if (pushSecondsLeft > 0f)
             {
                 Slide(deltaSeconds);
@@ -256,14 +269,36 @@ namespace DarknessRises.Game.Enemies
             else if (Behaviour.IsChasing)
             {
                 Hunt(deltaSeconds);
+                walks = true;
             }
             else
             {
                 HoldStill(deltaSeconds);
             }
 
+            ShowWalkingSpeed(walks);
+
             // On top of the chase, Wind-up, Stagger or push-back: the hit moves it without changing what it does.
             BeKnockedBack(deltaSeconds);
+        }
+
+        // The agent's velocity runs on Enemy time already (Slow-mo scales it), so it's scaled back to Enemy time here.
+        private void ShowWalkingSpeed(bool walks)
+        {
+            if (!walks || !agent.isOnNavMesh)
+            {
+                WalkingSpeed = 0f;
+                return;
+            }
+
+            if (time.Scale <= 0f)
+            {
+                return;
+            }
+
+            var velocity = agent.velocity;
+            velocity.y = 0f;
+            WalkingSpeed = velocity.magnitude / time.Scale;
         }
 
         private void OnDestroy()
@@ -493,6 +528,8 @@ namespace DarknessRises.Game.Enemies
         {
             Play(deathClip);
             tells.Silence();
+            WalkingSpeed = 0f;
+            Footsteps.Stop();
             Killed?.Invoke(this);
 
             // Out of the way of Shots. A body still being pushed by the killing hit keeps its agent until it comes to

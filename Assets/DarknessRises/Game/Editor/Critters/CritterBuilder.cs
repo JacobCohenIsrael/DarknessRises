@@ -1,4 +1,6 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Critters;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using UnityEditor;
 using UnityEngine;
@@ -72,6 +74,9 @@ namespace DarknessRises.Game.Editor.Critters
                 serialized.FindProperty("prefab"),
                 () => LoadOrCreatePrefab().gameObject,
                 AddressableContent.EnemiesGroup);
+
+            // A Critter's scurry and squeak are Sound. A prefab from before the categories gets it here.
+            AudioRouting.RouteUnroutedInPrefab(RatPrefabPath, AudioCategory.Sound);
             var scurries = serialized.FindProperty("sounds.scurryClips");
             var swapping = OnlyPlaceholders(scurries, ScurryPlaceholderPaths);
             HorrorSoundImport.ReplacePlaceholders(scurries, ScurryPlaceholderPaths, ScurryClipPaths, HorrorClipLength.Medium, AddressableContent.EnemiesGroup);
@@ -161,6 +166,7 @@ namespace DarknessRises.Game.Editor.Critters
             var voice = root.AddComponent<AudioSource>();
             voice.playOnAwake = false;
             voice.spatialBlend = 1f;
+            AudioRouting.Route(voice, AudioCategory.Sound);
 
             var renderers = new Renderer[Parts.Length + EyeNames.Length];
             for (var i = 0; i < Parts.Length; i++)

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Cameras;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
@@ -334,7 +335,7 @@ namespace DarknessRises.Game.Bosses
             impulse.ImpulseDuration = look.ImpactShakeSeconds;
 
             voice.playOnAwake = false;
-            voice.volume = look.Volume;
+            voice.SetVolume(look.Volume);
 
             // Its sounds run on Enemy time too, so Slow-mo slows them.
             enemyTime.ScaleChanged += OnEnemyTimeScaled;

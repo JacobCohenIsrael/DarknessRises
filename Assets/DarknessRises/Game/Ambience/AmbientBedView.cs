@@ -85,7 +85,7 @@ namespace DarknessRises.Game.Ambience
             voice.clip = clip;
             voice.pitch = random.Range(definition.MinPitch, definition.MaxPitch);
             voice.time = slice.StartSeconds;
-            voice.volume = 0f;
+            voice.SetVolume(0f);
             voice.Play();
             secondsIn = 0f;
             isPlaying = true;
@@ -117,7 +117,7 @@ namespace DarknessRises.Game.Ambience
             }
 
             cut.Tick(deltaSeconds);
-            voice.volume = cut.IsFading ? cut.Volume : definition.Volume * slice.Volume(secondsIn);
+            voice.SetVolume(cut.IsFading ? cut.Volume : definition.Volume * slice.Volume(secondsIn));
             if (slice.IsOver(secondsIn) || (cut.IsFading && !cut.IsAudible))
             {
                 voice.Stop();
@@ -126,11 +126,12 @@ namespace DarknessRises.Game.Ambience
             }
         }
 
-        // The one place the bed's voice is made: route it to the ambient mixer group here.
+        // The one place the bed's voice is made: it's Ambient, so the Ambient slider sets it (ADR 0010).
         private AudioSource CreateVoice()
         {
-            var source = new GameObject("Ambient Bed Voice").AddComponent<AudioSource>();
-            source.transform.SetParent(transform, false);
+            var sourceObject = new GameObject("Ambient Bed Voice");
+            sourceObject.transform.SetParent(transform, false);
+            var source = AudioCategorySource.Add(sourceObject, AudioCategory.Ambient).Source;
             source.playOnAwake = false;
             source.loop = false;
             source.spatialBlend = 1f;

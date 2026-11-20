@@ -248,7 +248,7 @@ Ending the Run, after dying or from the pause menu. The end screen shows the Run
 _Avoid_: quit, give up
 
 **Pause**:
-Freezing the Level while the character is alive in it: Enemies, Lightning, Skill cooldowns, Grenade refill and sound all stop, and the pause menu offers Resume, Restart and Exit. The player pauses, or the game does when the app loses focus; only the player resumes.
+Freezing the Level while the character is alive in it: Enemies, Lightning, Skill cooldowns, Grenade refill and sound all stop, and the pause menu offers Resume, Sound, Restart and Exit. Sound opens the Volume panel, and while it's open the Ambient sounds play on so the player hears that slider. The player pauses, or the game does when the app loses focus; only the player resumes.
 _Avoid_: stop, break
 
 **Score**:
@@ -302,3 +302,24 @@ _Avoid_: perk, boost, power-up, skill tree, level-up
 **Run's stats**:
 The numbers a Run plays with: the authored ones with the player's Upgrades applied. They're worked out when the Run's Level starts and never change what was authored.
 _Avoid_: buffs, modifiers, build
+
+## Audio
+
+**Audio category**:
+One of the three groups every sound in the game belongs to, Sound, Ambient or Music, each with its own volume slider. Every sound source is put in one when it's built, and a sound plays at its own volume times its category's.
+_Avoid_: channel, bus, mixer group
+
+**Sound**:
+The Audio category of everything the player's actions and the threats make: Gunshots and Firing loops, reloads, the Grenade, Enemies' voices, Wind-ups, attacks and footsteps, Critters, the Boss, the Station banners, and the Continue, Shop and HUD sounds. As a category name it's capitalized; "a sound" is still any sound.
+_Avoid_: SFX, effects
+
+**Ambient**:
+The Audio category of the world around the character: the storm bed and its Rumble, the Ambient bed, and the Phantom eyes' whispers and breath.
+_Avoid_: atmosphere, background, environment
+
+**Music**:
+The Audio category of music. The game has none yet; the category and its slider are ready for it.
+
+**Volume panel**:
+The panel with a slider for each Audio category, from 0 % (silent) to 100 % (as authored), opened from the pause menu's Sound button or the Shop's SOUND button. A slider changes its sounds as it moves, letting go of the Sound slider plays a short sample, and the settings stay on the device.
+_Avoid_: settings menu, options, mixer

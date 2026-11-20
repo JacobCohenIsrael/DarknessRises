@@ -370,6 +370,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5501969705523621357}
   - component: {fileID: 2629772152584533672}
+  - component: {fileID: 5624434039263245919}
   m_Layer: 0
   m_Name: Tell Voice
   m_TagString: Untagged
@@ -489,6 +490,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5624434039263245919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3832251027452681082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c74ea894c7d184d80d62403f61e24c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Audio.AudioCategorySource
+  category: 0
 --- !u!1 &4342068654046052237
 GameObject:
   m_ObjectHideFlags: 0
@@ -683,6 +697,7 @@ GameObject:
   - component: {fileID: 5893553101385802929}
   - component: {fileID: 8717080933844714037}
   - component: {fileID: 4848773818498921127}
+  - component: {fileID: 443960986234906301}
   m_Layer: 0
   m_Name: Shambler
   m_TagString: Untagged
@@ -898,3 +913,16 @@ MonoBehaviour:
   - {fileID: 9138725531927131043}
   - {fileID: 925538019520659851}
   tellVoice: {fileID: 2629772152584533672}
+--- !u!114 &443960986234906301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4817130450797629199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c74ea894c7d184d80d62403f61e24c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Audio.AudioCategorySource
+  category: 0

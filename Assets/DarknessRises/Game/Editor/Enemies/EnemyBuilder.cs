@@ -1,3 +1,5 @@
+using DarknessRises.Game.Audio;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Enemies.Tells;
@@ -298,6 +300,9 @@ namespace DarknessRises.Game.Editor.Enemies
             AddTells(figure.PrefabPath, figure.TellVoiceHeight);
             AddWindUpEyes(figure.PrefabPath);
 
+            // Everything an Enemy makes is Sound: its voice, its Tells. Prefabs from before the categories get it here.
+            AudioRouting.RouteUnroutedInPrefab(figure.PrefabPath, AudioCategory.Sound);
+
             // Re-save so fields added since the asset was created are written with their defaults.
             EditorUtility.SetDirty(enemyType);
             return enemyType;
@@ -332,6 +337,7 @@ namespace DarknessRises.Game.Editor.Enemies
             var voice = root.AddComponent<AudioSource>();
             voice.playOnAwake = false;
             voice.spatialBlend = 1f;
+            AudioRouting.Route(voice, AudioCategory.Sound);
 
             var renderers = new MeshRenderer[figure.Parts.Length + EyeNames.Length];
             for (var i = 0; i < figure.Parts.Length; i++)
@@ -446,6 +452,7 @@ namespace DarknessRises.Game.Editor.Enemies
                 var tellVoice = tellVoiceObject.GetComponent<AudioSource>();
                 tellVoice.playOnAwake = false;
                 tellVoice.spatialBlend = 1f;
+                AudioRouting.Route(tellVoice, AudioCategory.Sound);
 
                 var tells = contents.AddComponent<EnemyTellView>();
                 var serializedTells = new SerializedObject(tells);

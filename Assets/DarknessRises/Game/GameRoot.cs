@@ -164,6 +164,9 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The pause button and menu. Pausing freezes the whole Level; see PauseFlow.")]
         private PauseFlow pauseFlow;
 
+        [SerializeField, Tooltip("The volume sliders, opened from the pause menu.")]
+        private VolumePanelView volumePanel;
+
         [Header("Continue")]
         [SerializeField, Tooltip("The placeholder ad watched for a Continue. A real ad network replaces it later.")]
         private FakeAdView continueAd;
@@ -425,6 +428,8 @@ namespace DarknessRises.Game
             ShowHealthAndDeath();
             KeepScore();
             pauseFlow.Watch(new GamePause(run), run);
+            var audioVolumes = configuration.AudioVolumes;
+            volumePanel.Use(audioVolumes, content.Clip(audioVolumes.SampleClip));
             // The storm that swells after every flash, and the Boss's growl that warns of its flashes.
             var lightningRandom = new SystemRandom();
             lightning.UseStorm(content.Clip(configuration.Lightning.Storm.Clip), lightningRandom, enemyTime);

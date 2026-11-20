@@ -1,3 +1,4 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Rooms;
@@ -181,7 +182,7 @@ namespace DarknessRises.Game.Lightning
             warningVoices[index].Start(warning.Volume, Mathf.Max(0f, secondsUntilFlash), warning.FadeOutSeconds);
             source.clip = warningClip;
             source.pitch = 1f;
-            source.volume = warning.Volume;
+            source.SetVolume(warning.Volume);
             source.Play();
 
             // Seeking a clip that hasn't loaded fails (WebGL decodes audio late): it plays from the start instead.
@@ -247,7 +248,7 @@ namespace DarknessRises.Game.Lightning
             }
 
             stormBed.Tick(deltaSeconds);
-            stormSource.volume = stormBed.Volume;
+            stormSource.SetVolume(stormBed.Volume);
             stormSource.pitch = EnemyVoicePitch.For(stormBed.Pitch, enemyTime?.Scale ?? EnemyTime.NormalScale);
 
             // Started once, when the clip is ready (WebGL decodes audio late), and never stopped: it loops on, silent
@@ -278,7 +279,7 @@ namespace DarknessRises.Game.Lightning
                 voice.Tick(deltaSeconds);
                 if (voice.IsPlaying)
                 {
-                    warningSources[i].volume = voice.Volume;
+                    warningSources[i].SetVolume(voice.Volume);
                 }
                 else
                 {

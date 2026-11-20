@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Randomness;
 using UnityEngine;
@@ -65,7 +66,7 @@ namespace DarknessRises.Game.Enemies.Tells
             tellVoice.spatialBlend = 1f;
             tellVoice.rolloffMode = AudioRolloffMode.Linear;
             tellVoice.maxDistance = audio.HearingRange;
-            tellVoice.volume = sounds.Volume;
+            tellVoice.SetVolume(sounds.Volume);
 
             // Slow-mo slows Tell sounds with the Enemy's other sounds, on top of each sound's random pitch.
             time.ScaleChanged += OnEnemyTimeScaled;

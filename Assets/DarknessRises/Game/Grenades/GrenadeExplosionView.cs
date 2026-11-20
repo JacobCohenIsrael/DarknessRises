@@ -62,7 +62,7 @@ namespace DarknessRises.Game.Grenades
             bang.spatialBlend = 1f;
             bang.rolloffMode = AudioRolloffMode.Linear;
             bang.maxDistance = settings.HearingRange;
-            bang.volume = settings.Volume;
+            bang.SetVolume(settings.Volume);
 
             var shake = impulse.ImpulseDefinition;
             shake.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Explosion;

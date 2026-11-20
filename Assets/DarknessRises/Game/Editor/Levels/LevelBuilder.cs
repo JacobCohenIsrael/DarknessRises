@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using DarknessRises.Game.Audio;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Bosses;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Enemies;
@@ -322,6 +324,7 @@ namespace DarknessRises.Game.Editor.Levels
             // Show the authored values in the Scene view too, not only in Play mode.
             gameRoot.Apply();
 
+            AudioRouting.RequireRouted(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
             // Loaded additively through Addressables by the boot scene; only the boot scene is in Build Settings.
             AddressableContent.Add(AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath), AddressableContent.LevelGroup(GroupName));

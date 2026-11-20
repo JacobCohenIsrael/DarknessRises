@@ -129,7 +129,7 @@ namespace DarknessRises.Game.Phantoms
 
         private CritterMoment Moment => CritterMoments.Of(run.Phase, rhythm.Beat);
 
-        // The one place the whisper's voice is set up: route it to the ambient mixer group here.
+        // The one place the whisper's voice is set up: its builder puts it in the Ambient category (ADR 0010).
         private void Prepare()
         {
             voice.playOnAwake = false;
@@ -155,7 +155,7 @@ namespace DarknessRises.Game.Phantoms
         {
             var deltaSeconds = Time.deltaTime;
             whisper.Tick(deltaSeconds);
-            voice.volume = whisper.Volume;
+            voice.SetVolume(whisper.Volume);
             if (!whisper.IsAudible && voice.isPlaying && deltaSeconds > 0f)
             {
                 voice.Stop();
@@ -252,7 +252,7 @@ namespace DarknessRises.Game.Phantoms
             var latestStart = Mathf.Min(definition.WhisperLatestStartSeconds, clip.length - definition.MaxHoldSeconds * voice.pitch);
             voice.time = latestStart > 0f ? random.Range(0f, latestStart) : 0f;
             whisper.Start(definition.WhisperVolume);
-            voice.volume = whisper.Volume;
+            voice.SetVolume(whisper.Volume);
             voice.Play();
         }
 

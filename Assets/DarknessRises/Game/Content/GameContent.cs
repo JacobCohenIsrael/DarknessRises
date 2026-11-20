@@ -54,6 +54,7 @@ namespace DarknessRises.Game.Content
             content.Add(hitReaction.DeathClip);
             content.Add(configuration.Lightning.Storm.Clip);
             content.Add(configuration.Credits.EndScreen.BonusClip);
+            content.Add(configuration.AudioVolumes.SampleClip);
 
             var critters = configuration.Critters;
             if (critters != null)

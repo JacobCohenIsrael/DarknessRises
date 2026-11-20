@@ -1,3 +1,4 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Player;
@@ -68,7 +69,7 @@ namespace DarknessRises.Game.Health
             impulse.ImpulseDuration = settings.ShakeSeconds;
 
             voice.playOnAwake = false;
-            voice.volume = settings.Volume;
+            voice.SetVolume(settings.Volume);
             SetShown(true);
 
 #if UNITY_EDITOR || DEBUG

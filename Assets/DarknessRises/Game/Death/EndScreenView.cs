@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Ads;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Credits;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Runs;
@@ -186,7 +187,7 @@ namespace DarknessRises.Game.Death
             if (bonusClip != null)
             {
                 sound.clip = bonusClip;
-                sound.volume = look.BonusVolume;
+                sound.SetVolume(look.BonusVolume);
                 sound.time = Mathf.Clamp(look.BonusClipStartSeconds, 0f, Mathf.Max(0f, bonusClip.length - 0.01f));
                 sound.Play();
             }

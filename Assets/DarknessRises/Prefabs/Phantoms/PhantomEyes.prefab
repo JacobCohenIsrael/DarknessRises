@@ -191,6 +191,7 @@ GameObject:
   - component: {fileID: 7104951676378237768}
   - component: {fileID: 8327030890741764469}
   - component: {fileID: 2933168246959056815}
+  - component: {fileID: 2863935665177711052}
   m_Layer: 0
   m_Name: PhantomEyes
   m_TagString: Untagged
@@ -328,3 +329,16 @@ MonoBehaviour:
   - {fileID: 8676290448972718567}
   - {fileID: 7165372293853344380}
   voice: {fileID: 8327030890741764469}
+--- !u!114 &2863935665177711052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8457408978913619929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c74ea894c7d184d80d62403f61e24c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Audio.AudioCategorySource
+  category: 1

@@ -192,6 +192,7 @@ GameObject:
   - component: {fileID: 692009754257074757}
   - component: {fileID: 1531574869857702288}
   - component: {fileID: 2131937235072443243}
+  - component: {fileID: 6410329989495436381}
   m_Layer: 0
   m_Name: Rat
   m_TagString: Untagged
@@ -362,6 +363,19 @@ MonoBehaviour:
   eyes:
   - {fileID: 8126480903979836645}
   - {fileID: 845451394564071612}
+--- !u!114 &6410329989495436381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3819699107431785887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c74ea894c7d184d80d62403f61e24c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Audio.AudioCategorySource
+  category: 0
 --- !u!1 &4021610854160003771
 GameObject:
   m_ObjectHideFlags: 0

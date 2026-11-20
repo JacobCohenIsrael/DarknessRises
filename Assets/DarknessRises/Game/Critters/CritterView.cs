@@ -57,7 +57,7 @@ namespace DarknessRises.Game.Critters
         public float Glint => Mathf.Max(0f, glint);
 
         /// <summary>Called once, when the pool creates the Critter. Its sounds come from <paramref name="content"/>, already loaded.</summary>
-        /// <remarks>The one place a Critter's voice is set up: route it to the sound effects' mixer group here.</remarks>
+        /// <remarks>The one place a Critter's voice is set up: its builder puts it in the Sound category (ADR 0010).</remarks>
         public void Prepare(IObjectPool<CritterView> owner, CritterDefinition critterDefinition, ILoadedContent content, IRandom randomness)
         {
             pool = owner;
@@ -116,7 +116,7 @@ namespace DarknessRises.Game.Critters
                 var latestStart = Mathf.Min(sounds.ScurryLatestStartSeconds, clip.length - dash.Seconds * voice.pitch);
                 voice.time = latestStart > 0f ? random.Range(0f, latestStart) : 0f;
                 scurry.Start(sounds.ScurryVolume);
-                voice.volume = scurry.Volume;
+                voice.SetVolume(scurry.Volume);
                 voice.Play();
             }
         }
@@ -140,7 +140,7 @@ namespace DarknessRises.Game.Critters
             {
                 var pitch = random.Range(sounds.SqueakMinPitch, sounds.SqueakMaxPitch);
                 voice.pitch = pitch;
-                voice.volume = 1f;
+                voice.SetVolume(1f);
                 voice.PlayOneShot(clip, sounds.SqueakVolume);
 
                 // A clip's length is only known once its audio data has loaded (WebGL decodes audio late).
@@ -179,7 +179,7 @@ namespace DarknessRises.Game.Critters
             }
 
             scurry.Tick(deltaSeconds);
-            voice.volume = scurry.Volume;
+            voice.SetVolume(scurry.Volume);
             if (dash.IsOver(secondsIn) && !scurry.IsAudible)
             {
                 voice.Stop();

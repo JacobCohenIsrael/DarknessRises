@@ -1,3 +1,5 @@
+using DarknessRises.Game.Audio;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Phantoms;
 using UnityEditor;
@@ -53,6 +55,9 @@ namespace DarknessRises.Game.Editor.Phantoms
                 serialized.FindProperty("prefab"),
                 () => LoadOrCreatePrefab().gameObject,
                 AddressableContent.EnemiesGroup);
+
+            // The Phantom eyes' whisper and breath are Ambient. A prefab from before the categories gets it here.
+            AudioRouting.RouteUnroutedInPrefab(PrefabPath, AudioCategory.Ambient);
             var clips = serialized.FindProperty("whisperClips");
             var swapping = clips.arraySize == 0 || IsOnlyPlaceholder(clips);
             HorrorSoundImport.ReplacePlaceholders(clips, WhisperPlaceholderPaths, WhisperClipPaths, HorrorClipLength.Long, AddressableContent.EnemiesGroup);
@@ -90,6 +95,7 @@ namespace DarknessRises.Game.Editor.Phantoms
             var voice = root.AddComponent<AudioSource>();
             voice.playOnAwake = false;
             voice.spatialBlend = 1f;
+            AudioRouting.Route(voice, AudioCategory.Ambient);
 
             var eyes = new Renderer[EyeNames.Length];
             for (var i = 0; i < EyeNames.Length; i++)

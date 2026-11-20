@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Randomness;
 using DarknessRises.Game.Weapons;
@@ -150,7 +151,7 @@ namespace DarknessRises.Game.Enemies.Tells
                 var source = voiceSources[i];
                 if (voices.IsPlaying(i))
                 {
-                    source.volume = voiceVolumes[i] * voices.Gain(i, endFadeSeconds);
+                    source.SetVolume(voiceVolumes[i] * voices.Gain(i, endFadeSeconds));
                 }
                 else if (source.isPlaying)
                 {
@@ -189,18 +190,19 @@ namespace DarknessRises.Game.Enemies.Tells
             voiceVolumes[voice] = useDrag ? footsteps.DragVolume : footsteps.Volume;
             source.transform.position = enemy.transform.position;
             source.maxDistance = enemy.Definition.Audio.HearingRange;
-            source.volume = voiceVolumes[voice];
+            source.SetVolume(voiceVolumes[voice]);
             source.pitch = pitch;
             source.clip = clip;
             source.Play();
             Stepped?.Invoke(enemy, source);
         }
 
-        // The one place footstep voices are made: route them to the sound effects' mixer group here.
+        // The one place footstep voices are made: they're Sound, so the Sound slider sets them (ADR 0010).
         private AudioSource CreateVoice(int index)
         {
-            var voice = new GameObject($"Footstep Voice {index + 1}").AddComponent<AudioSource>();
-            voice.transform.SetParent(transform, false);
+            var voiceObject = new GameObject($"Footstep Voice {index + 1}");
+            voiceObject.transform.SetParent(transform, false);
+            var voice = AudioCategorySource.Add(voiceObject, AudioCategory.Sound).Source;
             voice.playOnAwake = false;
             voice.loop = false;
             voice.spatialBlend = 1f;

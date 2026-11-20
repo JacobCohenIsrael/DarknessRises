@@ -1,4 +1,6 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Editor.Hud;
@@ -18,8 +20,8 @@ namespace DarknessRises.Game.Editor.Shop
     /// <summary>
     /// Builds the Shop: its definition asset (the Primary weapons and every Upgrade it sells, with first-pass levels and
     /// prices) and its scene, which the boot loads through Addressables between Runs. The scene is a screen and nothing
-    /// else: one overlay canvas laid out for a landscape phone inside the safe area, an event system, a listener and a
-    /// sound. It has no camera, lights or world, so nothing of a Level is behind it. Everything is built from code; there
+    /// else: one overlay canvas laid out for a landscape phone inside the safe area, an event system, a listener, a
+    /// sound and the scene's volumes, with the volume panel behind a SOUND button. It has no camera, lights or world, so nothing of a Level is behind it. Everything is built from code; there
     /// is no imported art.
     /// </summary>
     public static class ShopBuilder
@@ -128,6 +130,11 @@ namespace DarknessRises.Game.Editor.Shop
         private const float HintLineGapToMiddle = 80f;
         private static readonly Vector2 PlayButtonSize = new(460f, 120f);
         private const float PlayFontSize = 84f;
+
+        // The SOUND button that opens the volume panel, at the left of the bottom bar, before the hint line.
+        private static readonly Vector2 SoundButtonSize = new(240f, 100f);
+        private const float SoundButtonFontSize = 40f;
+        private const float SoundButtonGap = 32f;
 
         /// <summary>
         /// Loads the Shop definition, creating it if it's missing. A definition with no Weapons gets the three Primaries
@@ -331,7 +338,8 @@ namespace DarknessRises.Game.Editor.Shop
                 configuration = TestRoomBuilder.LoadOrCreateConfiguration();
             }
 
-            var view = BuildScreen();
+            var volumes = AudioVolumesBuilder.Build(configuration);
+            var view = BuildScreen(volumes, out var volumePanel);
 
             // The screen's buttons are clicked through the Input System's UI module, by touch or by mouse.
             new GameObject("Event System", typeof(EventSystem), typeof(InputSystemUIInputModule));
@@ -343,8 +351,10 @@ namespace DarknessRises.Game.Editor.Shop
             var serializedRoot = new SerializedObject(root);
             serializedRoot.FindProperty("configuration").objectReferenceValue = configuration;
             serializedRoot.FindProperty("view").objectReferenceValue = view;
+            serializedRoot.FindProperty("volumePanel").objectReferenceValue = volumePanel;
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
 
+            AudioRouting.RequireRouted(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
 
             // Loaded additively through Addressables by the boot scene; only the boot scene is in Build Settings.
@@ -353,7 +363,7 @@ namespace DarknessRises.Game.Editor.Shop
             Debug.Log($"[ShopBuilder] Built {ScenePath}.");
         }
 
-        private static ShopView BuildScreen()
+        private static ShopView BuildScreen(SceneAudioVolumes volumes, out VolumePanelView volumePanel)
         {
             var canvasObject = new GameObject("Shop", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster), typeof(ShopView));
             var canvas = canvasObject.GetComponent<Canvas>();
@@ -400,13 +410,17 @@ namespace DarknessRises.Game.Editor.Shop
             var headingTemplate = BuildHeadingTemplate(templates);
             var rowTemplate = BuildRowTemplate(templates);
 
-            // The bottom bar: what owning a Weapon means on the left, the big PLAY on the right.
+            // The bottom bar: SOUND and what owning a Weapon means on the left, the big PLAY on the right.
+            var soundButton = AddButton(safeArea, "Sound Button", "SOUND", SoundButtonFontSize, ButtonColor, Color.white, out var soundLabel);
+            Corner((RectTransform)soundButton.transform, Vector2.zero, new Vector2(SideMargin, (BottomBarHeight - SoundButtonSize.y) / 2f), SoundButtonSize);
+            soundLabel.fontStyle = FontStyles.Bold;
+
             var hintLine = AddText(safeArea, "Hint Line", "Every unlocked Weapon comes along on a Run.", HintLineFontSize, DimTextColor, TextAlignmentOptions.Left);
             var hintRect = hintLine.rectTransform;
             hintRect.anchorMin = new Vector2(0f, 0f);
             hintRect.anchorMax = new Vector2(0.5f, 0f);
             hintRect.pivot = new Vector2(0f, 0f);
-            hintRect.offsetMin = new Vector2(SideMargin, (BottomBarHeight - HintLineHeight) / 2f);
+            hintRect.offsetMin = new Vector2(SideMargin + SoundButtonSize.x + SoundButtonGap, (BottomBarHeight - HintLineHeight) / 2f);
             hintRect.offsetMax = new Vector2(-HintLineGapToMiddle, (BottomBarHeight + HintLineHeight) / 2f);
             hintLine.textWrappingMode = TextWrappingModes.Normal;
 
@@ -418,6 +432,10 @@ namespace DarknessRises.Game.Editor.Shop
             sound.transform.SetParent(canvasObject.transform, false);
             sound.playOnAwake = false;
             sound.spatialBlend = 0f;
+            AudioRouting.Route(sound, AudioCategory.Sound);
+
+            // Over everything else on the screen.
+            volumePanel = VolumePanelBuilder.Build(canvasObject.transform, soundButton, soundLabel, volumes);
 
             var view = canvasObject.GetComponent<ShopView>();
             var serialized = new SerializedObject(view);

@@ -131,12 +131,12 @@ namespace DarknessRises.Game.EditModeTests.Phantoms
         }
 
         [TestCase(PhantomVanish.TimeUp, true)]
-        [TestCase(PhantomVanish.Lit, false)]
+        [TestCase(PhantomVanish.Lit, true)]
         [TestCase(PhantomVanish.AimedAt, false)]
         [TestCase(PhantomVanish.EnemyNear, false)]
         [TestCase(PhantomVanish.MomentEnded, false)]
         [TestCase(PhantomVanish.TooNear, false)]
-        public void Only_a_pair_that_held_its_time_opens_again_nearby(PhantomVanish vanish, bool hops)
+        public void Only_a_pair_that_held_its_time_or_was_lit_opens_again_nearby(PhantomVanish vanish, bool hops)
         {
             var relocation = new PhantomRelocation(1f, 2, 0.5f, 1f, 2f, 5f);
 

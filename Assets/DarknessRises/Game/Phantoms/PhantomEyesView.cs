@@ -15,7 +15,7 @@ namespace DarknessRises.Game.Phantoms
 {
     /// <summary>
     /// Makes the dark feel watched. When the <see cref="PhantomEyesSchedule"/> says so, a pair of Phantom eyes looks out
-    /// far from the character at a spot on the floor that is dark, in view and open to the character, or a lone voice
+    /// (as soon as a Lightning flash fades, <see cref="PhantomAfterFlash"/>) far from the character at a spot on the floor that is dark, in view and open to the character, or a lone voice
     /// comes from a dark spot. Up to an authored number of pairs show at once, each at its own spot; they blink while
     /// they hold, and a pair that held its time sometimes opens again nearby (<see cref="PhantomRelocation"/>). Voices
     /// never repeat the last clip (<see cref="PhantomVoicePicker"/>). Each frame each pair's
@@ -41,6 +41,7 @@ namespace DarknessRises.Game.Phantoms
         private PhantomEyesSpot voiceSpotShape;
         private PhantomRelocation relocation;
         private PhantomVoicePicker voicePicker;
+        private PhantomAfterFlash afterFlash;
         private PhantomEyesPair[] pairs;
         private Vector3[] otherSpots;
         private Transform character;
@@ -119,6 +120,7 @@ namespace DarknessRises.Game.Phantoms
             view.voiceSpotShape = phantomDefinition.ToVoiceSpot();
             view.relocation = phantomDefinition.ToRelocation();
             view.voicePicker = new PhantomVoicePicker(view.random);
+            view.afterFlash = phantomDefinition.ToAfterFlash();
             view.voiceClips = loadedContent.Clips(phantomDefinition.WhisperClips);
 
             // The most pairs of eyes, and one more so a lone voice can come while they're all out.
@@ -154,7 +156,7 @@ namespace DarknessRises.Game.Phantoms
             spotCount = lights.Gather(spots);
             for (var attempt = 0; attempt < definition.PlacementAttempts; attempt++)
             {
-                if (TryPlace(pair, spotShape.Pick(character.position, character.forward, random), true))
+                if (TryPlace(pair, spotShape.Pick(character.position, character.forward, random)))
                 {
                     pair.Hops = 0;
                     Open(pair);
@@ -184,7 +186,7 @@ namespace DarknessRises.Game.Phantoms
             for (var attempt = 0; attempt < definition.PlacementAttempts; attempt++)
             {
                 // A voice needs no screen: from any side, but still far out, on open floor, in the dark.
-                if (TryPlace(pair, voiceSpotShape.Pick(character.position, character.forward, random), false))
+                if (TryPlaceVoice(pair, voiceSpotShape.Pick(character.position, character.forward, random)))
                 {
                     pair.IsVoiceOnly = true;
                     pair.VoiceOnlyLeft = random.Range(definition.MinVoiceOnlySeconds, definition.MaxVoiceOnlySeconds);
@@ -220,10 +222,21 @@ namespace DarknessRises.Game.Phantoms
                 TickPair(pairs[i], deltaSeconds, moment, nearest, mayShow);
             }
 
-            var due = schedule.Tick(deltaSeconds, moment, nearest, EyesOut);
-            if (due == PhantomEvent.Eyes && AppearNow() == null)
+            // Due eyes wait for a flash to fade, then open into the dark it leaves.
+            if (!mayShow)
             {
-                schedule.Missed(due);
+                afterFlash.Cancel();
+            }
+
+            if (afterFlash.Tick(deltaSeconds, IsRoomLit()) && AppearNow() == null)
+            {
+                schedule.Missed(PhantomEvent.Eyes);
+            }
+
+            var due = schedule.Tick(deltaSeconds, moment, nearest, EyesOut);
+            if (due == PhantomEvent.Eyes)
+            {
+                afterFlash.Wait();
             }
             else if (due == PhantomEvent.Voice && voiceClips.Length > 0 && VoiceNow() == null)
             {
@@ -248,8 +261,12 @@ namespace DarknessRises.Game.Phantoms
 
             if (pair.IsHopping)
             {
-                // A fight or an Enemy near cancels the hop: nothing opens again.
-                pair.HopGapLeft -= deltaSeconds;
+                // A fight or an Enemy near cancels the hop: nothing opens again. The dark counts once the light is gone.
+                if (!IsLit(pair))
+                {
+                    pair.HopGapLeft -= deltaSeconds;
+                }
+
                 if (!mayShow)
                 {
                     pair.IsHopping = false;
@@ -306,7 +323,7 @@ namespace DarknessRises.Game.Phantoms
             var from = pair.transform.position;
             for (var attempt = 0; attempt < definition.PlacementAttempts; attempt++)
             {
-                if (TryPlace(pair, relocation.PickNear(from, random), true))
+                if (TryPlace(pair, relocation.PickNear(from, random)))
                 {
                     pair.Hops++;
                     Open(pair);
@@ -332,8 +349,8 @@ namespace DarknessRises.Game.Phantoms
         }
 
         // Puts the pair at the floor nearest to wanted, if that spot keeps every rule: on the floor and open to the
-        // character, far out, staying away along the walk, apart from the other pairs, dark, and (for eyes) in view.
-        private bool TryPlace(PhantomEyesPair pair, Vector3 wanted, bool mustBeSeen)
+        // character, far out, staying away along the walk, apart from the other pairs, dark, and in view.
+        private bool TryPlace(PhantomEyesPair pair, Vector3 wanted)
         {
             var search = definition.FloorSearchMetres;
             var position = character.position;
@@ -352,7 +369,23 @@ namespace DarknessRises.Game.Phantoms
             }
 
             pair.PlaceAt(floor.position, position);
-            return !IsLit(pair) && (!mustBeSeen || IsInView(pair));
+            return !IsLit(pair) && IsInView(pair);
+        }
+
+        // Puts the pair at the floor nearest to wanted for a lone voice: far out, apart from the other pairs, and dark. A
+        // sound needs no line of sight, so it may come from behind a wall or from the way the character came.
+        private bool TryPlaceVoice(PhantomEyesPair pair, Vector3 wanted)
+        {
+            var position = character.position;
+            if (!NavMesh.SamplePosition(wanted, out var floor, definition.FloorSearchMetres, NavMesh.AllAreas)
+                || !spotShape.IsFarOut(floor.position, position)
+                || !PhantomEyesSpot.IsApart(floor.position, otherSpots, OtherSpots(pair), definition.PairSeparationMetres))
+            {
+                return false;
+            }
+
+            pair.PlaceAt(floor.position, position);
+            return !IsLit(pair);
         }
 
         // Gathers where the other busy pairs are into otherSpots; returns how many.
@@ -406,6 +439,19 @@ namespace DarknessRises.Game.Phantoms
             for (var i = 0; i < spotCount; i++)
             {
                 if (spots[i].Lights(eyes) || spots[i].Lights(floor))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsRoomLit()
+        {
+            for (var i = 0; i < spotCount; i++)
+            {
+                if (spots[i].IsWholeRoom)
                 {
                     return true;
                 }

@@ -5,14 +5,15 @@ using UnityEngine;
 namespace DarknessRises.Game.Phantoms
 {
     /// <summary>
-    /// When a pair of Phantom eyes that held its time blinks out, it sometimes opens again a moment later at another dark
-    /// spot nearby: a "was that the same thing?" moment. Only a pair that ran out its time hops; one sent away by light,
-    /// aim, an Enemy or a fight never does, and a pair hops a few times at most. The new spot must pass every rule a
-    /// first spot does. Plain C# (ADR 0003).
+    /// When a pair of Phantom eyes goes away after holding its time, or because light reached it (a Lightning flash shows
+    /// nothing there), it sometimes opens again a moment later at another dark spot nearby: a "was that the same thing?"
+    /// moment. One sent away by aim, the character coming near, an Enemy or a fight never does, and a pair hops a few
+    /// times at most. The dark before it opens again counts only once the light is gone, and the new spot must pass
+    /// every rule a first spot does. Plain C# (ADR 0003).
     /// </summary>
     public readonly struct PhantomRelocation
     {
-        /// <param name="chance">Chance, from 0 to 1, that a pair whose time ran out opens again nearby.</param>
+        /// <param name="chance">Chance, from 0 to 1, that a pair whose time ran out, or that light reached, opens again nearby.</param>
         /// <param name="maxHops">Most times one pair may hop.</param>
         /// <param name="minGapSeconds">Fewest seconds of dark between blinking out and opening again.</param>
         /// <param name="maxGapSeconds">Most seconds of dark between blinking out and opening again.</param>
@@ -58,7 +59,7 @@ namespace DarknessRises.Game.Phantoms
         /// <summary>Whether a pair that went away for <paramref name="vanish"/>, having hopped <paramref name="hopsDone"/> times, opens again nearby.</summary>
         public bool Hops(PhantomVanish vanish, int hopsDone, IRandom random)
         {
-            return vanish == PhantomVanish.TimeUp && hopsDone < MaxHops && Chance > 0f && random.Range(0f, 1f) < Chance;
+            return (vanish == PhantomVanish.TimeUp || vanish == PhantomVanish.Lit) && hopsDone < MaxHops && Chance > 0f && random.Range(0f, 1f) < Chance;
         }
 
         /// <summary>Seconds of dark before the hop opens.</summary>

@@ -23,6 +23,8 @@ MonoBehaviour:
   voiceOnlyShare: 0.25
   firstDelaySeconds: 6
   retrySeconds: 1
+  afterFlashSeconds: 0.2
+  longestFlashWaitSeconds: 5
   maxPairs: 2
   pairSeparationMetres: 3
   enemyClearanceMetres: 14
@@ -39,8 +41,8 @@ MonoBehaviour:
   maxHoldSeconds: 4.5
   blinkOutSeconds: 0.08
   blinkSeconds: 0.16
-  minBlinkGapSeconds: 0.6
-  maxBlinkGapSeconds: 2
+  minBlinkGapSeconds: 0.3
+  maxBlinkGapSeconds: 1.2
   hopChance: 0.45
   maxHops: 2
   minHopGapSeconds: 0.5

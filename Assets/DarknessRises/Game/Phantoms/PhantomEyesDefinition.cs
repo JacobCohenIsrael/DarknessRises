@@ -33,6 +33,12 @@ namespace DarknessRises.Game.Phantoms
         [SerializeField, Min(0f), Tooltip("Seconds of safe time before trying again when an event found no dark spot (the Room lit, or no open floor in view). Short, so a bright moment doesn't cost a whole gap.")]
         private float retrySeconds = 1f;
 
+        [SerializeField, Min(0f), Tooltip("Seconds after a flash that lit the whole Room (Lightning) fades in which due eyes open. They wait for that moment, so they get the whole dark stretch until the next strike: the flash showed nothing, then they're there.")]
+        private float afterFlashSeconds = 0.2f;
+
+        [SerializeField, Min(0f), Tooltip("Most seconds due eyes wait for a flash to fade before they open anyway, for a calm stretch with no Lightning.")]
+        private float longestFlashWaitSeconds = 5f;
+
         [SerializeField, Min(1), Tooltip("Most pairs of eyes out at once, each at its own spot. A pair about to open again nearby counts.")]
         private int maxPairs = 2;
 
@@ -85,19 +91,19 @@ namespace DarknessRises.Game.Phantoms
         private float blinkSeconds = 0.16f;
 
         [SerializeField, Min(0f), Tooltip("Fewest seconds of open eyes before a blink.")]
-        private float minBlinkGapSeconds = 0.6f;
+        private float minBlinkGapSeconds = 0.3f;
 
-        [SerializeField, Min(0f), Tooltip("Most seconds of open eyes before a blink. Uneven gaps read as alive.")]
-        private float maxBlinkGapSeconds = 2f;
+        [SerializeField, Min(0f), Tooltip("Most seconds of open eyes before a blink. Uneven gaps read as alive; short, since Lightning (every few seconds) sends most pairs away within a few seconds.")]
+        private float maxBlinkGapSeconds = 1.2f;
 
         [Header("Opening again nearby")]
-        [SerializeField, Range(0f, 1f), Tooltip("Chance that a pair that held its time opens again a moment later at another dark spot nearby. One sent away by light, aim, an Enemy or a fight never does.")]
+        [SerializeField, Range(0f, 1f), Tooltip("Chance that a pair that held its time, or that light sent away (Lightning shows nothing, then they are back), opens again a moment later at another dark spot nearby. One sent away by aim, by the character coming near, by an Enemy or by a fight never does.")]
         private float hopChance = 0.45f;
 
         [SerializeField, Min(0), Tooltip("Most times one pair may open again nearby.")]
         private int maxHops = 2;
 
-        [SerializeField, Min(0f), Tooltip("Fewest seconds of dark before the pair opens again. At least the voice's fade, so its sound doesn't jump.")]
+        [SerializeField, Min(0f), Tooltip("Fewest seconds of dark before the pair opens again, counted once no light reaches its old spot. At least the voice's fade, so its sound doesn't jump.")]
         private float minHopGapSeconds = 0.5f;
 
         [SerializeField, Min(0f), Tooltip("Most seconds of dark before the pair opens again.")]
@@ -207,6 +213,11 @@ namespace DarknessRises.Game.Phantoms
         public PhantomEyesSpot ToVoiceSpot()
         {
             return new PhantomEyesSpot(voiceOnlyDegrees, minMetres, maxMetres);
+        }
+
+        public PhantomAfterFlash ToAfterFlash()
+        {
+            return new PhantomAfterFlash(afterFlashSeconds, longestFlashWaitSeconds);
         }
 
         public PhantomRelocation ToRelocation()

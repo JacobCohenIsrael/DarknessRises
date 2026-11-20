@@ -19,6 +19,7 @@ namespace DarknessRises.Game.Phantoms
         private AudioSource voice;
 
         private readonly SoundFade voiceFade = new();
+        private Vector3[] openScales = new Vector3[0];
         private Material eyeInstance;
         private Color color;
         private float shownStrength = -1f;
@@ -67,6 +68,12 @@ namespace DarknessRises.Game.Phantoms
             voice.rolloffMode = AudioRolloffMode.Linear;
             voice.maxDistance = hearingRange;
             voice.dopplerLevel = 0f;
+            openScales = new Vector3[eyes.Length];
+            for (var i = 0; i < eyes.Length; i++)
+            {
+                openScales[i] = eyes[i].transform.localScale;
+            }
+
             if (eyes.Length > 0)
             {
                 eyeInstance = new Material(eyes[0].sharedMaterial) { name = $"{name} Eyes" };
@@ -113,7 +120,10 @@ namespace DarknessRises.Game.Phantoms
             voice.Play();
         }
 
-        /// <summary>Shows the eyes at <paramref name="strength"/>, from 0 (hidden) to 1.</summary>
+        /// <summary>
+        /// Shows the eyes at <paramref name="strength"/>, from 0 (hidden) to 1: their glow, and how open they are (each eye
+        /// squashed upright like a lid closing), so opening, blinking and blinking out read as eyes, not a fading light.
+        /// </summary>
         public void ShowStrength(float strength)
         {
             if (strength == shownStrength)
@@ -126,6 +136,8 @@ namespace DarknessRises.Game.Phantoms
             for (var i = 0; i < eyes.Length; i++)
             {
                 eyes[i].enabled = shown;
+                var open = openScales[i];
+                eyes[i].transform.localScale = new Vector3(open.x, open.y * strength, open.z);
             }
 
             if (eyeInstance != null)

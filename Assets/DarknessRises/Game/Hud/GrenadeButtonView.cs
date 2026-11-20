@@ -1,5 +1,6 @@
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Grenades;
+using DarknessRises.Game.Storage;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -191,21 +192,21 @@ namespace DarknessRises.Game.Hud
             return Color.Lerp(settings.ArmedColor, settings.IdleColor, pulse);
         }
 
+        // Where the player dropped the button belongs to the device, with its other settings.
         private static Vector2 LoadPosition(Vector2 fallback)
         {
-            if (!PlayerPrefs.HasKey(PositionXKey) || !PlayerPrefs.HasKey(PositionYKey))
-            {
-                return fallback;
-            }
-
-            return new Vector2(PlayerPrefs.GetFloat(PositionXKey), PlayerPrefs.GetFloat(PositionYKey));
+            var deviceSettings = DeviceSettings.OfThisPlayer();
+            return deviceSettings.TryGetFloat(PositionXKey, out var x) && deviceSettings.TryGetFloat(PositionYKey, out var y)
+                ? new Vector2(x, y)
+                : fallback;
         }
 
         private static void SavePosition(Vector2 normalized)
         {
-            PlayerPrefs.SetFloat(PositionXKey, normalized.x);
-            PlayerPrefs.SetFloat(PositionYKey, normalized.y);
-            PlayerPrefs.Save();
+            var deviceSettings = DeviceSettings.OfThisPlayer();
+            deviceSettings.SetFloat(PositionXKey, normalized.x);
+            deviceSettings.SetFloat(PositionYKey, normalized.y);
+            deviceSettings.Flush();
         }
     }
 }

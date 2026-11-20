@@ -151,9 +151,9 @@ namespace DarknessRises.Game.EditModeTests.Audio
         [Test]
         public void Each_category_has_its_own_device_key()
         {
-            Assert.That(PlayerPrefsVolumeStorage.KeyFor(AudioCategory.Sound), Is.EqualTo("volume.sound"));
-            Assert.That(PlayerPrefsVolumeStorage.KeyFor(AudioCategory.Ambient), Is.EqualTo("volume.ambient"));
-            Assert.That(PlayerPrefsVolumeStorage.KeyFor(AudioCategory.Music), Is.EqualTo("volume.music"));
+            Assert.That(DeviceVolumeStorage.KeyFor(AudioCategory.Sound), Is.EqualTo("volume.sound"));
+            Assert.That(DeviceVolumeStorage.KeyFor(AudioCategory.Ambient), Is.EqualTo("volume.ambient"));
+            Assert.That(DeviceVolumeStorage.KeyFor(AudioCategory.Music), Is.EqualTo("volume.music"));
         }
     }
 }

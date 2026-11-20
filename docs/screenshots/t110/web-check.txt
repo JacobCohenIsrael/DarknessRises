@@ -1,0 +1,69 @@
+Issue #110: keep player data across Web builds. Headless check.
+
+Web builds were served from several URL paths of one local origin (http://127.0.0.1:8377) by a small Node server,
+as itch.io serves each upload from a new path of one origin. They ran in Chrome 157 in headless mode, muted, on the
+real GPU (WebGPU, 60 frames a second), driven through the DevTools protocol: no window was ever shown. Each scenario
+used a browser profile of its own that had never seen the game. A Run was played for real with the mouse: the script
+looks at a screenshot, aims at the nearest pair of glowing eyes and holds Fire until the character dies and the
+CONTINUE? countdown runs out. "IndexedDB files" lists what Unity put in its file system database (/idbfs).
+
+BEFORE: build 0.1.14 as published, at /upload-1/ and /upload-2/
+  first visit to /upload-1/                -> Stage 1. localStorage {} | IndexedDB files []
+  a Run: 1 Enemy killed, to the Shop       -> the Shop shows CREDITS 5. localStorage {} | IndexedDB files []
+  /upload-1/ reloaded                      -> Stage 1 again, 0 Credits. The save was never put in the browser.
+  /upload-2/                               -> Stage 1, 0 Credits.
+
+BEFORE, with a volume slider moved after the Run (a second browser profile)
+  a Run: 2 Enemies killed, to the Shop     -> CREDITS 10. IndexedDB files []
+  SOUND, Music 80 -> 30 %, BACK            -> IndexedDB files: /idbfs/d7786b02358f90cf372da673ec406c34/PlayerPrefs and
+                                              /idbfs/d7786b02358f90cf372da673ec406c34/save.json
+                                              (PlayerPrefs.Save() syncs the whole file system; the save rode along)
+  /upload-1/ reloaded                      -> the Shop, CREDITS 10: it survived this time.
+  /upload-2/                               -> Stage 1, 0 Credits: its folder is named after another address.
+
+AFTER: two builds of this branch, the release build at /upload-1/ and the dev build at /upload-2/
+  first visit to /upload-1/                -> Stage 1. localStorage {} | IndexedDB files []
+  a Run: 1 Enemy killed                    -> end screen "Credits earned +5". localStorage:
+                                              DarknessRises.save.v1 = {"version":2,"credits":5,"runsFinished":1,"items":[]}
+  SHOP, SOUND, Music 80 -> 30 %,           -> localStorage gains DarknessRises.settings.volume.music = 30 and
+    Sound 100 -> 60 %, BACK                   DarknessRises.settings.volume.sound = 60. IndexedDB files []
+  /upload-2/ (the dev build)               -> opens in the Shop, CREDITS 5. SOUND: Music 30 %, Sound 60 %, Ambient 100 %.
+                                              It read the same three localStorage keys.
+  /upload-1/ reloaded                      -> the Shop, CREDITS 5.
+  RESULT                                   -> the second upload has the first one's Credits, finished Run and volumes.
+                                              No page errors.
+
+localStorage BLOCKED (every access throws SecurityError), IndexedDB allowed
+  a Run at /upload-1/: 3 Enemies killed    -> console: "[Save] The first storage wouldn't take the save, so it's kept in
+                                              the fallback storage." IndexedDB files: /idbfs/d7786b…/save.json, at once
+                                              (0.1.14 left IndexedDB empty at this point)
+  SHOP, SOUND, Music 80 -> 30 %, BACK      -> IndexedDB files gain /idbfs/d7786b…/PlayerPrefs
+  /upload-1/ reloaded, still blocked       -> the Shop, CREDITS 15, Music 30 %: the fallback survives a reload
+  localStorage allowed again, reloaded     -> the save and the volume are carried over:
+                                              DarknessRises.save.v1 = {"version":2,"credits":15,"runsFinished":1,"items":[]}
+                                              DarknessRises.settings.volume.music = 30
+  /upload-2/                               -> the Shop, CREDITS 15. No page errors.
+
+ALL STORAGE BLOCKED (localStorage throws on every access, indexedDB.open throws)
+  /upload-1/                               -> loads and plays. A Run: 3 Enemies killed, the end screen, the Shop with
+                                              CREDITS 15 (kept in memory), the Volume panel, PLAY, a second Run starts.
+                                              One "[Save] ..." warning in the console. 0 page errors.
+  reloaded                                 -> Stage 1: nothing could be kept, and nothing broke.
+
+EMBEDDED, as on itch.io: the game in an iframe served from another site (page at 127.0.0.1, game at localhost)
+  /upload-1/ embedded: a Run, 7 killed     -> the iframe's localStorage: {"version":2,"credits":35,"runsFinished":1,"items":[]}
+  /upload-2/ embedded in the same page     -> the Shop, CREDITS 35
+  /upload-2/ opened in a tab of its own    -> Stage 1, no save: Chrome keeps an embedded page's storage apart from the
+                                              same origin opened on its own
+
+ANDROID
+  All 15 APKs in Builds/Android (0.1.0 to 0.1.11, release and dev) are signed with the same certificate,
+  SHA-256 35:DB:ED:DF:F3:76:C7:F4:48:65:0C:41:32:33:EF:94:0F:9F:3F:15:CB:96:18:6C:0B:86:08:26:70:B7:75:37,
+  the one in ~/.android/debug.keystore on this machine (created 2025-01-18). The package name is fixed and the
+  version code grows with the version, so an update installs over the last build and keeps persistentDataPath.
+
+EDIT-MODE TESTS
+  1372 of 1372 pass with the standalone "unity test . --mode EditMode"; 67 of them are new.
+
+The existing save.json in AppData/LocalLow/TheGamefather/Darkness Rises was not touched (same MD5 before and after),
+and Play Mode was never entered in the Editor.

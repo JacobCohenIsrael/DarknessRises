@@ -1,6 +1,7 @@
 using System;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Enemies;
+using DarknessRises.Game.Storage;
 using DarknessRises.Game.Weapons;
 using TMPro;
 using UnityEngine;
@@ -41,6 +42,7 @@ namespace DarknessRises.Game.Hud
         private PlayerControls controls;
 
         private ShootHintSettings settings;
+        private IDeviceSettings deviceSettings;
         private ShootHint hint;
         private EnemyView target;
         private PrimaryWeapon weapon;
@@ -57,7 +59,8 @@ namespace DarknessRises.Game.Hud
         public void Use(ShootHintSettings hintSettings)
         {
             settings = hintSettings ?? throw new ArgumentNullException(nameof(hintSettings));
-            hint = new ShootHint(settings.Frequency, PlayerPrefs.GetInt(ShownKey, 0) != 0);
+            deviceSettings = DeviceSettings.OfThisPlayer();
+            hint = new ShootHint(settings.Frequency, deviceSettings.TryGetInt(ShownKey, out var shown) && shown != 0);
             label.fontSize = settings.FontSize;
             label.color = settings.Color;
             arrow.color = settings.Color;
@@ -89,8 +92,8 @@ namespace DarknessRises.Game.Hud
             weapon.Fired += onFired;
             if (settings.Frequency == ShootHintFrequency.OncePerInstall)
             {
-                PlayerPrefs.SetInt(ShownKey, 1);
-                PlayerPrefs.Save();
+                deviceSettings.SetInt(ShownKey, 1);
+                deviceSettings.Flush();
             }
         }
 

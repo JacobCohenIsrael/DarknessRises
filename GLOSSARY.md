@@ -292,8 +292,12 @@ The one rewarded ad the end screen offers after a Run: watching it through multi
 _Avoid_: bonus ad, double-up, reward video
 
 **Save**:
-The player's durable progress on the device: the bank, and what was bought in the Shop. It survives app restarts and updates.
+The player's durable progress on the device: the bank, and what was bought in the Shop. It survives app restarts and updates. On the Web it's kept in the browser, so it also survives a new upload of the game; it stays with that browser.
 _Avoid_: profile, account, progress (that's how far along the Route the character is)
+
+**Device settings**:
+What belongs to the device rather than to the player's progress: the Volume panel's sliders, where the Grenade button was dropped, whether a one-time hint was shown. They're kept apart from the Save, and like it they survive app restarts, updates and new uploads on the Web.
+_Avoid_: preferences, options, config
 
 **Shop**:
 Where Credits are spent: the player unlocks Weapons there and buys Upgrades. It is open only between Runs, never between Levels: the end screen leads to it, and its PLAY starts the next Run. A first install goes straight into the first Level; once a Run has been finished, the app opens in the Shop.

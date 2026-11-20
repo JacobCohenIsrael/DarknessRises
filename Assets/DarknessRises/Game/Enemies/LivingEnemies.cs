@@ -14,6 +14,12 @@ namespace DarknessRises.Game.Enemies
 
         private readonly List<EnemyView> enemies = new(InitialCapacity);
 
+        /// <summary>How many Enemies are listed. Some may have died or gone back to their pool since: check each one.</summary>
+        public int Count => enemies.Count;
+
+        /// <summary>A listed Enemy, which may have died or gone back to its pool since it was added.</summary>
+        public EnemyView this[int index] => enemies[index];
+
         /// <summary>An Enemy has spawned.</summary>
         public void Add(EnemyView enemy)
         {

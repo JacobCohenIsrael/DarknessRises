@@ -62,8 +62,12 @@ _Avoid_: prop, cover
 The default state of a Room: no light at all except what the light sources below make.
 
 **Lightning**:
-A brief flash that lights a whole Room, in Rooms that let it in, from a slightly different angle each time. It comes every few seconds, with nothing to announce it, and its Rumble follows. Under it the storm bed, a thunder loop, plays all the time Lightning reaches the character, fading out in Rooms without windows and back in Rooms with them. It rolls on from one Level into the next without a break, and fades out in the Shop. In a Boss fight, the Boss decides when it flashes, the storm bed keeps playing, and the Boss's own warning (the Colossus's growl) comes before each flash.
+A brief flash that lights a whole Room, in Rooms that let it in, from a different angle each time, now and then a low one that throws long shadows across the floor and up the walls. It comes every few seconds, with nothing to announce it, and its Rumble follows. Under it the storm bed, a thunder loop, plays all the time Lightning reaches the character, fading out in Rooms without windows and back in Rooms with them. It rolls on from one Level into the next without a break, and fades out in the Shop. In a Boss fight, the Boss decides when it flashes, the storm bed keeps playing, and the Boss's own warning (the Colossus's growl) comes before each flash.
 _Avoid_: strike, flash
+
+**Looming strike**:
+Lightning that comes in low from behind a near Enemy that no light shows yet, straight toward the character, so the Enemy's own shadow stretches toward and over the player and up the walls, bigger and closer than the Enemy is. It's always a real Enemy's shadow: when none qualifies, the flash is an ordinary one. It lights the Room as any flash does, and the Boss's flashes can loom too, from the Enemies that drop from its back.
+_Avoid_: shadow scare, fake shadow
 
 **Rumble**:
 The swell of the storm after Lightning: the storm bed rises, holds and settles back, a short random delay after each flash, as from a strike at a varying distance, with a small pitch change so no two sound quite alike. It never warns of a flash.

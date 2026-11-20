@@ -116,6 +116,8 @@ namespace DarknessRises.Game.Editor.Builds
                     $"The Editor is on {EditorUserBuildSettings.activeBuildTarget}; start it with --target {target}.");
             }
 
+            // The shadow settings are code, not whatever the URP assets were left at.
+            Lightning.LightningShadowSetup.Apply();
             AssetDatabase.SaveAssets();
             var options = new BuildPlayerOptions
             {

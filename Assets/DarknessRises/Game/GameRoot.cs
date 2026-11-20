@@ -444,6 +444,7 @@ namespace DarknessRises.Game
             // The storm that swells after every flash, and the Boss's growl that warns of its flashes.
             var lightningRandom = new SystemRandom();
             lightning.UseStorm(carriedStorm, configuration.Lightning.Storm, lightningRandom, enemyTime);
+            lightning.UseLooming(livingEnemies, character, lights);
             var boss = level != null ? configuration.Level.Boss : null;
             if (bossHealthBar != null && level != null && level.Boss != null)
             {

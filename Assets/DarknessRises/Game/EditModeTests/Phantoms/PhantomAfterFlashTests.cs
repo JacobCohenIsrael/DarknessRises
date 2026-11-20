@@ -25,6 +25,36 @@ namespace DarknessRises.Game.EditModeTests.Phantoms
         }
 
         [Test]
+        public void Every_pair_waiting_opens_as_the_same_flash_fades_one_a_frame()
+        {
+            var timing = Timing();
+            timing.Wait();
+            timing.Wait();
+            timing.Wait();
+            Assert.That(timing.Waiting, Is.EqualTo(3));
+            Assert.That(Run(timing, 0.4f, true), Is.False);
+
+            Assert.That(timing.Tick(Frame, false), Is.True);
+            Assert.That(timing.Tick(Frame, false), Is.True);
+            Assert.That(timing.Tick(Frame, false), Is.True);
+            Assert.That(timing.IsWaiting, Is.False);
+            Assert.That(timing.Tick(Frame, false), Is.False);
+        }
+
+        [Test]
+        public void Cancelling_calls_off_every_waiting_pair()
+        {
+            var timing = Timing();
+            timing.Wait();
+            timing.Wait();
+            timing.Cancel();
+
+            Assert.That(timing.Waiting, Is.Zero);
+            Assert.That(Run(timing, 0.4f, true), Is.False);
+            Assert.That(Run(timing, 5f, false), Is.False);
+        }
+
+        [Test]
         public void Due_eyes_wait_through_the_dark_and_the_flash_then_open_as_it_fades()
         {
             var timing = Timing();

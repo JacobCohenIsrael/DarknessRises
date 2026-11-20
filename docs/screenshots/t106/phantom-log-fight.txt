@@ -1,0 +1,59 @@
+120 s of play: 76 s safe, 44 s Wave fight, 0 s Boss fight. safe-time first sightings 13, reopened nearby 7, fight eyes 3, blinks 22, voices 13, same clip twice 0. Nearest any phantom opened to the character 8.6 m; nearest a real Enemy was to a phantom's spot when it opened 6.1 m. Gone: MomentEnded 1, TooNear 1, Lit 20, 
+ 20.38s WaveFight  FIGHT EYES open: PhantomEyes 1 10.6 m out, screen (0.94,0.68); nearest Enemy to spot 9.7 m, to character 5.5 m, Enemies 2; 0.01 s after a flash; out 1, in fight 1
+ 21.38s AfterClear   gone MomentEnded: PhantomEyes 1 (fight); nearest Enemy to spot none
+ 25.84s Walking    EYES open: PhantomEyes 1 10.0 m out, screen (0.95,0.73); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+ 25.84s Walking      VOICE with eyes: Misc_breath; playing=True vol=0.70
+ 27.79s Walking      gone TooNear: PhantomEyes 1; nearest Enemy to spot none
+ 40.26s WaveFight  FIGHT EYES open: PhantomEyes 1 11.4 m out, screen (0.08,0.83); nearest Enemy to spot 13.4 m, to character 6.4 m, Enemies 1; 0.01 s after a flash; out 1, in fight 1
+ 41.58s WaveFight    gone Lit: PhantomEyes 1 (fight); nearest Enemy to spot none
+ 52.71s WaveFight  FIGHT EYES open: PhantomEyes 1 12.0 m out, screen (0.07,0.86); nearest Enemy to spot 6.1 m, to character 6.6 m, Enemies 2; 0.02 s after a flash; out 1, in fight 1
+ 54.53s AfterClear   gone Lit: PhantomEyes 1 (fight); nearest Enemy to spot none
+ 55.53s AfterClear   VOICE ALONE: Misc_Shh; playing=True vol=0.70
+ 60.14s Walking    EYES open: PhantomEyes 2 9.0 m out, screen (0.11,0.85); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+ 60.14s Walking      VOICE with eyes: Misc_Whisper; playing=True vol=0.70
+ 62.28s Walking      gone Lit: PhantomEyes 2; nearest Enemy to spot none
+ 62.69s Walking    EYES open: PhantomEyes 1 11.3 m out, screen (0.10,0.93); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+ 64.59s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+ 65.06s Walking      VOICE ALONE: Misc_breath; playing=True vol=0.70
+ 69.13s Walking      VOICE ALONE: Misc_Whisper; playing=True vol=0.70
+ 74.06s Walking      VOICE ALONE: Misc_Shh; playing=True vol=0.70
+ 77.31s Walking    EYES open: PhantomEyes 2 10.2 m out, screen (0.07,0.83); nearest Enemy to spot none, to character none, Enemies 0; 0.12 s after a flash; out 1, in fight 0
+ 79.79s Walking      gone Lit: PhantomEyes 2; nearest Enemy to spot none
+ 81.16s Walking    EYES hop 1 open: PhantomEyes 2 11.7 m out, screen (0.10,0.95); nearest Enemy to spot none, to character none, Enemies 0; 0.97 s after a flash; out 1, in fight 0
+ 81.16s Walking      VOICE with eyes: Misc_breath; playing=True vol=0.70
+ 82.13s Walking      gone Lit: PhantomEyes 2; nearest Enemy to spot none
+ 82.54s Walking    EYES open: PhantomEyes 1 10.9 m out, screen (0.11,0.91); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+ 84.06s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+ 84.48s Walking    EYES open: PhantomEyes 1 9.7 m out, screen (0.13,0.88); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+ 86.16s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+ 88.81s Walking    EYES open: PhantomEyes 1 9.2 m out, screen (0.16,0.91); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+ 91.03s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+ 92.61s Walking    EYES hop 1 open: PhantomEyes 1 9.1 m out, screen (0.09,0.80); nearest Enemy to spot none, to character none, Enemies 0; 1.18 s after a flash; out 1, in fight 0
+ 92.61s Walking      VOICE with eyes: Misc_Whisper; playing=True vol=0.70
+ 92.64s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+ 93.84s Walking    EYES hop 2 open: PhantomEyes 1 10.4 m out, screen (0.11,0.89); nearest Enemy to spot none, to character none, Enemies 0; 0.80 s after a flash; out 1, in fight 0
+ 95.41s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+ 95.83s Walking    EYES open: PhantomEyes 1 10.0 m out, screen (0.10,0.86); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+ 97.14s Walking      VOICE ALONE: Misc_Shh; playing=True vol=0.70
+ 98.38s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+101.56s Walking    EYES open: PhantomEyes 1 9.1 m out, screen (0.12,0.85); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+103.88s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+104.29s Walking    EYES open: PhantomEyes 1 9.1 m out, screen (0.08,0.79); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+104.29s Walking      VOICE with eyes: Misc_Whisper; playing=True vol=0.70
+106.44s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+107.87s Walking    EYES hop 1 open: PhantomEyes 1 11.4 m out, screen (0.07,0.90); nearest Enemy to spot none, to character none, Enemies 0; 1.02 s after a flash; out 1, in fight 0
+108.13s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+108.54s Walking    EYES open: PhantomEyes 2 9.1 m out, screen (0.06,0.74); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 2, in fight 0
+108.54s Walking      VOICE with eyes: Misc_breath; playing=True vol=0.70
+109.54s Walking    EYES hop 2 open: PhantomEyes 1 9.2 m out, screen (0.16,0.91); nearest Enemy to spot none, to character none, Enemies 0; 1.02 s after a flash; out 2, in fight 0
+111.46s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+111.46s Walking      gone Lit: PhantomEyes 2; nearest Enemy to spot none
+112.48s Walking    EYES hop 1 open: PhantomEyes 2 11.1 m out, screen (0.08,0.89); nearest Enemy to spot none, to character none, Enemies 0; 0.62 s after a flash; out 1, in fight 0
+113.98s Walking      gone Lit: PhantomEyes 2; nearest Enemy to spot none
+115.16s Walking    EYES hop 2 open: PhantomEyes 2 8.6 m out, screen (0.11,0.81); nearest Enemy to spot none, to character none, Enemies 0; 0.78 s after a flash; out 1, in fight 0
+115.16s Walking      VOICE with eyes: Misc_Shh; playing=True vol=0.70
+117.01s Walking      gone Lit: PhantomEyes 2; nearest Enemy to spot none
+117.43s Walking    EYES open: PhantomEyes 1 8.6 m out, screen (0.06,0.71); nearest Enemy to spot none, to character none, Enemies 0; 0.02 s after a flash; out 1, in fight 0
+118.69s Walking      gone Lit: PhantomEyes 1; nearest Enemy to spot none
+119.19s Walking    EYES open: PhantomEyes 1 8.7 m out, screen (0.10,0.79); nearest Enemy to spot none, to character none, Enemies 0; 0.10 s after a flash; out 1, in fight 0
+119.19s Walking      VOICE with eyes: Misc_breath; playing=True vol=0.70

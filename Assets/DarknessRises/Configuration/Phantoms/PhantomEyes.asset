@@ -18,23 +18,29 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  minGapSeconds: 3
-  maxGapSeconds: 7
+  minGapSeconds: 2
+  maxGapSeconds: 4
   voiceOnlyShare: 0.25
   firstDelaySeconds: 4
   retrySeconds: 1
   afterFlashSeconds: 0.2
   longestFlashWaitSeconds: 5
-  maxPairs: 3
+  maxPairs: 4
   pairSeparationMetres: 3
-  enemyClearanceMetres: 14
+  enemyClearanceMetres: 9
+  spotClearanceMetres: 6
+  fightMinGapSeconds: 8
+  fightMaxGapSeconds: 15
+  fightMaxPairs: 1
+  fightMinMetres: 10
+  fightMaxMetres: 12
   aheadDegrees: 120
   minMetres: 8.5
   maxMetres: 12
   keepAwayMetres: 7.5
   walkMarginMetres: 5
   screenMarginShare: 0.05
-  placementAttempts: 16
+  placementAttempts: 32
   floorSearchMetres: 1.5
   openSeconds: 0.6
   minHoldSeconds: 2.5
@@ -43,7 +49,7 @@ MonoBehaviour:
   blinkSeconds: 0.16
   minBlinkGapSeconds: 0.3
   maxBlinkGapSeconds: 1.2
-  hopChance: 0.55
+  hopChance: 0.65
   maxHops: 2
   minHopGapSeconds: 0.5
   maxHopGapSeconds: 1.2

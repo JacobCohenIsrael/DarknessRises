@@ -81,15 +81,18 @@ namespace DarknessRises.Game.Editor.Phantoms
             return definition;
         }
 
-        // How often they come, tuned for #102 (more often than #96): written over the asset by ApplyFrequencyTuning.
+        // How often and where they come, tuned for #102 and #106 (more often, nearer Enemies, rare in Wave fights):
+        // written over the asset by ApplyFrequencyTuning.
         private static readonly string[] FrequencyFields =
         {
             "minGapSeconds", "maxGapSeconds", "firstDelaySeconds", "maxPairs", "hopChance", "minVoiceGapSeconds",
+            "enemyClearanceMetres", "spotClearanceMetres", "fightMinGapSeconds", "fightMaxGapSeconds", "fightMaxPairs",
+            "fightMinMetres", "fightMaxMetres", "placementAttempts",
         };
 
         /// <summary>
-        /// Writes the definition's class defaults for how often Phantom eyes come (the gap, the first delay, the most
-        /// pairs, the hop chance, the gap between voices) over the asset, so a retune never hand-edits its YAML. Run
+        /// Writes the definition's class defaults for how often and where Phantom eyes come (the gap, the first delay, the
+        /// most pairs, the hop chance, the gap between voices, the Enemy clearances, and the Wave fight's eyes) over the asset, so a retune never hand-edits its YAML. Run
         /// headless: <c>unity run . -- -executeMethod DarknessRises.Game.Editor.Phantoms.PhantomEyesBuilder.ApplyFrequencyTuning</c>.
         /// </summary>
         public static void ApplyFrequencyTuning()

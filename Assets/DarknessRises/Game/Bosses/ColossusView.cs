@@ -86,6 +86,7 @@ namespace DarknessRises.Game.Bosses
         private AudioClip hurtClip;
         private AudioClip defeatClip;
         private AudioClip relocateClip;
+        private SoundThrottle hurtThrottle;
 
         private bool placesCharacter;
         private float impactLightSecondsLeft;
@@ -201,6 +202,7 @@ namespace DarknessRises.Game.Bosses
             hurtClip = content.Clip(definition.HurtClip);
             defeatClip = content.Clip(definition.DefeatClip);
             relocateClip = content.Clip(definition.RelocateClip);
+            hurtThrottle = new SoundThrottle(definition.HurtMinIntervalSeconds);
 
             // The first Position is where the character walked in: the Route's Boss Station.
             var floor = roomCentre.position;
@@ -350,6 +352,7 @@ namespace DarknessRises.Game.Bosses
             }
 
             var deltaSeconds = Time.deltaTime;
+            hurtThrottle.Tick(deltaSeconds);
 
             // The fight stops with the character's death.
             var characterAlive = attackTarget == null || attackTarget.CanBeAttacked;
@@ -574,9 +577,13 @@ namespace DarknessRises.Game.Bosses
             }
         }
 
+        // Under the Gunshot and at most once per authored interval: a hit adds to the shot, never masks it.
         private void OnHurt()
         {
-            Play(hurtClip);
+            if (hurtClip != null && hurtThrottle.TryPlay())
+            {
+                voice.PlayOneShot(hurtClip, definition.HurtVolume);
+            }
         }
 
         private void OnDefeated()
@@ -588,7 +595,10 @@ namespace DarknessRises.Game.Bosses
 
         private void OnDashStarted(int from, int to)
         {
-            Play(relocateClip);
+            if (relocateClip != null)
+            {
+                voice.PlayOneShot(relocateClip, definition.RelocateVolume);
+            }
         }
 
         private void OnEnemyTimeScaled(float scale)

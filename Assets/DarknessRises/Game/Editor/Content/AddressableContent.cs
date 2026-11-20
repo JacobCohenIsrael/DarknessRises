@@ -125,6 +125,16 @@ namespace DarknessRises.Game.Editor.Content
             EditorUtility.SetDirty(entry.parentGroup);
         }
 
+        /// <summary>Takes the asset at <paramref name="assetPath"/> out of Addressables, for content nothing plays any more.</summary>
+        public static void Remove(string assetPath)
+        {
+            var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+            if (settings.RemoveAssetEntry(AssetDatabase.AssetPathToGUID(assetPath), postEvent: false))
+            {
+                EditorUtility.SetDirty(settings);
+            }
+        }
+
         /// <summary>Marks <paramref name="asset"/> addressable in <paramref name="groupName"/> and points the reference at it.</summary>
         public static void Reference(SerializedProperty reference, Object asset, string groupName)
         {

@@ -45,12 +45,6 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: e1a75776f005439469f89a17a986c567
-    m_Address: Indiana Jones Punch
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 9b8e4016ecbf3504e9179aedf25c9f5d, type: 2}
   m_SchemaSet:

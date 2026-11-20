@@ -80,11 +80,23 @@ namespace DarknessRises.Game.Bosses
         [SerializeField, Tooltip("A hit on the weak spot.")]
         private AssetReferenceT<AudioClip> hurtClip;
 
+        [SerializeField, Range(0f, 1f), Tooltip("The hurt sound's volume, as a share of the Colossus's. Kept under the " +
+                                                "Gunshots, so a hit adds a clang to the shot without drowning it.")]
+        private float hurtVolume = 0.35f;
+
+        [SerializeField, Min(0f), Tooltip("Least seconds between two hurt sounds. A hit sooner than that is heard only as " +
+                                          "its Gunshot, so a fast Weapon's every Shot doesn't become a clang.")]
+        private float hurtMinIntervalSeconds = 0.4f;
+
         [SerializeField, Tooltip("The Colossus beaten.")]
         private AssetReferenceT<AudioClip> defeatClip;
 
         [SerializeField, Tooltip("The character's dash to a Position.")]
         private AssetReferenceT<AudioClip> relocateClip;
+
+        [SerializeField, Range(0f, 1f), Tooltip("The dash sound's volume, as a share of the Colossus's: about as loud as a " +
+                                                "Gunshot, so it reads as the character's own move without covering the fight.")]
+        private float relocateVolume = 0.45f;
 
         public string DisplayName => displayName;
         public int HitPoints => hitPoints;
@@ -109,8 +121,11 @@ namespace DarknessRises.Game.Bosses
         public float GrowlClipStartSeconds => growlClipStartSeconds;
         public AssetReferenceT<AudioClip> StompClip => stompClip;
         public AssetReferenceT<AudioClip> HurtClip => hurtClip;
+        public float HurtVolume => hurtVolume;
+        public float HurtMinIntervalSeconds => hurtMinIntervalSeconds;
         public AssetReferenceT<AudioClip> DefeatClip => defeatClip;
         public AssetReferenceT<AudioClip> RelocateClip => relocateClip;
+        public float RelocateVolume => relocateVolume;
 
         /// <summary>The Positions in world space, around <paramref name="roomCentre"/> on its floor.</summary>
         public Vector3[] PositionsAround(Vector3 roomCentre)

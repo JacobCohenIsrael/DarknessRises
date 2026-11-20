@@ -31,6 +31,7 @@ namespace DarknessRises.Game.Lightning
         private AudioClip clip;
         private object clipKey;
         private bool isStarted;
+        private bool isHushed;
 
         /// <summary>The source the storm plays on.</summary>
         public AudioSource Source => source;
@@ -53,7 +54,11 @@ namespace DarknessRises.Game.Lightning
         /// </summary>
         public void Play(AssetReferenceT<AudioClip> stormClip, StormEnvelope envelope)
         {
-            bed ??= new StormBed(envelope);
+            if (bed == null)
+            {
+                bed = new StormBed(envelope);
+                bed.Hush(isHushed);
+            }
             if (!ContentReferences.IsSet(stormClip))
             {
                 return;
@@ -73,6 +78,17 @@ namespace DarknessRises.Game.Lightning
         public void SetAudible(bool audible)
         {
             bed?.SetAudible(audible);
+        }
+
+        /// <summary>
+        /// Hushes the storm whatever the Level says, or lets the Level drive it again (<see cref="StormBed.Hush"/>). The
+        /// boot hushes it as the player leaves for the Shop, so it fades out through the change instead of after it, and
+        /// lets it go when the next Level plays.
+        /// </summary>
+        public void Hush(bool hush)
+        {
+            isHushed = hush;
+            bed?.Hush(hush);
         }
 
         /// <summary>The Rumble: the bed swells, with a small pitch nudge, then settles back.</summary>

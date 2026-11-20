@@ -65,5 +65,12 @@ WHERE THE BUTTON SITS (HUD of 2400 x 1079)
   Weapon button x 1719..1968, y 48..168   | magazine count x 1984..2344, y 48..178 | pause x 2256..2352, y 943..1039 |
   Grenade button around (450, 337), where the player left it | Skill buttons bottom left. Nothing overlaps.
 
+THE RUN-DRY FLASH (added after the first check; a save with the Machine gun unlocked)
+  before                                  -> the Weapon button's face is (0.10, 0.10, 0.11, 0.60); the view isn't running
+  Machine gun, Fire held until it's dry   -> the face turns (1.00, 0.35, 0.25, 0.90) on the frame the Pistol takes over
+  the next 0.9 s                          -> 0.20 s: (0.74, 0.28, 0.21, 0.81) | 0.46 s: (0.46, 0.20, 0.17, 0.72) |
+                                             0.75 s: (0.12, 0.11, 0.11, 0.61) | 0.90 s: back to (0.10, 0.10, 0.11, 0.60),
+                                             and the view has stopped running again
+
 EDIT-MODE TESTS
-  986 of 986 pass (938 before this slice), in the open Editor and in a standalone "unity test . --mode EditMode".
+  994 of 994 pass (938 before this slice), in the open Editor and in a standalone "unity test . --mode EditMode".

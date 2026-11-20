@@ -435,6 +435,7 @@ namespace DarknessRises.Game
                 lightningDebugToggle,
                 rampLevelDebugJump,
                 bossSkipDebug,
+                new SaveDebugCommands(save, configuration.Shop),
                 pauseFlow.Pause);
 #endif
             primaryWeapon.Switched += OnPrimaryWeaponSwitched;

@@ -1,0 +1,35 @@
+Issue #78, slice 4: dev tools for the save. Headless check.
+
+A batch-mode Editor (no window, master volume 0) played from the boot scene. A probe clicked the DEV menus' buttons
+through Button.onClick and read the save file, the Shop's labels and GameRoot.Stats back. The save file was deleted
+afterwards.
+
+IN A LEVEL (first install, no save file; the Level's DEV menu, which pauses the game)
+  the Run as it started                  -> Pistol 12/12, damage 1, 5 hit points, 3 Grenades, Aura 4.5 m
+  DEV > "+1000 Credits" twice            -> bank 2000; save.json written each time
+  DEV > "Max upgrades"                   -> save.json holds every item at its top level: the Machine gun and the
+                                            Flamethrower at 1, all 20 Upgrades at 2 or 3. The bank is still 2000.
+  the Run that is on                     -> unchanged: still 12/12, 5 hit points (a Run's stats are built when its Level starts)
+  pause, Exit, SHOP                      -> every Weapon reads EQUIP or EQUIPPED, every row reads MAX and can't be pressed:
+                                            Pistol damage 3, magazine 22, reload 0.70 s, 7/s | Machine gun 3, 60, 1.50 s, 15/s |
+                                            Flamethrower 3, tank 120, 1.50 s
+
+IN THE SHOP (its own DEV button, bottom centre)
+  DEV > "Reset save"                     -> save.json: {"version":2,"credits":0,"runsFinished":0,"items":[],"primaryWeapon":""}
+                                            the open Shop follows at once: CREDITS 0, PISTOL EQUIPPED, both Weapons to unlock,
+                                            every row back to its starting value (12 > 15 ...) and unpressable
+  DEV > "+1000 Credits", "Max upgrades"  -> CREDITS 1000, everything MAX again
+  FLAMETHROWER's EQUIP, PLAY             -> the Run: Flamethrower damage 3, tank 120/120 (HUD "120 / 120"), reload 1.50 s |
+                                            5 Grenades, refill 11 s, blast 5 m | Flare 7 s / 9 s, Slow-mo 7 s / 9 s |
+                                            8 hit points (8 pips) | Aura light range 5.4
+
+RESET, THEN THE NEXT LAUNCH
+  DEV > "Reset save" in the Level        -> save.json back to a first install
+  Play Mode stopped and started          -> scenes [Boot, Level]: straight into Level 1, no Shop
+                                            (the Run that was on when the app quit banked its own 5 Credits on the way out)
+
+THE SHOP ON A 4:3 SCREEN (1440 x 1080, the narrowest the HUD scales to)
+  three columns still fit side by side; no text overlaps. An Upgrade's level now sits over its price button, so
+  "1.00 s > 0.85 s" keeps the whole line on the left.
+
+Console: no game errors. EditMode: 938/938 passed in the same Editor.

@@ -284,3 +284,4 @@ MonoBehaviour:
       m_EditorAssetChanged: 0
     buyClipStartSeconds: 1.3
     buyVolume: 0.8
+  debugCredits: 1000

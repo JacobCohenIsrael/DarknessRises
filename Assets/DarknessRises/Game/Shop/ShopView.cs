@@ -88,7 +88,7 @@ namespace DarknessRises.Game.Shop
         private Rect fittedSafeArea;
         private Action<WeaponCardView> onCardPressed;
         private Action<UpgradeRowView> onRowPressed;
-        private Action<int> onCreditsChanged;
+        private Action onSaveChanged;
         private bool isShown;
 
         /// <summary>Whether the Shop is showing a keeper's wares.</summary>
@@ -133,8 +133,8 @@ namespace DarknessRises.Game.Shop
             creditsCount.ValueChanged += ShowCredits;
             creditsCount.Set(keeper.Credits);
             ShowCredits(keeper.Credits);
-            onCreditsChanged = OnCreditsChanged;
-            keeper.CreditsChanged += onCreditsChanged;
+            onSaveChanged = OnSaveChanged;
+            keeper.Changed += onSaveChanged;
             FitSafeArea();
             Refresh();
         }
@@ -246,7 +246,7 @@ namespace DarknessRises.Game.Shop
             }
 
             creditsCount.ValueChanged -= ShowCredits;
-            keeper.CreditsChanged -= onCreditsChanged;
+            keeper.Changed -= onSaveChanged;
             weaponsTab.onClick.RemoveListener(ShowWeaponsPage);
             gearTab.onClick.RemoveListener(ShowGearPage);
             for (var i = 0; i < weaponCards.Count; i++)
@@ -302,10 +302,15 @@ namespace DarknessRises.Game.Shop
             Refresh();
         }
 
-        // The bank changed, by a purchase here or from outside: the number counts to it, and what can be afforded may differ.
-        private void OnCreditsChanged(int credits)
+        // The save changed, by a purchase here or from outside (the dev tools): the Credits count to their new number,
+        // and what is owned or can be afforded may differ.
+        private void OnSaveChanged()
         {
-            creditsCount.CountTo(credits, settings.CreditsCountSeconds);
+            if (creditsCount.Target != keeper.Credits)
+            {
+                creditsCount.CountTo(keeper.Credits, settings.CreditsCountSeconds);
+            }
+
             Refresh();
         }
 

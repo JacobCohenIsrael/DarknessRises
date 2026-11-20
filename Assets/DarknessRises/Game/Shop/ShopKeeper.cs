@@ -35,6 +35,16 @@ namespace DarknessRises.Game.Shop
             remove => save.CreditsChanged -= value;
         }
 
+        /// <summary>
+        /// Raised when anything the Shop shows may have changed: the bank, a level, the chosen Primary. Also when the
+        /// save was changed from outside the Shop, as the dev tools do.
+        /// </summary>
+        public event Action Changed
+        {
+            add => save.Changed += value;
+            remove => save.Changed -= value;
+        }
+
         /// <summary>The Credits in the bank.</summary>
         public int Credits => save.Credits;
 

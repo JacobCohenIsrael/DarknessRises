@@ -228,6 +228,67 @@ namespace DarknessRises.Game.EditModeTests.Saving
         }
 
         [Test]
+        public void Credits_can_be_added_outside_a_Run()
+        {
+            var save = PlayerSave.Load(storage);
+
+            save.AddCredits(1000);
+            save.AddCredits(0);
+            save.Write();
+
+            Assert.That(save.Credits, Is.EqualTo(1000));
+            Assert.That(PlayerSave.Load(storage).Credits, Is.EqualTo(1000));
+            Assert.That(() => save.AddCredits(-1), Throws.InstanceOf<ArgumentOutOfRangeException>());
+        }
+
+        [Test]
+        public void Reset_forgets_everything()
+        {
+            var save = PlayerSave.Load(storage);
+            save.FinishRun(RunThatEarned(3000));
+            save.Purchase("machine-gun", 1, 2500);
+            save.ChoosePrimaryWeapon("machine-gun");
+            var totals = new List<int>();
+            save.CreditsChanged += totals.Add;
+
+            save.Reset();
+            save.Write();
+
+            Assert.That(save.Credits, Is.Zero);
+            Assert.That(save.RunsFinished, Is.Zero);
+            Assert.That(save.LevelOf("machine-gun"), Is.Zero);
+            Assert.That(save.PrimaryWeaponId, Is.Empty);
+            Assert.That(totals, Is.EqualTo(new[] { 0 }));
+            var afterRestart = PlayerSave.Load(storage);
+            Assert.That(afterRestart.Credits, Is.Zero);
+            Assert.That(afterRestart.LevelOf("machine-gun"), Is.Zero);
+        }
+
+        [Test]
+        public void It_tells_whenever_anything_it_holds_changes()
+        {
+            var save = PlayerSave.Load(storage);
+            var changes = 0;
+            save.Changed += () => changes++;
+
+            save.Bank(new RunCredits());
+            Assert.That(changes, Is.Zero, "Nothing was banked.");
+
+            save.Bank(RunThatEarned(500));
+            Assert.That(changes, Is.EqualTo(1));
+
+            save.Purchase("pistol.magazine", 1, 250);
+            Assert.That(changes, Is.EqualTo(2));
+
+            save.Purchase("pistol.magazine", 2, 9999);
+            Assert.That(changes, Is.EqualTo(2), "The bank couldn't cover it.");
+
+            save.ChoosePrimaryWeapon("pistol");
+            save.ChoosePrimaryWeapon("pistol");
+            Assert.That(changes, Is.EqualTo(3));
+        }
+
+        [Test]
         public void It_needs_somewhere_to_keep_the_save_and_Credits_to_bank()
         {
             var save = PlayerSave.Load(storage);

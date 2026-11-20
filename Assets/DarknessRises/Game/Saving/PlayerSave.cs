@@ -41,6 +41,9 @@ namespace DarknessRises.Game.Saving
         /// <summary>Raised when the Credits in the bank change, with the new total.</summary>
         public event Action<int> CreditsChanged;
 
+        /// <summary>Raised when anything the save holds changes: the bank, what was bought, the chosen Primary, the Runs finished.</summary>
+        public event Action Changed;
+
         /// <summary>Credits in the bank: every Run's earnings so far, less what was spent in the Shop.</summary>
         public int Credits { get; private set; }
 
@@ -94,7 +97,7 @@ namespace DarknessRises.Game.Saving
             }
 
             RunsFinished = RunsFinished < int.MaxValue ? RunsFinished + 1 : int.MaxValue;
-            hasUnsavedChanges = true;
+            MarkChanged();
             Bank(runCredits);
         }
 
@@ -137,14 +140,48 @@ namespace DarknessRises.Game.Saving
             }
 
             levels[itemId] = level;
-            hasUnsavedChanges = true;
             if (price > 0)
             {
                 Credits -= price;
                 CreditsChanged?.Invoke(Credits);
             }
 
+            MarkChanged();
             return true;
+        }
+
+        /// <summary>
+        /// Puts <paramref name="credits"/> straight in the bank, outside any Run. For the dev tools; a Run's Credits come
+        /// in through <see cref="Bank"/>. It doesn't write the save.
+        /// </summary>
+        public void AddCredits(int credits)
+        {
+            if (credits < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(credits), credits, "Credits are spent in the Shop, not taken away.");
+            }
+
+            Deposit(credits);
+        }
+
+        /// <summary>
+        /// Puts the save back to a first install: no Credits, nothing bought, no Primary chosen, no Run finished. For the
+        /// dev tools. It doesn't write the save.
+        /// </summary>
+        public void Reset()
+        {
+            var hadCredits = Credits != 0;
+            Credits = 0;
+            RunsFinished = 0;
+            PrimaryWeaponId = string.Empty;
+            levels.Clear();
+            boughtIds.Clear();
+            if (hadCredits)
+            {
+                CreditsChanged?.Invoke(Credits);
+            }
+
+            MarkChanged();
         }
 
         /// <summary>Chooses the Primary weapon for the next Run, by its id. Whether it's owned is the Shop's call.</summary>
@@ -158,7 +195,7 @@ namespace DarknessRises.Game.Saving
             }
 
             PrimaryWeaponId = weaponId;
-            hasUnsavedChanges = true;
+            MarkChanged();
             return true;
         }
 
@@ -189,8 +226,14 @@ namespace DarknessRises.Game.Saving
 
             // The bank never overflows into debt: it stops at the most an int holds.
             Credits = (int)Math.Min(int.MaxValue, (long)Credits + credits);
-            hasUnsavedChanges = true;
             CreditsChanged?.Invoke(Credits);
+            MarkChanged();
+        }
+
+        private void MarkChanged()
+        {
+            hasUnsavedChanges = true;
+            Changed?.Invoke();
         }
 
         private SaveRecord ToRecord()

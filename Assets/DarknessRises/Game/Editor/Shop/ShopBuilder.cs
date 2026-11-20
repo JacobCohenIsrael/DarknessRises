@@ -114,9 +114,11 @@ namespace DarknessRises.Game.Editor.Shop
         private const float UpgradeEffectFontSize = 32f;
         private const float UpgradeEffectBottom = 14f;
         private const float UpgradeEffectHeight = 42f;
-        private const float UpgradeLevelFontSize = 22f;
-        private const float UpgradeLevelWidth = 86f;
-        private static readonly Vector2 UpgradeButtonSize = new(170f, 76f);
+        private const float UpgradeLevelFontSize = 21f;
+        private const float UpgradeLevelTop = 8f;
+        private const float UpgradeLevelHeight = 26f;
+        private static readonly Vector2 UpgradeButtonSize = new(170f, 64f);
+        private const float UpgradeButtonBottom = 12f;
         private const float UpgradeButtonFontSize = 34f;
 
         private const float PrimaryLineFontSize = 44f;
@@ -476,8 +478,8 @@ namespace DarknessRises.Game.Editor.Shop
             return heading;
         }
 
-        // One Upgrade's row: its name over its numbers on the left ("12 > 15", with its level at the end of the line),
-        // and the buy button with the price on the right.
+        // One Upgrade's row: its name over its numbers on the left ("12 > 15"), and its level over the buy button with the
+        // price on the right.
         private static UpgradeRowView BuildRowTemplate(RectTransform templates)
         {
             var row = AddRect("Upgrade Row", templates);
@@ -495,17 +497,15 @@ namespace DarknessRises.Game.Editor.Shop
             FitOnOneLine(title, UpgradeTitleFontSize);
 
             var effect = AddText(row, "Effect", "0 > 0", UpgradeEffectFontSize, Color.white, TextAlignmentOptions.Left);
-            BottomStrip(effect.rectTransform, UpgradeRowPadding, textRight + UpgradeLevelWidth, UpgradeEffectBottom, UpgradeEffectHeight);
+            BottomStrip(effect.rectTransform, UpgradeRowPadding, textRight, UpgradeEffectBottom, UpgradeEffectHeight);
             FitOnOneLine(effect, UpgradeEffectFontSize);
 
-            var level = AddText(row, "Level", "LV 0/3", UpgradeLevelFontSize, DimTextColor, TextAlignmentOptions.Right);
-            BottomStrip(level.rectTransform, UpgradeRowPadding, textRight, UpgradeEffectBottom, UpgradeEffectHeight);
+            // On the right: the level over the buy button, so the numbers on the left keep the whole line on a narrow screen.
+            var level = AddText(row, "Level", "LV 0/3", UpgradeLevelFontSize, DimTextColor, TextAlignmentOptions.Center);
+            Corner(level.rectTransform, Vector2.one, new Vector2(-UpgradeRowPadding, -UpgradeLevelTop), new Vector2(UpgradeButtonSize.x, UpgradeLevelHeight));
 
             var button = AddButton(row, "Button", "0", UpgradeButtonFontSize, ButtonColor, Color.white, out var buttonLabel);
-            var buttonRect = (RectTransform)button.transform;
-            buttonRect.anchorMin = buttonRect.anchorMax = buttonRect.pivot = new Vector2(1f, 0.5f);
-            buttonRect.anchoredPosition = new Vector2(-UpgradeRowPadding, 0f);
-            buttonRect.sizeDelta = UpgradeButtonSize;
+            Corner((RectTransform)button.transform, new Vector2(1f, 0f), new Vector2(-UpgradeRowPadding, UpgradeButtonBottom), UpgradeButtonSize);
             buttonLabel.fontStyle = FontStyles.Bold;
 
             var view = row.gameObject.AddComponent<UpgradeRowView>();

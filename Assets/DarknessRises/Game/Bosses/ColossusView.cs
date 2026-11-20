@@ -23,8 +23,8 @@ namespace DarknessRises.Game.Bosses
     /// <remarks>
     /// During the fight the character stands where Relocate puts it, and this is the only thing that moves it: the Route
     /// walker hands placement over when the fight starts and takes it back when it ends (see
-    /// <see cref="Routes.RouteWalker.HandOverPlacement"/>). The fight's first Position is the Route's Boss Station, so
-    /// the character walks on from there once it's over.
+    /// <see cref="Routes.RouteWalker.HandOverPlacement"/>). The fight's first Position is the Route's Boss Station.
+    /// Once it's over the character stays where it stands, and the Route walker walks it on from there.
     /// </remarks>
     // Runs before everything that reads the character's position in Update (the weapon's muzzle and aim, Enemies'
     // NavMesh targets and attacks, Grenade throws, Aim assist, the reload meter), so they all see the Relocated
@@ -108,7 +108,7 @@ namespace DarknessRises.Game.Bosses
         /// <summary>A fight began, run by this pattern. The Boss health bar reads it.</summary>
         public event Action<ColossusPattern> FightBegan;
 
-        /// <summary>The fight is over: beaten, with the character back on the Boss Station, or cut short.</summary>
+        /// <summary>The fight is over: beaten, with the character standing still wherever it ended up, or cut short.</summary>
         public event Action FightEnded;
 
         /// <summary>The Colossus being fought; null before the first fight.</summary>
@@ -136,7 +136,7 @@ namespace DarknessRises.Game.Bosses
 
         /// <summary>
         /// Fights the Colossus with the character standing on the Route's Boss Station at <paramref name="bossStation"/>,
-        /// until it is beaten and the character is back on that Station. Its hit points are scaled by
+        /// until it is beaten, its foot has lifted out of the Room and the character has finished any dash under way. Its hit points are scaled by
         /// <paramref name="rampStep"/>. From phase 2 its Shamblers come from <paramref name="pools"/>.
         /// </summary>
         public async UniTask FightAsync(
@@ -155,8 +155,8 @@ namespace DarknessRises.Game.Bosses
             {
                 await UniTask.WaitUntil(this, view => view.pattern.IsDefeated, cancellationToken: cancellation);
 
-                // The foot lifts out of the Room as the character goes back to where it came in.
-                relocation.MoveTo(0);
+                // The foot lifts out of the Room. The character finishes a dash under way and stays where it is: the
+                // Route walker walks it on from there, so it never snaps back to where it came in.
                 await UniTask.WaitUntil(
                     this,
                     view => !view.relocation.IsDashing && view.defeatLiftElapsedSeconds >= view.definition.Stomp.LiftSeconds,

@@ -774,7 +774,7 @@ namespace DarknessRises.Game
         // In the Boss fight the Boss decides when Lightning flashes, and its growl warns of each flash.
         private void OnBossFightStarted()
         {
-            // The fight places the character (Relocate) until it's back on the Boss Station.
+            // The fight places the character (Relocate) until it's over; then the walker walks it on from where it stands.
             routeWalker.HandOverPlacement();
             run.BeginBossFight();
             lightningScheduler.EnterBossDrivenMode();

@@ -5,8 +5,8 @@ using UnityEngine;
 namespace DarknessRises.Game.Cameras
 {
     /// <summary>
-    /// The point the camera follows: a little way ahead of the character along its Route while it leads the walk,
-    /// easing back while the character is stopped. Following the Route rather than a straight line lets the camera
+    /// The point the camera follows: a little way ahead of the character along its way (the Route, or its way back
+    /// onto it) while it leads the walk, easing back while the character is stopped. Following the Route rather than a straight line lets the camera
     /// look round corners.
     /// </summary>
     public sealed class RouteLookAhead
@@ -75,7 +75,7 @@ namespace DarknessRises.Game.Cameras
 
             var desired = leading ? walkingDistance : stoppedDistance;
             Distance = Mathf.MoveTowards(Distance, desired, changeSpeed * deltaSeconds);
-            Target = progress.Path.PositionAt(progress.Distance + Distance);
+            Target = progress.PositionAhead(Distance);
         }
     }
 }

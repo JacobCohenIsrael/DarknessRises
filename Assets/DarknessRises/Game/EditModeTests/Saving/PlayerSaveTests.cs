@@ -186,14 +186,13 @@ namespace DarknessRises.Game.EditModeTests.Saving
         }
 
         [Test]
-        public void Purchases_and_the_Primary_choice_survive_an_app_restart()
+        public void Purchases_survive_an_app_restart()
         {
             var save = PlayerSave.Load(storage);
             save.Bank(RunThatEarned(3000));
             save.Purchase("machine-gun", 1, 2500);
             save.Purchase("pistol.magazine", 1, 250);
             save.Purchase("pistol.magazine", 2, 200);
-            save.ChoosePrimaryWeapon("machine-gun");
             save.Write();
 
             var afterRestart = PlayerSave.Load(storage);
@@ -201,20 +200,6 @@ namespace DarknessRises.Game.EditModeTests.Saving
             Assert.That(afterRestart.Credits, Is.EqualTo(50));
             Assert.That(afterRestart.LevelOf("machine-gun"), Is.EqualTo(1));
             Assert.That(afterRestart.LevelOf("pistol.magazine"), Is.EqualTo(2));
-            Assert.That(afterRestart.PrimaryWeaponId, Is.EqualTo("machine-gun"));
-        }
-
-        [Test]
-        public void Choosing_the_same_Primary_again_isnt_a_change()
-        {
-            var save = PlayerSave.Load(storage);
-
-            Assert.That(save.ChoosePrimaryWeapon("machine-gun"), Is.True);
-            Assert.That(save.ChoosePrimaryWeapon("machine-gun"), Is.False);
-            save.Write();
-            save.Write();
-
-            Assert.That(storage.WriteCount, Is.EqualTo(1));
         }
 
         [Test]
@@ -247,7 +232,6 @@ namespace DarknessRises.Game.EditModeTests.Saving
             var save = PlayerSave.Load(storage);
             save.FinishRun(RunThatEarned(3000));
             save.Purchase("machine-gun", 1, 2500);
-            save.ChoosePrimaryWeapon("machine-gun");
             var totals = new List<int>();
             save.CreditsChanged += totals.Add;
 
@@ -257,7 +241,6 @@ namespace DarknessRises.Game.EditModeTests.Saving
             Assert.That(save.Credits, Is.Zero);
             Assert.That(save.RunsFinished, Is.Zero);
             Assert.That(save.LevelOf("machine-gun"), Is.Zero);
-            Assert.That(save.PrimaryWeaponId, Is.Empty);
             Assert.That(totals, Is.EqualTo(new[] { 0 }));
             var afterRestart = PlayerSave.Load(storage);
             Assert.That(afterRestart.Credits, Is.Zero);
@@ -283,8 +266,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
             save.Purchase("pistol.magazine", 2, 9999);
             Assert.That(changes, Is.EqualTo(2), "The bank couldn't cover it.");
 
-            save.ChoosePrimaryWeapon("pistol");
-            save.ChoosePrimaryWeapon("pistol");
+            save.Reset();
             Assert.That(changes, Is.EqualTo(3));
         }
 

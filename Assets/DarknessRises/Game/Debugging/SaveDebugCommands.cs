@@ -13,7 +13,8 @@ namespace DarknessRises.Game.Debugging
     /// </summary>
     /// <remarks>
     /// In a Level, what was maxed out shows up from the next Level started (the Run's stats are built when a Level
-    /// starts), and a reset save boots straight into Level 1 the next time the app starts. In the Shop the screen
+    /// starts; the Weapons the character carries, with their ammo, are the Run's, so a newly unlocked one re-arms them),
+    /// and a reset save boots straight into Level 1 the next time the app starts. In the Shop the screen
     /// follows the save as it changes.
     /// </remarks>
     public sealed class SaveDebugCommands
@@ -39,8 +40,7 @@ namespace DarknessRises.Game.Debugging
         }
 
         /// <summary>
-        /// Raises everything the Shop sells to its top level, for free: every Weapon unlocked, every Upgrade maxed. The
-        /// chosen Primary stays as it was.
+        /// Raises everything the Shop sells to its top level, for free: every Weapon unlocked, every Upgrade maxed.
         /// </summary>
         public void MaxOut()
         {

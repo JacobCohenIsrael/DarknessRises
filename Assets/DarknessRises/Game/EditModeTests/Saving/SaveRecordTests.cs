@@ -38,15 +38,15 @@ namespace DarknessRises.Game.EditModeTests.Saving
         }
 
         [Test]
-        public void What_was_bought_and_the_Primary_choice_read_back_as_written()
+        public void What_was_bought_reads_back_as_written()
         {
-            var written = new SaveRecord { credits = 40, primaryWeapon = "machine-gun" };
+            var written = new SaveRecord { credits = 40 };
             written.items.Add(new SaveItem { id = "machine-gun", level = 1 });
             written.items.Add(new SaveItem { id = "pistol.magazine", level = 3 });
 
             SaveFormat.TryParse(SaveFormat.ToText(written), out var record);
 
-            Assert.That(record.primaryWeapon, Is.EqualTo("machine-gun"));
+            Assert.That(record.credits, Is.EqualTo(40));
             Assert.That(record.items.Count, Is.EqualTo(2));
             Assert.That(record.items[1].id, Is.EqualTo("pistol.magazine"));
             Assert.That(record.items[1].level, Is.EqualTo(3));
@@ -65,11 +65,27 @@ namespace DarknessRises.Game.EditModeTests.Saving
             Assert.That(record.credits, Is.EqualTo(375));
             Assert.That(record.runsFinished, Is.EqualTo(3));
             Assert.That(record.items, Is.Empty);
-            Assert.That(record.primaryWeapon, Is.Empty);
         }
 
         [Test]
-        public void A_version_1_save_loads_with_its_bank_and_the_starting_Primary()
+        public void A_save_that_still_names_a_chosen_Primary_loads_with_everything_else()
+        {
+            // As a build wrote it while the Shop still picked the one Primary of the next Run. The choice is gone
+            // (every unlocked Weapon comes along now); the rest of the save reads as it was.
+            var storage = new MemorySaveStorage
+            {
+                Text = "{\"version\":2,\"credits\":90,\"runsFinished\":4,\"items\":[{\"id\":\"machine-gun\",\"level\":1}],\"primaryWeapon\":\"machine-gun\"}",
+            };
+
+            var save = PlayerSave.Load(storage);
+
+            Assert.That(save.Credits, Is.EqualTo(90));
+            Assert.That(save.RunsFinished, Is.EqualTo(4));
+            Assert.That(save.LevelOf("machine-gun"), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void A_version_1_save_loads_with_its_bank_and_nothing_bought()
         {
             var storage = new MemorySaveStorage { Text = "{\"version\":1,\"credits\":375,\"runsFinished\":3}" };
 
@@ -77,14 +93,13 @@ namespace DarknessRises.Game.EditModeTests.Saving
 
             Assert.That(save.Credits, Is.EqualTo(375));
             Assert.That(save.RunsFinished, Is.EqualTo(3));
-            Assert.That(save.PrimaryWeaponId, Is.Empty);
             Assert.That(save.LevelOf("machine-gun"), Is.Zero);
         }
 
         [Test]
         public void Bought_items_no_version_allows_are_put_right()
         {
-            var record = new SaveRecord { version = SaveRecord.CurrentVersion, primaryWeapon = null };
+            var record = new SaveRecord { version = SaveRecord.CurrentVersion };
             record.items.Add(new SaveItem { id = "machine-gun", level = 1 });
             record.items.Add(null);
             record.items.Add(new SaveItem { id = string.Empty, level = 2 });
@@ -96,7 +111,6 @@ namespace DarknessRises.Game.EditModeTests.Saving
             Assert.That(record.items.Count, Is.EqualTo(1), "One entry per item; entries without an id or a level are dropped.");
             Assert.That(record.items[0].id, Is.EqualTo("machine-gun"));
             Assert.That(record.items[0].level, Is.EqualTo(3));
-            Assert.That(record.primaryWeapon, Is.Empty);
         }
 
         [Test]

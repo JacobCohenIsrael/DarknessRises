@@ -32,6 +32,10 @@ namespace DarknessRises.Game.Continues
         [SerializeField, Min(0f), Tooltip("Seconds the character can't be hit after it comes back.")]
         private float invulnerabilitySeconds = 2f;
 
+        [SerializeField, Range(0f, 1f), Tooltip(
+            "The share of a full ammo reserve every Primary weapon gets back on a Continue. 1 refills them all: the ad buys a fresh start.")]
+        private float ammoRefillShare = 1f;
+
         [Header("Push-back")]
         [SerializeField, Min(0.1f), Tooltip("Metres around the character the burst clears: every Enemy inside is pushed out to this distance.")]
         private float pushBackRadius = 5f;
@@ -61,6 +65,7 @@ namespace DarknessRises.Game.Continues
         public int CountdownFrom => countdownFrom;
         public float CountdownSecondsPerCount => countdownSecondsPerCount;
         public float InvulnerabilitySeconds => invulnerabilitySeconds;
+        public float AmmoRefillShare => ammoRefillShare;
         public float PushBackRadius => pushBackRadius;
         public float PushBackForce => pushBackForce;
         public Color LightColor => lightColor;

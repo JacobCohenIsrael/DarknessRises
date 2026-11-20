@@ -10,7 +10,8 @@ namespace DarknessRises.Game.Saving
     /// </summary>
     /// <remarks>
     /// Public fields because that's what Unity's JSON serializer reads and writes. Adding a field is safe (an older
-    /// record reads it as its default); renaming or re-meaning one needs a new version and a migration step.
+    /// record reads it as its default), and so is dropping one (text that still has it reads fine without it);
+    /// renaming or re-meaning one needs a new version and a migration step.
     /// </remarks>
     [Serializable]
     public sealed class SaveRecord
@@ -29,12 +30,6 @@ namespace DarknessRises.Game.Saving
 
         /// <summary>What was bought in the Shop, each with the level it stands at. Since version 2.</summary>
         public List<SaveItem> items = new();
-
-        /// <summary>
-        /// The id of the Primary weapon the character carries into the next Run. Empty: the one owned from the start.
-        /// Since version 2.
-        /// </summary>
-        public string primaryWeapon = string.Empty;
     }
 
     /// <summary>One thing bought in the Shop: the item's id, as authored in the Shop definition, and its level.</summary>

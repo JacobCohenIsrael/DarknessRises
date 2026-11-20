@@ -17,6 +17,8 @@ MonoBehaviour:
   reloadSeconds: 1.2
   shotSpeed: 30
   damage: 1
+  hasUnlimitedAmmo: 1
+  ammoReserve: 0
   range: 20
   spreadDegrees: 0
   knockback:

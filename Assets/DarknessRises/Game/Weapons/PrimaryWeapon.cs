@@ -3,14 +3,15 @@ using System;
 namespace DarknessRises.Game.Weapons
 {
     /// <summary>
-    /// The state of the Primary weapon: fire-rate gating, the magazine, and manual and automatic reload.
-    /// Plain C#: time arrives as an explicit delta and commands as method calls (ADR 0003).
+    /// The state of a Primary weapon: fire-rate gating, the magazine, manual and automatic reload, and the ammo reserve
+    /// its reloads take from. Plain C#: time arrives as an explicit delta and commands as method calls (ADR 0003).
     /// </summary>
     /// <remarks>
     /// While the trigger is held the Weapon fires at its fire rate, starting on the tick the trigger is pulled
     /// if it's ready. Releasing the trigger never banks shots: the next pull fires as soon as the fire-rate gap
     /// since the last shot has passed. Firing the last shot in the magazine starts a reload automatically,
-    /// and nothing fires while reloading. A reload always refills the whole magazine.
+    /// and nothing fires while reloading. A reload fills the magazine as far as the reserve allows. With the magazine
+    /// and the reserve both empty the Weapon has run dry: it can't fire or reload until its reserve is refilled.
     /// </remarks>
     public sealed class PrimaryWeapon
     {
@@ -18,9 +19,12 @@ namespace DarknessRises.Game.Weapons
         private float secondsUntilReady;
         private float reloadSecondsLeft;
 
-        public PrimaryWeapon(PrimaryWeaponStats stats)
+        /// <param name="stats">Its fire rate, magazine and reload time.</param>
+        /// <param name="reserve">The ammo its reloads take from. None: an unlimited reserve.</param>
+        public PrimaryWeapon(PrimaryWeaponStats stats, AmmoReserve reserve = null)
         {
             this.stats = stats;
+            Reserve = reserve ?? AmmoReserve.Unlimited();
             RoundsInMagazine = stats.MagazineSize;
         }
 
@@ -30,13 +34,22 @@ namespace DarknessRises.Game.Weapons
         /// <summary>Raised when a reload starts, manual or automatic.</summary>
         public event Action ReloadStarted;
 
-        /// <summary>Raised when a reload finishes and the magazine is full again.</summary>
+        /// <summary>Raised when a reload finishes and the magazine is as full as the reserve could make it.</summary>
         public event Action ReloadFinished;
+
+        /// <summary>Raised when the last round is fired with nothing left in the reserve: the Weapon has run dry.</summary>
+        public event Action<PrimaryWeapon> RanDry;
 
         public int RoundsInMagazine { get; private set; }
         public int MagazineSize => stats.MagazineSize;
         public bool IsReloading { get; private set; }
         public bool IsTriggerHeld { get; private set; }
+
+        /// <summary>The ammo beyond the magazine, which reloads take from.</summary>
+        public AmmoReserve Reserve { get; }
+
+        /// <summary>Whether the Weapon has anything to fire: rounds in the magazine, or in the reserve to reload from.</summary>
+        public bool HasAmmo => RoundsInMagazine > 0 || !Reserve.IsEmpty;
 
         /// <summary>How far the current reload is, from 0 to 1. 0 when not reloading.</summary>
         public float ReloadProgress =>
@@ -50,6 +63,16 @@ namespace DarknessRises.Game.Weapons
         /// <summary>Seconds since the current reload started. 0 when not reloading.</summary>
         public float ReloadElapsedSeconds => IsReloading ? stats.ReloadSeconds - reloadSecondsLeft : 0f;
 
+        /// <summary>Forgets whoever listened to the Weapon and its reserve: the Level that showed it is gone.</summary>
+        public void DropListeners()
+        {
+            Fired = null;
+            ReloadStarted = null;
+            ReloadFinished = null;
+            RanDry = null;
+            Reserve.DropListeners();
+        }
+
         public void PullTrigger()
         {
             IsTriggerHeld = true;
@@ -60,11 +83,14 @@ namespace DarknessRises.Game.Weapons
             IsTriggerHeld = false;
         }
 
-        /// <summary>Starts a manual reload. Does nothing if the magazine is full or a reload is already running.</summary>
+        /// <summary>
+        /// Starts a manual reload. Does nothing if the magazine is full, a reload is already running, or the reserve
+        /// is empty.
+        /// </summary>
         /// <returns>Whether a reload started.</returns>
         public bool Reload()
         {
-            if (IsReloading || RoundsInMagazine >= stats.MagazineSize)
+            if (IsReloading || RoundsInMagazine >= stats.MagazineSize || Reserve.IsEmpty)
             {
                 return false;
             }
@@ -83,7 +109,12 @@ namespace DarknessRises.Game.Weapons
 
             secondsUntilReady -= deltaSeconds;
 
-            if (IsReloading)
+            // An empty magazine reloads on its own as soon as there's ammo for it: after a refill, too.
+            if (!IsReloading && RoundsInMagazine == 0 && !Reserve.IsEmpty)
+            {
+                StartReload();
+            }
+            else if (IsReloading)
             {
                 reloadSecondsLeft -= deltaSeconds;
 
@@ -99,7 +130,7 @@ namespace DarknessRises.Game.Weapons
                 }
             }
 
-            while (IsTriggerHeld && !IsReloading && secondsUntilReady <= 0f)
+            while (IsTriggerHeld && !IsReloading && RoundsInMagazine > 0 && secondsUntilReady <= 0f)
             {
                 Fire();
                 secondsUntilReady += stats.SecondsBetweenShots;
@@ -117,7 +148,16 @@ namespace DarknessRises.Game.Weapons
             RoundsInMagazine--;
             Fired?.Invoke();
 
-            if (RoundsInMagazine == 0)
+            if (RoundsInMagazine > 0)
+            {
+                return;
+            }
+
+            if (Reserve.IsEmpty)
+            {
+                RanDry?.Invoke(this);
+            }
+            else
             {
                 StartReload();
             }
@@ -134,7 +174,7 @@ namespace DarknessRises.Game.Weapons
         {
             IsReloading = false;
             reloadSecondsLeft = 0f;
-            RoundsInMagazine = stats.MagazineSize;
+            RoundsInMagazine += Reserve.Take(stats.MagazineSize - RoundsInMagazine);
             ReloadFinished?.Invoke();
         }
     }

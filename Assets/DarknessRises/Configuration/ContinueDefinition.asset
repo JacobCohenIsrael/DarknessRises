@@ -19,6 +19,7 @@ MonoBehaviour:
   countdownFrom: 10
   countdownSecondsPerCount: 1
   invulnerabilitySeconds: 2
+  ammoRefillShare: 1
   pushBackRadius: 5
   pushBackForce: 14
   lightColor: {r: 0.85, g: 0.92, b: 1, a: 1}

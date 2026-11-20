@@ -57,6 +57,9 @@ namespace DarknessRises.Game
         [SerializeField] private PrimaryWeaponView primaryWeapon;
         [SerializeField] private AmmoHudView ammoHud;
 
+        [SerializeField, Tooltip("The Weapon button beside the ammo count: the equipped Primary and its reserve; a tap switches to the next one.")]
+        private WeaponButtonView weaponButton;
+
         [SerializeField, Tooltip("The radial meter by the character while the Primary weapon reloads.")]
         private ReloadMeterView reloadMeter;
 
@@ -107,9 +110,6 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("Debug/ToggleLightning. Only read in the Editor and debug builds.")]
         private InputActionReference toggleLightning;
 
-        [SerializeField, Tooltip("Debug/PrimaryWeapon1-3: equip the Nth Primary. Only read in the Editor and debug builds.")]
-        private InputActionReference[] switchPrimaryWeapon;
-
         [SerializeField, Tooltip("Debug/JumpToRampLevel: jump to the Ramp definition's debug Level. Only read in the Editor and debug builds.")]
         private InputActionReference jumpToRampLevel;
 
@@ -119,15 +119,9 @@ namespace DarknessRises.Game
         private LightningScheduler lightningScheduler;
 #if UNITY_EDITOR || DEBUG
         private LightningDebugToggle lightningDebugToggle;
-        private PrimaryWeaponDebugSwitch primaryWeaponDebugSwitch;
         private RampLevelDebugJump rampLevelDebugJump;
         private BossSkipDebug bossSkipDebug;
         private DebugMenuView debugMenu;
-
-        // Debug builds carry every Primary, so the debug switch can try them all.
-        private const bool CarriesEveryPrimary = true;
-#else
-        private const bool CarriesEveryPrimary = false;
 #endif
         [SerializeField] private RouteWavesView routeWaves;
         [SerializeField] private CharacterSkillsView characterSkills;
@@ -179,6 +173,9 @@ namespace DarknessRises.Game
 
         // The Run's effective stats: the definitions' numbers with the player's Upgrades applied. Every system reads these.
         private RunStats stats;
+
+        // The names of the Primaries the character carries, in switching order, as the Shop calls them.
+        private string[] primaryNames;
         private bool reportsToRun;
 
         // Whether the scene runs a Level (or the Test Room's Waves). Kept from Awake: on unload the Level may be destroyed first.
@@ -257,15 +254,22 @@ namespace DarknessRises.Game
 
             var ramp = configuration.Ramp.ToRamp();
             var rampStep = ramp.StepAt(run.LevelIndex);
-            // One Primary per Run: the one chosen in the Shop. Only what the character carries is loaded.
+            // Every Primary the player has unlocked comes along, in the Shop's order: the Pistol first. Only what the
+            // character carries is loaded.
             var keeper = new ShopKeeper(save);
-            var chosenPrimary = configuration.Shop.PrimaryWeapon(keeper);
-            var primaryWeapons = CarriedPrimaries.For(
-                configuration.Shop.ToPrimaryWeapons(), chosenPrimary, CarriesEveryPrimary, out var equippedPrimary);
+            var catalog = configuration.Shop.ToCatalog();
+            var carried = CarriedPrimaries.For(catalog.Weapons, weapon => keeper.Owns(weapon.Item), out var carriedPlaces);
+            var primaryWeapons = new WeaponDefinition[carried.Length];
+            primaryNames = new string[carried.Length];
+            for (var i = 0; i < carried.Length; i++)
+            {
+                primaryWeapons[i] = carried[i].Offer.Weapon;
+                primaryNames[i] = carried[i].Offer.DisplayName;
+            }
 
             // What was bought in the Shop shows up here: the definitions never change, the Run's stats are built from
             // them and the levels the player owns.
-            stats = ConfiguredRunStats.For(configuration, configuration.Shop.ToCatalog(), keeper, primaryWeapons);
+            stats = ConfiguredRunStats.For(configuration, catalog, keeper, primaryWeapons);
             await GameContent.For(configuration, primaryWeapons, level != null, rampStep).LoadAsync(content, cancellationToken);
 
             // Runtime objects (pools, effects) are created in the active scene, so they go when this scene does.
@@ -274,7 +278,31 @@ namespace DarknessRises.Game
                 SceneManager.SetActiveScene(gameObject.scene);
             }
 
-            Begin(primaryWeapons, equippedPrimary, ramp);
+            Begin(primaryWeapons, carriedPlaces, ramp);
+        }
+
+        // The Primaries the character carries are the Run's, not the Level's. The Run's first Level arms them: full
+        // magazines, full reserves, the first one (the Pistol) equipped. Every Level after it finds them as the last
+        // one left them, with a share of each reserve refilled.
+        private PrimaryWeaponLoadout RunLoadout()
+        {
+            var loadout = run.Loadout;
+            if (loadout != null && loadout.Count == stats.Primaries.Count)
+            {
+                loadout.Refill(configuration.Ammo.LevelRefillShare);
+                return loadout;
+            }
+
+            // A new Run, or (with the dev tools) a save that unlocked another Primary in the middle of one.
+            var weapons = new PrimaryWeapon[stats.Primaries.Count];
+            for (var i = 0; i < weapons.Length; i++)
+            {
+                weapons[i] = stats.Primaries[i].ToWeapon();
+            }
+
+            loadout = new PrimaryWeaponLoadout(weapons);
+            run.Carry(loadout);
+            return loadout;
         }
 
         // Nothing is written to the device: the real save belongs to the boot.
@@ -289,7 +317,7 @@ namespace DarknessRises.Game
             run.Left += OnOwnRunLeft;
         }
 
-        private void Begin(WeaponDefinition[] primaryWeapons, int equippedPrimary, Ramp<EnemyDefinition> ramp)
+        private void Begin(WeaponDefinition[] primaryWeapons, int[] carriedPlaces, Ramp<EnemyDefinition> ramp)
         {
             aura.Reach(stats.AuraRange);
             routeWalker.Walk(configuration.Player, character, configuration.StationRhythm.ToWalkEasing());
@@ -312,10 +340,13 @@ namespace DarknessRises.Game
             lights.Add(aura.Light);
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
-            var loadout = primaryWeapon.Arm(primaryWeapons, stats.Primaries, content, lights);
-            loadout.Switch(equippedPrimary);
+            var loadout = primaryWeapon.Arm(primaryWeapons, stats.Primaries, RunLoadout(), carriedPlaces, content, lights);
             gunshotSound.Use(configuration.GunshotVoices, primaryWeapons, loadout, content);
             ammoHud.Show(primaryWeapon.Weapon);
+            if (weaponButton != null)
+            {
+                weaponButton.Show(loadout, primaryNames, configuration.WeaponButton);
+            }
             reloadMeter.Use(configuration.ReloadFeedback, character);
             reloadMeter.Show(primaryWeapon.Weapon);
             reloadSound.Use(configuration.ReloadFeedback, content);
@@ -415,7 +446,6 @@ namespace DarknessRises.Game
 
 #if UNITY_EDITOR || DEBUG
             lightningDebugToggle = new LightningDebugToggle(toggleLightning, lightningScheduler, lightning);
-            primaryWeaponDebugSwitch = new PrimaryWeaponDebugSwitch(switchPrimaryWeapon, primaryWeapon);
             if (jumpToRampLevel != null)
             {
                 rampLevelDebugJump = new RampLevelDebugJump(jumpToRampLevel, run, configuration.Ramp.DebugJumpLevel);
@@ -429,8 +459,8 @@ namespace DarknessRises.Game
             // Built from code, so no scene references it and release builds have none of it.
             debugMenu = DebugMenuView.Create(
                 transform,
-                PrimaryWeaponLabels(),
-                primaryWeaponDebugSwitch,
+                primaryNames,
+                primaryWeapon,
                 () => characterHealth.GodMode,
                 lightningDebugToggle,
                 rampLevelDebugJump,
@@ -735,21 +765,6 @@ namespace DarknessRises.Game
             SceneManager.LoadScene(BootSceneBuildIndex);
         }
 
-#if UNITY_EDITOR || DEBUG
-        // The touch debug menu's labels for the Primaries, in the order they're carried: the Shop's.
-        private string[] PrimaryWeaponLabels()
-        {
-            var weapons = configuration.Shop.Weapons;
-            var labels = new string[weapons.Count];
-            for (var i = 0; i < labels.Length; i++)
-            {
-                labels[i] = weapons[i].DisplayName;
-            }
-
-            return labels;
-        }
-#endif
-
         private void OnDisable()
         {
             if (!isSubscribed)
@@ -775,8 +790,6 @@ namespace DarknessRises.Game
 
             lightningDebugToggle.Dispose();
             lightningDebugToggle = null;
-            primaryWeaponDebugSwitch.Dispose();
-            primaryWeaponDebugSwitch = null;
             rampLevelDebugJump?.Dispose();
             rampLevelDebugJump = null;
             bossSkipDebug?.Dispose();

@@ -16,8 +16,8 @@ namespace DarknessRises.Game.Shop
     public sealed class ShopDefinition : ScriptableObject
     {
         [SerializeField, Tooltip(
-            "The Primary weapons, in the order the Shop shows them, each with its Upgrades. One Primary per Run: the player unlocks them " +
-            "here and chooses which one the character carries. At least one must cost nothing, so the player owns a Primary from the start.")]
+            "The Primary weapons, in the order the Shop shows them and the player switches between them, each with its Upgrades. Every one " +
+            "the player has unlocked comes along on every Run. The first must cost nothing and have unlimited ammo: it's the one a Run starts with.")]
         private WeaponOffer[] weapons = Array.Empty<WeaponOffer>();
 
         [SerializeField, Tooltip("The Grenade's Upgrades: charges, refill time, blast radius.")]
@@ -66,16 +66,6 @@ namespace DarknessRises.Game.Shop
             }
 
             return items;
-        }
-
-        /// <summary>
-        /// The Primary weapon the character carries into the next Run, as <paramref name="keeper"/> has it: the one the
-        /// player chose, or the one owned from the start.
-        /// </summary>
-        public WeaponDefinition PrimaryWeapon(ShopKeeper keeper)
-        {
-            var items = ToWeaponItems();
-            return weapons[Array.IndexOf(items, keeper.PrimaryOf(items))].Weapon;
         }
 
         /// <summary>Every Primary weapon there is, in the Shop's order.</summary>

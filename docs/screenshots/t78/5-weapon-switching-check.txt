@@ -1,0 +1,69 @@
+Issue #78, slice 5: switching Primary weapons mid-Run, with finite ammo. Headless check.
+
+A batch-mode Editor (no window, master volume 0) played from the boot scene. This time the probe went through real
+input devices: a touchscreen it added and touched (so the event system, the UI filter and the Gesture input saw a
+finger), a keyboard and a mouse. It read the Run's loadout and the HUD's texts back after every step. Test saves
+were written to the player's normal save path and deleted afterwards.
+
+THE SHOP (a save with the Machine gun and the Flamethrower unlocked, 5000 Credits)
+  the cards                               -> PISTOL, MACHINE GUN, FLAMETHROWER all read OWNED and can't be pressed; the line
+                                             at the bottom says "Every unlocked Weapon comes along on a Run. Switch between
+                                             them as you play."
+  the new rows                            -> MACHINE GUN / RESERVE 240 > 300 [LV 0/3] for 500
+                                             FLAMETHROWER / RESERVE 300 > 380 [LV 0/3] for 600
+  buy the Machine gun's RESERVE once      -> the row reads 300 > 360 [LV 1/3], next price 1000; bank 4500; saved
+  PLAY
+
+THE RUN STARTS
+  Level 1                                 -> PISTOL equipped. Carried: Pistol 12/12, reserve unlimited | Machine gun 30/30,
+                                             reserve 300/300 (the Upgrade) | Flamethrower 60/60, reserve 300/300
+                                             HUD: "12 / 12", Weapon button "PISTOL" / "NO LIMIT"
+
+SWITCHING ON TOUCH (a finger down on the Weapon button and up three frames later)
+  tap the Weapon button                   -> MACHINE GUN, HUD "30 / 30", button "MACHINE GUN" / "RESERVE 300". Shots fired: 0
+  tap the Room (middle of the screen)     -> 1 Shot: 29/30. A tap elsewhere still fires.
+  tap the Weapon button                   -> FLAMETHROWER, "60 / 60", "RESERVE 300". Shots fired: 0
+  tap the Weapon button                   -> PISTOL (it wraps round), "12 / 12", "NO LIMIT". Shots fired: 0
+
+SWITCHING ON KEYBOARD AND MOUSE
+  key 3                                   -> FLAMETHROWER
+  key 2                                   -> MACHINE GUN
+  wheel down                              -> FLAMETHROWER (the next one)
+  wheel up, wheel up                      -> MACHINE GUN, then PISTOL (the one before)
+
+RUNNING DRY (the left mouse button held down)
+  Machine gun, Fire held 20 s             -> 119 Shots; magazine 0/30 (reloading), reserve 210/300; button "RESERVE 210"
+  Fire held on                            -> 210 more Shots, then: [ran dry: MACHINE GUN at magazine 0, reserve 0]
+                                             [switched to PISTOL]. 329 Shots in all: the 29 in the magazine and the 300 in
+                                             the reserve, not one more. With Fire still held the Pistol fired 5 Shots in the
+                                             next second. HUD "7 / 12", button "PISTOL" / "NO LIMIT"
+  key 2 (the dry Machine gun)             -> refused: still PISTOL. canSelect=False
+  tap the Weapon button                   -> FLAMETHROWER: the tap skips the dry Machine gun
+  Flamethrower, Fire held                 -> 360 Shots (60 + 300), then [ran dry: FLAMETHROWER] [switched to PISTOL]
+  tap, wheel down, key 3                  -> nothing: the Pistol is the only Weapon with ammo
+
+THE NEXT LEVEL (the Boss beaten)
+  Level 2 starts                          -> the same loadout (it's the Run's): PISTOL equipped, magazines as they were
+                                             (Pistol 2/12, the others 0), reserves refilled by half: Machine gun 150/300,
+                                             Flamethrower 150/300. Both can be selected again
+  tap the Weapon button                   -> MACHINE GUN; its empty magazine reloads on its own: 30/30, reserve 120
+
+A NEW RUN
+  Shop, PLAY                              -> PISTOL equipped; Machine gun 30/30 + 300/300, Flamethrower 60/60 + 300/300:
+                                             full again
+
+A CONTINUE
+  Machine gun, Fire held 12 s             -> 76 Shots; magazine 14/30, reserve 240/300
+  die, CONTINUE, the fake ad              -> back in the fight with the Machine gun still equipped, magazine 14/30,
+                                             reserve 300/300; button "RESERVE 300"
+
+ONLY THE PISTOL (a first install: no save)
+  Level 1                                 -> carried: the Pistol alone. The Weapon button is hidden
+  key 2, wheel down                       -> nothing: a Weapon that isn't unlocked can't be selected
+
+WHERE THE BUTTON SITS (HUD of 2400 x 1079)
+  Weapon button x 1719..1968, y 48..168   | magazine count x 1984..2344, y 48..178 | pause x 2256..2352, y 943..1039 |
+  Grenade button around (450, 337), where the player left it | Skill buttons bottom left. Nothing overlaps.
+
+EDIT-MODE TESTS
+  986 of 986 pass (938 before this slice), in the open Editor and in a standalone "unity test . --mode EditMode".

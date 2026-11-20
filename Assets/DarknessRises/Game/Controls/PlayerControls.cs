@@ -33,6 +33,17 @@ namespace DarknessRises.Game.Controls
             "Gameplay/Relocate: a direction (WASD or the arrow keys) that picks the Position to dash to in a Boss fight.")]
         private InputActionReference relocate;
 
+        [SerializeField, Tooltip(
+            "Gameplay/Weapon1, 2, 3: equip the Primary weapon in that place of the Shop's order (Pistol, Machine gun, Flamethrower), " +
+            "if it's unlocked and has ammo.")]
+        private InputActionReference[] selectWeapon = Array.Empty<InputActionReference>();
+
+        [SerializeField, Tooltip("Gameplay/NextWeapon: equip the next unlocked Primary weapon that has ammo. The mouse wheel, and the Weapon button on touch.")]
+        private InputActionReference nextWeapon;
+
+        [SerializeField, Tooltip("Gameplay/PreviousWeapon: equip the unlocked Primary weapon before this one that has ammo. The mouse wheel the other way.")]
+        private InputActionReference previousWeapon;
+
         [SerializeField, Tooltip("The camera the player sees the Room through, used to turn the pointer into an aim point.")]
         private Camera viewCamera;
 
@@ -88,6 +99,27 @@ namespace DarknessRises.Game.Controls
         public bool WasFlarePressedThisFrame => flare.action.WasPressedThisFrame();
         public bool WasSlowMoPressedThisFrame => slowMo.action.WasPressedThisFrame();
         public bool WasGrenadePressedThisFrame => grenade.action.WasPressedThisFrame();
+        public bool WasNextWeaponPressedThisFrame => nextWeapon != null && nextWeapon.action.WasPressedThisFrame();
+        public bool WasPreviousWeaponPressedThisFrame => previousWeapon != null && previousWeapon.action.WasPressedThisFrame();
+
+        /// <summary>
+        /// The place in the Shop's order of the Primary weapon the player asked for this frame (0 is the first: the
+        /// Pistol), if they pressed one of the Weapon commands.
+        /// </summary>
+        public bool TryGetSelectedWeapon(out int place)
+        {
+            for (var i = 0; i < selectWeapon.Length; i++)
+            {
+                if (selectWeapon[i] != null && selectWeapon[i].action.WasPressedThisFrame())
+                {
+                    place = i;
+                    return true;
+                }
+            }
+
+            place = -1;
+            return false;
+        }
 
         /// <summary>
         /// The direction the player pressed this frame to Relocate, if any: x is screen right, y is screen up.
@@ -195,6 +227,7 @@ namespace DarknessRises.Game.Controls
             flare.action.Enable();
             slowMo.action.Enable();
             grenade.action.Enable();
+            SetWeaponActions(true);
             if (relocate != null)
             {
                 // Never subscribed twice, whichever of enabling and releasing the hold comes first.
@@ -220,6 +253,7 @@ namespace DarknessRises.Game.Controls
             flare.action.Disable();
             slowMo.action.Disable();
             grenade.action.Disable();
+            SetWeaponActions(false);
             if (relocate != null)
             {
                 relocate.action.performed -= OnRelocateChanged;
@@ -227,6 +261,34 @@ namespace DarknessRises.Game.Controls
                 relocate.action.Disable();
                 relocateHeld = Vector2.zero;
                 ClearRelocate();
+            }
+        }
+
+        private void SetWeaponActions(bool enabled)
+        {
+            for (var i = 0; i < selectWeapon.Length; i++)
+            {
+                Set(selectWeapon[i], enabled);
+            }
+
+            Set(nextWeapon, enabled);
+            Set(previousWeapon, enabled);
+        }
+
+        private static void Set(InputActionReference reference, bool enabled)
+        {
+            if (reference == null)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                reference.action.Enable();
+            }
+            else
+            {
+                reference.action.Disable();
             }
         }
 

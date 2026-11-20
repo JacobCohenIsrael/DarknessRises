@@ -111,12 +111,9 @@ namespace DarknessRises.Game.EditModeTests.Debugging
         }
 
         [Test]
-        public void Max_out_keeps_the_chosen_Primary_and_survives_an_app_restart()
+        public void Max_out_survives_an_app_restart()
         {
             commands.MaxOut();
-            var catalog = shop.ToCatalog();
-
-            Assert.That(new ShopKeeper(save).PrimaryOf(catalog.WeaponItems), Is.SameAs(catalog.WeaponItems[0]));
 
             var restarted = Restarted();
             Assert.That(restarted.LevelOf("machine-gun"), Is.EqualTo(1));
@@ -142,7 +139,6 @@ namespace DarknessRises.Game.EditModeTests.Debugging
             earned.Earn(300);
             save.FinishRun(earned);
             commands.MaxOut();
-            save.ChoosePrimaryWeapon("machine-gun");
             Assert.That(BootDestinations.For(save), Is.EqualTo(BootDestination.Shop));
 
             commands.ResetSave();
@@ -153,7 +149,6 @@ namespace DarknessRises.Game.EditModeTests.Debugging
                 Assert.That(read.RunsFinished, Is.Zero);
                 Assert.That(read.LevelOf("machine-gun"), Is.Zero);
                 Assert.That(read.LevelOf("machine-gun.magazine"), Is.Zero);
-                Assert.That(read.PrimaryWeaponId, Is.Empty);
                 Assert.That(BootDestinations.For(read), Is.EqualTo(BootDestination.FirstRun), "The next launch goes straight into Level 1.");
             }
         }

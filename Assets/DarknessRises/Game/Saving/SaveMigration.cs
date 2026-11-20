@@ -17,7 +17,7 @@ namespace DarknessRises.Game.Saving
         /// <summary>The first version there was: Credits and the Runs finished.</summary>
         private const int CreditsVersion = 1;
 
-        /// <summary>Adds what was bought in the Shop and the Primary weapon choice.</summary>
+        /// <summary>Adds what was bought in the Shop.</summary>
         private const int ShopVersion = 2;
 
         /// <summary>Migrates <paramref name="record"/> in place to <see cref="SaveRecord.CurrentVersion"/> and returns it.</summary>
@@ -36,9 +36,8 @@ namespace DarknessRises.Game.Saving
 
             if (record.version == CreditsVersion)
             {
-                // Before the Shop nothing could be bought and the character always carried the starting Primary.
+                // Before the Shop nothing could be bought.
                 record.items = new List<SaveItem>();
-                record.primaryWeapon = string.Empty;
                 record.version = ShopVersion;
             }
 
@@ -55,7 +54,6 @@ namespace DarknessRises.Game.Saving
         {
             record.credits = Math.Max(0, record.credits);
             record.runsFinished = Math.Max(0, record.runsFinished);
-            record.primaryWeapon ??= string.Empty;
             record.items ??= new List<SaveItem>();
 
             // One entry per item, at its highest level; entries without an id or a level are dropped.

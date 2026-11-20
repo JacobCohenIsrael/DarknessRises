@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Saving;
 using DarknessRises.Game.Shop;
+using DarknessRises.Game.Weapons;
 using NUnit.Framework;
 
 namespace DarknessRises.Game.EditModeTests.Shop
@@ -183,64 +184,31 @@ namespace DarknessRises.Game.EditModeTests.Shop
         }
 
         [Test]
-        public void The_Weapon_owned_from_the_start_is_the_Primary_until_another_is_chosen()
+        public void A_Run_carries_the_Weapons_that_are_owned_and_no_other()
         {
-            Assert.That(keeper.PrimaryOf(weapons), Is.SameAs(pistol));
+            var carried = CarriedPrimaries.For(weapons, weapon => keeper.Owns(weapon), out var places);
+
+            Assert.That(carried, Is.EqualTo(new[] { pistol }));
+            Assert.That(places, Is.EqualTo(new[] { 0, -1, -1 }));
+
+            Earn(6000);
+            keeper.Buy(flamethrower);
+            carried = CarriedPrimaries.For(weapons, weapon => keeper.Owns(weapon), out places);
+
+            Assert.That(carried, Is.EqualTo(new[] { pistol, flamethrower }));
+            Assert.That(places, Is.EqualTo(new[] { 0, -1, 1 }), "The Machine gun isn't unlocked: it has no place.");
         }
 
         [Test]
-        public void A_Weapon_that_isnt_owned_cant_be_chosen()
-        {
-            Assert.That(keeper.ChoosePrimary(machineGun), Is.False);
-
-            Assert.That(keeper.PrimaryOf(weapons), Is.SameAs(pistol));
-        }
-
-        [Test]
-        public void An_owned_Weapon_can_be_chosen_as_the_Primary_and_the_choice_is_saved()
+        public void An_unlocked_Weapon_still_comes_along_after_an_app_restart()
         {
             Earn(2500);
             keeper.Buy(machineGun);
+            var restarted = AfterRestart();
 
-            Assert.That(keeper.PrimaryOf(weapons), Is.SameAs(pistol), "Unlocking alone doesn't change the Primary.");
-            Assert.That(keeper.ChoosePrimary(machineGun), Is.True);
+            var carried = CarriedPrimaries.For(weapons, weapon => restarted.Owns(weapon), out _);
 
-            Assert.That(keeper.PrimaryOf(weapons), Is.SameAs(machineGun));
-            Assert.That(AfterRestart().PrimaryOf(weapons).Id, Is.EqualTo("machine-gun"));
-        }
-
-        [Test]
-        public void The_player_can_go_back_to_the_starting_Weapon()
-        {
-            Earn(2500);
-            keeper.Buy(machineGun);
-            keeper.ChoosePrimary(machineGun);
-
-            Assert.That(keeper.ChoosePrimary(pistol), Is.True);
-
-            Assert.That(keeper.PrimaryOf(weapons), Is.SameAs(pistol));
-        }
-
-        [Test]
-        public void Choosing_the_Primary_again_changes_nothing()
-        {
-            var chosen = new List<ShopItem>();
-            keeper.PrimaryChosen += chosen.Add;
-            Earn(2500);
-            keeper.Buy(machineGun);
-
-            Assert.That(keeper.ChoosePrimary(machineGun), Is.True);
-            Assert.That(keeper.ChoosePrimary(machineGun), Is.False);
-
-            Assert.That(chosen, Is.EqualTo(new[] { machineGun }));
-        }
-
-        [Test]
-        public void A_saved_choice_the_Shop_no_longer_sells_falls_back_to_the_starting_Weapon()
-        {
-            save.ChoosePrimaryWeapon("railgun");
-
-            Assert.That(keeper.PrimaryOf(weapons), Is.SameAs(pistol));
+            Assert.That(carried, Is.EqualTo(new[] { pistol, machineGun }));
         }
 
         [Test]
@@ -276,7 +244,7 @@ namespace DarknessRises.Game.EditModeTests.Shop
         {
             var locked = new[] { machineGun, flamethrower };
 
-            Assert.That(() => keeper.PrimaryOf(locked), Throws.InstanceOf<InvalidOperationException>());
+            Assert.That(() => CarriedPrimaries.For(locked, weapon => keeper.Owns(weapon), out _), Throws.InstanceOf<ArgumentException>());
         }
     }
 }

@@ -17,6 +17,7 @@ namespace DarknessRises.Game.Gestures
         public const int GrenadeBit = 2;
         public const int FlareBit = 3;
         public const int SlowMoBit = 4;
+        public const int NextWeaponBit = 5;
 
         public static FourCC Format => new('G', 'S', 'T', 'R');
 
@@ -25,6 +26,7 @@ namespace DarknessRises.Game.Gestures
         [InputControl(name = "grenade", layout = "Button", bit = GrenadeBit, displayName = "Grenade")]
         [InputControl(name = "flare", layout = "Button", bit = FlareBit, displayName = "Flare")]
         [InputControl(name = "slowMo", layout = "Button", bit = SlowMoBit, displayName = "Slow-mo")]
+        [InputControl(name = "nextWeapon", layout = "Button", bit = NextWeaponBit, displayName = "Next Weapon")]
         [FieldOffset(0)]
         public uint buttons;
 
@@ -60,6 +62,7 @@ namespace DarknessRises.Game.Gestures
         public ButtonControl Grenade { get; private set; }
         public ButtonControl Flare { get; private set; }
         public ButtonControl SlowMo { get; private set; }
+        public ButtonControl NextWeapon { get; private set; }
         public Vector2Control Relocate { get; private set; }
 
         // Touching the static constructor registers the layout before any scene or actions asset needs it.
@@ -76,6 +79,7 @@ namespace DarknessRises.Game.Gestures
             Grenade = GetChildControl<ButtonControl>("grenade");
             Flare = GetChildControl<ButtonControl>("flare");
             SlowMo = GetChildControl<ButtonControl>("slowMo");
+            NextWeapon = GetChildControl<ButtonControl>("nextWeapon");
             Relocate = GetChildControl<Vector2Control>("relocate");
         }
     }

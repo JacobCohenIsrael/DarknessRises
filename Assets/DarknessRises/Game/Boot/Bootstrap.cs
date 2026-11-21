@@ -28,8 +28,8 @@ namespace DarknessRises.Game.Boot
     /// Shop is open), the boot's <see cref="LoadingScreenView"/> covers the screen, so a scene is never seen half-made.
     /// Before a destination's scene loads, everything that destination can need (its <see cref="ContentLabels"/> label
     /// and its scene) is downloaded to the device in one measured download, so the loading screen's bar can show the
-    /// whole wait in bytes from the start; the loads that follow come from the device. Each destination is downloaded at
-    /// most once a session.
+    /// whole wait in bytes from the start; the loads that follow come from the device. A destination already downloaded
+    /// (this session, or on an earlier visit with the same content) isn't downloaded again.
     /// It also owns the player's save, which outlives every Run: it reads it from the device at start, banks each Run's
     /// Credits in it, and writes it when the app goes to the background or quits.
     /// And it owns the sounds that carry across scenes (ADR 0011): the storm plays on the boot's own
@@ -241,7 +241,7 @@ namespace DarknessRises.Game.Boot
             if (!downloaded.Contains(key))
             {
                 var keys = new[] { key, label };
-                if (await downloads.DownloadAsync(keys, loadingScreen, loadingScreen.ProgressPollSeconds, cancellationToken))
+                if (await downloads.DownloadAsync(keys, label, loadingScreen, loadingScreen.ProgressPollSeconds, cancellationToken))
                 {
                     downloaded.Add(key);
                 }

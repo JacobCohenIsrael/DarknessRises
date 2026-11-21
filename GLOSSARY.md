@@ -291,6 +291,10 @@ _Avoid_: wallet, balance, purse
 The one rewarded ad the end screen offers after a Run: watching it through multiplies the Credits that Run earned. It's optional, pays once per Run, and never blocks moving on. An ad that isn't watched through pays nothing and leaves the offer standing. A Run that earned too few Credits isn't offered one.
 _Avoid_: bonus ad, double-up, reward video
 
+**Loading screen**:
+The black screen that covers everything while a Level or the Shop loads, until that scene is ready to be seen: a Level's content is in and its start beat begins, or the Shop shows the Save. If the wait goes on (a first visit still downloading), it says LOADING, with dots that grow. A Level or the Shop is never shown half-made.
+_Avoid_: splash screen (that is Unity's own), loader
+
 **Save**:
 The player's durable progress on the device: the bank, and what was bought in the Shop. It survives app restarts and updates. On the Web it's kept in the browser, so it also survives a new upload of the game; it stays with that browser.
 _Avoid_: profile, account, progress (that's how far along the Route the character is)

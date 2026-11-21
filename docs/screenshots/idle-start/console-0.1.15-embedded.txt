@@ -1,0 +1,319 @@
+[   0.6 s] NETWORK 404 http://127.0.0.1:8377/favicon.ico
+[   0.6 s] LOG error Failed to load resource: the server responded with a status of 404 (Not Found) http://127.0.0.1:8377/favicon.ico
+[   0.8 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[   0.9 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[   0.9 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[   1.0 s] LOG You can reduce startup time if you configure your web server to add "Content-Encoding: gzip" response header when serving "Build/DarknessRises-0.1.15.framework.js.unityweb" file.
+[  12.9 s] LOG You can reduce startup time if you configure your web server to add "Content-Encoding: gzip" response header when serving "Build/DarknessRises-0.1.15.data.unityweb" file.
+[  12.9 s] LOG [UnityCache] 'http://localhost:8377/game/Build/DarknessRises-0.1.15.data.unityweb' successfully downloaded and stored in the browser cache
+[  19.2 s] LOG You can reduce startup time if you configure your web server to add "Content-Encoding: gzip" response header when serving "Build/DarknessRises-0.1.15.wasm.unityweb" file.
+[  20.3 s] LOG [UnityMemory] Configuration Parameters - Can be set up in boot.config
+
+[  20.3 s] LOG     "memorysetup-bucket-allocator-granularity=16"
+
+[  20.3 s] LOG     "memorysetup-bucket-allocator-bucket-count=8"
+
+[  20.3 s] LOG     "memorysetup-bucket-allocator-block-size=4194304"
+
+[  20.3 s] LOG     "memorysetup-bucket-allocator-block-count=1"
+
+[  20.3 s] LOG     "memorysetup-main-allocator-block-size=16777216"
+
+[  20.3 s] LOG     "memorysetup-thread-allocator-block-size=16777216"
+
+[  20.3 s] LOG     "memorysetup-main-allocator-mimalloc-enabled=1"
+
+[  20.3 s] LOG     "memorysetup-gfx-main-allocator-block-size=16777216"
+
+[  20.3 s] LOG     "memorysetup-gfx-thread-allocator-block-size=16777216"
+
+[  20.3 s] LOG     "memorysetup-cache-allocator-block-size=4194304"
+
+[  20.3 s] LOG     "memorysetup-typetree-allocator-block-size=2097152"
+
+[  20.3 s] LOG     "memorysetup-profiler-bucket-allocator-granularity=16"
+
+[  20.3 s] LOG     "memorysetup-profiler-bucket-allocator-bucket-count=8"
+
+[  20.3 s] LOG     "memorysetup-profiler-bucket-allocator-block-size=4194304"
+
+[  20.3 s] LOG     "memorysetup-profiler-bucket-allocator-block-count=1"
+
+[  20.3 s] LOG     "memorysetup-profiler-allocator-block-size=16777216"
+
+[  20.3 s] LOG     "memorysetup-profiler-editor-allocator-block-size=1048576"
+
+[  20.3 s] LOG     "memorysetup-temp-allocator-size-main=4194304"
+
+[  20.3 s] LOG     "memorysetup-job-temp-allocator-block-size=2097152"
+
+[  20.3 s] LOG     "memorysetup-job-temp-allocator-block-size-background=1048576"
+
+[  20.3 s] LOG     "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+
+[  20.3 s] LOG     "memorysetup-temp-allocator-size-background-worker=32768"
+
+[  20.3 s] LOG     "memorysetup-allocator-temp-initial-block-size-main=262144"
+
+[  20.3 s] LOG     "memorysetup-allocator-temp-initial-block-size-worker=262144"
+
+[  20.3 s] LOG     "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+
+[  20.3 s] LOG     "memorysetup-temp-allocator-size-audio-worker=65536"
+
+[  20.3 s] LOG     "memorysetup-remapper-allocator-initial-capacity=32768"
+
+[  20.4 s] LOG CodeReloadManager initialized
+
+[  20.4 s] LOG Input System module state changed to: Initialized.
+
+[  20.4 s] LOG [Physics::Module] Initialized fallback backend.
+
+[  20.4 s] LOG [Physics::Module] Id: 0xdecafbad
+
+[  20.4 s] LOG Loading player data from data.unity3d
+
+[  20.4 s] LOG warning The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 blob:http://localhost:8377/ac641475-be6c-4437-a175-ab2850641a85
+[  20.4 s] LOG Initialize engine version: 6000.6.5f1 (3ff58d469c8a)
+
+[  20.4 s] LOG [EntityIdStore] init: page-table path, blockCount=1048576, entitiesPerBlock=256, top-level=8388608 bytes, sizeof(Block)=4128 (lazily allocated per committed block)
+
+[  20.4 s] LOG [Subsystems] Discovering subsystems at path UnitySubsystems
+
+[  20.4 s] LOG Unity WebGPU:
+
+[  20.4 s] LOG     Version:  WebGPU 1.0 [1.0]
+
+[  20.4 s] LOG     Renderer: WebGPU Device
+
+[  20.4 s] LOG     Vendor:   Unity Technologies
+
+[  20.5 s] LOG [Physics::Module] Selected backend (deferred post-plugins).
+
+[  20.5 s] LOG [Physics::Module] Name: PhysX
+
+[  20.5 s] LOG [Physics::Module] Id: 0xf2b8ea05
+
+[  20.5 s] LOG [Physics::Module] SDK Version: 4.1.2
+
+[  20.5 s] LOG [Physics::Module] Integration Version: 1.0.0
+
+[  20.5 s] LOG [Physics::Module] Threading Mode: Single-Threaded
+
+[  20.6 s] LOG Input System initialize...
+
+[  20.7 s] LOG UnloadTime: 2.699999 ms
+
+[  20.7 s] LOG Audio context resumed after 0.272 seconds.
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/GaussianDepthOfField' is not supported or has been stripped from the build (in 'DepthOfFieldGaussianPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/GaussianDepthOfField' is not supported or has been stripped from the build (in 'DepthOfFieldGaussianPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/BokehDepthOfField' is not supported or has been stripped from the build (in 'DepthOfFieldBokehPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/CameraMotionBlur' is not supported or has been stripped from the build (in 'MotionBlurPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/PaniniProjection' is not supported or has been stripped from the build (in 'PaniniProjectionPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] LOG Shader 'Hidden/Universal Render Pipeline/Bloom' is not supported or has been stripped from the build (in 'BloomPostProcessPass'). PostProcessing render passes will not execute.
+
+[  22.9 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.0 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.0 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.1 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.2 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.2 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.2 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.6 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/43e8b3ac1cc9df2b8a811ca889cfb172_unitybuiltinassets_0bf974ea2c0ed4904b1f5f4e2fbdb243.bundle' successfully downloaded and stored in the browser cache
+[  23.7 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  23.7 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/43e8b3ac1cc9df2b8a811ca889cfb172_monoscripts_e466df8bbcc038f4a15ee292d385c72e.bundle' successfully downloaded and stored in the browser cache
+[  26.6 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/shared_assets_all_1d6389ddc6b9251a873cc9dd38069364.bundle' successfully downloaded and stored in the browser cache
+[  28.1 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/level1_scenes_all_8519424faabc90e13e04bc8a4819659a.bundle' successfully downloaded and stored in the browser cache
+[  28.1 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  28.1 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  28.2 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  28.5 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.5 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.6 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.6 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.7 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.7 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.7 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.8 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.8 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.8 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.8 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.8 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.8 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.9 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.9 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.9 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.9 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  28.9 s] LOG Trying to get length of sound which is not loaded yet.
+[  28.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  29.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  29.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  29.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  29.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  29.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  29.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  29.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  29.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  29.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  29.2 s] LOG Trying to get metadata of sound which is not loaded.
+[  32.8 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_rat_13712637dcf7f1bebb1641c946dee585.bundle' successfully downloaded and stored in the browser cache
+[  32.8 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  32.9 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  32.9 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_phantomeyes_bf89375669daa02ed18cff7adfb1b0b0.bundle' successfully downloaded and stored in the browser cache
+[  33.0 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_rats_1_ab08cbe29e3d47d4ae120ec9e204b2c7.bundle' successfully downloaded and stored in the browser cache
+[  33.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  33.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  33.0 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  33.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  33.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  33.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  33.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  33.1 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_sneek_hiss_01_7dc509a274f1cb390d694b5c96aa0dea.bundle' successfully downloaded and stored in the browser cache
+[  33.1 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  33.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  33.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  33.1 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_owl_squeak_01_916acd835ee60093633f454b82e6e353.bundle' successfully downloaded and stored in the browser cache
+[  33.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  33.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  33.2 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  34.5 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_shambler_60b8f2392aa5972363be1c7c76e3fe7a.bundle' successfully downloaded and stored in the browser cache
+[  34.5 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  34.8 s] LOG Trying to get length of sound which is not loaded yet.
+[  34.8 s] LOG Trying to get metadata of sound which is not loaded.
+[  34.8 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_misc_whisper_79ec119173a518e0cf90539396d7014e.bundle' successfully downloaded and stored in the browser cache
+[  34.9 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  35.1 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_misc_breath_58d668dc64ce982a79cb56ded47b0a6a.bundle' successfully downloaded and stored in the browser cache
+[  35.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  35.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  35.1 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  35.2 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_misc_shh_93f45aa20ac9eca366e541ba234c5d98.bundle' successfully downloaded and stored in the browser cache
+[  35.2 s] LOG Trying to get length of sound which is not loaded yet.
+[  35.2 s] LOG Trying to get metadata of sound which is not loaded.
+[  35.2 s] LOG Trying to get length of sound which is not loaded yet.
+[  35.2 s] LOG Trying to get metadata of sound which is not loaded.
+[  35.3 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  36.6 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.6 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.6 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_dk-scratch_d7cd657ff7e2651b440d4fae2e97b411.bundle' successfully downloaded and stored in the browser cache
+[  36.6 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  36.7 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_magicspell_simpleswoosh_6_c5a6c0ecf27d9326b4a3a836a241db4a.bundle' successfully downloaded and stored in the browser cache
+[  36.7 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.7 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.7 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.7 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.8 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_batshort_2c369031eb4739f5543b4c608612e346.bundle' successfully downloaded and stored in the browser cache
+[  36.8 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  36.8 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.8 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.8 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  36.8 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.8 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.8 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_bulletimpact14_0e6d327d78c5b44c20dff09878bb5150.bundle' successfully downloaded and stored in the browser cache
+[  36.8 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.8 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.9 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_bloodypunch_f93e3600307b1cea556c4f2ce6558756.bundle' successfully downloaded and stored in the browser cache
+[  36.9 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.9 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  36.9 s] LOG Trying to get length of sound which is not loaded yet.
+[  36.9 s] LOG Trying to get metadata of sound which is not loaded.
+[  36.9 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  37.0 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_magicspell_shortreverse_1_b8f4957b1783edb80b55c3c818b12efc.bundle' successfully downloaded and stored in the browser cache
+[  37.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.0 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_footsteps_zombie_concret_001_e8f5279cc134bd0c6a2c016f9e2ef9e8.bundle' successfully downloaded and stored in the browser cache
+[  37.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.0 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.0 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.1 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  37.1 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  37.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.1 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_footsteps_zombie_concret_003_b7f0f438db6125b681bdd40ec45da375.bundle' successfully downloaded and stored in the browser cache
+[  37.1 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_footsteps_zombie_concret_002_9d017dd478e623f02bef7aa1b8e32bd1.bundle' successfully downloaded and stored in the browser cache
+[  37.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.2 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  37.2 s] WARNING [UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.
+[  37.2 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.2 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.2 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_footsteps_zombie_concret_004_a9f39b31659d1ce22889b87430899e5d.bundle' successfully downloaded and stored in the browser cache
+[  37.3 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.3 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.3 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.3 s] LOG Trying to get metadata of sound which is not loaded.
+[  37.3 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/enemies_assets_foley_crawling_a_001_11f57c431dd0f11c6694ee43e2889de6.bundle' successfully downloaded and stored in the browser cache
+[  37.3 s] LOG Trying to get length of sound which is not loaded yet.
+[  37.3 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.1 s] LOG [UnityCache] 'http://localhost:8377/game/StreamingAssets/aa/WebGL/level1_assets_all_7a4ce71e2c8f2b5e91fd89766ec417b3.bundle' successfully downloaded and stored in the browser cache
+[  38.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.1 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.1 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.2 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.2 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.5 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.5 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.5 s] LOG Trying to get length of sound which is not loaded yet.
+[  38.5 s] LOG Trying to get metadata of sound which is not loaded.
+[  38.7 s] NETWORK 404 http://127.0.0.1:8377/favicon.ico
+[  38.7 s] LOG error Failed to load resource: the server responded with a status of 404 (Not Found) http://127.0.0.1:8377/favicon.ico

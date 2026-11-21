@@ -46,6 +46,12 @@ namespace DarknessRises.Game.Shop
         public bool IsOpen => Keeper != null;
 
         /// <summary>
+        /// Raised once, when the Shop's content has loaded and its screen shows the save: from here it's fit to be seen.
+        /// Until then the screen shows what it was built with.
+        /// </summary>
+        public event Action Opened;
+
+        /// <summary>
         /// Opens the Shop over <paramref name="save"/> and waits until the player presses PLAY. What's bought is
         /// written to the save as it's bought.
         /// </summary>
@@ -77,6 +83,7 @@ namespace DarknessRises.Game.Shop
             // Built from code, so the scene doesn't reference it and release builds have none of it.
             ShopDebugMenuView.Create(transform, new SaveDebugCommands(save, shop));
 #endif
+            Opened?.Invoke();
             await view.PlayAsync(cancellationToken);
         }
 

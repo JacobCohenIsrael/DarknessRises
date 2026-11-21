@@ -23,6 +23,8 @@ namespace DarknessRises.Game.Boot
     /// When the player leaves a Run's end screen, the Level unloads and the Shop scene loads the same way; PLAY there
     /// unloads it and starts a new Run. Only one of the two is ever loaded. A first install goes straight into Level 1;
     /// once a Run has been finished, the app opens in the Shop (<see cref="BootDestinations"/>).
+    /// While a scene loads, and until it says it's ready (a Level's content has loaded and its start beat begins; the
+    /// Shop is open), the boot's <see cref="LoadingScreenView"/> covers the screen, so a scene is never seen half-made.
     /// It also owns the player's save, which outlives every Run: it reads it from the device at start, banks each Run's
     /// Credits in it, and writes it when the app goes to the background or quits.
     /// And it owns the sounds that carry across scenes (ADR 0011): the storm plays on the boot's own
@@ -59,6 +61,9 @@ namespace DarknessRises.Game.Boot
         [SerializeField, Tooltip("Hears the storm while no Level or Shop is loaded to hear it: through every unload and load.")]
         private BootEars ears;
 
+        [SerializeField, Tooltip("Covers the screen while a Level or the Shop loads, until that scene is ready to be seen.")]
+        private LoadingScreenView loadingScreen;
+
         // Owns the boot's lifetime: the app's.
         private CancellationTokenSource lifetime;
 
@@ -94,12 +99,17 @@ namespace DarknessRises.Game.Boot
         /// <summary>The boot's AudioListener, on while no other scene's is.</summary>
         public BootEars Ears => ears;
 
+        /// <summary>The loading screen, up while no scene is ready to be seen.</summary>
+        public LoadingScreenView LoadingScreen => loadingScreen;
+
         /// <summary>The player's save: the Credits in the bank and what they bought. Read from the device at start.</summary>
         public PlayerSave Save { get; private set; }
 
         private void Start()
         {
             versionLabel.Show(definition.VersionLabel, VersionLabel.Text(Application.version, Debug.isDebugBuild));
+            loadingScreen.Use(definition.LoadingScreen);
+            loadingScreen.Show();
             lifetime = new CancellationTokenSource();
             Save = PlayerSave.Load(SaveStorages.OfThisPlayer());
             banking = new RunBanking(Run, Save);
@@ -163,6 +173,18 @@ namespace DarknessRises.Game.Boot
             var gameRoot = Find<GameRoot>(scene);
             storm.Hush(false);
             gameRoot.Play(Run, Save, storm);
+
+            // The scene is in, but its content (Enemies, sounds) may still be downloading: on a first visit that takes
+            // seconds. The Level stays behind the loading screen until it has started.
+            if (gameRoot.IsStarted)
+            {
+                loadingScreen.Hide();
+            }
+            else
+            {
+                gameRoot.Started += loadingScreen.Hide;
+            }
+
             audioVolumes.Follow(gameRoot.AudioVolumes);
             LevelLoaded?.Invoke(gameRoot);
 
@@ -193,6 +215,9 @@ namespace DarknessRises.Game.Boot
             var shop = Find<ShopRoot>(scene);
             audioVolumes.Follow(shop.AudioVolumes);
             ShopLoaded?.Invoke(shop);
+
+            // The Shop stays behind the loading screen until its content has loaded and its screen shows the save.
+            shop.Opened += loadingScreen.Hide;
             await shop.RunAsync(Save, cancellationToken);
             audioVolumes.Unfollow();
             await UnloadSceneAsync(scene, cancellationToken);
@@ -201,6 +226,7 @@ namespace DarknessRises.Game.Boot
 
         private async UniTask<Scene> LoadSceneAsync(object key, CancellationToken cancellationToken)
         {
+            loadingScreen.Show();
             loadingCamera.enabled = true;
             sceneScope = new ContentScope(source);
             var scene = await sceneScope.LoadSceneAsync(key, cancellationToken);
@@ -210,6 +236,7 @@ namespace DarknessRises.Game.Boot
 
         private async UniTask UnloadSceneAsync(Scene scene, CancellationToken cancellationToken)
         {
+            loadingScreen.Show();
             loadingCamera.enabled = true;
 
             // The scene's ears go with it; the boot's hear on, so a sound that carries across scenes never cuts.

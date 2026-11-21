@@ -7,7 +7,7 @@ namespace DarknessRises.Game.Boot
     /// <summary>
     /// What the boot scene loads: the Level scene the game starts in, the Shop scene shown between Runs, and the Test
     /// Room sandbox. All are Addressables scenes, so the boot scene (the only scene in the build) holds nothing but these references and what
-    /// lives as long as the app, such as the build version label. Never changed at runtime.
+    /// lives as long as the app, such as the build version label and the loading screen. Never changed at runtime.
     /// </summary>
     [CreateAssetMenu(menuName = "Darkness Rises/Boot Definition", fileName = "BootDefinition", order = 0)]
     public sealed class BootDefinition : ScriptableObject
@@ -29,9 +29,13 @@ namespace DarknessRises.Game.Boot
             "which is Level content loaded through Addressables, so the label shows before any Level loads.")]
         private VersionLabelSettings versionLabel = new();
 
+        [SerializeField, Tooltip("The loading screen: what covers the screen while a Level or the Shop loads, until it's ready to be seen.")]
+        private LoadingScreenSettings loadingScreen = new();
+
         public AssetReference LevelScene => levelScene;
         public AssetReference ShopScene => shopScene;
         public AssetReference TestRoomScene => testRoomScene;
         public VersionLabelSettings VersionLabel => versionLabel;
+        public LoadingScreenSettings LoadingScreen => loadingScreen;
     }
 }

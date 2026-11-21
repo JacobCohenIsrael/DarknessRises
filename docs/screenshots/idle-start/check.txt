@@ -1,0 +1,42 @@
+"The game starts idle" on 0.1.15: reproduction and fix. Headless check.
+
+The exact release zip (Builds/WebGL/DarknessRises-0.1.15-webgl.zip, copied, not moved) was unzipped and served by a
+small Node server at http://127.0.0.1:8377, and run in Chrome 157 in headless mode: muted, no window, on the real GPU,
+driven through the DevTools protocol. Every run used a browser profile that had never seen the game. A screenshot of
+the game's canvas was taken every second and read by a script; the whole console, every exception and every failed
+request went to a file (console-0.1.15-embedded.txt is the embedded run's).
+
+"IDLE" below is the frame in the user's report: the character standing in its Aura, SCORE 0, "PISTOL / RESERVE 0",
+12 / 12, the Q FLARE and E SLOW-MO buttons, one hit point pip, one Grenade dot, no title card.
+
+WHAT IT IS
+  The Level scene is shown the moment the scene itself has loaded. Its content (the Enemies, their sounds: about
+  10 MB of Addressables bundles) is still downloading then, and the Level only starts (its HUD filled in, the title
+  card, the walk) once that is in. Until it is, the scene shows what it was built with. On a local server that is one
+  frame in thirty; on a real connection, on the first visit to a new upload, it is seconds.
+  Nothing stalls and nothing throws: no exception, no "[Save]" line, no failed request from the game in any run.
+
+BEFORE: the 0.1.15 release zip
+  its own page, no throttling             1 Unity's splash | 2 black | 3 IDLE | 4.. Stage 1, the Level plays
+  its own page, 8 Mbit/s                  1 splash | 2-6 black | 7-15 IDLE (9 s) | 16.. Stage 1
+  embedded in an iframe from another      1 splash | 2-6 black | 7-12 IDLE (6 s) | 13.. Stage 1
+    site (as itch.io embeds it), 8 Mbit/s   the iframe never had focus (document.hasFocus() = false): it doesn't need it
+  WebGL 2 instead of WebGPU (its own      the same as with WebGPU: 1 IDLE second unthrottled, then Stage 1
+    page, WebGPU hidden from the page)
+  a returning player on a new upload,     opens in the Shop, filled in, after 2 s of plain black
+    8 Mbit/s
+
+AFTER: this branch, built as 0.1.15
+  its own page, 8 Mbit/s                  1 splash | 2-14 the loading screen, "LOADING" with growing dots | 15.. Stage 1
+                                          IDLE for 0 of 45 seconds
+  embedded, 8 Mbit/s                      1 splash | 2-14 the loading screen | 15.. Stage 1. IDLE for 0 of 45 seconds
+  a returning player on a new upload,     "LOADING.." for 2 s, then the Shop, filled in
+    8 Mbit/s
+  No page errors in any run.
+
+EDIT-MODE TESTS
+  1389 of 1389 pass (1372 before): the loading screen's rule, and the built boot scene (the screen is wired to the
+  boot, built covering the whole screen, takes no taps, and sits over every other scene's canvases).
+
+The existing save.json in AppData/LocalLow/TheGamefather/Darkness Rises was not touched, and Play Mode was never
+entered in the Editor.

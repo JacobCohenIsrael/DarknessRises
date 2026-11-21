@@ -229,6 +229,12 @@ namespace DarknessRises.Game
         /// <summary>Whether the scene's content has loaded and its gameplay has started.</summary>
         public bool IsStarted => isStarted;
 
+        /// <summary>
+        /// Raised once, when the scene's content has loaded and its gameplay has started: from here the scene is fit to
+        /// be seen. Until then its views are idle and show what they were built with.
+        /// </summary>
+        public event Action Started;
+
         /// <summary>The Run this scene plays a Level of, once it has one.</summary>
         public RunFlow Run => run;
 
@@ -489,6 +495,8 @@ namespace DarknessRises.Game
             {
                 run.FinishStartBeat();
             }
+
+            Started?.Invoke();
         }
 
         private void OnEnable()

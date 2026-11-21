@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Audio;
@@ -25,6 +26,10 @@ namespace DarknessRises.Game.Boot
     /// once a Run has been finished, the app opens in the Shop (<see cref="BootDestinations"/>).
     /// While a scene loads, and until it says it's ready (a Level's content has loaded and its start beat begins; the
     /// Shop is open), the boot's <see cref="LoadingScreenView"/> covers the screen, so a scene is never seen half-made.
+    /// Before a destination's scene loads, everything that destination can need (its <see cref="ContentLabels"/> label
+    /// and its scene) is downloaded to the device in one measured download, so the loading screen's bar can show the
+    /// whole wait in bytes from the start; the loads that follow come from the device. A destination already downloaded
+    /// (this session, or on an earlier visit with the same content) isn't downloaded again.
     /// It also owns the player's save, which outlives every Run: it reads it from the device at start, banks each Run's
     /// Credits in it, and writes it when the app goes to the background or quits.
     /// And it owns the sounds that carry across scenes (ADR 0011): the storm plays on the boot's own
@@ -74,6 +79,10 @@ namespace DarknessRises.Game.Boot
         private UniTaskCompletionSource<Next> levelLeft;
 
         private readonly IContentSource source = new AddressablesContentSource();
+        private readonly AddressablesContentDownloads downloads = new();
+
+        // The destinations (by scene key) whose content is on the device this session: no need to download them again.
+        private readonly HashSet<object> downloaded = new();
 
         // Banks each Run's Credits in the save, however the Run ends.
         private RunBanking banking;
@@ -168,7 +177,7 @@ namespace DarknessRises.Game.Boot
         private async UniTask<Next> PlayLevelAsync(object levelKey, CancellationToken cancellationToken)
         {
             levelLeft = new UniTaskCompletionSource<Next>();
-            var scene = await LoadSceneAsync(levelKey, cancellationToken);
+            var scene = await LoadSceneAsync(levelKey, ContentLabels.Level, cancellationToken);
             loadingCamera.enabled = false;
             var gameRoot = Find<GameRoot>(scene);
             storm.Hush(false);
@@ -211,7 +220,7 @@ namespace DarknessRises.Game.Boot
         {
             // There is no storm in the Shop: it fades out, and fades back in when a Level with Lightning is played.
             storm.Hush(true);
-            var scene = await LoadSceneAsync(definition.ShopScene.RuntimeKey, cancellationToken);
+            var scene = await LoadSceneAsync(definition.ShopScene.RuntimeKey, ContentLabels.Shop, cancellationToken);
             var shop = Find<ShopRoot>(scene);
             audioVolumes.Follow(shop.AudioVolumes);
             ShopLoaded?.Invoke(shop);
@@ -224,10 +233,20 @@ namespace DarknessRises.Game.Boot
             ShopUnloaded?.Invoke();
         }
 
-        private async UniTask<Scene> LoadSceneAsync(object key, CancellationToken cancellationToken)
+        // Downloads what the destination can need, then loads its scene. The label names the rest of what it can need.
+        private async UniTask<Scene> LoadSceneAsync(object key, string label, CancellationToken cancellationToken)
         {
             loadingScreen.Show();
             loadingCamera.enabled = true;
+            if (!downloaded.Contains(key))
+            {
+                var keys = new[] { key, label };
+                if (await downloads.DownloadAsync(keys, label, loadingScreen, loadingScreen.ProgressPollSeconds, cancellationToken))
+                {
+                    downloaded.Add(key);
+                }
+            }
+
             sceneScope = new ContentScope(source);
             var scene = await sceneScope.LoadSceneAsync(key, cancellationToken);
             SceneManager.SetActiveScene(scene);

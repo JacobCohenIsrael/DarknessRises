@@ -41,10 +41,14 @@ namespace DarknessRises.Game.Editor
             Debug.Log("[ProjectSetup] Applied project settings.");
         }
 
-        /// <summary>Marks the content every scene shares, once the builders have made it.</summary>
+        /// <summary>
+        /// Marks the content every scene shares, once the builders have made it, and labels all content with the
+        /// destinations that can need it.
+        /// </summary>
         private static void MarkSharedContent()
         {
             AddressableContent.MarkShared(ConfigurationFolder, Weapons.PistolBuilder.ControlsPath);
+            AddressableContent.LabelDestinations();
         }
 
         /// <summary>Batch-mode entry point: applies the project setup, then (re)builds the test Room, the Shop and the boot scene.</summary>

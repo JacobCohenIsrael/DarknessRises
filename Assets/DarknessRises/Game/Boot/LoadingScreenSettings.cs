@@ -37,7 +37,52 @@ namespace DarknessRises.Game.Boot
             "so nothing of a scene that isn't ready shows through; below the version label.")]
         private int sortingOrder = 90;
 
+        [Header("Download bar")]
+        [SerializeField, Min(1f), Tooltip(
+            "How wide the bar under the label is, in the HUD's reference pixels (1920 x 1080, scaled to the screen's height).")]
+        private float barWidth = 520f;
+
+        [SerializeField, Min(1f), Tooltip("How tall the bar is, in reference pixels: a thin line.")]
+        private float barHeight = 4f;
+
+        [SerializeField, Min(0f), Tooltip("The gap between the label's middle and the bar, in reference pixels.")]
+        private float barOffset = 48f;
+
+        [SerializeField, Tooltip("The part of the bar that is downloaded. Dim, like the label.")]
+        private Color barFillColor = new(0.8f, 0.8f, 0.8f, 0.85f);
+
+        [SerializeField, Tooltip("The part of the bar still to download: barely there against the black.")]
+        private Color barTrackColor = new(0.8f, 0.8f, 0.8f, 0.15f);
+
+        [SerializeField, Tooltip(
+            "The sizes under the bar: {0} is the megabytes in, {1} the megabytes in all; ':1' gives one decimal. Empty shows none.")]
+        private string sizesFormat = "{0:1} / {1:1} MB";
+
+        [SerializeField, Min(1f), Tooltip("The sizes' font size.")]
+        private float sizesFontSize = 24f;
+
+        [SerializeField, Tooltip("The sizes' colour: dimmer than the label.")]
+        private Color sizesColor = new(0.8f, 0.8f, 0.8f, 0.5f);
+
+        [SerializeField, Min(0f), Tooltip("The gap between the bar and the sizes' middle, in reference pixels.")]
+        private float sizesOffset = 32f;
+
+        [SerializeField, Min(0.02f), Tooltip(
+            "Seconds between two looks at how far the download has got. Each look costs Addressables a little garbage, so " +
+            "it isn't every frame; a tenth of a second still reads as smooth.")]
+        private float progressPollSeconds = 0.1f;
+
         public string Label => label;
+        public float BarWidth => barWidth;
+        public float BarHeight => barHeight;
+        public float BarOffset => barOffset;
+        public Color BarFillColor => barFillColor;
+        public Color BarTrackColor => barTrackColor;
+        public string SizesFormat => sizesFormat;
+        public float SizesFontSize => sizesFontSize;
+        public Color SizesColor => sizesColor;
+        public float SizesOffset => sizesOffset;
+        public float ProgressPollSeconds => progressPollSeconds;
         public float LabelDelaySeconds => labelDelaySeconds;
         public float DotSeconds => dotSeconds;
         public int MaxDots => maxDots;

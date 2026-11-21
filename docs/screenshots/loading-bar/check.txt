@@ -1,0 +1,162 @@
+Issue #113: the loading screen's download bar. Headless check.
+
+This branch built as a release WebGL 0.1.16 (PlayerBuilds.BuildWebGL), served by a small Node server at 127.0.0.1 that
+answers like a real host (ETag and Last-Modified, 304 for a file the browser already has) and counts what it sends.
+Chrome 157 in headless mode, muted, no window, on the real GPU (WebGPU), driven over the DevTools protocol, throttled
+to 1024 KB/s (8 Mbit/s) with 40 ms latency. Every scenario starts from a browser profile that has never seen the game.
+
+The bar's value is read off the screen: every half second the canvas is captured and the bar's lit row measured
+(the filled part is bright, the rest barely lit). "over the wire" is what Chrome received for Addressables bundles.
+Time counts from the moment Unity's own loader is done (the engine has started; its splash comes first).
+
+States: splash = Unity's "Made with Unity"; black; label = LOADING with dots, no bar; bar NN% = the download bar;
+level = the Level's HUD (Stage 1); shop = the Shop screen; other = lit, with no label (the version label on black,
+or the Shop fading out).
+
+THE BUNDLES ON DISK (StreamingAssets/aa/WebGL of this build)
+  Level label + Level scene: 27 bundles, 16.44 MB (every Enemy type, the Level's scene and assets, Shared, built-ins)
+  Shop label + Shop scene:    4 bundles,  2.38 MB (the Shop's scene, Shared, built-ins, scripts)
+
+1. A NEW PLAYER (Level 1), fresh profile
+  0.4 s  splash       over the wire 0.00 MB
+  1.1 s  splash       over the wire 0.00 MB
+  1.6 s  splash       over the wire 0.00 MB
+  2.1 s  splash       over the wire 0.00 MB
+  2.7 s  other        over the wire 0.00 MB
+  3.1 s  bar   1%     over the wire 0.33 MB
+  3.7 s  bar   5%     over the wire 0.80 MB
+  4.2 s  bar   7%     over the wire 1.27 MB
+  4.7 s  bar  10%     over the wire 1.70 MB
+  5.1 s  bar  13%     over the wire 2.17 MB
+  5.7 s  bar  16%     over the wire 2.62 MB
+  6.1 s  bar  18%     over the wire 3.12 MB
+  6.6 s  bar  22%     over the wire 3.59 MB
+  7.2 s  bar  24%     over the wire 4.06 MB
+  7.6 s  bar  27%     over the wire 4.54 MB
+  8.1 s  bar  30%     over the wire 5.02 MB
+  8.6 s  bar  33%     over the wire 5.49 MB
+  9.2 s  bar  35%     over the wire 5.96 MB
+  9.6 s  bar  38%     over the wire 6.33 MB
+  10.1 s  bar  41%     over the wire 6.79 MB
+  10.6 s  bar  44%     over the wire 7.28 MB
+  11.1 s  bar  47%     over the wire 7.77 MB
+  11.6 s  bar  50%     over the wire 8.24 MB
+  12.1 s  bar  52%     over the wire 8.70 MB
+  12.6 s  bar  56%     over the wire 9.17 MB
+  13.1 s  bar  58%     over the wire 9.66 MB
+  13.6 s  bar  61%     over the wire 10.09 MB
+  14.1 s  bar  64%     over the wire 10.54 MB
+  14.6 s  bar  67%     over the wire 11.02 MB
+  15.1 s  bar  69%     over the wire 11.49 MB
+  15.6 s  bar  73%     over the wire 11.98 MB
+  16.1 s  bar  75%     over the wire 12.42 MB
+  16.6 s  bar  78%     over the wire 12.89 MB
+  17.2 s  bar  81%     over the wire 13.36 MB
+  17.6 s  bar  84%     over the wire 13.86 MB
+  18.1 s  bar  87%     over the wire 14.32 MB
+  18.6 s  bar  90%     over the wire 14.76 MB
+  19.1 s  bar  93%     over the wire 15.23 MB
+  19.6 s  bar  95%     over the wire 15.70 MB
+  20.1 s  bar  98%     over the wire 16.16 MB
+  20.6 s  bar 100%     over the wire 16.44 MB
+  21.3 s  bar 100%     over the wire 16.44 MB
+  21.6 s  bar 100%     over the wire 16.44 MB
+  22.3 s  level        over the wire 16.44 MB
+  first: level reached at 22.3 s; bar seen in 38 samples, went backwards 0 times
+  first: bundle bytes Chrome received: 16.45 MB
+  first: server so far: 27 bundles sent in full (16.44 MB), 25 answered 304
+  The game's own sizes under the bar read "x / 16.4 MB", the same 16.44 MB the server sent and Chrome received.
+  The 25 "304" answers are the Level's real loads after the download: they come from the browser's cache.
+
+2. THE SAME PLAYER AGAIN, CACHE WARM (same profile, page reopened)
+  0.2 s  splash       over the wire 0.00 MB
+  0.6 s  splash       over the wire 0.00 MB
+  1.1 s  splash       over the wire 0.00 MB
+  1.6 s  splash       over the wire 0.00 MB
+  2.3 s  splash       over the wire 0.00 MB
+  2.7 s  label        over the wire 0.00 MB
+  3.2 s  label        over the wire 0.00 MB
+  3.7 s  label        over the wire 0.00 MB
+  4.3 s  level        over the wire 0.00 MB
+  warm: level reached at 4.3 s; bar seen in 0 samples, went backwards 0 times
+  warm: bundle bytes Chrome received: 0.01 MB
+  warm: server so far: 0 bundles sent in full (0.00 MB), 25 answered 304
+  No bar: the download record on the device says these bundles are already in, so nothing is measured and nothing
+  downloaded. Only the loads' own revalidations (304) go out. LOADING shows for about a second, as on 0.1.16 (below).
+
+3. A RETURNING PLAYER (a save with a finished Run) on a new upload: the Shop, then PLAY
+  0.8 s  black        over the wire 0.00 MB
+  1.2 s  splash       over the wire 0.00 MB
+  1.6 s  splash       over the wire 0.00 MB
+  2.1 s  splash       over the wire 0.00 MB
+  2.6 s  splash       over the wire 0.00 MB
+  3.1 s  bar   0%     over the wire 0.00 MB
+  3.6 s  bar  15%     over the wire 0.45 MB
+  4.1 s  bar  36%     over the wire 0.91 MB
+  4.6 s  bar  57%     over the wire 1.38 MB
+  5.1 s  bar  75%     over the wire 1.86 MB
+  5.6 s  bar  97%     over the wire 2.36 MB
+  6.1 s  shop         over the wire 2.38 MB
+  first: shop reached at 6.1 s; bar seen in 6 samples, went backwards 0 times
+  first: bundle bytes Chrome received: 2.38 MB
+  first: server so far: 4 bundles sent in full (2.38 MB), 4 answered 304
+  Then PLAY:
+  0.1 s  other        over the wire 0.14 MB
+  0.6 s  other        over the wire 0.61 MB
+  1.1 s  bar  17%     over the wire 1.10 MB
+  1.6 s  bar  20%     over the wire 1.57 MB
+  2.1 s  bar  23%     over the wire 2.05 MB
+  2.6 s  bar  26%     over the wire 2.53 MB
+  3.1 s  bar  29%     over the wire 3.05 MB
+  3.6 s  bar  32%     over the wire 3.52 MB
+  4.1 s  bar  34%     over the wire 4.01 MB
+  4.6 s  bar  38%     over the wire 4.53 MB
+  5.1 s  bar  41%     over the wire 5.01 MB
+  5.6 s  bar  43%     over the wire 5.46 MB
+  6.1 s  bar  47%     over the wire 5.96 MB
+  6.6 s  bar  50%     over the wire 6.46 MB
+  7.1 s  bar  53%     over the wire 6.93 MB
+  7.6 s  bar  56%     over the wire 7.44 MB
+  8.1 s  bar  58%     over the wire 7.92 MB
+  8.6 s  bar  62%     over the wire 8.40 MB
+  9.1 s  bar  65%     over the wire 8.88 MB
+  9.6 s  bar  68%     over the wire 9.38 MB
+  10.1 s  bar  70%     over the wire 9.88 MB
+  10.6 s  bar  74%     over the wire 10.37 MB
+  11.1 s  bar  76%     over the wire 10.83 MB
+  11.6 s  bar  79%     over the wire 11.32 MB
+  12.1 s  bar  82%     over the wire 11.79 MB
+  12.6 s  bar  85%     over the wire 12.27 MB
+  13.1 s  bar  88%     over the wire 12.78 MB
+  13.6 s  bar  91%     over the wire 13.23 MB
+  14.1 s  bar  93%     over the wire 13.71 MB
+  14.6 s  bar  97%     over the wire 14.18 MB
+  15.1 s  bar 100%     over the wire 14.66 MB
+  15.6 s  bar 100%     over the wire 14.68 MB
+  16.1 s  bar 100%     over the wire 14.68 MB
+  16.7 s  level        over the wire 14.68 MB
+  play: level reached at 16.7 s; bar seen in 31 samples, went backwards 0 times
+  play: bundle bytes Chrome received: 14.69 MB
+  play: server so far: 24 bundles sent in full (14.68 MB), 28 answered 304
+  The Level's wait measures 16.44 MB; the Shared bundles the Shop already fetched come from the browser's cache in
+  the first half second (the bar's first ~10%), then the bar follows the 14.68 MB still to come.
+
+FOR COMPARISON: 0.1.16, the same server, throttling and fresh profile
+  new player:  splash to 2.3 s | label (LOADING with dots) 2.6 to 17.6 s | level at 18.2 s
+  warm cache:  splash to 2.2 s | label 2.7 to 3.2 s | level at 3.7 s
+  first: level reached at 18.2 s; bar seen in 0 samples, went backwards 0 times
+  first: server so far: 25 bundles sent in full (14.25 MB), 0 answered 304
+  warm: level reached at 3.7 s; bar seen in 0 samples, went backwards 0 times
+  warm: server so far: 0 bundles sent in full (0.00 MB), 25 answered 304
+  A new player waited 18.2 s with LOADING and dots and no sense of progress; with the bar it is 22.3 s, because the
+  Level's download now takes every Enemy type any Level can use (the Runner's 2.2 MB too), so later Levels never
+  download mid-Run. The warm visit is the same on both.
+
+Never backwards: the bar went backwards 0 times in every run.
+No page errors in any run.
+
+Android: the APK's bundles ship inside it and load from the device (Addressables' local load path), so
+GetDownloadSizeAsync measures 0 and nothing is downloaded: no bar, the black cut and LOADING as before. Read from
+the code and the Addressables source; not run on a device.
+
+EditMode: 1405 of 1405 pass (1389 before).

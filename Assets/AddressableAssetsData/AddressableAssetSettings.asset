@@ -115,6 +115,8 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - Level
+    - Shop
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 7d64fd76145080844a34e85e3db5a1cf, type: 2}

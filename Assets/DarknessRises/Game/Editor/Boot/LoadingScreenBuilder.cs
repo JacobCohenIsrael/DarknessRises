@@ -9,8 +9,9 @@ namespace DarknessRises.Game.Editor.Boot
 {
     /// <summary>
     /// Builds the loading screen in the boot scene: its own overlay canvas, scaled like the HUD, with a cover stretched
-    /// over the whole screen and a label in the middle. It's built covering the screen with the label off, so the app
-    /// opens on black. There is no raycaster: it never takes a tap. Its look and timing come from the
+    /// over the whole screen, a label in the middle, and under it a thin download bar (a track with a fill stretched from
+    /// its left edge) and the sizes. It's built covering the screen with the label, the bar and the sizes off, so the app
+    /// opens on black. Where the bar sits and how big it is come from the settings. There is no raycaster: it never takes a tap. Its look and timing come from the
     /// <see cref="LoadingScreenSettings"/> at runtime.
     /// </summary>
     public static class LoadingScreenBuilder
@@ -22,6 +23,11 @@ namespace DarknessRises.Game.Editor.Boot
         private const float LabelFontSize = 48f;
         private const int SortingOrder = 90;
         private static readonly Color LabelColor = new(0.8f, 0.8f, 0.8f, 0.85f);
+        private static readonly Vector2 BarSize = new(520f, 4f);
+        private static readonly Vector2 BarPosition = new(0f, -48f);
+        private static readonly Vector2 SizesSize = new(600f, 48f);
+        private static readonly Vector2 SizesPosition = new(0f, -80f);
+        private const float SizesFontSize = 24f;
 
         public static LoadingScreenView Build()
         {
@@ -60,11 +66,49 @@ namespace DarknessRises.Game.Editor.Boot
             label.raycastTarget = false;
             label.gameObject.SetActive(false);
 
+            var barTrack = new GameObject("Download Bar", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            var trackRect = barTrack.rectTransform;
+            trackRect.SetParent(root.transform, false);
+            trackRect.anchorMin = trackRect.anchorMax = trackRect.pivot = new Vector2(0.5f, 0.5f);
+            trackRect.anchoredPosition = BarPosition;
+            trackRect.sizeDelta = BarSize;
+            barTrack.color = new Color(LabelColor.r, LabelColor.g, LabelColor.b, 0.15f);
+            barTrack.raycastTarget = false;
+
+            // Stretched from the track's left edge to as far as the download has got: the view moves its right anchor.
+            var barFill = new GameObject("Fill", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            var fillRect = barFill.rectTransform;
+            fillRect.SetParent(trackRect, false);
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = new Vector2(0f, 1f);
+            fillRect.pivot = new Vector2(0f, 0.5f);
+            fillRect.offsetMin = fillRect.offsetMax = Vector2.zero;
+            barFill.color = LabelColor;
+            barFill.raycastTarget = false;
+            barTrack.gameObject.SetActive(false);
+
+            var sizes = new GameObject("Sizes", typeof(RectTransform), typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>();
+            var sizesRect = sizes.rectTransform;
+            sizesRect.SetParent(root.transform, false);
+            sizesRect.anchorMin = sizesRect.anchorMax = sizesRect.pivot = new Vector2(0.5f, 0.5f);
+            sizesRect.anchoredPosition = SizesPosition;
+            sizesRect.sizeDelta = SizesSize;
+            sizes.text = string.Empty;
+            sizes.fontSize = SizesFontSize;
+            sizes.color = LabelColor;
+            sizes.alignment = TextAlignmentOptions.Center;
+            sizes.textWrappingMode = TextWrappingModes.NoWrap;
+            sizes.raycastTarget = false;
+            sizes.gameObject.SetActive(false);
+
             var view = root.GetComponent<LoadingScreenView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("canvas").objectReferenceValue = canvas;
             serialized.FindProperty("cover").objectReferenceValue = cover;
             serialized.FindProperty("label").objectReferenceValue = label;
+            serialized.FindProperty("barTrack").objectReferenceValue = barTrack;
+            serialized.FindProperty("barFill").objectReferenceValue = barFill;
+            serialized.FindProperty("sizes").objectReferenceValue = sizes;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
         }

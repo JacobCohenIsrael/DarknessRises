@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
+using DarknessRises.Game.Content;
 using UnityEngine;
 
 namespace DarknessRises.Game.Editor.Content
@@ -23,6 +24,10 @@ namespace DarknessRises.Game.Editor.Content
     /// <item><b>Shop</b>: the Shop's scene, loaded between Runs. Can change after release.</item>
     /// <item><b>Sandbox</b>: the Test Room.</item>
     /// </list>
+    /// Labels name what each destination can need, so the boot can download it all, measured, before it loads the
+    /// destination's scene (<see cref="ContentLabels"/>): the Shared content carries both <c>Level</c> and <c>Shop</c>;
+    /// the Shop's group carries <c>Shop</c>; the Sandbox carries none; every other group (Enemies, each Level's) holds
+    /// Level content and carries <c>Level</c>.
     /// Groups that can change after release build and load through the profile's Remote paths, and the catalog is built
     /// as a remote catalog too. For now the Default profile points the Remote paths at the local ones, so everything
     /// ships inside the build; pointing <c>Remote.LoadPath</c> at a server (and <c>Remote.BuildPath</c> at
@@ -106,6 +111,36 @@ namespace DarknessRises.Game.Editor.Content
         {
             Group(ShopGroupName, remote: true, BundledAssetGroupSchema.BundlePackingMode.PackTogether);
             return ShopGroupName;
+        }
+
+        /// <summary>
+        /// Labels every entry with the destinations that can need it, by its group (see the remarks). Run once the
+        /// builders have marked their content.
+        /// </summary>
+        public static void LabelDestinations()
+        {
+            var settings = setUp != null ? setUp : Setup();
+            settings.AddLabel(ContentLabels.Level, postEvent: false);
+            settings.AddLabel(ContentLabels.Shop, postEvent: false);
+            foreach (var group in settings.groups)
+            {
+                if (group == null)
+                {
+                    continue;
+                }
+
+                var level = group.Name != SandboxGroup && group.Name != ShopGroupName;
+                var shop = group.Name == SharedGroup || group.Name == ShopGroupName;
+                foreach (var entry in group.entries)
+                {
+                    entry.SetLabel(ContentLabels.Level, level, force: true, postEvent: false);
+                    entry.SetLabel(ContentLabels.Shop, shop, force: true, postEvent: false);
+                }
+
+                EditorUtility.SetDirty(group);
+            }
+
+            EditorUtility.SetDirty(settings);
         }
 
         /// <summary>Marks <paramref name="asset"/> addressable in <paramref name="groupName"/>, addressed by its file name.</summary>

@@ -18,133 +18,177 @@ MonoBehaviour:
   - m_GUID: 0bd05763df902854a80475577a26666a
     m_Address: Flare gun 5-2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 2e071f5b8b8467d45a5e6e24c23c6ad4
     m_Address: Metal Impact 7
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 34b439bf70b80a6409eadecc6be92d68
     m_Address: Hand Gun 2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 34f9cbd28a9740349b6cc2f5e280dda3
     m_Address: Magic Spell_Coins_2
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 373932479250b134c9289d6a734cf6e2
     m_Address: GrenadeExplosion
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 4dc8e0d67c65d5247bbf69778eb2f48b
     m_Address: HitSpark
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 5a4fd945b579c8044819d01a7f2e53c5
     m_Address: Controls
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 6739c01659ad96d47987f4ddee226b36
     m_Address: Hand Gun 1
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 688c6b22d6fbcf843b1886d15e51e8d7
     m_Address: Shot
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 7d156b8a5b340cd46bcf0a76557dd2dd
     m_Address: Dragon Spit Fire 1
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 7dc48ac47b618424f8d032a339525809
     m_Address: Thunder strikes 30 second- Loop
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 8327bacc90a16a441903a18e8fe175b1
     m_Address: Grenade3
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 84063d6a64a5ffe4298638d5ec0392f6
     m_Address: HitMarker
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 94268e2739cefc84a87017dc59f3a0e1
     m_Address: GoArrow
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 95dfef04350f10a4fbdde45823d7ab5c
     m_Address: FlameShot
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: 9930d5b4be15bb04c9d0a6fa0d7e6b2e
     m_Address: Heavy Object Impact 4
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: aa4f91807ecedce4bb52ef7f333766e6
     m_Address: Grenade
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: ac6034ade498bb94b87620cdf6eac48b
     m_Address: Monster Bite
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: d40330822ccea6140b664c0560d5022f
     m_Address: Machine Gun 1
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: d686c71dcdac9b24b9209aec52cd843d
     m_Address: Crosshair
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: e05478d53ab27f9409619259809c5e6c
     m_Address: Handling_Gun_01_Reload_Sq_SFX
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   - m_GUID: e17b921ca341d2f40bcee6d6621c39df
     m_Address: Configuration
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Level
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   m_ReadOnly: 0

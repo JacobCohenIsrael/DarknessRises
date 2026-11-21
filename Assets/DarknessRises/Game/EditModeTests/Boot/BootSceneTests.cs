@@ -80,6 +80,32 @@ namespace DarknessRises.Game.EditModeTests.Boot
             Assert.That(coverRect.offsetMin, Is.EqualTo(Vector2.zero));
             Assert.That(coverRect.offsetMax, Is.EqualTo(Vector2.zero));
             Assert.That(loadingScreen.transform.Find("Label").gameObject.activeSelf, Is.False);
+            Assert.That(loadingScreen.transform.Find("Download Bar").gameObject.activeSelf, Is.False);
+            Assert.That(loadingScreen.transform.Find("Sizes").gameObject.activeSelf, Is.False);
+        }
+
+        [Test]
+        public void The_download_bar_fills_from_its_left_edge()
+        {
+            var loadingScreen = Find<LoadingScreenView>();
+            var fill = loadingScreen.transform.Find("Download Bar/Fill") as RectTransform;
+
+            Assert.That(fill, Is.Not.Null);
+            Assert.That(fill.anchorMin, Is.EqualTo(Vector2.zero));
+            Assert.That(fill.anchorMax, Is.EqualTo(new Vector2(0f, 1f)), "Empty until bytes arrive.");
+            Assert.That(fill.offsetMin, Is.EqualTo(Vector2.zero));
+            Assert.That(fill.offsetMax, Is.EqualTo(Vector2.zero));
+        }
+
+        [Test]
+        public void The_download_bar_is_authored_thin_and_under_the_label()
+        {
+            var settings = AssetDatabase.LoadAssetAtPath<BootDefinition>(DefinitionPath).LoadingScreen;
+
+            Assert.That(settings.BarWidth, Is.GreaterThan(0f));
+            Assert.That(settings.BarHeight, Is.GreaterThan(0f).And.LessThan(settings.FontSize), "A thin line, not a block.");
+            Assert.That(settings.BarOffset, Is.GreaterThan(0f));
+            Assert.That(settings.ProgressPollSeconds, Is.GreaterThan(0f));
         }
 
         [Test]

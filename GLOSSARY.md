@@ -292,7 +292,7 @@ The one rewarded ad the end screen offers after a Run: watching it through multi
 _Avoid_: bonus ad, double-up, reward video
 
 **Loading screen**:
-The black screen that covers everything while a Level or the Shop loads, until that scene is ready to be seen: a Level's content is in and its start beat begins, or the Shop shows the Save. If the wait goes on (a first visit still downloading), it says LOADING, with dots that grow. A Level or the Shop is never shown half-made.
+The black screen that covers everything while a Level or the Shop loads, until that scene is ready to be seen: a Level's content is in and its start beat begins, or the Shop shows the Save. If the wait goes on, it says LOADING. While a first visit is still downloading, a thin bar under the label fills with the bytes that are in (the sizes in MB under it); it never fills on its own and never goes backwards. With nothing to download it shows dots that grow instead. A Level or the Shop is never shown half-made.
 _Avoid_: splash screen (that is Unity's own), loader
 
 **Save**:

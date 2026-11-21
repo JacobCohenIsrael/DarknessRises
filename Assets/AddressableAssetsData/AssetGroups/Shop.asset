@@ -18,7 +18,8 @@ MonoBehaviour:
   - m_GUID: 384845ead0426e14d9306f5714d937a6
     m_Address: Shop
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
   m_ReadOnly: 0

@@ -1,4 +1,5 @@
 using DarknessRises.Game.Audio;
+using DarknessRises.Game.Haptics;
 using DarknessRises.Game.Hud;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -48,6 +49,11 @@ namespace DarknessRises.Game.Boot
             "mixer between the game's sounds and its output and clips them hard.")]
         private WebAudioLimiterSettings webAudioLimiter = new();
 
+        [SerializeField, Tooltip(
+            "Haptics: how each moment of the game vibrates on a phone, and the rules that keep it from buzzing. Here because the boot " +
+            "owns the game's Haptics, which outlive every Level and the Shop. Empty: nothing vibrates.")]
+        private HapticsDefinition haptics;
+
         public AssetReference LevelScene => levelScene;
         public AssetReference ShopScene => shopScene;
         public AssetReference TestRoomScene => testRoomScene;
@@ -62,5 +68,8 @@ namespace DarknessRises.Game.Boot
 
         /// <summary>The Web player's safety limiter.</summary>
         public WebAudioLimiterSettings WebAudioLimiter => webAudioLimiter;
+
+        /// <summary>Haptics, authored; null when none are.</summary>
+        public HapticsDefinition Haptics => haptics;
     }
 }

@@ -4,6 +4,7 @@ using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Levels;
 using DarknessRises.Game.Editor.Shop;
+using DarknessRises.Game.Haptics;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -26,6 +27,9 @@ namespace DarknessRises.Game.Editor.Boot
         // Outside the Configuration folder, which is Addressables content: the boot scene ships in the build itself.
         private const string BootFolder = "Assets/DarknessRises/Boot";
         private const string BootDefinitionPath = BootFolder + "/BootDefinition.asset";
+
+        // Haptics belong to the boot, which owns them for as long as the app runs.
+        private const string HapticsDefinitionPath = BootFolder + "/HapticsDefinition.asset";
 
         // Drawn under everything, and only while no Level is loaded.
         private const float LoadingCameraDepth = -100f;
@@ -87,9 +91,20 @@ namespace DarknessRises.Game.Editor.Boot
             SetScene(serialized.FindProperty("levelScene"), LevelBuilder.ScenePath);
             SetScene(serialized.FindProperty("shopScene"), ShopBuilder.ScenePath);
             SetScene(serialized.FindProperty("testRoomScene"), TestRoomBuilder.ScenePath);
+            serialized.FindProperty("haptics").objectReferenceValue = LoadOrCreateHaptics();
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(definition);
             return definition;
+        }
+
+        /// <summary>Loads the Haptics definition, creating it with its authored patterns if it's missing.</summary>
+        public static HapticsDefinition LoadOrCreateHaptics()
+        {
+            var haptics = TestRoomBuilder.LoadOrCreate<HapticsDefinition>(HapticsDefinitionPath);
+
+            // Re-saved so fields added since it was created are written to disk with their defaults.
+            EditorUtility.SetDirty(haptics);
+            return haptics;
         }
 
         private static void SetScene(SerializedProperty reference, string scenePath)

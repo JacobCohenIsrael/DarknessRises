@@ -42,6 +42,9 @@ namespace DarknessRises.Game.Shop
         /// <summary>Raised when the card's button is pressed.</summary>
         public event Action<WeaponCardView> Pressed;
 
+        /// <summary>Raised when the button is tapped while it can't be pressed (maxed, locked, or the bank can't cover it).</summary>
+        public event Action<WeaponCardView> Refused;
+
         public WeaponOffer Offer { get; private set; }
 
         /// <summary>The Weapon as the Shop's rules see it.</summary>
@@ -57,6 +60,7 @@ namespace DarknessRises.Game.Shop
             shown = Look.None;
             shownMissing = -1;
             button.onClick.AddListener(OnPressed);
+            RefusedPress.On(button).Refused += OnRefused;
         }
 
         /// <summary>Shows where the Weapon stands: to unlock, or owned.</summary>
@@ -127,6 +131,11 @@ namespace DarknessRises.Game.Shop
         private void OnPressed()
         {
             Pressed?.Invoke(this);
+        }
+
+        private void OnRefused()
+        {
+            Refused?.Invoke(this);
         }
     }
 }

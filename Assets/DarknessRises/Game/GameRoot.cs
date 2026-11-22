@@ -17,6 +17,7 @@ using DarknessRises.Game.Enemies;
 using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
+using DarknessRises.Game.Haptics;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
@@ -204,6 +205,13 @@ namespace DarknessRises.Game
         // The boot's storm player, which outlives this Level; null when the scene plays on its own.
         private StormPlayer carriedStorm;
 
+        // The game's Haptics, the boot's, which outlive this Level; null when the scene plays on its own (no vibration).
+        private HapticsPlayer carriedHaptics;
+
+        // What the Level's moments feel like through the Haptics; null without them.
+        private LevelHaptics levelHaptics;
+        private bool isAdShowing;
+
         // What a cleared Level pays on top of its kills.
         private LevelClearBonus levelClearBonus;
 
@@ -289,9 +297,10 @@ namespace DarknessRises.Game
         /// Plays the current Level of <paramref name="runFlow"/> in this scene, with the Ramp at its Level index.
         /// The Run's Credits are banked in <paramref name="playerSave"/>, by whoever owns both. The storm plays on
         /// <paramref name="storm"/>, the boot's, which carries it from Level to Level; without one, on the scene's own.
+        /// The Level's moments vibrate through <paramref name="haptics"/>, the boot's; without them, nothing vibrates.
         /// Called by the boot right after it loads the scene.
         /// </summary>
-        public void Play(RunFlow runFlow, PlayerSave playerSave, StormPlayer storm = null)
+        public void Play(RunFlow runFlow, PlayerSave playerSave, StormPlayer storm = null, HapticsPlayer haptics = null)
         {
             if (run != null)
             {
@@ -300,6 +309,7 @@ namespace DarknessRises.Game
 
             save = playerSave ?? throw new ArgumentNullException(nameof(playerSave));
             carriedStorm = storm;
+            carriedHaptics = haptics;
             run = runFlow ?? throw new ArgumentNullException(nameof(runFlow));
         }
 
@@ -464,7 +474,7 @@ namespace DarknessRises.Game
             KeepScore();
             pauseFlow.Watch(gamePause, run);
             var audioVolumes = configuration.AudioVolumes;
-            volumePanel.Use(audioVolumes, content.Clip(audioVolumes.SampleClip));
+            volumePanel.Use(audioVolumes, content.Clip(audioVolumes.SampleClip), carriedHaptics);
             // The storm that swells after every flash, and the Boss's growl that warns of its flashes.
             var lightningRandom = new SystemRandom();
             lightning.UseStorm(carriedStorm, configuration.Lightning.Storm, lightningRandom, enemyTime);
@@ -510,6 +520,25 @@ namespace DarknessRises.Game
             if (aimAssist != null)
             {
                 aimAssist.Use(configuration.Gestures.AimAssist, configuration.MouseAimAssist, run.LevelIndex, lights);
+            }
+
+            if (carriedHaptics != null)
+            {
+                levelHaptics = new LevelHaptics(
+                    carriedHaptics,
+                    carriedHaptics.Definition,
+                    grenadeThrower,
+                    primaryWeapon,
+                    level,
+                    routeWaves,
+                    characterHealth.Health,
+                    hurtVignette,
+                    scoreKeeper.Combo,
+                    skills,
+                    lightning,
+                    scoreBoost,
+                    endScreen,
+                    gamePause);
             }
 
             isStarted = true;
@@ -595,6 +624,8 @@ namespace DarknessRises.Game
                 }
 
                 StopKeepingScore();
+                levelHaptics?.Dispose();
+                levelHaptics = null;
 
                 // The Run outlives this scene when the boot owns it.
                 if (ownsRun)
@@ -727,6 +758,7 @@ namespace DarknessRises.Game
                 case StationBeat.Clear:
                     var result = scoreKeeper.EndStation(stationRhythm.FightSeconds);
                     LandStationBonus(result);
+                    levelHaptics?.StationCleared(result.Grade);
                     if (stationResult != null)
                     {
                         stationResult.Show(result);
@@ -1055,6 +1087,14 @@ namespace DarknessRises.Game
 
             lightningScheduler.Tick(lightningScheduler.Mode == LightningMode.BossDriven ? enemyTime.Scaled(deltaSeconds) : deltaSeconds);
             lightning.SetStormAudible(lightningScheduler.IsStormRunning);
+
+            // Nothing vibrates while a Continue's ad plays (the Score boost's holds the Level, which holds Haptics too).
+            var adShowing = continueAd.gameObject.activeSelf;
+            if (levelHaptics != null && adShowing != isAdShowing)
+            {
+                isAdShowing = adShowing;
+                levelHaptics.ShowingAd(adShowing);
+            }
         }
 
         private void OnPrimaryWeaponSwitched(PrimaryWeapon equipped)

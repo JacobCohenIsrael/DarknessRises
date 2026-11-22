@@ -126,6 +126,9 @@ namespace DarknessRises.Game.Death
             }
         }
 
+        /// <summary>Raised when NEW BEST! stamps in.</summary>
+        public event Action NewBestStamped;
+
         /// <summary>Shows <paramref name="record"/> and the Credits it earned until the player moves on.</summary>
         public async UniTask ShowAsync(RunRecord record, CancellationToken cancellationToken)
         {
@@ -274,6 +277,10 @@ namespace DarknessRises.Game.Death
             if (newBest.enabled != newBestStamp.IsStamped)
             {
                 newBest.enabled = newBestStamp.IsStamped;
+                if (newBest.enabled)
+                {
+                    NewBestStamped?.Invoke();
+                }
             }
 
             if (!newBestStamp.IsStamped)

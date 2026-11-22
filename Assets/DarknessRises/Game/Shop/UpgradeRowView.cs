@@ -48,6 +48,9 @@ namespace DarknessRises.Game.Shop
         /// <summary>Raised when the row's button is pressed.</summary>
         public event Action<UpgradeRowView> Pressed;
 
+        /// <summary>Raised when the button is tapped while it can't be pressed (maxed, locked, or the bank can't cover it).</summary>
+        public event Action<UpgradeRowView> Refused;
+
         /// <summary>The Upgrade as the Shop's rules see it.</summary>
         public Upgrade Upgrade { get; private set; }
 
@@ -67,6 +70,7 @@ namespace DarknessRises.Game.Shop
             shown = Look.None;
             shownLevel = -1;
             button.onClick.AddListener(OnPressed);
+            RefusedPress.On(button).Refused += OnRefused;
         }
 
         /// <summary>Shows where the Upgrade stands: its level, its next step and whether it can be bought.</summary>
@@ -156,6 +160,11 @@ namespace DarknessRises.Game.Shop
         private void OnPressed()
         {
             Pressed?.Invoke(this);
+        }
+
+        private void OnRefused()
+        {
+            Refused?.Invoke(this);
         }
     }
 }

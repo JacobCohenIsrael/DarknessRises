@@ -57,6 +57,22 @@ namespace DarknessRises.Game.Audio
         [SerializeField, Tooltip("The button that closes the panel.")]
         private string closeLabel = "BACK";
 
+        [Header("Vibration")]
+        [SerializeField, Tooltip("The VIBRATION switch's name, under the sliders. The switch only shows where the device can vibrate.")]
+        private string vibrationLabel = "VIBRATION";
+
+        [SerializeField, Tooltip("The switch's label while Haptics are on.")]
+        private string vibrationOnLabel = "ON";
+
+        [SerializeField, Tooltip("The switch's label while Haptics are off.")]
+        private string vibrationOffLabel = "OFF";
+
+        [SerializeField, Tooltip("The switch's face while Haptics are on.")]
+        private Color vibrationOnColor = new(0.8f, 0.12f, 0.1f, 1f);
+
+        [SerializeField, Tooltip("The switch's face while Haptics are off.")]
+        private Color vibrationOffColor = new(0.2f, 0.2f, 0.22f, 1f);
+
         public VolumeDefaults Defaults => new(soundDefaultPercent, ambientDefaultPercent, musicDefaultPercent);
         public VolumeCurve Curve => new(quietestDecibels);
         public AssetReferenceT<AudioClip> SampleClip => sampleClip;
@@ -66,6 +82,11 @@ namespace DarknessRises.Game.Audio
         public string Title => title;
         public string PercentFormat => percentFormat;
         public string CloseLabel => closeLabel;
+        public string VibrationLabel => vibrationLabel;
+        public string VibrationOnLabel => vibrationOnLabel;
+        public string VibrationOffLabel => vibrationOffLabel;
+        public Color VibrationOnColor => vibrationOnColor;
+        public Color VibrationOffColor => vibrationOffColor;
 
         /// <summary>The name of <paramref name="category"/>'s slider.</summary>
         public string LabelOf(AudioCategory category) => category switch

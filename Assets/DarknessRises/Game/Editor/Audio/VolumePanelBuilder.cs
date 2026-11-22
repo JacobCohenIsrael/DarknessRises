@@ -10,7 +10,7 @@ namespace DarknessRises.Game.Editor.Audio
     /// <summary>
     /// Builds the volume panel, the same one for the pause menu and the Shop: a shade over the whole screen that takes
     /// every touch, and a dark card in the middle with a big slider each for Music, Sound and Ambient, their percents,
-    /// and BACK. Built from code in the HUD's arcade look, with no imported art; the card fits a landscape phone's safe
+    /// the VIBRATION switch under them (shown only where the device can vibrate), and BACK. Built from code in the HUD's arcade look, with no imported art; the card fits a landscape phone's safe
     /// area at any aspect from 4:3 up, in HUD units (1080 tall).
     /// </summary>
     public static class VolumePanelBuilder
@@ -33,11 +33,11 @@ namespace DarknessRises.Game.Editor.Audio
         private const float FrameWidth = 3f;
 
         private const float TitleFontSize = 90f;
-        private static readonly Vector2 TitlePosition = new(0f, 280f);
+        private static readonly Vector2 TitlePosition = new(0f, 295f);
         private static readonly Vector2 TitleSize = new(800f, 120f);
 
-        private const float FirstRowY = 130f;
-        private const float RowSpacing = 140f;
+        private const float FirstRowY = 165f;
+        private const float RowSpacing = 122f;
         private const float NameFontSize = 46f;
         private const float NameX = -360f;
         private static readonly Vector2 NameSize = new(320f, 90f);
@@ -50,7 +50,10 @@ namespace DarknessRises.Game.Editor.Audio
         private static readonly Vector2 ValueSize = new(170f, 90f);
 
         private const float ButtonFontSize = 44f;
-        private static readonly Vector2 CloseButtonPosition = new(0f, -290f);
+        private static readonly Vector2 CloseButtonPosition = new(0f, -305f);
+
+        // The VIBRATION switch: a row under the sliders, its name where theirs are and an ON/OFF button where they start.
+        private static readonly Vector2 VibrationButtonSize = new(220f, 90f);
         private static readonly Vector2 CloseButtonSize = new(380f, 100f);
 
         /// <summary>
@@ -95,6 +98,15 @@ namespace DarknessRises.Game.Editor.Audio
                 releases[i] = sliders[i].gameObject.AddComponent<SliderRelease>();
             }
 
+            var vibrationY = FirstRowY - Order.Length * RowSpacing;
+            var vibrationName = HealthBuilder.AddText(
+                cardRect, "Vibration Name", "VIBRATION", NameFontSize, TextColor, new Vector2(NameX, vibrationY), NameSize);
+            vibrationName.alignment = TextAlignmentOptions.Left;
+            vibrationName.fontStyle = FontStyles.Bold;
+            var vibrationX = SliderX - SliderSize.x / 2f + VibrationButtonSize.x / 2f;
+            var vibration = AddButton(
+                cardRect, "Vibration Button", "ON", new Vector2(vibrationX, vibrationY), VibrationButtonSize, out var vibrationLabel);
+
             var close = AddButton(cardRect, "Back Button", "BACK", CloseButtonPosition, CloseButtonSize, out var closeLabel);
 
             var sampleObject = new GameObject("Sample", typeof(AudioSource));
@@ -117,6 +129,10 @@ namespace DarknessRises.Game.Editor.Audio
             SetArray(serialized.FindProperty("values"), values);
             SetArray(serialized.FindProperty("releases"), releases);
             serialized.FindProperty("sample").objectReferenceValue = sample;
+            serialized.FindProperty("vibrationName").objectReferenceValue = vibrationName;
+            serialized.FindProperty("vibrationButton").objectReferenceValue = vibration;
+            serialized.FindProperty("vibrationLabel").objectReferenceValue = vibrationLabel;
+            serialized.FindProperty("vibrationFace").objectReferenceValue = vibration.targetGraphic;
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             // Until the panel has its wording and sample (VolumePanelView.Use).

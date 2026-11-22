@@ -34,7 +34,7 @@ namespace DarknessRises.Game.Weapons
         private float volume = 0.8f;
 
         [SerializeField, Range(0.1f, 3f), Tooltip("Above 1 plays the clip faster and higher, so it fills less of the reload. " +
-                                                  "Slow-mo leaves it alone: the character, and so its reloads, keep full speed.")]
+                                                  "Adrenaline leaves it alone: the character, and so its reloads, keep full speed.")]
         private float pitch = 1f;
 
         [SerializeField, Min(0f), Tooltip("Seconds the sound takes to fade out when a reload is cut short: the weapon is " +

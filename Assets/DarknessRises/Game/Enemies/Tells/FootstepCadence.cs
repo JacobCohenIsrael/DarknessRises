@@ -6,7 +6,7 @@ namespace DarknessRises.Game.Enemies.Tells
     /// When a walking Enemy puts a foot down: once per stride of ground covered, so its steps come faster the faster it
     /// moves. A limp makes every other stride short, so steps come in uneven pairs (a step, then a dragged foot). It
     /// stops while the Enemy stands still (a Wind-up, an attack, a Stagger, death) and starts again with a quick first
-    /// step when it walks off. Plain C# (ADR 0003); time and speed come in as Enemy time, so Slow-mo slows the steps and
+    /// step when it walks off. Plain C# (ADR 0003); time and speed come in as Enemy time, so Adrenaline slows the steps and
     /// a paused game makes none. Pooled with its Enemy, so <see cref="Stop"/> starts it over.
     /// </summary>
     public sealed class FootstepCadence

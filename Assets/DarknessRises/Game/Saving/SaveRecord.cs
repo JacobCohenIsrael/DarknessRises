@@ -17,7 +17,7 @@ namespace DarknessRises.Game.Saving
     public sealed class SaveRecord
     {
         /// <summary>The version this build writes.</summary>
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
 
         /// <summary>The version the record was written as. 0 means the text carried none.</summary>
         public int version;
@@ -28,7 +28,10 @@ namespace DarknessRises.Game.Saving
         /// <summary>How many Runs the player has finished, whichever way they ended.</summary>
         public int runsFinished;
 
-        /// <summary>What was bought in the Shop, each with the level it stands at. Since version 2.</summary>
+        /// <summary>
+        /// What was bought in the Shop, each with the level it stands at. Since version 2. Version 3 renamed the Slow-mo
+        /// Upgrades' ids to Adrenaline's.
+        /// </summary>
         public List<SaveItem> items = new();
     }
 

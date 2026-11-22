@@ -22,7 +22,7 @@ namespace DarknessRises.Game.Lightning
     /// </summary>
     /// <remarks>
     /// Audio is plain AudioSource volume and pitch, with no AudioMixer, so it works on WebGL. The storm's pitch follows
-    /// Slow-mo the way Enemy sounds do (<see cref="EnemyVoicePitch"/> on <see cref="EnemyTime"/>). Everything runs on
+    /// Adrenaline the way Enemy sounds do (<see cref="EnemyVoicePitch"/> on <see cref="EnemyTime"/>). Everything runs on
     /// scaled time, so the pause (<c>Time.timeScale = 0</c> and <c>AudioListener.pause</c>) freezes it, and it carries on
     /// afterwards. Warnings take turns on AudioSources, each with its own <see cref="WarningVoice"/>, so a new one lets a
     /// fading one roll on.
@@ -139,7 +139,7 @@ namespace DarknessRises.Game.Lightning
         /// <summary>
         /// Drives the storm on <paramref name="player"/> (the boot's, or null for the scene's own) with the storm of
         /// <paramref name="settings"/>; where each strike's angle and Rumble's pitch nudge come from; and the Enemy time
-        /// whose Slow-mo the storm's pitch follows. Without a clip, Lightning comes silently.
+        /// whose Adrenaline the storm's pitch follows. Without a clip, Lightning comes silently.
         /// </summary>
         public void UseStorm(StormPlayer player, StormSettings settings, IRandom strikeRandom, EnemyTime time)
         {

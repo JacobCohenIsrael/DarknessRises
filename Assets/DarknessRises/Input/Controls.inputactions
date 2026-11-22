@@ -57,7 +57,7 @@
                     "priority": 0
                 },
                 {
-                    "name": "SlowMo",
+                    "name": "Adrenaline",
                     "type": "Button",
                     "id": "aa4fed74-d8a2-45d2-bcc3-d30c350a91a2",
                     "expectedControlType": "",
@@ -120,6 +120,16 @@
                     "name": "PreviousWeapon",
                     "type": "Button",
                     "id": "ceaf56e6-bbf6-4b96-bfa5-057d63867cf7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "Lure",
+                    "type": "Button",
+                    "id": "6ac14eb3-c761-4345-93ca-a79fc90a2dc6",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -190,7 +200,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "SlowMo",
+                    "action": "Adrenaline",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -362,11 +372,11 @@
                 {
                     "name": "",
                     "id": "40d440c9-04bc-43d4-9f5c-f091545f01e6",
-                    "path": "<GestureDevice>/slowMo",
+                    "path": "<GestureDevice>/adrenaline",
                     "interactions": "",
                     "processors": "",
                     "groups": "Touch",
-                    "action": "SlowMo",
+                    "action": "Adrenaline",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -444,6 +454,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "PreviousWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3e83f7ff-eafa-46a5-be88-2efc14280f46",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Lure",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3d435f95-fc1c-498b-bce8-fd54c8057515",
+                    "path": "<GestureDevice>/lure",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Touch",
+                    "action": "Lure",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

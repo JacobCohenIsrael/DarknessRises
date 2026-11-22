@@ -223,9 +223,9 @@ MonoBehaviour:
       value: 11
     - price: 1200
       value: 9
-  - id: slow-mo.duration
+  - id: adrenaline.duration
     stat: 22
-    displayName: SLOW-MO TIME
+    displayName: ADRENALINE TIME
     valueFormat: '{0} s'
     levels:
     - price: 300
@@ -234,9 +234,9 @@ MonoBehaviour:
       value: 6
     - price: 1200
       value: 7
-  - id: slow-mo.cooldown
+  - id: adrenaline.cooldown
     stat: 23
-    displayName: SLOW-MO COOLDOWN
+    displayName: ADRENALINE COOLDOWN
     valueFormat: '{0} s'
     levels:
     - price: 300
@@ -245,6 +245,28 @@ MonoBehaviour:
       value: 11
     - price: 1200
       value: 9
+  - id: lure.duration
+    stat: 24
+    displayName: LURE TIME
+    valueFormat: '{0} s'
+    levels:
+    - price: 300
+      value: 6
+    - price: 700
+      value: 7
+    - price: 1200
+      value: 8
+  - id: lure.cooldown
+    stat: 25
+    displayName: LURE COOLDOWN
+    valueFormat: '{0} s'
+    levels:
+    - price: 300
+      value: 16
+    - price: 700
+      value: 14
+    - price: 1200
+      value: 12
   characterUpgrades:
   - id: character.hit-points
     stat: 30

@@ -15,7 +15,7 @@ namespace DarknessRises.Game.Enemies.Tells
     /// <remarks>
     /// During a Wind-up the Enemy view swaps the eyes to its brighter Wind-up material, which outshines the glint
     /// at any distance, opened or not: a real attack is never hidden. The glint material comes back when the Wind-up
-    /// ends. The eyes' opening and Tell sounds run on Enemy time, so they follow Slow-mo and stop while paused.
+    /// ends. The eyes' opening and Tell sounds run on Enemy time, so they follow Adrenaline and stop while paused.
     /// </remarks>
     public sealed class EnemyTellView : MonoBehaviour
     {
@@ -68,7 +68,7 @@ namespace DarknessRises.Game.Enemies.Tells
             tellVoice.maxDistance = audio.HearingRange;
             tellVoice.SetVolume(sounds.Volume);
 
-            // Slow-mo slows Tell sounds with the Enemy's other sounds, on top of each sound's random pitch.
+            // Adrenaline slows Tell sounds with the Enemy's other sounds, on top of each sound's random pitch.
             time.ScaleChanged += OnEnemyTimeScaled;
             OnEnemyTimeScaled(time.Scale);
 

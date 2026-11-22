@@ -182,7 +182,7 @@ namespace DarknessRises.Game.EditModeTests.Enemies.Tells
         }
 
         [Test]
-        public void Slow_mo_slows_the_steps_with_Enemy_time()
+        public void Adrenaline_slows_the_steps_with_Enemy_time()
         {
             var time = new EnemyTime { Scale = 0.5f };
             var normal = new FootstepCadence(0.5f, 0f, 0.5f, 0.1f);

@@ -14,7 +14,7 @@ namespace DarknessRises.Game.Weapons
     /// </summary>
     /// <remarks>
     /// Shots are heard as the Weapon fires them, from inside its tick; the voices advance afterwards, on real time, since
-    /// Slow-mo never slows the character. The pause freezes them with game time (and <c>AudioListener.pause</c>). A clip
+    /// Adrenaline never slows the character. The pause freezes them with game time (and <c>AudioListener.pause</c>). A clip
     /// whose audio data hasn't loaded is skipped rather than measured or seeked (WebGL decodes audio late); the Level's
     /// content loads every clip's audio data before play starts.
     /// </remarks>

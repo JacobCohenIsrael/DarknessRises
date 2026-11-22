@@ -6,7 +6,7 @@ namespace DarknessRises.Game.Enemies.Tells
     /// How far an Enemy's eyes have opened since it spawned, from 0 (shut) to 1 (open). The eyes stay shut for a moment,
     /// crack open slowly to a peek, blink shut and open again, then open fully, slowly at first. It multiplies the
     /// distance glint (<see cref="EyeGlint"/>), so an Enemy that spawns close to the character doesn't glint at full
-    /// strength from its first frame. Plain C# (ADR 0003); time comes in as Enemy time, so it follows Slow-mo and
+    /// strength from its first frame. Plain C# (ADR 0003); time comes in as Enemy time, so it follows Adrenaline and
     /// stops while the game is paused. Pooled with its Enemy, so <see cref="Restart"/> shuts the eyes again.
     /// </summary>
     public sealed class EyeOpening

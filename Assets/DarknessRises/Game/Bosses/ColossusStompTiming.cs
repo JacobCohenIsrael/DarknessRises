@@ -6,7 +6,7 @@ namespace DarknessRises.Game.Bosses
     /// <summary>
     /// The rhythm of one Colossus stomp: its growl (its warning), the Lightning flash that shows the raised foot's
     /// shadow, the Relocate window, the impact, and how long the planted foot stays down as the damage window.
-    /// All in Enemy time, so Slow-mo stretches them.
+    /// All in Enemy time, so Adrenaline stretches them.
     /// </summary>
     [Serializable]
     public sealed class ColossusStompTiming

@@ -13,7 +13,7 @@ namespace DarknessRises.Game.Skills
         [SerializeField, Min(0.1f), Tooltip("Seconds the Flare burns.")]
         private float durationSeconds = 4f;
 
-        [SerializeField, Min(0f), Tooltip("Real-time seconds from the end of the Flare until it can be used again. Slow-mo doesn't slow it.")]
+        [SerializeField, Min(0f), Tooltip("Real-time seconds from the end of the Flare until it can be used again. Adrenaline doesn't slow it.")]
         private float cooldownSeconds = 15f;
 
         [SerializeField, Min(0f), Tooltip("Seconds the light takes to reach full strength.")]

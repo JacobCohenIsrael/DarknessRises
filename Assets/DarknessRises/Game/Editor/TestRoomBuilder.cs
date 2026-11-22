@@ -207,7 +207,8 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("flamethrower").objectReferenceValue = flamethrower;
             serialized.FindProperty("lightning").objectReferenceValue = lightning;
             serialized.FindProperty("flare").objectReferenceValue = SkillsBuilder.LoadOrCreateFlare();
-            serialized.FindProperty("slowMo").objectReferenceValue = SkillsBuilder.LoadOrCreateSlowMo();
+            serialized.FindProperty("adrenaline").objectReferenceValue = SkillsBuilder.LoadOrCreateAdrenaline();
+            serialized.FindProperty("lure").objectReferenceValue = SkillsBuilder.LoadOrCreateLure();
             serialized.FindProperty("grenade").objectReferenceValue = GrenadeBuilder.LoadOrCreateGrenade();
             serialized.FindProperty("ramp").objectReferenceValue = RampBuilder.LoadOrCreateRamp();
             serialized.FindProperty("continue").objectReferenceValue = ContinueBuilder.LoadOrCreateContinue();

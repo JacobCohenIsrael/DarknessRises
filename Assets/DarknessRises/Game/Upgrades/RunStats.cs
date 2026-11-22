@@ -21,7 +21,8 @@ namespace DarknessRises.Game.Upgrades
             IReadOnlyList<WeaponRunStats> primaries,
             GrenadeRunStats grenade,
             SkillTiming flare,
-            SkillTiming slowMo,
+            SkillTiming adrenaline,
+            SkillTiming lure,
             int maxHitPoints,
             float auraRange)
         {
@@ -48,7 +49,8 @@ namespace DarknessRises.Game.Upgrades
 
             Grenade = grenade;
             Flare = flare;
-            SlowMo = slowMo;
+            Adrenaline = adrenaline;
+            Lure = lure;
             MaxHitPoints = maxHitPoints;
             AuraRange = auraRange;
         }
@@ -61,8 +63,11 @@ namespace DarknessRises.Game.Upgrades
         /// <summary>How long the Flare burns and its cooldown.</summary>
         public SkillTiming Flare { get; }
 
-        /// <summary>How long Slow-mo lasts and its cooldown.</summary>
-        public SkillTiming SlowMo { get; }
+        /// <summary>How long Adrenaline lasts and its cooldown.</summary>
+        public SkillTiming Adrenaline { get; }
+
+        /// <summary>How long the Lure draws Enemies once it lands, and its cooldown.</summary>
+        public SkillTiming Lure { get; }
 
         /// <summary>Hit points the character starts the Run with.</summary>
         public int MaxHitPoints { get; }

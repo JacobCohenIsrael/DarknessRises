@@ -36,8 +36,10 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             { UpgradeStat.GrenadeBlastRadius, 8f },
             { UpgradeStat.FlareDurationSeconds, 9f },
             { UpgradeStat.FlareCooldownSeconds, 3f },
-            { UpgradeStat.SlowMoDurationSeconds, 8f },
-            { UpgradeStat.SlowMoCooldownSeconds, 2f },
+            { UpgradeStat.AdrenalineDurationSeconds, 8f },
+            { UpgradeStat.AdrenalineCooldownSeconds, 2f },
+            { UpgradeStat.LureDurationSeconds, 7.5f },
+            { UpgradeStat.LureCooldownSeconds, 4f },
             { UpgradeStat.MaxHitPoints, 9f },
             { UpgradeStat.AuraRange, 6.5f },
         };
@@ -56,7 +58,8 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
         private static readonly UpgradeStat[] SkillStats =
         {
             UpgradeStat.FlareDurationSeconds, UpgradeStat.FlareCooldownSeconds,
-            UpgradeStat.SlowMoDurationSeconds, UpgradeStat.SlowMoCooldownSeconds,
+            UpgradeStat.AdrenalineDurationSeconds, UpgradeStat.AdrenalineCooldownSeconds,
+            UpgradeStat.LureDurationSeconds, UpgradeStat.LureCooldownSeconds,
         };
 
         private static readonly UpgradeStat[] CharacterStats = { UpgradeStat.MaxHitPoints, UpgradeStat.AuraRange };
@@ -97,7 +100,8 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             serialized.FindProperty("player").objectReferenceValue = Create<PlayerDefinition>();
             serialized.FindProperty("grenade").objectReferenceValue = Create<GrenadeDefinition>();
             serialized.FindProperty("flare").objectReferenceValue = Create<FlareDefinition>();
-            serialized.FindProperty("slowMo").objectReferenceValue = Create<SlowMoDefinition>();
+            serialized.FindProperty("adrenaline").objectReferenceValue = Create<AdrenalineDefinition>();
+            serialized.FindProperty("lure").objectReferenceValue = Create<LureDefinition>();
             serialized.FindProperty("shop").objectReferenceValue = shop;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -173,8 +177,10 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
                 UpgradeStat.GrenadeBlastRadius => stats.Grenade.BlastRadius,
                 UpgradeStat.FlareDurationSeconds => stats.Flare.DurationSeconds,
                 UpgradeStat.FlareCooldownSeconds => stats.Flare.CooldownSeconds,
-                UpgradeStat.SlowMoDurationSeconds => stats.SlowMo.DurationSeconds,
-                UpgradeStat.SlowMoCooldownSeconds => stats.SlowMo.CooldownSeconds,
+                UpgradeStat.AdrenalineDurationSeconds => stats.Adrenaline.DurationSeconds,
+                UpgradeStat.AdrenalineCooldownSeconds => stats.Adrenaline.CooldownSeconds,
+                UpgradeStat.LureDurationSeconds => stats.Lure.DurationSeconds,
+                UpgradeStat.LureCooldownSeconds => stats.Lure.CooldownSeconds,
                 UpgradeStat.MaxHitPoints => stats.MaxHitPoints,
                 UpgradeStat.AuraRange => stats.AuraRange,
                 _ => throw new ArgumentOutOfRangeException(nameof(stat), stat, null),

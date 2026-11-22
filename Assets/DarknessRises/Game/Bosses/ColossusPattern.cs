@@ -17,7 +17,7 @@ namespace DarknessRises.Game.Bosses
     /// <para>Flare reveals the next stomp's shadows early, before any Lightning, and opens Relocate at once.</para>
     /// </summary>
     /// <remarks>
-    /// Plain C# (ADR 0003). Time comes in through <see cref="Tick"/> in Enemy time, so Slow-mo stretches every timing.
+    /// Plain C# (ADR 0003). Time comes in through <see cref="Tick"/> in Enemy time, so Adrenaline stretches every timing.
     /// The pattern, not a timer, decides when Lightning flashes: it raises <see cref="FlashRequested"/> for the
     /// Lightning scheduler's Boss mode.
     /// </remarks>

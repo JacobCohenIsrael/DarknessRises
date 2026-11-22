@@ -171,18 +171,22 @@ _Avoid_: power, ability, spell
 A Skill that makes the character give off a burst of strong light for a few seconds.
 _Avoid_: glow
 
-**Slow-mo**:
-A Skill that slows Enemies and their sounds for a few seconds while the character keeps full speed.
-_Avoid_: slow, time warp, bullet time
+**Adrenaline**:
+A Skill: for a few seconds the character's reflexes speed up, so Enemies and their sounds slow down while the character keeps full speed. A faint heartbeat plays while it lasts. It was called Slow-mo until 2026-11-22.
+_Avoid_: Slow-mo, slow, time warp, bullet time
+
+**Lure**:
+A Skill: the character throws a rattling noisemaker to a point in the Room. Once it lands, every Enemy that comes within its radius turns and goes for it instead of the character, and strikes it once it gets there. When its time runs out, or an Enemy's strike breaks it, they all go back to the character. An Enemy already winding up at the character finishes that attack first. Bosses ignore it. It lights nothing: it's heard, by its rattle, not seen. On keyboard and mouse F throws it at the pointer; on touch a sideways Two-finger flick throws it that way.
+_Avoid_: decoy, bait, noisemaker (in code)
 
 ## Input
 
 **Gesture**:
-A touch pattern that triggers an action. A tap fires once, as the finger lifts, and a finger that stays down (a hold) starts firing almost at once and keeps firing. Two quick one-finger taps are just two taps (two Shots). A two-finger double-tap (two quick two-finger taps in the same place) reloads, and neither of its taps fires. A one-finger flick in any direction Relocates that way in a Boss fight and does nothing elsewhere. A two-finger flick up triggers the Flare and down triggers Slow-mo. A two-finger tap alone does nothing. New Gestures (circles, squares, lines) can be added later for new Skills.
+A touch pattern that triggers an action. A tap fires once, as the finger lifts, and a finger that stays down (a hold) starts firing almost at once and keeps firing. Two quick one-finger taps are just two taps (two Shots). A two-finger double-tap (two quick two-finger taps in the same place) reloads, and neither of its taps fires. A one-finger flick in any direction Relocates that way in a Boss fight and does nothing elsewhere. A two-finger flick up triggers the Flare, down triggers Adrenaline, and left or right throws the Lure that way. A two-finger tap alone does nothing. New Gestures (circles, squares, lines) can be added later for new Skills.
 _Avoid_: swipe command, touch combo
 
 **Two-finger flick**:
-A Gesture: two fingers touch down together and flick the same way, far and fast, then lift. Its direction is the average of the two fingers'. Up triggers the Flare, down triggers Slow-mo, sideways does nothing.
+A Gesture: two fingers touch down together and flick the same way, far and fast, then lift. Its direction is the average of the two fingers'. Up triggers the Flare, down triggers Adrenaline, and left or right throws the Lure that way, an authored distance from the character. Each direction owns the same angle either side of it, so a flick halfway between two does nothing.
 _Avoid_: two-finger swipe, double flick
 
 **Grenade button**:
@@ -324,7 +328,7 @@ Buying a Weapon in the Shop, once, with Credits. An unlocked Weapon is owned for
 _Avoid_: purchase (for a Weapon), acquire
 
 **Upgrade**:
-A lasting improvement bought in the Shop with Credits, level by level, each level dearer than the last. An Upgrade sets one number: a Primary weapon's damage, magazine, reload time or fire rate, or the ammo reserve of one whose ammo runs out; the Grenade's charges, refill time or blast radius; the Flare's or Slow-mo's duration or cooldown; the character's hit points or the reach of the Aura. A Weapon's Upgrades can be bought only once the Weapon is unlocked. Upgrades apply from the next Run; the Aura's are kept small so Darkness stays dark.
+A lasting improvement bought in the Shop with Credits, level by level, each level dearer than the last. An Upgrade sets one number: a Primary weapon's damage, magazine, reload time or fire rate, or the ammo reserve of one whose ammo runs out; the Grenade's charges, refill time or blast radius; the Flare's or Adrenaline's duration or cooldown, or the Lure's time or cooldown; the character's hit points or the reach of the Aura. A Weapon's Upgrades can be bought only once the Weapon is unlocked. Upgrades apply from the next Run; the Aura's are kept small so Darkness stays dark.
 _Avoid_: perk, boost, power-up, skill tree, level-up
 
 **Run's stats**:

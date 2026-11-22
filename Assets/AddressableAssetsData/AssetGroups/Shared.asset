@@ -135,6 +135,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 7074546add76c5a4b9b46ae716363d0c
+    m_Address: SkillLure
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 7d156b8a5b340cd46bcf0a76557dd2dd
     m_Address: Dragon Spit Fire 1
     m_ReadOnly: 0
@@ -193,6 +201,14 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: 9930d5b4be15bb04c9d0a6fa0d7e6b2e
     m_Address: Heavy Object Impact 4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 9b713c76b05f8b04882a23a60605b0d2
+    m_Address: Walking in ChainMail - Loop
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level

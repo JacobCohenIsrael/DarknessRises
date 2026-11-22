@@ -244,7 +244,8 @@ namespace DarknessRises.Game.Editor.Shop
             }
         }
 
-        // The Grenade (3 charges, 20 s refill, 3.5 m blast), the Skills (Flare and Slow-mo: 4 s, 15 s cooldown) and the
+        // The Grenade (3 charges, 20 s refill, 3.5 m blast), the Skills (Flare and Adrenaline: 4 s, 15 s cooldown; the Lure
+        // further down) and the
         // character (5 hit points, Aura 4.5 m). The Aura's levels are small on purpose: 0.3 m each, 20% in all, so
         // Darkness stays dark.
         private static void AuthorGearUpgrades(SerializedObject serialized)
@@ -264,9 +265,18 @@ namespace DarknessRises.Game.Editor.Shop
                 Author(skills,
                     ("flare.duration", UpgradeStat.FlareDurationSeconds, "FLARE TIME", Seconds, new[] { (300, 5f), (700, 6f), (1200, 7f) }),
                     ("flare.cooldown", UpgradeStat.FlareCooldownSeconds, "FLARE COOLDOWN", Seconds, new[] { (300, 13f), (700, 11f), (1200, 9f) }),
-                    ("slow-mo.duration", UpgradeStat.SlowMoDurationSeconds, "SLOW-MO TIME", Seconds, new[] { (300, 5f), (700, 6f), (1200, 7f) }),
-                    ("slow-mo.cooldown", UpgradeStat.SlowMoCooldownSeconds, "SLOW-MO COOLDOWN", Seconds, new[] { (300, 13f), (700, 11f), (1200, 9f) }));
+                    ("adrenaline.duration", UpgradeStat.AdrenalineDurationSeconds, "ADRENALINE TIME", Seconds, new[] { (300, 5f), (700, 6f), (1200, 7f) }),
+                    ("adrenaline.cooldown", UpgradeStat.AdrenalineCooldownSeconds, "ADRENALINE COOLDOWN", Seconds, new[] { (300, 13f), (700, 11f), (1200, 9f) }));
             }
+
+            // Slow-mo became Adrenaline (#117): its Upgrades keep their tuning under the new ids and names. Saves bought
+            // under the old ids are migrated to the new ones (SaveMigration).
+            Rename(skills, "slow-mo.duration", "adrenaline.duration", "ADRENALINE TIME");
+            Rename(skills, "slow-mo.cooldown", "adrenaline.cooldown", "ADRENALINE COOLDOWN");
+
+            // The Lure (5 s on the floor, 18 s cooldown), priced like the other Skills.
+            AddIfMissing(skills, ("lure.duration", UpgradeStat.LureDurationSeconds, "LURE TIME", Seconds, new[] { (300, 6f), (700, 7f), (1200, 8f) }));
+            AddIfMissing(skills, ("lure.cooldown", UpgradeStat.LureCooldownSeconds, "LURE COOLDOWN", Seconds, new[] { (300, 16f), (700, 14f), (1200, 12f) }));
 
             var character = serialized.FindProperty("characterUpgrades");
             if (character.arraySize == 0)
@@ -274,6 +284,20 @@ namespace DarknessRises.Game.Editor.Shop
                 Author(character,
                     ("character.hit-points", UpgradeStat.MaxHitPoints, "HIT POINTS", Whole, new[] { (500, 6f), (1200, 7f), (2200, 8f) }),
                     ("character.aura", UpgradeStat.AuraRange, "AURA", Metres, new[] { (400, 4.8f), (900, 5.1f), (1600, 5.4f) }));
+            }
+        }
+
+        // Gives the Upgrade with id <from> the id <to> and a new display name, keeping its levels as they were tuned.
+        private static void Rename(SerializedProperty list, string from, string to, string displayName)
+        {
+            for (var i = 0; i < list.arraySize; i++)
+            {
+                var upgrade = list.GetArrayElementAtIndex(i);
+                if (upgrade.FindPropertyRelative("id").stringValue == from)
+                {
+                    upgrade.FindPropertyRelative("id").stringValue = to;
+                    upgrade.FindPropertyRelative("displayName").stringValue = displayName;
+                }
             }
         }
 

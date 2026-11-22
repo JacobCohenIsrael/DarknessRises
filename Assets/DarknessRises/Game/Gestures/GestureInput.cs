@@ -15,7 +15,8 @@ namespace DarknessRises.Game.Gestures
     /// </summary>
     /// <remarks>
     /// A touch that starts on a UI control (the pause button) is left to the UI and never becomes a Gesture.
-    /// One-off commands (a Tap's Fire, Reload, Relocate) are pressed for one frame; a Hold keeps Fire pressed.
+    /// One-off commands (a Tap's Fire, Reload, Relocate, a Skill) are pressed for one frame; a Hold keeps Fire pressed.
+    /// A sideways Two-finger flick presses Lure and hands its direction to <see cref="PlayerControls.AimLureToward"/>.
     /// While the Grenade button is armed, a touch in the Room (a Tap, or one that stays long enough to start a Hold)
     /// presses Grenade instead of Fire, with the Grenade aimed at the touched point, so the touch that throws never fires.
     /// Runs early, so the device's state is queued before the rest of the frame reads input.
@@ -29,7 +30,7 @@ namespace DarknessRises.Game.Gestures
         private readonly int[] uiFingers = new int[MostFingers];
         private int uiFingerCount;
 
-        [SerializeField, Tooltip("Aims a Grenade thrown with the Grenade button at the tapped point.")]
+        [SerializeField, Tooltip("Aims a Grenade thrown with the Grenade button at the tapped point, and the Lure the way a sideways Two-finger flick went.")]
         private PlayerControls controls;
 
         private GestureDefinition definition;
@@ -98,8 +99,13 @@ namespace DarknessRises.Game.Gestures
                 case GestureCommand.Flare:
                     pulses |= 1u << GestureDeviceState.FlareBit;
                     break;
-                case GestureCommand.SlowMo:
-                    pulses |= 1u << GestureDeviceState.SlowMoBit;
+                case GestureCommand.Adrenaline:
+                    pulses |= 1u << GestureDeviceState.AdrenalineBit;
+                    break;
+                case GestureCommand.Lure:
+                    // Thrown the flick's way: the direction goes with the press, as the Grenade button's tap point does.
+                    controls.AimLureToward(gesture.Direction);
+                    pulses |= 1u << GestureDeviceState.LureBit;
                     break;
                 case GestureCommand.Relocate:
                     relocate = gesture.Direction;

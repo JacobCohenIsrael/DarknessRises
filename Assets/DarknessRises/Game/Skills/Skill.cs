@@ -4,7 +4,7 @@ namespace DarknessRises.Game.Skills
 {
     /// <summary>
     /// One Skill's changing state: ready, active for its duration, then cooling down until it's ready again.
-    /// Plain C# (ADR 0003). Ticked with real time, so Slow-mo never slows a cooldown.
+    /// Plain C# (ADR 0003). Ticked with real time, so Adrenaline never slows a cooldown.
     /// </summary>
     public sealed class Skill
     {
@@ -56,6 +56,30 @@ namespace DarknessRises.Game.Skills
             Phase = SkillPhase.Active;
             ActiveSecondsLeft = timing.DurationSeconds;
             Activated?.Invoke(this);
+            return true;
+        }
+
+        /// <summary>
+        /// Cuts the effect short (the Lure was broken): the cooldown starts now, as if the effect had run out.
+        /// Does nothing unless the Skill is active. Returns whether it ended the effect.
+        /// </summary>
+        public bool End()
+        {
+            if (!IsActive)
+            {
+                return false;
+            }
+
+            ActiveSecondsLeft = 0f;
+            Phase = SkillPhase.CoolingDown;
+            CooldownSecondsLeft = timing.CooldownSeconds;
+            Ended?.Invoke(this);
+            if (CooldownSecondsLeft <= 0f)
+            {
+                Phase = SkillPhase.Ready;
+                Readied?.Invoke(this);
+            }
+
             return true;
         }
 

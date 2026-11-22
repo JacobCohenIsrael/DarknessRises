@@ -24,8 +24,11 @@ namespace DarknessRises.Game.Editor.Hud
         /// <summary>The Flare: a bright core with eight rays.</summary>
         public static Sprite Flare() => LoadOrCreate("SkillFlare", IconSize, FlareCoverage);
 
-        /// <summary>A heart, for Slow-mo, which becomes Adrenaline.</summary>
+        /// <summary>A heart, for Adrenaline.</summary>
         public static Sprite Heart() => LoadOrCreate("SkillHeart", IconSize, HeartCoverage);
+
+        /// <summary>The Lure: a little rattle can with sound waves coming off it either side.</summary>
+        public static Sprite Lure() => LoadOrCreate("SkillLure", IconSize, LureCoverage);
 
         /// <summary>A hand grenade: a ribbed body, its cap, lever and pin ring.</summary>
         public static Sprite Grenade() => LoadOrCreate("Grenade", IconSize, GrenadeCoverage);
@@ -132,6 +135,31 @@ namespace DarknessRises.Game.Editor.Hud
             }
 
             return Fill(distance / scale);
+        }
+
+        // An upright can with a band round its middle, and two arcs of sound either side of it.
+        private static float LureCoverage(float x, float y)
+        {
+            var p = new Vector2(x, y);
+            var centre = new Vector2(0.5f, 0.5f);
+
+            var can = Box(p, centre, new Vector2(0.09f, 0.17f)) - 0.05f;
+            var band = Box(p, centre, new Vector2(0.2f, 0.025f));
+            can = Mathf.Max(can, -band);
+            var cap = Box(p, centre + new Vector2(0f, 0.25f), new Vector2(0.06f, 0.025f));
+            var distance = Mathf.Min(can, cap);
+
+            // Arcs of sound, left and right, each within 40 degrees of the horizontal.
+            var offset = p - centre;
+            var side = Mathf.Abs(Mathf.Atan2(offset.y, Mathf.Abs(offset.x))) * Mathf.Rad2Deg;
+            if (side <= 40f)
+            {
+                var near = Mathf.Abs(offset.magnitude - 0.29f) - 0.03f;
+                var far = Mathf.Abs(offset.magnitude - 0.41f) - 0.03f;
+                distance = Mathf.Min(distance, Mathf.Min(near, far));
+            }
+
+            return Fill(distance);
         }
 
         private static float GrenadeCoverage(float x, float y)

@@ -74,7 +74,7 @@ namespace DarknessRises.Game.EditModeTests.Gestures
         }
 
         [TestCase(0.2f, GestureCommand.Flare)]
-        [TestCase(-0.2f, GestureCommand.SlowMo)]
+        [TestCase(-0.2f, GestureCommand.Adrenaline)]
         public void ATwoFingerFlickStillTriggersItsSkillAndNothingElse(float travelY, GestureCommand command)
         {
             var travel = new Vector2(0f, travelY);
@@ -113,17 +113,25 @@ namespace DarknessRises.Game.EditModeTests.Gestures
         [TestCase(0f, -1f)]
         [TestCase(0.5f, -1f)]
         [TestCase(-0.5f, -1f)]
-        public void ATwoFingerFlickDownTriggersSlowMo(float x, float y)
+        public void ATwoFingerFlickDownTriggersAdrenaline(float x, float y)
         {
-            Assert.That(For(GestureKind.TwoFingerFlick, new Vector2(x, y)), Is.EqualTo(GestureCommand.SlowMo));
+            Assert.That(For(GestureKind.TwoFingerFlick, new Vector2(x, y)), Is.EqualTo(GestureCommand.Adrenaline));
         }
 
+        // Left or right throws the Lure that way, within the same half-angle of the horizontal as up and down have.
         [TestCase(1f, 0f)]
         [TestCase(-1f, 0f)]
         [TestCase(1f, 0.5f)]
-        public void ATwoFingerFlickSidewaysMeansNothing(float x, float y)
+        [TestCase(-1f, -0.6f)]
+        public void ATwoFingerFlickSidewaysThrowsTheLure(float x, float y)
         {
-            Assert.That(For(GestureKind.TwoFingerFlick, new Vector2(x, y)), Is.EqualTo(GestureCommand.None));
+            Assert.That(For(GestureKind.TwoFingerFlick, new Vector2(x, y)), Is.EqualTo(GestureCommand.Lure));
+        }
+
+        [Test]
+        public void AStillTwoFingerFlickMeansNothing()
+        {
+            Assert.That(For(GestureKind.TwoFingerFlick, Vector2.zero), Is.EqualTo(GestureCommand.None));
         }
 
         // The mapping has no idea of the fight; Relocation only acts while the Boss fight enables it.

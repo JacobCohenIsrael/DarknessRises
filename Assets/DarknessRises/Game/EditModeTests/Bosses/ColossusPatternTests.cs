@@ -457,7 +457,7 @@ namespace DarknessRises.Game.EditModeTests.Bosses
         }
 
         [Test]
-        public void Slow_mo_stretches_the_Relocate_window_through_Enemy_time()
+        public void Adrenaline_stretches_the_Relocate_window_through_Enemy_time()
         {
             var enemyTime = new EnemyTime { Scale = 0.5f };
             AimAtCharacter();

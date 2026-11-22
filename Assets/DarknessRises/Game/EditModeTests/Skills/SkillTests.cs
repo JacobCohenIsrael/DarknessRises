@@ -145,5 +145,30 @@ namespace DarknessRises.Game.EditModeTests.Skills
 
             AllocationAssert.DoesNotAllocate(() => quiet.Tick(0.016f));
         }
+
+        [Test]
+        public void EndingCutsTheEffectShortAndStartsTheCooldown()
+        {
+            skill.TryActivate();
+            skill.Tick(1f);
+
+            Assert.That(skill.End(), NUnit.Framework.Is.True);
+
+            Assert.That(skill.Phase, NUnit.Framework.Is.EqualTo(SkillPhase.CoolingDown));
+            Assert.That(skill.ActiveSecondsLeft, NUnit.Framework.Is.Zero);
+            Assert.That(skill.CooldownSecondsLeft, NUnit.Framework.Is.EqualTo(Cooldown));
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "activated", "ended" }));
+        }
+
+        [Test]
+        public void EndingASkillThatIsntActiveDoesNothing()
+        {
+            Assert.That(skill.End(), NUnit.Framework.Is.False);
+            skill.TryActivate();
+            skill.End();
+
+            Assert.That(skill.End(), NUnit.Framework.Is.False);
+            Assert.That(events, NUnit.Framework.Is.EqualTo(new[] { "activated", "ended" }));
+        }
     }
 }

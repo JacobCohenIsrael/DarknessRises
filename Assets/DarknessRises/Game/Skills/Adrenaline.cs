@@ -4,20 +4,20 @@ using DarknessRises.Game.Enemies;
 namespace DarknessRises.Game.Skills
 {
     /// <summary>
-    /// The Slow-mo Skill: while active, eases the Enemy time scale down to its authored strength, and back up to
+    /// The Adrenaline Skill: while active, eases the Enemy time scale down to its authored strength, and back up to
     /// normal once it ends. Never touches the global time scale, so the character, Shots and Skills keep full speed.
     /// </summary>
-    public sealed class SlowMo
+    public sealed class Adrenaline
     {
         private readonly EnemyTime enemyTime;
         private readonly float enemyTimeScale;
         private readonly float easeSeconds;
 
-        public SlowMo(SkillTiming timing, float enemyTimeScale, float easeSeconds, EnemyTime enemyTime)
+        public Adrenaline(SkillTiming timing, float enemyTimeScale, float easeSeconds, EnemyTime enemyTime)
         {
             if (enemyTimeScale < 0f || enemyTimeScale > EnemyTime.NormalScale)
             {
-                throw new ArgumentOutOfRangeException(nameof(enemyTimeScale), enemyTimeScale, "Slow-mo scales Enemy time between 0 and 1.");
+                throw new ArgumentOutOfRangeException(nameof(enemyTimeScale), enemyTimeScale, "Adrenaline scales Enemy time between 0 and 1.");
             }
 
             if (easeSeconds < 0f)

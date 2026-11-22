@@ -16,7 +16,7 @@ namespace DarknessRises.Game.Bosses
 {
     /// <summary>
     /// The Colossus fight in its Boss Room. The rules live in <see cref="ColossusPattern"/> and <see cref="Relocation"/>;
-    /// this feeds them time (the pattern in Enemy time, so Slow-mo slows it) and the player's Relocate directions,
+    /// this feeds them time (the pattern in Enemy time, so Adrenaline slows it) and the player's Relocate directions,
     /// and shows what they decide: the raised foot's shadow, the fall, the shockwave, light and camera shake of the
     /// impact, and the planted foot with only its weak spot lit. The Boss Room camera frames the fight.
     /// </summary>
@@ -339,7 +339,7 @@ namespace DarknessRises.Game.Bosses
             voice.playOnAwake = false;
             voice.SetVolume(look.Volume);
 
-            // Its sounds run on Enemy time too, so Slow-mo slows them.
+            // Its sounds run on Enemy time too, so Adrenaline slows them.
             enemyTime.ScaleChanged += OnEnemyTimeScaled;
             OnEnemyTimeScaled(enemyTime.Scale);
         }

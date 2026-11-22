@@ -8,6 +8,7 @@ using DarknessRises.Game.Critters;
 using DarknessRises.Game.Enemies.Tells;
 using DarknessRises.Game.Gestures;
 using DarknessRises.Game.Grenades;
+using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Levels;
 using DarknessRises.Game.Lightning;
@@ -80,6 +81,12 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The first-run hint over the first Enemy: tap to shoot.")]
         private ShootHintSettings shootHint = new();
 
+        [SerializeField, Tooltip("How every Skill button on the HUD behaves: the cooldown sweep and the ready pulse. Each Skill's own look is on its definition.")]
+        private SkillHudSettings skillHud = new();
+
+        [SerializeField, Tooltip("The red at the screen's edges when the character is hurt: a flash on each hit, and a pulse with a heartbeat on the last hit points.")]
+        private HurtFeedbackSettings hurtFeedback = new();
+
         [SerializeField, Tooltip("The Score's rules: the Combo, and what each Grade of a Station's fight requires.")]
         private ScoreSettings score = new();
 
@@ -139,5 +146,7 @@ namespace DarknessRises.Game.Configuration
         public CritterDefinition Critters => critters;
         public PhantomEyesDefinition PhantomEyes => phantomEyes;
         public AmbienceDefinition Ambience => ambience;
+        public SkillHudSettings SkillHud => skillHud;
+        public HurtFeedbackSettings HurtFeedback => hurtFeedback;
     }
 }

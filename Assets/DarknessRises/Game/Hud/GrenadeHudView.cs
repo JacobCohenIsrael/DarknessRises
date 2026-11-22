@@ -5,16 +5,17 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Hud
 {
     /// <summary>
-    /// Shows the Grenade charges next to the ammo: one pip per charge, filled while the charge is carried,
-    /// with the charge that is refilling filling up around its pip.
+    /// Shows the Grenade charges: one small grenade icon per charge, lit while the charge is carried and dimmed once
+    /// it's spent, with the charge that is refilling lighting up from the bottom as it refills
+    /// (<see cref="GrenadeChargeIcons"/>).
     /// </summary>
     public sealed class GrenadeHudView : MonoBehaviour
     {
-        [SerializeField, Tooltip("One charge's pip. Cloned for each charge the character carries.")]
-        private RectTransform pipTemplate;
+        [SerializeField, Tooltip("One charge's icon, its dimmed outline. Cloned for each charge the character carries.")]
+        private RectTransform iconTemplate;
 
-        [SerializeField, Tooltip("The template pip's fill, a radial filled Image.")]
-        private Image pipFillTemplate;
+        [SerializeField, Tooltip("The template icon's lit fill, a vertically filled Image over the dimmed one.")]
+        private Image iconFillTemplate;
 
         private GrenadeCharges charges;
         private Image[] fills = System.Array.Empty<Image>();
@@ -22,11 +23,11 @@ namespace DarknessRises.Game.Hud
         public void Show(GrenadeCharges grenadeCharges)
         {
             charges = grenadeCharges;
-            BuildPips(charges.MaxCharges);
+            BuildIcons(charges.MaxCharges);
             Refresh();
         }
 
-        // The refilling pip fills up continuously, so this runs every frame. Setting an unchanged fill amount is free.
+        // The refilling icon fills up continuously, so this runs every frame. Setting an unchanged fill amount is free.
         private void Update()
         {
             if (charges != null)
@@ -37,31 +38,30 @@ namespace DarknessRises.Game.Hud
 
         private void Refresh()
         {
-            var carried = charges.Charges;
             for (var i = 0; i < fills.Length; i++)
             {
-                fills[i].fillAmount = i < carried ? 1f : i == carried ? charges.RefillProgress : 0f;
+                fills[i].fillAmount = GrenadeChargeIcons.Fill(i, charges);
             }
         }
 
-        private void BuildPips(int count)
+        private void BuildIcons(int count)
         {
-            var parent = pipTemplate.parent;
-            var fillPath = pipFillTemplate.transform.GetSiblingIndex();
+            var parent = iconTemplate.parent;
+            var fillPath = iconFillTemplate.transform.GetSiblingIndex();
 
-            // Drop pips left from an earlier Show; the template is always the first.
+            // Drop icons left from an earlier Show; the template is always the first.
             for (var i = parent.childCount - 1; i >= 1; i--)
             {
                 Destroy(parent.GetChild(i).gameObject);
             }
 
             fills = new Image[count];
-            fills[0] = pipFillTemplate;
+            fills[0] = iconFillTemplate;
             for (var i = 1; i < count; i++)
             {
-                var pip = Instantiate(pipTemplate, parent);
-                pip.name = $"{pipTemplate.name} {i + 1}";
-                fills[i] = pip.GetChild(fillPath).GetComponent<Image>();
+                var icon = Instantiate(iconTemplate, parent);
+                icon.name = $"{iconTemplate.name} {i + 1}";
+                fills[i] = icon.GetChild(fillPath).GetComponent<Image>();
             }
         }
     }

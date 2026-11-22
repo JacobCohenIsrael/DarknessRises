@@ -16,3 +16,8 @@ MonoBehaviour:
   cooldownSeconds: 15
   enemyTimeScale: 0.35
   easeSeconds: 0.25
+  button:
+    icon: {fileID: 21300000, guid: d9d36016d3613e3469eb70fa7674fa8a, type: 3}
+    color: {r: 1, g: 0.36, b: 0.42, a: 0.95}
+    displayName: SLOW-MO
+    keyBadge: E

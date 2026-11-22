@@ -23,6 +23,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 1fe68c2517a664847a898bbf500a952a
+    m_Address: Grenade
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 2e071f5b8b8467d45a5e6e24c23c6ad4
     m_Address: Metal Impact 7
     m_ReadOnly: 0
@@ -87,6 +95,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 7b69beceabbd8f24e8bc62d77ac7ca1c
+    m_Address: Heavy Object Impact 10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 7d156b8a5b340cd46bcf0a76557dd2dd
     m_Address: Dragon Spit Fire 1
     m_ReadOnly: 0
@@ -135,8 +151,24 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 96971dab9dac44143a0392a57e753c00
+    m_Address: Ring
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 9930d5b4be15bb04c9d0a6fa0d7e6b2e
     m_Address: Heavy Object Impact 4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: a65244ecca5d6774d83e596182fcd062
+    m_Address: SkillFlare
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level
@@ -151,8 +183,24 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: ab7a4ce196b898f45bb917d9bcd85cae
+    m_Address: HurtVignette
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: ac6034ade498bb94b87620cdf6eac48b
     m_Address: Monster Bite
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: ce4ab45d11831e143b5c82fa7ca2a574
+    m_Address: Disc
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level
@@ -169,6 +217,14 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: d686c71dcdac9b24b9209aec52cd843d
     m_Address: Crosshair
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: d9d36016d3613e3469eb70fa7674fa8a
+    m_Address: SkillHeart
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level

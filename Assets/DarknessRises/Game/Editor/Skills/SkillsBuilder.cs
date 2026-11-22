@@ -10,7 +10,7 @@ namespace DarknessRises.Game.Editor.Skills
 {
     /// <summary>
     /// Builds the Skills: the Flare and Slow-mo definitions, their input actions (Q and E), the Flare light and
-    /// Skill runner on the character, and their cooldowns on the HUD. Existing definitions are kept.
+    /// Skill runner on the character, and their buttons on the HUD. Existing definitions are kept.
     /// </summary>
     public static class SkillsBuilder
     {
@@ -27,17 +27,34 @@ namespace DarknessRises.Game.Editor.Skills
 
         public static FlareDefinition LoadOrCreateFlare()
         {
-            return LoadOrCreate<FlareDefinition>(FlareDefinitionPath);
+            var flare = LoadOrCreate<FlareDefinition>(FlareDefinitionPath);
+            DrawIconIfEmpty(flare, HudIcons.Flare);
+            return flare;
         }
 
         public static SlowMoDefinition LoadOrCreateSlowMo()
         {
-            return LoadOrCreate<SlowMoDefinition>(SlowMoDefinitionPath);
+            // A heart: Slow-mo becomes Adrenaline.
+            var slowMo = LoadOrCreate<SlowMoDefinition>(SlowMoDefinitionPath);
+            DrawIconIfEmpty(slowMo, HudIcons.Heart);
+            return slowMo;
+        }
+
+        // A Skill's button icon is drawn by the HUD builder, unless another was chosen in the Inspector.
+        private static void DrawIconIfEmpty(ScriptableObject definition, System.Func<Sprite> draw)
+        {
+            var serialized = new SerializedObject(definition);
+            var icon = serialized.FindProperty("button.icon");
+            if (icon.objectReferenceValue == null)
+            {
+                icon.objectReferenceValue = draw();
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
 
         /// <summary>
-        /// Gives the character its Skills (read from <paramref name="controls"/>, Flare light included) and adds both
-        /// cooldowns to the HUD canvas, then hands them to the composition root.
+        /// Gives the character its Skills (read from <paramref name="controls"/>, Flare light included) and adds the row
+        /// of Skill buttons to the HUD canvas, then hands them to the composition root.
         /// </summary>
         public static void Build(GameRoot gameRoot, Transform character, PlayerControls controls, Canvas hud)
         {
@@ -61,12 +78,11 @@ namespace DarknessRises.Game.Editor.Skills
             SetReference(skills, "controls", controls);
             SetReference(skills, "flare", flareView);
 
-            SkillHudBuilder.BuildSkillHuds(hud, out var flareHud, out var slowMoHud);
+            var skillBar = SkillHudBuilder.BuildSkillBar(hud, controls);
 
             var serializedRoot = new SerializedObject(gameRoot);
             serializedRoot.FindProperty("characterSkills").objectReferenceValue = skills;
-            serializedRoot.FindProperty("flareHud").objectReferenceValue = flareHud;
-            serializedRoot.FindProperty("slowMoHud").objectReferenceValue = slowMoHud;
+            serializedRoot.FindProperty("skillBar").objectReferenceValue = skillBar;
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
         }
 

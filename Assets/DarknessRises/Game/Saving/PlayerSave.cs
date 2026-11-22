@@ -6,7 +6,7 @@ namespace DarknessRises.Game.Saving
 {
     /// <summary>
     /// The player's durable progress, kept across app restarts: the Credits in the bank, how many Runs they've
-    /// finished, and the level of everything bought in the Shop. It's read from its <see cref="ISaveStorage"/> once,
+    /// finished, the best Score of any Run, and the level of everything bought in the Shop. It's read from its <see cref="ISaveStorage"/> once,
     /// and written back whenever it changes at a moment that matters: a Run banks its Credits, something is bought,
     /// the app goes to the background or quits.
     /// Plain C# (ADR 0003): whoever lives longest (the boot) owns it and hands it to what needs it.
@@ -30,6 +30,7 @@ namespace DarknessRises.Game.Saving
             storage = saveStorage;
             Credits = record.credits;
             RunsFinished = record.runsFinished;
+            BestScore = record.bestScore;
             foreach (var item in record.items)
             {
                 levels[item.id] = item.level;
@@ -48,6 +49,9 @@ namespace DarknessRises.Game.Saving
 
         /// <summary>How many Runs the player has finished, whichever way they ended.</summary>
         public int RunsFinished { get; private set; }
+
+        /// <summary>The best Score of any Run the player has finished. It buys nothing; it's there to beat.</summary>
+        public int BestScore { get; private set; }
 
         /// <summary>
         /// Reads the save from <paramref name="saveStorage"/>, migrating an older record to this build's version.
@@ -95,6 +99,28 @@ namespace DarknessRises.Game.Saving
             RunsFinished = RunsFinished < int.MaxValue ? RunsFinished + 1 : int.MaxValue;
             MarkChanged();
             Bank(runCredits);
+        }
+
+        /// <summary>
+        /// Keeps <paramref name="score"/> as the best Score if it beats it. It doesn't write the save: whoever banks the
+        /// Run does, straight after.
+        /// </summary>
+        /// <returns>Whether it was a new best.</returns>
+        public bool KeepScore(int score)
+        {
+            if (score < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(score), score, "A Score is never below 0.");
+            }
+
+            if (score <= BestScore)
+            {
+                return false;
+            }
+
+            BestScore = score;
+            MarkChanged();
+            return true;
         }
 
         /// <summary>The level the item with <paramref name="itemId"/> was bought up to. 0 when it was never bought.</summary>
@@ -161,7 +187,7 @@ namespace DarknessRises.Game.Saving
         }
 
         /// <summary>
-        /// Puts the save back to a first install: no Credits, nothing bought, no Run finished. For the dev tools. It
+        /// Puts the save back to a first install: no Credits, nothing bought, no Run finished, no best Score. For the dev tools. It
         /// doesn't write the save.
         /// </summary>
         public void Reset()
@@ -169,6 +195,7 @@ namespace DarknessRises.Game.Saving
             var hadCredits = Credits != 0;
             Credits = 0;
             RunsFinished = 0;
+            BestScore = 0;
             levels.Clear();
             boughtIds.Clear();
             if (hadCredits)
@@ -223,6 +250,7 @@ namespace DarknessRises.Game.Saving
                 version = SaveRecord.CurrentVersion,
                 credits = Credits,
                 runsFinished = RunsFinished,
+                bestScore = BestScore,
             };
 
             foreach (var id in boughtIds)

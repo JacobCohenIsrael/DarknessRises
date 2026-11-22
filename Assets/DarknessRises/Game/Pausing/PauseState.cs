@@ -10,6 +10,12 @@ namespace DarknessRises.Game.Pausing
         Paused,
 
         /// <summary>
+        /// Everything in the Level is frozen while something plays over it (a rewarded ad), with no pause menu. Whoever
+        /// held it lets it go.
+        /// </summary>
+        Held,
+
+        /// <summary>
         /// The player picked Restart or Exit on the pause menu. The Level stays frozen behind whatever comes next
         /// (the end screen, or the next Run loading) until its scene goes.
         /// </summary>

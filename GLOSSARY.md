@@ -276,8 +276,20 @@ Freezing the Level while the character is alive in it: Enemies, Lightning, Skill
 _Avoid_: stop, break
 
 **Score**:
-The points a Run earns for its kills. Each Enemy type and Boss is worth its own points, multiplied by the Combo at the moment it dies. It shows on the HUD, pops up over every kill, and ends up on the end screen. It's kept per Run and buys nothing: it isn't Credits.
+The points a Run earns for its kills. Each Enemy type and Boss is worth its own points, multiplied by the Combo at the moment it dies, and by the Score boost while one runs. Each Station's fight adds its Accuracy bonus on top. It shows on the HUD, pops up over every kill, and ends up on the end screen beside the Best Score. It buys nothing: it isn't Credits.
 _Avoid_: points (for the Run's total), credits
+
+**Accuracy bonus**:
+What a Station's fight adds to its Score for its accuracy: the Station's Score multiplied by the best authored tier the accuracy reaches (x1.1 from 45 %, x1.25 from 65 %, x1.5 from 80 %, x1.75 from 90 %, x2 for a perfect fight), less the Score itself. A fight with too few Shots to say anything (none at all, a fight won by Grenades, or Shots that only killed Critters) gets x1. On the Result card it stamps in ("ACCURACY x1.5") and the Score counts up to the total.
+_Avoid_: accuracy multiplier (that's its number), precision bonus
+
+**Score boost**:
+A timed multiplier on every Score earned (x2 for 60 s of play, authored), started by watching its own rewarded ad, offered by a button on the Result card. It doubles each kill after the Combo, and so the Accuracy bonus of what it doubled. Its timer runs only while the game plays: not while paused, during an ad, on a loading screen or while the character is dead. It carries over from Level to Level and ends when its time is up or the Run ends. While one runs, no Result card offers another. On the HUD it shows beside the Score with its seconds left, pulsing as it's about to end.
+_Avoid_: double score, score multiplier, power-up
+
+**Best Score**:
+The highest Score of any Run, kept in the save (since save version 4; older saves start at 0). The end screen shows it beside the Run's Score and stamps NEW BEST! when the Run beat it; the Shop shows it beside PLAY.
+_Avoid_: high score, record
 
 **Combo**:
 A streak of consecutive Shots that each hurt an Enemy. Every few hits in a row its multiplier steps up, to a cap; a Shot that hurts nothing ends it, and so does going too long without a hit. A Shot that kills a Critter is neither: the streak carries on as it was.
@@ -288,7 +300,7 @@ The mark a Station's fight earns: S, A, B or C, from its accuracy, its time per 
 _Avoid_: rank, rating, stars
 
 **Result card**:
-The card under the Clear banner: the Station's kills, accuracy and time, the Score it earned and its Grade.
+The card under the Clear banner: the Station's kills, accuracy and time, the Score it earned and its Grade, with its Accuracy bonus stamped in. While the Score boost is on offer it has a button to watch its ad, and stays up a little longer after the Go cue; it never holds the game up.
 _Avoid_: scoreboard, summary
 
 **Hit marker**:
@@ -304,7 +316,7 @@ The Credits the player holds between Runs, kept in the save. A Run's Credits are
 _Avoid_: wallet, balance, purse
 
 **End-of-Run ad**:
-The one rewarded ad the end screen offers after a Run: watching it through multiplies the Credits that Run earned. It's optional, pays once per Run, and never blocks moving on. An ad that isn't watched through pays nothing and leaves the offer standing. A Run that earned too few Credits isn't offered one.
+The rewarded ad the end screen offers after a Run: watching it through multiplies the Credits that Run earned. It's separate from the Score boost's ad, which the Result card offers. It's optional, pays once per Run, and never blocks moving on. An ad that isn't watched through pays nothing and leaves the offer standing. A Run that earned too few Credits isn't offered one.
 _Avoid_: bonus ad, double-up, reward video
 
 **Loading screen**:

@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Scoring;
 using DarknessRises.Game.Weapons;
 
 namespace DarknessRises.Game.Runs
@@ -54,6 +55,13 @@ namespace DarknessRises.Game.Runs
         /// </summary>
         public PrimaryWeaponLoadout Loadout { get; private set; }
 
+        /// <summary>
+        /// The Run's Score boost: one for the whole Run, so a boost started in one Level runs on into the next (the
+        /// player watched an ad for its time; a Level ending shouldn't take it). The Run's first Level makes it
+        /// (<see cref="CarryBoost"/>); a running boost ends when the Run does. A new Run starts with none.
+        /// </summary>
+        public ScoreBoost ScoreBoost { get; private set; }
+
         // The phase of the Level the character is dead in: where a Continue goes back to.
         private RunPhase resumePhase;
 
@@ -83,6 +91,7 @@ namespace DarknessRises.Game.Runs
                 return false;
             }
 
+            ScoreBoost?.End();
             RunEnded?.Invoke(Record);
             BeginRun();
             return true;
@@ -97,6 +106,7 @@ namespace DarknessRises.Game.Runs
             }
 
             hasLeft = false;
+            ScoreBoost?.End();
             Enter(RunPhase.Ended);
             RunEnded?.Invoke(Record);
             return true;
@@ -234,6 +244,23 @@ namespace DarknessRises.Game.Runs
             return true;
         }
 
+        /// <summary>Gives the Run its Score boost for the rest of it. Only while a Run is on.</summary>
+        public bool CarryBoost(ScoreBoost boost)
+        {
+            if (boost == null)
+            {
+                throw new ArgumentNullException(nameof(boost));
+            }
+
+            if (!IsInRun)
+            {
+                return false;
+            }
+
+            ScoreBoost = boost;
+            return true;
+        }
+
         /// <summary>
         /// A kill or a cleared Level paid <paramref name="credits"/>. Counts while a Run is on, like the kill itself.
         /// Credits are flat: the Combo never multiplies them.
@@ -274,6 +301,7 @@ namespace DarknessRises.Game.Runs
             Record = new RunRecord();
             ContinuesUsed = 0;
             Loadout = null;
+            ScoreBoost = null;
             StartLevel(RunRecord.FirstLevel);
         }
 

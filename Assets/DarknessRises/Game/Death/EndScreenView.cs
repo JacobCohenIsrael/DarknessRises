@@ -14,7 +14,8 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Death
 {
     /// <summary>
-    /// The end screen after Exit: the Run's Score, the Level reached and the Enemies killed, then the Credits the Run
+    /// The end screen after Exit: the Run's Score beside the best Score of every Run (with NEW BEST! stamped in when
+    /// the Run beat it), the Level reached and the Enemies killed, then the Credits the Run
     /// earned and the new total in the bank, counted up arcade-style. It offers the end-of-Run ad, which multiplies the
     /// Run's Credits (<see cref="EndOfRunAd"/> decides when and how much), and never blocks moving on. It leads to the
     /// Shop, where a new Run starts.
@@ -34,6 +35,12 @@ namespace DarknessRises.Game.Death
         [SerializeField] private TMP_Text levelReached;
         [SerializeField] private TMP_Text enemiesKilled;
         [SerializeField] private TMP_Text score;
+
+        [SerializeField, Tooltip("Beside the Score: the best Score of every Run, this one counted.")]
+        private TMP_Text bestScore;
+
+        [SerializeField, Tooltip("Stamped in when the Run beat the best Score, then pulsing.")]
+        private TMP_Text newBest;
 
         [Header("Credits")]
         [SerializeField, Tooltip("The Credits the Run earned.")]
@@ -70,6 +77,10 @@ namespace DarknessRises.Game.Death
         private readonly CountUp totalCount = new();
 
         private CreditsDefinition settings;
+        private ScoreHudSettings scoreLook;
+        private BonusReveal newBestStamp;
+        private string bestFormat;
+        private float pulseSeconds;
         private IRewardedAd ad;
         private PlayerSave save;
         private AudioClip bonusClip;
@@ -80,8 +91,18 @@ namespace DarknessRises.Game.Death
         /// Gets the screen ready to show Credits as <paramref name="credits"/> says, bank the ad's bonus in
         /// <paramref name="playerSave"/> and show <paramref name="rewardedAd"/> for it.
         /// </summary>
-        public void Use(CreditsDefinition credits, IRewardedAd rewardedAd, PlayerSave playerSave, AudioClip bonusSound)
+        public void Use(
+            CreditsDefinition credits, IRewardedAd rewardedAd, PlayerSave playerSave, AudioClip bonusSound, ScoreHudSettings scoreHud)
         {
+            scoreLook = scoreHud ?? throw new ArgumentNullException(nameof(scoreHud));
+
+            // Made once: the caption and the number's place ("BEST  {0}").
+            bestFormat = scoreLook.BestCaption + "  {0}";
+            newBest.text = scoreLook.NewBestText;
+            newBest.color = scoreLook.NewBestColor;
+            newBest.enabled = false;
+            newBestStamp = new BonusReveal(scoreLook.NewBestDelaySeconds, scoreLook.StampSeconds, scoreLook.StampScale, 0f, 0f);
+
             settings = credits ? credits : throw new ArgumentNullException(nameof(credits));
             ad = rewardedAd ?? throw new ArgumentNullException(nameof(rewardedAd));
             save = playerSave ?? throw new ArgumentNullException(nameof(playerSave));
@@ -112,6 +133,17 @@ namespace DarknessRises.Game.Death
             levelReached.SetText(NumberFormat, (float)record.LevelReached);
             enemiesKilled.SetText(NumberFormat, (float)record.EnemiesKilled);
             score.SetText(NumberFormat, (float)record.Score);
+            bestScore.SetText(bestFormat, (float)Math.Max(record.BestScore, save.BestScore));
+            newBest.enabled = false;
+            pulseSeconds = 0f;
+            if (record.IsNewBest)
+            {
+                newBestStamp.Begin();
+            }
+            else
+            {
+                newBestStamp.Stop();
+            }
 
             // The Run's Credits were banked when it ended; this only catches a Run nobody banks.
             var credits = record.Credits;
@@ -205,6 +237,7 @@ namespace DarknessRises.Game.Death
             earnedCount.Tick(deltaSeconds);
             bonusCount.Tick(deltaSeconds);
             totalCount.Tick(deltaSeconds);
+            ShowNewBest(deltaSeconds);
 
             var total = creditsTotal.rectTransform;
             if (kickSecondsLeft > 0f || total.localScale.x != 1f)
@@ -227,6 +260,36 @@ namespace DarknessRises.Game.Death
             earnedCount.ValueChanged -= ShowEarned;
             bonusCount.ValueChanged -= ShowBonus;
             totalCount.ValueChanged -= ShowTotal;
+        }
+
+        // NEW BEST! punches in after a moment, then pulses for as long as the screen shows.
+        private void ShowNewBest(float deltaSeconds)
+        {
+            if (newBestStamp == null)
+            {
+                return;
+            }
+
+            newBestStamp.Tick(deltaSeconds);
+            if (newBest.enabled != newBestStamp.IsStamped)
+            {
+                newBest.enabled = newBestStamp.IsStamped;
+            }
+
+            if (!newBestStamp.IsStamped)
+            {
+                return;
+            }
+
+            var size = newBestStamp.StampSize;
+            if (newBestStamp.IsCounting)
+            {
+                pulseSeconds += deltaSeconds;
+                var pulse = Mathf.Abs(Mathf.Sin(pulseSeconds * scoreLook.NewBestPulsesPerSecond * Mathf.PI));
+                size = Mathf.Lerp(1f, scoreLook.NewBestPulseScale, pulse);
+            }
+
+            newBest.rectTransform.localScale = new Vector3(size, size, 1f);
         }
 
         // Puts a count at its first number and writes it, whether or not it changed from the last time the screen showed.

@@ -8,7 +8,15 @@ namespace DarknessRises.Game.Scoring
     public readonly struct StationResult
     {
         public StationResult(int kills, int hits, int misses, int hitsTaken, float seconds, int points, Grade grade)
+            : this(kills, hits, misses, hitsTaken, seconds, points, grade, 1f, 0)
         {
+        }
+
+        public StationResult(
+            int kills, int hits, int misses, int hitsTaken, float seconds, int points, Grade grade, float accuracyMultiplier, int bonus)
+        {
+            AccuracyMultiplier = accuracyMultiplier;
+            Bonus = bonus;
             Kills = kills;
             Hits = hits;
             Misses = misses;
@@ -33,10 +41,22 @@ namespace DarknessRises.Game.Scoring
         /// <summary>Seconds from the fight's start to its last death.</summary>
         public float Seconds { get; }
 
-        /// <summary>Score earned during the fight.</summary>
+        /// <summary>Score the fight's kills earned, before the accuracy bonus.</summary>
         public int Points { get; }
 
         public Grade Grade { get; }
+
+        /// <summary>What the accuracy bonus multiplied <see cref="Points"/> by. 1 when it added nothing.</summary>
+        public float AccuracyMultiplier { get; }
+
+        /// <summary>The Score the accuracy bonus added on top of <see cref="Points"/>.</summary>
+        public int Bonus { get; }
+
+        /// <summary>Everything the fight earned: its kills' Score and the accuracy bonus.</summary>
+        public int Total => Points + Bonus;
+
+        /// <summary>Whether the accuracy bonus added anything: the card stamps it in and counts up to the total.</summary>
+        public bool HasBonus => Bonus > 0;
 
         /// <summary>The share of the Shots that hurt an Enemy, from 0 to 1. A fight won without a single Shot missed nothing.</summary>
         public float Accuracy => StationScore.Accuracy(Hits, Misses);
@@ -60,15 +80,17 @@ namespace DarknessRises.Game.Scoring
     }
 
     /// <summary>
-    /// Keeps the Score of a Level as it's played: every kill earns its Enemy's points times the Combo's multiplier, hits
-    /// and misses drive the Combo, and from the start of a Station's fight to its clear it tallies what the result card
-    /// shows and grades it. The Run's total is kept by the Run; this only says what each kill earned.
+    /// Keeps the Score of a Level as it's played: every kill earns its Enemy's points times the Combo's multiplier (and
+    /// times the Score boost while one runs), hits and misses drive the Combo, and from the start of a Station's fight to
+    /// its clear it tallies what the result card shows, grades it and works out its accuracy bonus. The Run's total is
+    /// kept by the Run; this only says what each kill and each Station's bonus earned.
     /// Plain C# (ADR 0003): whoever shows the Level tells it what happens.
     /// </summary>
     public sealed class ScoreKeeper
     {
         private readonly IReadOnlyList<GradeRequirement> grades;
         private readonly Grade lowestGrade;
+        private readonly AccuracyBonus accuracyBonus;
         private bool isTallying;
         private int kills;
         private int hits;
@@ -80,11 +102,29 @@ namespace DarknessRises.Game.Scoring
         /// <param name="grades">What each Grade above <paramref name="lowestGrade"/> requires.</param>
         /// <param name="lowestGrade">The Grade of a fight that meets none of them.</param>
         public ScoreKeeper(Combo combo, IReadOnlyList<GradeRequirement> grades, Grade lowestGrade)
+            : this(combo, grades, lowestGrade, AccuracyBonus.None, null)
+        {
+        }
+
+        /// <param name="combo">The Combo that multiplies every kill.</param>
+        /// <param name="grades">What each Grade above <paramref name="lowestGrade"/> requires.</param>
+        /// <param name="lowestGrade">The Grade of a fight that meets none of them.</param>
+        /// <param name="bonus">What each Station's accuracy multiplies its Score by.</param>
+        /// <param name="boost">The Run's Score boost, which multiplies every kill while it runs. Null for none.</param>
+        public ScoreKeeper(Combo combo, IReadOnlyList<GradeRequirement> grades, Grade lowestGrade, AccuracyBonus bonus, ScoreBoost boost)
         {
             Combo = combo ?? throw new ArgumentNullException(nameof(combo));
             this.grades = grades ?? throw new ArgumentNullException(nameof(grades));
             this.lowestGrade = lowestGrade;
+            accuracyBonus = bonus ?? throw new ArgumentNullException(nameof(bonus));
+            Boost = boost;
         }
+
+        /// <summary>The Run's Score boost, or null when there is none.</summary>
+        public ScoreBoost Boost { get; }
+
+        /// <summary>Whether a kill right now is multiplied by the Score boost.</summary>
+        public bool IsBoosted => Boost != null && Boost.IsRunning;
 
         /// <summary>Raised when a kill earns Score, with the points it earned (already multiplied).</summary>
         public event Action<int> Scored;
@@ -134,7 +174,7 @@ namespace DarknessRises.Game.Scoring
         /// <summary>
         /// An Enemy worth <paramref name="basePoints"/> died, however it died (a Grenade's kill counts too).
         /// </summary>
-        /// <returns>The Score it earned: its points times the Combo's multiplier.</returns>
+        /// <returns>The Score it earned: its points times the Combo's multiplier, and the Score boost's while it runs.</returns>
         public int EnemyKilled(int basePoints)
         {
             if (basePoints < 0)
@@ -143,6 +183,11 @@ namespace DarknessRises.Game.Scoring
             }
 
             var earned = basePoints * Combo.Multiplier;
+            if (Boost != null)
+            {
+                earned = Boost.Apply(earned);
+            }
+
             if (isTallying)
             {
                 kills++;
@@ -178,7 +223,10 @@ namespace DarknessRises.Game.Scoring
         }
 
         /// <summary>
-        /// The Station's last Wave is dead after <paramref name="fightSeconds"/> of fighting: the tally stops and is graded.
+        /// The Station's last Wave is dead after <paramref name="fightSeconds"/> of fighting: the tally stops, is graded
+        /// and gets its accuracy bonus. The bonus multiplies the Score the fight's kills earned, which already holds each
+        /// kill's Score boost, so a boosted kill's share of the bonus is boosted too, and an unboosted one's isn't.
+        /// The bonus isn't added to anything here: whoever keeps the Run's total adds <see cref="StationResult.Bonus"/>.
         /// </summary>
         public StationResult EndStation(float fightSeconds)
         {
@@ -190,7 +238,14 @@ namespace DarknessRises.Game.Scoring
             isTallying = false;
             var grade = Grading.For(
                 StationScore.Accuracy(hits, misses), StationScore.SecondsPerKill(fightSeconds, kills), hitsTaken, grades, lowestGrade);
-            return new StationResult(kills, hits, misses, hitsTaken, fightSeconds, points, grade);
+            var multiplier = accuracyBonus.MultiplierFor(hits, misses);
+            var bonus = AccuracyBonus.BonusOf(points, multiplier);
+            if (bonus == 0)
+            {
+                multiplier = 1f;
+            }
+
+            return new StationResult(kills, hits, misses, hitsTaken, fightSeconds, points, grade, multiplier, bonus);
         }
 
         public void Tick(float deltaSeconds)

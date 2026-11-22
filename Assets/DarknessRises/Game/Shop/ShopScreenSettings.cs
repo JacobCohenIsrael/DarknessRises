@@ -14,6 +14,9 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The small word beside the Credits in the bank.")]
         private string creditsCaption = "CREDITS";
 
+        [SerializeField, Tooltip("The small word over the best Score of any Run, beside PLAY.")]
+        private string bestScoreCaption = "BEST SCORE";
+
         [SerializeField, Tooltip("The big button that starts a new Run.")]
         private string playLabel = "PLAY";
 
@@ -105,6 +108,7 @@ namespace DarknessRises.Game.Shop
         public string Title => title;
         public string CreditsCaption => creditsCaption;
         public string PlayLabel => playLabel;
+        public string BestScoreCaption => bestScoreCaption;
         public string CarryHint => carryHint;
         public string UnlockFormat => unlockFormat;
         public string MissingFormat => missingFormat;

@@ -129,6 +129,12 @@ namespace DarknessRises.Game.Editor.Shop
         private const float HintLineHeight = 90f;
         private const float HintLineGapToMiddle = 80f;
         private static readonly Vector2 PlayButtonSize = new(460f, 120f);
+
+        // The best Score, two small lines just left of PLAY.
+        private const float BestScoreGap = 28f;
+        private const float BestScoreCaptionFontSize = 24f;
+        private const float BestScoreValueFontSize = 36f;
+        private static readonly Vector2 BestScoreSize = new(220f, 42f);
         private const float PlayFontSize = 84f;
 
         // The SOUND button that opens the volume panel, at the left of the bottom bar, before the hint line.
@@ -453,6 +459,14 @@ namespace DarknessRises.Game.Editor.Shop
             Corner((RectTransform)playButton.transform, new Vector2(1f, 0f), new Vector2(-SideMargin, (BottomBarHeight - PlayButtonSize.y) / 2f), PlayButtonSize);
             playLabel.fontStyle = FontStyles.Bold;
 
+            // The best Score, small, just left of PLAY: clear of the hint line, which ends short of the middle.
+            var bestRight = -(SideMargin + PlayButtonSize.x + BestScoreGap);
+            var bestCaption = AddText(safeArea, "Best Score Caption", "BEST SCORE", BestScoreCaptionFontSize, DimTextColor, TextAlignmentOptions.Right);
+            Corner(bestCaption.rectTransform, new Vector2(1f, 0f), new Vector2(bestRight, BottomBarHeight / 2f), BestScoreSize);
+            var bestValue = AddText(safeArea, "Best Score Value", "0", BestScoreValueFontSize, TextColor, TextAlignmentOptions.Right);
+            Corner(bestValue.rectTransform, new Vector2(1f, 0f), new Vector2(bestRight, BottomBarHeight / 2f - BestScoreSize.y), BestScoreSize);
+            bestValue.fontStyle = FontStyles.Bold;
+
             var sound = new GameObject("Sound", typeof(AudioSource)).GetComponent<AudioSource>();
             sound.transform.SetParent(canvasObject.transform, false);
             sound.playOnAwake = false;
@@ -469,6 +483,8 @@ namespace DarknessRises.Game.Editor.Shop
             serialized.FindProperty("creditsCaption").objectReferenceValue = creditsCaption;
             serialized.FindProperty("creditsValue").objectReferenceValue = creditsValue;
             serialized.FindProperty("hintLine").objectReferenceValue = hintLine;
+            serialized.FindProperty("bestScoreCaption").objectReferenceValue = bestCaption;
+            serialized.FindProperty("bestScoreValue").objectReferenceValue = bestValue;
             serialized.FindProperty("weaponsPage").objectReferenceValue = weaponsPage;
             serialized.FindProperty("gearPage").objectReferenceValue = gearPage;
             serialized.FindProperty("weaponsTab").objectReferenceValue = weaponsTab;

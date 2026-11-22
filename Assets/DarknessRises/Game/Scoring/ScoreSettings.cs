@@ -5,7 +5,8 @@ using UnityEngine;
 namespace DarknessRises.Game.Scoring
 {
     /// <summary>
-    /// Authored rules of the Score: how the Combo builds and ends, and what each Grade of a Station's fight requires.
+    /// Authored rules of the Score: how the Combo builds and ends, what each Grade of a Station's fight requires, the
+    /// accuracy bonus on each Station's Score, and the Score boost a rewarded ad starts.
     /// What a kill is worth is authored on each Enemy type and Boss.
     /// </summary>
     [Serializable]
@@ -34,12 +35,56 @@ namespace DarknessRises.Game.Scoring
         [SerializeField, Tooltip("The Grade of a fight that meets none of the requirements above.")]
         private Grade lowestGrade = Grade.C;
 
+        [Header("Accuracy bonus")]
+        [SerializeField, Tooltip(
+            "What each Station's Score is multiplied by from its fight's accuracy: the best tier the accuracy reaches. "
+            + "The steps sit on the Grade lines (B 45 %, A 65 %, S 80 %) so the bonus and the letter agree; a fight "
+            + "under 45 % gets x1. A perfect fight doubles its Score, the most any fight can earn.")]
+        private AccuracyTier[] accuracyTiers =
+        {
+            new(0.45f, 1.1f),
+            new(0.65f, 1.25f),
+            new(0.8f, 1.5f),
+            new(0.9f, 1.75f),
+            new(1f, 2f),
+        };
+
+        [SerializeField, Min(0), Tooltip(
+            "The fewest Shots (hits and misses) a fight needs for its accuracy to earn a bonus, so one lucky Shot isn't "
+            + "a perfect fight. Fewer gets x1, and so does a fight won without Shots (Grenades) or with only Critter kills.")]
+        private int accuracyMinShots = 5;
+
+        [Header("Score boost")]
+        [SerializeField, Min(1), Tooltip("What every Score is multiplied by while the boost runs: kills, and so each Station's accuracy bonus. 2 doubles it.")]
+        private int boostFactor = 2;
+
+        [SerializeField, Min(1f), Tooltip(
+            "Seconds of play one boost lasts. Its timer stands still while paused, while an ad plays, on loading screens "
+            + "and while the character is dead, and it carries over from Level to Level until it's up or the Run ends.")]
+        private float boostSeconds = 60f;
+
+        [SerializeField, Min(0), Tooltip(
+            "How many boosts a Run may have. 0: no limit beyond the player's rule that no card offers one while one runs.")]
+        private int boostsPerRun;
+
+        [SerializeField, Min(0f), Tooltip("Seconds the placeholder ad for the boost plays, until a real ad network replaces it.")]
+        private float boostFakeAdSeconds = 5f;
+
         public IReadOnlyList<GradeRequirement> Grades => grades;
         public Grade LowestGrade => lowestGrade;
         public int ComboMaxMultiplier => comboMaxMultiplier;
 
         public Combo ToCombo() => new(comboHitsPerStep, comboMaxMultiplier, comboTimeoutSeconds);
 
+        public float BoostFakeAdSeconds => boostFakeAdSeconds;
+
+        public AccuracyBonus ToAccuracyBonus() => new(accuracyTiers, accuracyMinShots);
+
+        public ScoreBoost ToBoost() => new(boostFactor, boostSeconds, boostsPerRun);
+
         public ScoreKeeper ToKeeper() => new(ToCombo(), grades, lowestGrade);
+
+        /// <summary>A keeper with the accuracy bonus, whose kills <paramref name="boost"/> multiplies while it runs.</summary>
+        public ScoreKeeper ToKeeper(ScoreBoost boost) => new(ToCombo(), grades, lowestGrade, ToAccuracyBonus(), boost);
     }
 }

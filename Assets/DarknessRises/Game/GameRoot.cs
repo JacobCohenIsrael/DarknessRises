@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Ads;
@@ -38,6 +39,7 @@ using DarknessRises.Game.Weapons;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 #if UNITY_EDITOR || DEBUG
 using DarknessRises.Game.Debugging;
 #endif
@@ -92,8 +94,11 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The points that pop up over a kill and the hit marker where a Shot hurts an Enemy.")]
         private ScorePopupsView scorePopups;
 
-        [SerializeField, Tooltip("The result card under the Clear banner.")]
+        [SerializeField, Tooltip("The result card under the Clear banner, with the accuracy bonus and the Score boost offer.")]
         private StationResultView stationResult;
+
+        [SerializeField, Tooltip("The placeholder ad watched for the Score boost. A real ad network replaces it later.")]
+        private FakeAdView scoreBoostAd;
 
         [SerializeField] private CharacterAnimationView characterAnimation;
         [SerializeField] private Room room;
@@ -221,6 +226,13 @@ namespace DarknessRises.Game
         // Keeps the Level's Score: the Combo, what each kill earns and each Station's tally. The Run keeps the total.
         private ScoreKeeper scoreKeeper;
         private CharacterHealth scoredHealth;
+
+        // The Run's Score boost, carried from Level to Level; and whether its ad is playing now.
+        private ScoreBoost scoreBoost;
+        private bool isBoostAdShowing;
+
+        // The Level's pause: the pause menu's, and held while the Score boost's ad plays.
+        private GamePause gamePause;
 
 
         // Owns the scene's lifetime: the content load, and everything loaded for it.
@@ -447,8 +459,9 @@ namespace DarknessRises.Game
                 grenadeButton.Show(grenadeCharges, configuration.Gestures.GrenadeButton);
             }
             ShowHealthAndDeath();
+            gamePause = new GamePause(run);
             KeepScore();
-            pauseFlow.Watch(new GamePause(run), run);
+            pauseFlow.Watch(gamePause, run);
             var audioVolumes = configuration.AudioVolumes;
             volumePanel.Use(audioVolumes, content.Clip(audioVolumes.SampleClip));
             // The storm that swells after every flash, and the Boss's growl that warns of its flashes.
@@ -623,17 +636,28 @@ namespace DarknessRises.Game
             var credits = configuration.Credits;
             levelClearBonus = credits.LevelClearBonus.ToBonus();
             endOfRunAd.Use(credits.EndOfRunAd.FakeAdSeconds);
-            endScreen.Use(credits, endOfRunAd, save, content.Clip(credits.EndScreen.BonusClip));
+            endScreen.Use(credits, endOfRunAd, save, content.Clip(credits.EndScreen.BonusClip), configuration.ScoreHud);
         }
 
         // Score comes from what the Level's fights report: every Shot's hit or miss drives the Combo, every kill earns
         // points, and each Station's fight is tallied from its first Wave to its clear, then graded on its result card.
+        // The Score boost is the Run's: the first Level makes it, the Levels after find it running or not.
         private void KeepScore()
         {
-            scoreKeeper = configuration.Score.ToKeeper();
+            scoreBoost = run.ScoreBoost;
+            if (scoreBoost == null)
+            {
+                scoreBoost = configuration.Score.ToBoost();
+                run.CarryBoost(scoreBoost);
+            }
+
+            scoreBoost.Started += OnScoreBoostStarted;
+            scoreBoost.Ended += OnScoreBoostEnded;
+            scoreKeeper = configuration.Score.ToKeeper(scoreBoost);
             if (scoreHud != null)
             {
                 scoreHud.Show(configuration.ScoreHud, scoreKeeper.Combo, configuration.Score.ComboMaxMultiplier, run.Record.Score);
+                scoreHud.ShowBoost(scoreBoost);
             }
 
             if (scorePopups != null)
@@ -643,7 +667,14 @@ namespace DarknessRises.Game
 
             if (stationResult != null)
             {
-                stationResult.Use(configuration.ScoreHud, configuration.StationBanners);
+                // Without its ad (a scene built before it), the card offers nothing.
+                if (scoreBoostAd != null)
+                {
+                    scoreBoostAd.Use(configuration.Score.BoostFakeAdSeconds);
+                }
+
+                stationResult.Use(configuration.ScoreHud, configuration.StationBanners, scoreBoostAd != null ? scoreBoost : null);
+                stationResult.BoostPicked += OnScoreBoostPicked;
             }
 
             scoredHealth = characterHealth.Health;
@@ -662,6 +693,13 @@ namespace DarknessRises.Game
             scoredHealth.Hurt -= OnCharacterHurt;
             primaryWeapon.ShotLanded -= OnShotLanded;
             stationRhythm.BeatChanged -= OnStationBeatChanged;
+            scoreBoost.Started -= OnScoreBoostStarted;
+            scoreBoost.Ended -= OnScoreBoostEnded;
+            if (stationResult != null)
+            {
+                stationResult.BoostPicked -= OnScoreBoostPicked;
+            }
+
             scoreKeeper = null;
         }
 
@@ -687,6 +725,7 @@ namespace DarknessRises.Game
                     break;
                 case StationBeat.Clear:
                     var result = scoreKeeper.EndStation(stationRhythm.FightSeconds);
+                    LandStationBonus(result);
                     if (stationResult != null)
                     {
                         stationResult.Show(result);
@@ -704,6 +743,83 @@ namespace DarknessRises.Game
             }
         }
 
+        // The accuracy bonus joins the Run's Score at once, so nothing can lose it; the HUD counts up to it once the card
+        // has stamped it in and counted its own total.
+        private void LandStationBonus(in StationResult result)
+        {
+            LogScore(
+                $"[Score] Station cleared: accuracy {result.Accuracy:P0} ({result.Hits} hits, {result.Misses} misses), "
+                + $"x{result.AccuracyMultiplier:0.##}: {result.Points} + {result.Bonus} bonus = {result.Total}, Grade {result.Grade}, "
+                + $"boost {(scoreKeeper.IsBoosted ? "running" : "off")}");
+            if (result.Bonus <= 0 || !run.AddScore(result.Bonus) || scoreHud == null)
+            {
+                return;
+            }
+
+            var look = configuration.ScoreHud;
+            var cardCounted = look.StampDelaySeconds + look.StampSeconds + look.CountDelaySeconds + look.CountSeconds;
+            scoreHud.CountScoreTo(run.Record.Score, cardCounted, look.ScoreCountSeconds);
+        }
+
+        // The player tapped the offer on a Result card: the Level holds still while the ad plays, and an ad watched to
+        // the end starts the boost. One not watched through gives nothing, and the card keeps offering it.
+        private void OnScoreBoostPicked()
+        {
+            if (!isBoostAdShowing && scoreBoost.IsOffered)
+            {
+                WatchScoreBoostAdAsync(lifetime.Token).Forget();
+            }
+        }
+
+        private async UniTaskVoid WatchScoreBoostAdAsync(CancellationToken cancellationToken)
+        {
+            if (!gamePause.Hold())
+            {
+                return;
+            }
+
+            isBoostAdShowing = true;
+            LogScore("[Score] Score boost ad started; the Level holds still.");
+            AdOutcome outcome;
+            try
+            {
+                outcome = await scoreBoostAd.ShowAsync(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // The scene is going: nothing to resume.
+                return;
+            }
+            finally
+            {
+                isBoostAdShowing = false;
+            }
+
+            gamePause.Release();
+            LogScore($"[Score] Score boost ad {(outcome == AdOutcome.Watched ? "watched to the end" : "not watched to the end: no boost")}.");
+            if (outcome == AdOutcome.Watched)
+            {
+                scoreBoost.Start();
+            }
+        }
+
+        private void OnScoreBoostStarted()
+        {
+            LogScore($"[Score] Score boost x{scoreBoost.Factor} started: {scoreBoost.DurationSeconds:0}s of play. Run Score {run.Record.Score}.");
+        }
+
+        private void OnScoreBoostEnded()
+        {
+            LogScore($"[Score] Score boost ended ({(run.IsInRun ? "time up" : "the Run ended")}). Run Score {run.Record.Score}.");
+        }
+
+        // The Run log of the Score (each Station's bonus, the boost, the kills it doubled): the Editor and debug builds only.
+        [Conditional("UNITY_EDITOR"), Conditional("DEBUG")]
+        private static void LogScore(string message)
+        {
+            Debug.Log(message);
+        }
+
         // A kill earns its Enemy's points times the Combo, shown floating up from where it died, and its Credits, which
         // the Combo doesn't touch.
         private void OnEnemyKilled(EnemyView enemy)
@@ -719,8 +835,15 @@ namespace DarknessRises.Game
                 return;
             }
 
-            var multiplied = scoreKeeper.Combo.Multiplier > 1;
+            var multiplied = scoreKeeper.Combo.Multiplier > 1 || scoreKeeper.IsBoosted;
+            var combo = scoreKeeper.Combo.Multiplier;
+            var boosted = scoreKeeper.IsBoosted;
             var earned = scoreKeeper.EnemyKilled(basePoints);
+            if (boosted)
+            {
+                LogScore($"[Score] Kill doubled by the boost: {basePoints} x Combo {combo} x{scoreBoost.Factor} = +{earned} ({scoreBoost.SecondsLeft:0.0}s left).");
+            }
+
             if (earned <= 0 || !run.AddScore(earned))
             {
                 return;
@@ -922,6 +1045,13 @@ namespace DarknessRises.Game
             // The Boss runs on Enemy time, so a flash it asks for is timed on it too: Adrenaline stretches both alike.
             var deltaSeconds = Time.deltaTime;
             scoreKeeper?.Tick(deltaSeconds);
+
+            // Play time only: frozen (paused, the ad) it gets no time, and a dead character's boost waits for a Continue.
+            if (scoreBoost != null && run.IsInRun && run.Phase != RunPhase.Dead)
+            {
+                scoreBoost.Tick(deltaSeconds);
+            }
+
             lightningScheduler.Tick(lightningScheduler.Mode == LightningMode.BossDriven ? enemyTime.Scaled(deltaSeconds) : deltaSeconds);
             lightning.SetStormAudible(lightningScheduler.IsStormRunning);
         }

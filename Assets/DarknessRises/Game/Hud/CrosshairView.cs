@@ -10,6 +10,8 @@ namespace DarknessRises.Game.Hud
     /// The crosshair on the HUD: a reticle where the player aims that kicks with every Shot, so the first tap of the
     /// game visibly lands. <see cref="Reticle"/> decides when it shows and how big; this puts it under the pointer.
     /// It isn't a raycast target, so it never takes a tap, and it touches the canvas only while it shows.
+    /// While the Primary weapon reloads, a thin ring around it fills with the reload, so the player never has to look
+    /// away from the aim; on touch it stays where the crosshair last was.
     /// </summary>
     /// <remarks>
     /// Runs after the Primary weapon, which reads the pointer and fires, so the crosshair is where this frame's Shot went.
@@ -24,6 +26,12 @@ namespace DarknessRises.Game.Hud
 
         [SerializeField] private Image crosshair;
 
+        [SerializeField, Tooltip("The reload ring: a faint full ring, its fill a radial filled child. Hidden unless reloading.")]
+        private Image reloadTrack;
+
+        [SerializeField, Tooltip("The reload ring's fill, radial from the top.")]
+        private Image reloadRing;
+
         [SerializeField, Tooltip("Where the player's pointer is and whether Fire is held.")]
         private PlayerControls controls;
 
@@ -37,6 +45,7 @@ namespace DarknessRises.Game.Hud
         private float shownAlpha = -1f;
         private float shownScale = -1f;
         private bool hidesCursor;
+        private bool showsRing;
 
         /// <summary>Starts showing the crosshair as <paramref name="crosshairSettings"/> say, kicking with the Shots of <paramref name="primaryWeapon"/>.</summary>
         public void Show(CrosshairSettings crosshairSettings, PrimaryWeapon primaryWeapon)
@@ -45,6 +54,10 @@ namespace DarknessRises.Game.Hud
             reticle = new Reticle(settings.KickScale, settings.KickSeconds, settings.TouchLingerSeconds, settings.FadeSeconds);
             crosshair.rectTransform.sizeDelta = new Vector2(settings.Size, settings.Size);
             crosshair.color = settings.Color;
+            reloadTrack.rectTransform.sizeDelta = new Vector2(settings.ReloadRingSize, settings.ReloadRingSize);
+            reloadTrack.color = settings.ReloadTrackColor;
+            reloadRing.color = settings.ReloadRingColor;
+            ShowRing(false);
             ShowWeapon(primaryWeapon);
             Apply();
         }
@@ -94,6 +107,32 @@ namespace DarknessRises.Game.Hud
             {
                 Place();
             }
+
+            ShowReload(canAim);
+        }
+
+        // The ring sits on the crosshair, even while the crosshair itself has faded on touch.
+        private void ShowReload(bool canAim)
+        {
+            var reloading = canAim && weapon != null && weapon.IsReloading;
+            if (reloading != showsRing)
+            {
+                ShowRing(reloading);
+            }
+
+            if (!reloading)
+            {
+                return;
+            }
+
+            reloadRing.fillAmount = weapon.ReloadProgress;
+            reloadTrack.rectTransform.anchoredPosition = crosshair.rectTransform.anchoredPosition;
+        }
+
+        private void ShowRing(bool shown)
+        {
+            showsRing = shown;
+            reloadTrack.gameObject.SetActive(shown);
         }
 
         private void OnDisable()

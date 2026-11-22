@@ -5,6 +5,7 @@ using DarknessRises.Game.Death;
 using DarknessRises.Game.Debugging;
 using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
+using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Editor.Weapons;
 using DarknessRises.Game.Health;
 using DarknessRises.Game.Hud;
@@ -29,6 +30,13 @@ namespace DarknessRises.Game.Editor.Health
         // Approved Free Pack placeholders.
         private const string HurtClipPath = "Assets/Free Pack/Monster Bite.wav";
         private const string DeathClipPath = "Assets/Free Pack/Heavy Object Impact 4.wav";
+
+        // The low-health heartbeat loops: "Heartbeat sounds" by bart (OpenGameArt, CC0), see the folder's README.
+        private const string SlowHeartbeatClipPath = "Assets/DarknessRises/Audio/Heartbeat/Heartbeat Slow.wav";
+        private const string FastHeartbeatClipPath = "Assets/DarknessRises/Audio/Heartbeat/Heartbeat Fast.wav";
+
+        // The Free Pack thump that stood in for a heartbeat before. Nothing else uses it, so no bundle should carry it.
+        private const string FormerHeartbeatClipPath = "Assets/Free Pack/Heavy Object Impact 10.wav";
 
         private const string GodModeBinding = "<Keyboard>/f1";
 
@@ -95,6 +103,7 @@ namespace DarknessRises.Game.Editor.Health
             AddImpulseListener(cameraView);
             serializedRoot.FindProperty("characterHealth").objectReferenceValue = BuildCharacterHealth(character);
             serializedRoot.FindProperty("hitPointsHud").objectReferenceValue = BuildHitPointsHud(hud);
+            serializedRoot.FindProperty("hurtVignette").objectReferenceValue = BuildHurtVignette(hud);
             serializedRoot.FindProperty("deathFlow").objectReferenceValue = BuildScreens();
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -105,6 +114,22 @@ namespace DarknessRises.Game.Editor.Health
             ReferenceIfEmpty(player.FindProperty("hitReaction.hurtClip"), HurtClipPath);
             ReferenceIfEmpty(player.FindProperty("hitReaction.deathClip"), DeathClipPath);
             player.ApplyModifiedPropertiesWithoutUndo();
+
+            AddressableContent.Setup().RemoveAssetEntry(AssetDatabase.AssetPathToGUID(FormerHeartbeatClipPath));
+            var serializedConfiguration = new SerializedObject(configuration);
+            ReferenceHeartbeat(serializedConfiguration.FindProperty("hurtFeedback.slow.clip"), SlowHeartbeatClipPath);
+            ReferenceHeartbeat(serializedConfiguration.FindProperty("hurtFeedback.fast.clip"), FastHeartbeatClipPath);
+            serializedConfiguration.ApplyModifiedPropertiesWithoutUndo();
+
+            // Written to disk with the settings' defaults, even when the clips were already set.
+            EditorUtility.SetDirty(configuration);
+        }
+
+        // A heartbeat loop: short, so mono and decompressed on load like the other gameplay sounds, and seamless.
+        private static void ReferenceHeartbeat(SerializedProperty clip, string path)
+        {
+            AddressableContent.ReferenceIfEmpty(clip, () => GameplaySoundImport.Load(path), AddressableContent.SharedGroup);
+            GameplaySoundImport.ApplyToReferenced(clip);
         }
 
         // The character's sounds load through Addressables with its other content.
@@ -165,6 +190,47 @@ namespace DarknessRises.Game.Editor.Health
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
+        }
+
+        // The hurt edge: over the whole screen, behind the rest of the HUD, with the heartbeat's 2D source beside it.
+        private static HurtVignetteView BuildHurtVignette(Transform hud)
+        {
+            var root = new GameObject("Hurt Vignette", typeof(RectTransform), typeof(Image), typeof(HurtVignetteView));
+            var rect = root.GetComponent<RectTransform>();
+            rect.SetParent(hud, false);
+            rect.SetAsFirstSibling();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+
+            var edge = root.GetComponent<Image>();
+            edge.sprite = HudIcons.Vignette();
+            edge.color = new Color(1f, 0f, 0f, 0f);
+            edge.raycastTarget = false;
+            edge.enabled = false;
+
+            var slowHeartbeat = AddHeartbeatSource(rect, "Slow Heartbeat");
+            var fastHeartbeat = AddHeartbeatSource(rect, "Fast Heartbeat");
+
+            var view = root.GetComponent<HurtVignetteView>();
+            var serialized = new SerializedObject(view);
+            serialized.FindProperty("edge").objectReferenceValue = edge;
+            serialized.FindProperty("slowHeartbeat").objectReferenceValue = slowHeartbeat;
+            serialized.FindProperty("fastHeartbeat").objectReferenceValue = fastHeartbeat;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return view;
+        }
+
+        // A looping 2D source in the Sound category, silent until the view plays it.
+        private static AudioSource AddHeartbeatSource(Transform parent, string name)
+        {
+            var source = new GameObject(name, typeof(AudioSource)).GetComponent<AudioSource>();
+            source.transform.SetParent(parent, false);
+            source.playOnAwake = false;
+            source.loop = true;
+            source.spatialBlend = 0f;
+            AudioRouting.Route(source, AudioCategory.Sound);
+            return source;
         }
 
         private static HitPointsHudView BuildHitPointsHud(Transform hud)

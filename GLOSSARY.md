@@ -193,9 +193,17 @@ _Avoid_: grenade icon, bomb button
 The on-screen button that switches Primary weapons, in the ammo corner of the HUD. It shows the equipped Primary's name and its ammo reserve, and a tap or a click equips the next unlocked Primary that has ammo. On keyboard and mouse, keys 1 to 3 also pick a Primary and the mouse wheel steps through them. It's hidden while the Pistol is the only Primary unlocked.
 _Avoid_: weapon wheel, weapon picker, switch button
 
+**Skill button**:
+One Skill on the HUD, in a row at the bottom left: the Skill's icon on a dark disc with its name under it. While the Skill is active a ring of its colour runs down around the disc; while it recharges the icon dims under a dark sweep with the seconds left, and the button gives a small pulse when it's ready again. On keyboard and mouse a small badge in its corner shows the Skill's key; on touch there's none. Each Skill's icon, colour, name and key are authored on its definition, so a new Skill gets its button from data alone.
+_Avoid_: skill icon, ability slot, cooldown disc
+
 **Crosshair**:
-The reticle on the HUD where the player aims. It kicks with every Shot. With a mouse it follows the pointer all the time and stands in for the cursor; on touch it appears where the finger lands with the first Shot and fades a moment after the last.
+The reticle on the HUD where the player aims. It kicks with every Shot. With a mouse it follows the pointer all the time and stands in for the cursor; on touch it appears where the finger lands with the first Shot and fades a moment after the last. While the Primary weapon reloads, a thin ring around it fills with the reload; on touch it stays where the Crosshair last was.
 _Avoid_: cursor, pointer, hit marker (that marks a hit on an Enemy)
+
+**Hurt edge**:
+Red at the screen's edges that says the character is hurt. Every landed hit flashes it for a moment, stronger for a bigger hit. On the last few hit points (short of full) a slow heartbeat loops and the edge pulses in time with it; on the very last hit point a fast heartbeat crossfades in. The heartbeat stops at once on death, a Continue or the Level's end.
+_Avoid_: blood screen, damage overlay, red vignette
 
 **Shoot hint**:
 The first-run prompt ("TAP TO SHOOT") that bobs over the first Enemy of a Run's first Level and goes away as soon as the player fires.
@@ -326,7 +334,7 @@ One of the three groups every sound in the game belongs to, Sound, Ambient or Mu
 _Avoid_: channel, bus, mixer group
 
 **Sound**:
-The Audio category of everything the player's actions and the threats make: Gunshots and Firing loops, reloads, the Grenade, Enemies' voices, Wind-ups, attacks and footsteps, Critters, the Boss, the Station banners, and the Continue, Shop and HUD sounds. As a category name it's capitalized; "a sound" is still any sound.
+The Audio category of everything the player's actions and the threats make: Gunshots and Firing loops, reloads, the Grenade, Enemies' voices, Wind-ups, attacks and footsteps, Critters, the Boss, the Station banners, the heartbeat of the Hurt edge, and the Continue, Shop and HUD sounds. As a category name it's capitalized; "a sound" is still any sound.
 _Avoid_: SFX, effects
 
 **Ambient**:

@@ -1,3 +1,4 @@
+using DarknessRises.Game.Controls;
 using DarknessRises.Game.Hud;
 using TMPro;
 using UnityEditor;
@@ -7,79 +8,122 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Editor.Hud
 {
     /// <summary>
-    /// Builds the Skill cooldowns on the HUD: a disc per Skill at the bottom left, Flare then Slow-mo,
-    /// where touch buttons for them can go later.
+    /// Builds the Skill buttons on the HUD: a row at the bottom left of the safe area with one template button, which
+    /// the <see cref="SkillBarView"/> copies for each Skill the character has. Each button is an icon on a dark disc
+    /// with a rim, the Skill's name under it and a key badge in its corner; colours, icons and names come from each
+    /// Skill's authored look at runtime, so nothing here is per Skill.
     /// </summary>
     public static class SkillHudBuilder
     {
-        private const string DiscSpritePath = "UI/Skin/Knob.psd";
-
         private static readonly Vector2 Margin = new(56f, 48f);
         private const float DiscSize = 120f;
-        private const float RingThickness = 10f;
+        private const float RingThickness = 9f;
+        private const float IconInset = 25f;
         private const float Gap = 40f;
         private const float NameHeight = 34f;
+        private const float BadgeSize = 44f;
+        private static readonly Vector2 BadgeOffset = new(4f, 4f);
 
-        private const float KeyFontSize = 52f;
         private const float SecondsFontSize = 48f;
         private const float NameFontSize = 24f;
+        private const float KeyFontSize = 26f;
 
-        private static readonly Color FlareColor = new(1f, 0.62f, 0.35f, 0.9f);
-        private static readonly Color SlowMoColor = new(0.45f, 0.7f, 1f, 0.9f);
-        private const float UnavailableAlpha = 0.3f;
-        private static readonly Color SweepColor = new(0f, 0f, 0f, 0.6f);
+        // Placeholders until the Skills' looks and the settings colour them at runtime.
+        private static readonly Color DiscColor = new(0.06f, 0.06f, 0.08f, 0.78f);
+        private static readonly Color SweepColor = new(0f, 0f, 0f, 0.62f);
         private static readonly Color TextColor = new(0.92f, 0.92f, 0.92f, 0.95f);
-        private static readonly Color KeyColor = new(0.08f, 0.08f, 0.1f, 0.9f);
+        private static readonly Color BadgeColor = new(0.92f, 0.92f, 0.92f, 0.95f);
+        private static readonly Color KeyColor = new(0.06f, 0.06f, 0.08f, 1f);
 
-        public static void BuildSkillHuds(Canvas hud, out SkillHudView flare, out SkillHudView slowMo)
+        /// <summary>Builds the row of Skill buttons on <paramref name="hud"/>, its key badges following <paramref name="controls"/>.</summary>
+        public static SkillBarView BuildSkillBar(Canvas hud, PlayerControls controls)
         {
-            flare = BuildSkillHud(hud.transform, "Flare Cooldown", "FLARE", "Q", FlareColor, 0);
-            slowMo = BuildSkillHud(hud.transform, "Slow-mo Cooldown", "SLOW-MO", "E", SlowMoColor, 1);
+            var safeArea = HudBuilder.SafeArea(hud.transform);
+            var bar = new GameObject("Skill Buttons", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(SkillBarView));
+            var barRect = bar.GetComponent<RectTransform>();
+            barRect.SetParent(safeArea, false);
+            barRect.anchorMin = barRect.anchorMax = barRect.pivot = Vector2.zero;
+            barRect.anchoredPosition = Margin;
+            barRect.sizeDelta = new Vector2(0f, DiscSize + NameHeight);
+
+            var layout = bar.GetComponent<HorizontalLayoutGroup>();
+            layout.spacing = Gap;
+            layout.childAlignment = TextAnchor.LowerLeft;
+            layout.childControlWidth = layout.childControlHeight = false;
+            layout.childForceExpandWidth = layout.childForceExpandHeight = false;
+
+            var template = BuildButton(barRect, controls);
+            var view = bar.GetComponent<SkillBarView>();
+            var serialized = new SerializedObject(view);
+            serialized.FindProperty("template").objectReferenceValue = template;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return view;
         }
 
-        private static SkillHudView BuildSkillHud(Transform hud, string objectName, string skillName, string key, Color color, int slot)
+        private static SkillHudView BuildButton(RectTransform bar, PlayerControls controls)
         {
-            var sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(DiscSpritePath);
+            var disc = HudIcons.Disc();
+            var ring = HudIcons.Ring();
 
-            var root = new GameObject(objectName, typeof(RectTransform), typeof(SkillHudView));
+            var root = new GameObject("Skill Button", typeof(RectTransform), typeof(SkillHudView));
             var rect = root.GetComponent<RectTransform>();
-            rect.SetParent(hud, false);
-            rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.zero;
-            rect.anchoredPosition = new Vector2(Margin.x + slot * (DiscSize + Gap), Margin.y + NameHeight);
-            rect.sizeDelta = new Vector2(DiscSize, DiscSize);
+            rect.SetParent(bar, false);
+            rect.pivot = Vector2.zero;
+            rect.sizeDelta = new Vector2(DiscSize, DiscSize + NameHeight);
 
-            // Drawn back to front: the ring peeks out around the disc, the sweep darkens it.
-            var ring = AddImage(rect, "Active Ring", sprite, color, -RingThickness);
-            MakeRadial(ring);
-            var disc = AddImage(rect, "Disc", sprite, color, 0f);
-            var sweep = AddImage(rect, "Cooldown Sweep", sprite, SweepColor, 0f);
+            // The disc and all on it, scaled about its middle for the ready pulse.
+            var faceObject = new GameObject("Face", typeof(RectTransform));
+            var face = faceObject.GetComponent<RectTransform>();
+            face.SetParent(rect, false);
+            face.anchorMin = face.anchorMax = new Vector2(0.5f, 1f);
+            face.pivot = new Vector2(0.5f, 0.5f);
+            face.sizeDelta = new Vector2(DiscSize, DiscSize);
+            face.anchoredPosition = new Vector2(0f, -DiscSize / 2f);
+
+            // Drawn back to front: the active ring peeks out around the disc, the sweep darkens the icon.
+            var activeRing = AddImage(face, "Active Ring", disc, Color.white, -RingThickness);
+            MakeRadial(activeRing);
+            var discImage = AddImage(face, "Disc", disc, DiscColor, 0f);
+            var rim = AddImage(face, "Rim", ring, Color.white, 0f);
+            var icon = AddImage(face, "Icon", HudIcons.Flare(), Color.white, IconInset);
+            icon.preserveAspect = true;
+            var sweep = AddImage(face, "Cooldown Sweep", disc, SweepColor, 0f);
             MakeRadial(sweep);
+            var seconds = AddText(face, "Seconds", "15", SecondsFontSize, TextColor, TextAlignmentOptions.Center);
 
-            var keyLabel = AddText(rect, "Key", key, KeyFontSize, KeyColor, TextAlignmentOptions.Center);
-            var seconds = AddText(rect, "Seconds", "15", SecondsFontSize, TextColor, TextAlignmentOptions.Center);
-            var name = AddText(rect, "Name", skillName, NameFontSize, TextColor, TextAlignmentOptions.Top);
+            // The keyboard key, in a light badge on the disc's top right corner.
+            var badge = AddImage(face, "Key Badge", disc, BadgeColor, 0f);
+            var badgeRect = badge.rectTransform;
+            badgeRect.anchorMin = badgeRect.anchorMax = Vector2.one;
+            badgeRect.pivot = new Vector2(0.5f, 0.5f);
+            badgeRect.sizeDelta = new Vector2(BadgeSize, BadgeSize);
+            badgeRect.anchoredPosition = -BadgeSize / 2f * Vector2.one + BadgeOffset;
+            var key = AddText(badgeRect, "Key", "Q", KeyFontSize, KeyColor, TextAlignmentOptions.Center);
+
+            var name = AddText(rect, "Name", "SKILL", NameFontSize, TextColor, TextAlignmentOptions.Top);
             var nameRect = name.rectTransform;
             nameRect.anchorMin = Vector2.zero;
             nameRect.anchorMax = new Vector2(1f, 0f);
-            nameRect.pivot = new Vector2(0.5f, 1f);
-            nameRect.sizeDelta = new Vector2(Gap, NameHeight);
-            nameRect.anchoredPosition = Vector2.zero;
-
-            var unavailable = color;
-            unavailable.a = UnavailableAlpha;
+            nameRect.pivot = new Vector2(0.5f, 0f);
+            nameRect.offsetMin = new Vector2(-Gap / 2f, 0f);
+            nameRect.offsetMax = new Vector2(Gap / 2f, NameHeight);
 
             var view = root.GetComponent<SkillHudView>();
             var serialized = new SerializedObject(view);
-            serialized.FindProperty("disc").objectReferenceValue = disc;
-            serialized.FindProperty("activeRing").objectReferenceValue = ring;
+            serialized.FindProperty("controls").objectReferenceValue = controls;
+            serialized.FindProperty("face").objectReferenceValue = face;
+            serialized.FindProperty("disc").objectReferenceValue = discImage;
+            serialized.FindProperty("rim").objectReferenceValue = rim;
+            serialized.FindProperty("icon").objectReferenceValue = icon;
+            serialized.FindProperty("activeRing").objectReferenceValue = activeRing;
             serialized.FindProperty("cooldownSweep").objectReferenceValue = sweep;
-            serialized.FindProperty("keyLabel").objectReferenceValue = keyLabel;
             serialized.FindProperty("cooldownSeconds").objectReferenceValue = seconds;
-            serialized.FindProperty("readyColor").colorValue = color;
-            serialized.FindProperty("unavailableColor").colorValue = unavailable;
+            serialized.FindProperty("nameLabel").objectReferenceValue = name;
+            serialized.FindProperty("keyBadge").objectReferenceValue = badge.gameObject;
+            serialized.FindProperty("keyLabel").objectReferenceValue = key;
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
-            ring.gameObject.SetActive(false);
+            activeRing.gameObject.SetActive(false);
             sweep.gameObject.SetActive(false);
             seconds.gameObject.SetActive(false);
             return view;

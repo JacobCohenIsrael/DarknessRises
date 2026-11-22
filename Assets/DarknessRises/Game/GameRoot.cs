@@ -129,8 +129,8 @@ namespace DarknessRises.Game
 #endif
         [SerializeField] private RouteWavesView routeWaves;
         [SerializeField] private CharacterSkillsView characterSkills;
-        [SerializeField] private SkillHudView flareHud;
-        [SerializeField] private SkillHudView slowMoHud;
+        [SerializeField, Tooltip("The Skill buttons at the bottom left: one per Skill, drawn from each Skill's authored look.")]
+        private SkillBarView skillBar;
 
         // How fast time runs for Enemies. Slow-mo slows it; the global time scale is never touched.
         private readonly EnemyTime enemyTime = new();
@@ -159,6 +159,9 @@ namespace DarknessRises.Game
         [Header("Health and death")]
         [SerializeField] private CharacterHealthView characterHealth;
         [SerializeField] private HitPointsHudView hitPointsHud;
+
+        [SerializeField, Tooltip("The red at the screen's edges when the character is hurt, with the heartbeat on the last hit points.")]
+        private HurtVignetteView hurtVignette;
         [SerializeField] private DeathFlow deathFlow;
 
         [SerializeField, Tooltip("The pause button and menu. Pausing freezes the whole Level; see PauseFlow.")]
@@ -465,8 +468,10 @@ namespace DarknessRises.Game
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, lightningRandom);
             var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, stats.Flare, stats.SlowMo, enemyTime);
             flareSkill = skills.Flare.Skill;
-            flareHud.Show(skills.Flare.Skill);
-            slowMoHud.Show(skills.SlowMo.Skill);
+            skillBar.Show(
+                configuration.SkillHud,
+                new SkillButton(skills.Flare.Skill, configuration.Flare.Button),
+                new SkillButton(skills.SlowMo.Skill, configuration.SlowMo.Button));
             if (gestureInput != null)
             {
                 gestureInput.Use(configuration.Gestures);
@@ -585,6 +590,12 @@ namespace DarknessRises.Game
         {
             var health = characterHealth.Show(configuration.Player, stats.MaxHitPoints, content);
             hitPointsHud.Show(health);
+            if (hurtVignette != null)
+            {
+                var hurtFeedback = configuration.HurtFeedback;
+                hurtVignette.Show(health, hurtFeedback, content.Clip(hurtFeedback.Slow.Clip), content.Clip(hurtFeedback.Fast.Clip));
+            }
+
             ReportToRun(true);
             var continueDefinition = configuration.Continue;
             continueAd.Use(continueDefinition.FakeAdSeconds);
@@ -823,6 +834,11 @@ namespace DarknessRises.Game
         private void OnEndBeatStarted()
         {
             reloadSound.Interrupt();
+            if (hurtVignette != null)
+            {
+                hurtVignette.Stop();
+            }
+
             run.BeginLevelEnd();
         }
 

@@ -26,6 +26,12 @@ MonoBehaviour:
   ramp: {fileID: 11400000, guid: 101d8620b1c986c4993ae486ef081b81, type: 2}
   continue: {fileID: 11400000, guid: ae9e36fa5ab891b45b8f66f9a3164a66, type: 2}
   gestures: {fileID: 11400000, guid: 6c6f0e527e4da834381b3be4ea39dd57, type: 2}
+  mouseAimAssist:
+    radius: 1.2
+    strength: 0.15
+    strengthPerLevel: 0.03
+    maxStrength: 0.4
+    fullPullFraction: 0.4
   ammo:
     levelRefillShare: 0.5
   reloadFeedback:
@@ -133,6 +139,9 @@ MonoBehaviour:
     touchLingerSeconds: 0.5
     fadeSeconds: 0.25
     hideMouseCursor: 1
+    reloadRingSize: 150
+    reloadRingColor: {r: 1, g: 0.72, b: 0.3, a: 0.95}
+    reloadTrackColor: {r: 1, g: 1, b: 1, a: 0.18}
   shootHint:
     frequency: 1
     touchText: TAP TO SHOOT
@@ -145,6 +154,46 @@ MonoBehaviour:
     bobDistance: 18
     bobsPerSecond: 2
     fadeSeconds: 0.25
+  skillHud:
+    sweepColor: {r: 0, g: 0, b: 0, a: 0.62}
+    rechargingAlpha: 0.35
+    discColor: {r: 0.06, g: 0.06, b: 0.08, a: 0.78}
+    readyPulseSeconds: 0.35
+    readyPulseScale: 1.18
+  hurtFeedback:
+    edgeColor: {r: 0.75, g: 0.02, b: 0.02, a: 0.85}
+    flashStrengthPerHitPoint: 0.7
+    flashMaxStrength: 1
+    flashSeconds: 0.45
+    lowHitPoints: 2
+    criticalHitPoints: 1
+    crossfadeSeconds: 0.6
+    pulseDecaySeconds: 0.45
+    pulseRestStrength: 0.18
+    pulsePeakStrength: 0.55
+    softBeatStrength: 0.6
+    slow:
+      clip:
+        m_AssetGUID: cba26e1b22499ec48b3fc944fd1cf757
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      volume: 0.75
+      beatsPerMinute: 66.667
+      firstBeatSeconds: 0
+      softBeatDelaySeconds: 0.31
+    fast:
+      clip:
+        m_AssetGUID: e79e5599130b5ce4c94ad9a0f284a03e
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      volume: 0.85
+      beatsPerMinute: 106.667
+      firstBeatSeconds: 0
+      softBeatDelaySeconds: 0.19
   score:
     comboHitsPerStep: 4
     comboMaxMultiplier: 5

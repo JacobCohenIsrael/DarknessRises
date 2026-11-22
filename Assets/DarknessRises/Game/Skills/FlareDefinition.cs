@@ -34,6 +34,10 @@ namespace DarknessRises.Game.Skills
         [SerializeField, Min(0f), Tooltip("Metres above the character's feet.")]
         private float height = 2.2f;
 
+        [Header("HUD")]
+        [SerializeField, Tooltip("The Flare's button on the HUD: its icon, colour, name and key badge.")]
+        private SkillButtonLook button = new(new Color(1f, 0.62f, 0.35f, 0.95f), "FLARE", "Q");
+
         public SkillTiming Timing => new(durationSeconds, cooldownSeconds);
         public float FadeInSeconds => fadeInSeconds;
         public float FadeOutSeconds => fadeOutSeconds;
@@ -41,5 +45,6 @@ namespace DarknessRises.Game.Skills
         public float Intensity => intensity;
         public float Radius => radius;
         public float Height => height;
+        public SkillButtonLook Button => button;
     }
 }

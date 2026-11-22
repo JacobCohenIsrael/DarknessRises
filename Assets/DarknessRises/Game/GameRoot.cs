@@ -392,6 +392,7 @@ namespace DarknessRises.Game
             lights.Add(aura.Light);
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
+            lights.Add(characterSkills.LureLight);
             var loadout = primaryWeapon.Arm(
                 primaryWeapons, stats.Primaries, RunLoadout(), carriedPlaces, content, lights, configuration.WeaponSwitch);
             gunshotSound.Use(configuration.GunshotVoices, primaryWeapons, loadout, content);

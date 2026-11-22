@@ -36,6 +36,10 @@ To enumerate Unity-loaded assemblies, use `UnityEngine.Assemblies.CurrentAssembl
 
 Check the matching [HLSL pragma reference](https://docs.unity.com/en-us/engine/6000.6/manual/materials-and-shaders/shaders/reference/sl-pragma-directives). Unity 6.6 deprecates `enable_d3d11_debug_symbols`. Use `enable_debug_symbols` only while debugging shaders, and remove debug-symbol directives afterwards so builds keep shader optimizations.
 
+## Emissive URP materials
+
+When a builder changes a URP Lit material's `_EmissionColor` and saves it, the saved `_EMISSION` keyword is lost even if `EnableKeyword("_EMISSION")` ran before the save. Save the colour first, then enable the keyword and save again (`SkillsBuilder` and `EnemyBuilder` do this), so the asset keeps the emissive variant for builds. At runtime, drive a glow on a copy of the material made once with `EnableKeyword("_EMISSION")` (`LureView`, `EnemyTellView`), not on the shared asset.
+
 ## Verify the change
 
 Headless: `unity test . --mode EditMode` compiles the project at startup and fails on compile errors; its Editor log has fresh compiler and analyzer diagnostics.

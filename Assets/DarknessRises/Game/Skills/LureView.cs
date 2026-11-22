@@ -14,9 +14,11 @@ namespace DarknessRises.Game.Skills
     /// strike it as they would the character, and the first landed strike breaks it.
     /// </summary>
     /// <remarks>
-    /// It lights nothing: the body is an ordinary lit object, seen only in Lightning, Gunfire, the Aura or a Skill's light.
-    /// One Lure exists, reused for every throw, so throwing allocates nothing. Bosses aren't living Enemies of the Waves,
-    /// so they never see it.
+    /// It gives off a small, dim, shadowless light and its can glows (<see cref="LureGlow"/>), from the throw until it
+    /// ends, then both fade out and the body goes. The light is one of the scene's lights, so Enemies striking the Lure
+    /// stand in it and count as visible, for Aim assist too: a place to shoot at, not a second Flare. One Lure exists,
+    /// reused for every throw, so throwing allocates nothing. Bosses aren't living Enemies of the Waves, so they never
+    /// see it.
     /// </remarks>
     public sealed class LureView : MonoBehaviour, IEnemyAttackTarget
     {
@@ -31,13 +33,30 @@ namespace DarknessRises.Game.Skills
         [SerializeField, Tooltip("The rattle: a looping 3D source on the body, in the Sound category.")]
         private AudioSource rattle;
 
+        [SerializeField, Tooltip("The small shadowless point light on the can. Only Lightning casts real-time shadows.")]
+        private Light glowLight;
+
+        [SerializeField, Tooltip("The can, whose material's emission glows in the light's colour.")]
+        private Renderer can;
+
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
+
         private LureDefinition definition;
         private Lure lure;
         private LivingEnemies enemies;
         private GrenadeFlight flight;
+        private LureGlow glow;
+        private Material canGlow;
+        private float shownBrightness = -1f;
 
         /// <summary>The Lure rule this view throws, once <see cref="Use"/> has been called.</summary>
         public Lure Lure => lure;
+
+        /// <summary>The small light on the Lure, one of the scene's lights while it shines.</summary>
+        public Light Light => glowLight;
+
+        /// <summary>How bright the Lure's light and glow are now, once <see cref="Use"/> has been called.</summary>
+        public LureGlow Glow => glow;
 
         bool IEnemyAttackTarget.CanBeAttacked => lure != null && lure.IsOut;
 
@@ -67,6 +86,23 @@ namespace DarknessRises.Game.Skills
             rattle.SetVolume(definition.RattleVolume);
             rattle.Stop();
 
+            glow = new LureGlow(definition.FadeOutSeconds, definition.PulseSeconds, definition.PulseDepth);
+            glowLight.type = LightType.Point;
+            glowLight.shadows = LightShadows.None;
+            glowLight.color = definition.LightColor;
+            glowLight.range = definition.LightRange;
+            glowLight.transform.localPosition = Vector3.up * definition.LightHeight;
+            if (can != null && canGlow == null)
+            {
+                // The can's own copy, with emission on, made once for every throw and Run in this scene.
+                canGlow = new Material(can.sharedMaterial) { name = $"{can.sharedMaterial.name} Glow" };
+                canGlow.EnableKeyword("_EMISSION");
+                can.sharedMaterial = canGlow;
+            }
+
+            shownBrightness = -1f;
+            Render(0f);
+
             body.gameObject.SetActive(false);
             lure.Landed += OnLanded;
             lure.Ended += OnEnded;
@@ -92,6 +128,33 @@ namespace DarknessRises.Game.Skills
             else if (lure.IsOut)
             {
                 DrawEnemies();
+            }
+
+            if (glow.IsShining)
+            {
+                glow.Tick(Time.deltaTime);
+                Render(glow.Brightness);
+                if (!glow.IsShining && !lure.Skill.IsActive)
+                {
+                    body.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        // Sets the light and the can's glow to brightness, from 0 (dark) to 1 (full strength).
+        private void Render(float brightness)
+        {
+            if (brightness == shownBrightness)
+            {
+                return;
+            }
+
+            shownBrightness = brightness;
+            glowLight.intensity = definition.LightIntensity * brightness;
+            glowLight.enabled = brightness > 0f;
+            if (canGlow != null)
+            {
+                canGlow.SetColor(EmissionColorId, definition.LightColor * (definition.GlowEmission * brightness));
             }
         }
 
@@ -119,6 +182,8 @@ namespace DarknessRises.Game.Skills
             flight = new GrenadeFlight(release, point, float.PositiveInfinity, definition.Gravity, Mathf.Max(lure.FlightSeconds, 0.01f));
             body.position = release;
             body.gameObject.SetActive(true);
+            glow.Light();
+            Render(glow.Brightness);
         }
 
         private void OnLanded(Lure landed)
@@ -131,7 +196,15 @@ namespace DarknessRises.Game.Skills
         private void OnEnded(Lure ended, LureEnd why)
         {
             rattle.Stop();
-            body.gameObject.SetActive(false);
+
+            // The can stays where it lies while its light fades out, then goes (in Update).
+            glow.FadeOut();
+            if (!glow.IsShining)
+            {
+                Render(0f);
+                body.gameObject.SetActive(false);
+            }
+
             for (var i = 0; i < enemies.Count; i++)
             {
                 var enemy = enemies[i];
@@ -174,6 +247,10 @@ namespace DarknessRises.Game.Skills
         private void OnDestroy()
         {
             Unsubscribe();
+            if (canGlow != null)
+            {
+                Destroy(canGlow);
+            }
         }
     }
 }

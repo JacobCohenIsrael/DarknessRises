@@ -176,7 +176,7 @@ A Skill: for a few seconds the character's reflexes speed up, so Enemies and the
 _Avoid_: Slow-mo, slow, time warp, bullet time
 
 **Lure**:
-A Skill: the character throws a rattling noisemaker to a point in the Room. Once it lands, every Enemy that comes within its radius turns and goes for it instead of the character, and strikes it once it gets there. When its time runs out, or an Enemy's strike breaks it, they all go back to the character. An Enemy already winding up at the character finishes that attack first. Bosses ignore it. It lights nothing: it's heard, by its rattle, not seen. On keyboard and mouse F throws it at the pointer; on touch a sideways Two-finger flick throws it that way.
+A Skill: the character throws a rattling noisemaker to a point in the Room. Once it lands, every Enemy that comes within its radius turns and goes for it instead of the character, and strikes it once it gets there. When its time runs out, or an Enemy's strike breaks it, they all go back to the character. An Enemy already winding up at the character finishes that attack first. Bosses ignore it. It's heard by its rattle, and it gives off a small, dim, light-blue light, and its can glows, from the throw until it ends, when both fade out. The light is a beacon showing where it lies, not a second Flare: it reaches only the Enemies standing at it, who count as visible there, for Aim assist too. On keyboard and mouse F throws it at the pointer; on touch a sideways Two-finger flick throws it that way.
 _Avoid_: decoy, bait, noisemaker (in code)
 
 ## Input
@@ -218,7 +218,7 @@ The first-run prompt ("TAP TO SHOOT") that bobs over the first Enemy of a Run's 
 _Avoid_: tutorial, tooltip
 
 **Aim assist**:
-Shots bend slightly toward the nearest visible Enemy close to where the player aims: the finger on touch, the pointer with a mouse. Each input has its own pull, gentle at first and stronger in later Levels up to a cap; the mouse's is the slighter. The pull fades out toward the edge of its reach, so the aim never jumps. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare or a Grenade's blast. Critters and Phantom eyes never pull the aim.
+Shots bend slightly toward the nearest visible Enemy close to where the player aims: the finger on touch, the pointer with a mouse. Each input has its own pull, gentle at first and stronger in later Levels up to a cap; the mouse's is the slighter. The pull fades out toward the edge of its reach, so the aim never jumps. An Enemy counts as visible while light reaches it: a Lightning flash, Gunfire, a Hit spark, the Aura, the Flare, the Lure's small light or a Grenade's blast. Critters and Phantom eyes never pull the aim.
 
 ## Weapons
 

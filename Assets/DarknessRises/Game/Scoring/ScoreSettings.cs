@@ -61,7 +61,7 @@ namespace DarknessRises.Game.Scoring
         [SerializeField, Min(1f), Tooltip(
             "Seconds of play one boost lasts. Its timer stands still while paused, while an ad plays, on loading screens "
             + "and while the character is dead, and it carries over from Level to Level until it's up or the Run ends.")]
-        private float boostSeconds = 60f;
+        private float boostSeconds = 120f;
 
         [SerializeField, Min(0), Tooltip(
             "How many boosts a Run may have. 0: no limit beyond the player's rule that no card offers one while one runs.")]

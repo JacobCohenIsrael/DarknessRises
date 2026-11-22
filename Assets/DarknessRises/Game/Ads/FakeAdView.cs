@@ -10,7 +10,7 @@ namespace DarknessRises.Game.Ads
     /// A stand-in for a real rewarded ad: a placeholder screen with a countdown, shown for an authored time, after which
     /// it reports the ad as watched. Where it has a close button, closing it early reports the ad as not watched, as
     /// skipping a real one would. It counts real (unscaled) time, so nothing that slows or stops game time holds it up:
-    /// it plays for a Continue, while the character is dead and the game never pauses, and for the Score boost, over
+    /// it plays for a Continue, while the character is dead and the game never pauses, and for the end-of-Run ad, over
     /// a Level that has ended and may be frozen.
     /// Once a real ad network plugs in behind <see cref="IRewardedAd"/>, this goes.
     /// </summary>

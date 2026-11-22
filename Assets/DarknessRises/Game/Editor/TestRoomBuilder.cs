@@ -221,6 +221,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("shop").objectReferenceValue = ShopBuilder.LoadOrCreateShop(pistol, machineGun, flamethrower);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             AudioVolumesBuilder.AuthorSettings(configuration);
+            ScoreHudBuilder.AuthorBoostSeconds(configuration);
             WeaponLooksBuilder.AuthorSwitch(configuration);
             WavesBuilder.AuthorPlaceholderWaves(route);
 

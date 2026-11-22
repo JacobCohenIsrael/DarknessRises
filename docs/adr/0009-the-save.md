@@ -8,7 +8,7 @@ Storage sits behind `ISaveStorage`, which only reads and writes text. Today the 
 
 A record older than the build is migrated one version step at a time in `SaveMigration`; every new version adds a step and a test with a record of the version before it. Text that isn't a save is treated as no save. A record from a newer build is read as far as the older build understands it; downgrading isn't supported beyond that.
 
-Credits are banked from the Run, not counted in the save as they're earned: a Run keeps its own tally (`RunCredits`) and banking takes only what hasn't been banked yet. That makes banking safe to repeat (on the way to the background mid-Run, when the Run ends). Since #127 the Run's Credits come from its Score: each banking converts the whole Score so far, so the points short of a Credit at one banking count towards the next. So no way of ending a Run loses Credits and none is banked twice.
+Credits are banked from the Run, not counted in the save as they're earned: a Run keeps its own tally (`RunCredits`) and banking takes only what hasn't been banked yet. That makes banking safe to repeat (on the way to the background mid-Run, when the Run ends, after the end-of-Run ad). Since #127 the Run's Credits come from its Score: each banking converts the whole Score so far, so the points short of a Credit at one banking count towards the next. So no way of ending a Run loses Credits and none is banked twice.
 
 ## Considered Options
 

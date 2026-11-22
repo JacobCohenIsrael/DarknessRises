@@ -31,6 +31,7 @@ namespace DarknessRises.Game.Haptics
         ScoreBoost,
         NewBest,
         CreditsLanded,
+        AdBonus,
 
         // Menus and the Shop.
         Bought,

@@ -98,7 +98,7 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("How the Score shows: the running Score and Combo, the points over a kill, the hit marker and the result card.")]
         private ScoreHudSettings scoreHud = new();
 
-        [SerializeField, Tooltip("Credits: the rate the Run's Score pays them at, the flat bonus a cleared Level pays, and how the end screen pays them out.")]
+        [SerializeField, Tooltip("Credits: the rate the Run's Score pays them at, the flat bonus a cleared Level pays, the end-of-Run ad, and how the end screen pays them out.")]
         private CreditsDefinition credits;
 
         [SerializeField, Tooltip("The Shop, open only between Runs: the Primary weapons it sells with their prices, and how its screen reads and looks.")]

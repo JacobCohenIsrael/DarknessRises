@@ -73,7 +73,7 @@ namespace DarknessRises.Game.Editor.Health
         private static readonly Vector2 StatValueOffset = new(280f, 0f);
         private static readonly Vector2 StatValueSize = new(320f, 70f);
 
-        // The end screen, top to bottom: the title, the Run's record, a rule, the Credits pay-out and the way on.
+        // The end screen, top to bottom: the title, the Run's record, a rule, the Credits pay-out, the ad's offer and the way on.
         private static readonly Vector2 EndTitlePosition = new(0f, 420f);
         private static readonly Vector2 EndScorePosition = new(0f, 300f);
         private static readonly Vector2 EndLevelPosition = new(0f, 235f);
@@ -99,10 +99,14 @@ namespace DarknessRises.Game.Editor.Health
         private static readonly Vector2 EndPayoutArrowSize = new(60f, 80f);
         private static readonly Vector2 EndPayoutRatePosition = new(0f, 6f);
         private static readonly Vector2 EndPayoutRateSize = new(900f, 40f);
-        private static readonly Vector2 EndClearBonusPosition = new(0f, -52f);
-        private static readonly Vector2 EndCreditsTotalPosition = new(0f, -140f);
+        private static readonly Vector2 EndClearBonusPosition = new(0f, -45f);
+        private static readonly Vector2 EndAdBonusPosition = new(0f, -100f);
+        private static readonly Vector2 EndCreditsTotalPosition = new(0f, -175f);
         private const float EndCreditsTotalFontSize = 68f;
-        private static readonly Vector2 EndShopPosition = new(0f, -330f);
+        private static readonly Vector2 EndAdButtonPosition = new(0f, -288f);
+        private static readonly Vector2 EndAdButtonSize = new(820f, 96f);
+        private static readonly Color EndAdButtonColor = new(0.07f, 0.26f, 0.21f, 0.98f);
+        private static readonly Vector2 EndShopPosition = new(0f, -445f);
 
         // Until the Credits definition colours them at runtime.
         private static readonly Color CreditsColor = new(0.35f, 1f, 0.78f, 1f);
@@ -382,9 +386,29 @@ namespace DarknessRises.Game.Editor.Health
             var bonusLabel = AddStat(clearBonusRow, "Clear Bonus", "Level clear bonus", Vector2.zero, out var clearBonus);
             clearBonusRow.gameObject.SetActive(false);
 
+            // The end-of-Run ad's bonus has its own line, shown only once the ad has paid out.
+            var adBonusRow = new GameObject("Ad Bonus", typeof(RectTransform)).GetComponent<RectTransform>();
+            adBonusRow.SetParent(panel, false);
+            adBonusRow.anchoredPosition = EndAdBonusPosition;
+            var adBonusLabel = AddStat(adBonusRow, "Ad Bonus", "From the ad", Vector2.zero, out var adBonus);
+            adBonusRow.gameObject.SetActive(false);
+
             var totalLabel = AddStat(panel, "Credits Total", "CREDITS", EndCreditsTotalPosition, out var creditsTotal);
             totalLabel.fontSize = creditsTotal.fontSize = EndCreditsTotalFontSize;
             totalLabel.fontStyle = creditsTotal.fontStyle = FontStyles.Bold;
+
+            // The end-of-Run ad's offer: its wording and the bonus under it come from the Credits definition.
+            var adButton = AddButton(panel, "Watch Ad", EndAdButtonPosition);
+            var adButtonRect = (RectTransform)adButton.transform;
+            adButtonRect.sizeDelta = EndAdButtonSize;
+            adButton.targetGraphic.color = EndAdButtonColor;
+            var adButtonLabel = adButton.GetComponentInChildren<TextMeshProUGUI>();
+            adButtonLabel.rectTransform.sizeDelta = EndAdButtonSize;
+            adButtonLabel.fontStyle = FontStyles.Bold;
+            var hintHeight = HintFontSize * 1.5f;
+            var adHint = AddText(
+                adButtonRect, "Hint", string.Empty, HintFontSize, CreditsColor,
+                new Vector2(0f, -(EndAdButtonSize.y + hintHeight) / 2f - HintGap), new Vector2(EndAdButtonSize.x, hintHeight));
 
             // The way on: the Shop, where the next Run starts.
             var shop = AddButton(panel, "Shop", EndShopPosition);
@@ -408,10 +432,18 @@ namespace DarknessRises.Game.Editor.Health
             serialized.FindProperty("payoutRate").objectReferenceValue = payoutRate;
             serialized.FindProperty("clearBonusRow").objectReferenceValue = clearBonusRow.gameObject;
             serialized.FindProperty("clearBonus").objectReferenceValue = clearBonus;
+            serialized.FindProperty("adBonusRow").objectReferenceValue = adBonusRow.gameObject;
+            serialized.FindProperty("adBonus").objectReferenceValue = adBonus;
             serialized.FindProperty("creditsTotal").objectReferenceValue = creditsTotal;
+            serialized.FindProperty("adButton").objectReferenceValue = adButton;
+            serialized.FindProperty("adButtonLabel").objectReferenceValue = adButtonLabel;
+            serialized.FindProperty("adHint").objectReferenceValue = adHint;
             serialized.FindProperty("sound").objectReferenceValue = sound;
             serialized.FindProperty("shopButton").objectReferenceValue = shop;
-            var creditsTexts = new[] { payoutArrow, payoutCredits, bonusLabel, clearBonus, totalLabel, creditsTotal };
+            var creditsTexts = new[]
+            {
+                payoutArrow, payoutCredits, bonusLabel, clearBonus, adBonusLabel, adBonus, totalLabel, creditsTotal, adButtonLabel, adHint,
+            };
             var creditsTextsProperty = serialized.FindProperty("creditsTexts");
             creditsTextsProperty.arraySize = creditsTexts.Length;
             for (var i = 0; i < creditsTexts.Length; i++)

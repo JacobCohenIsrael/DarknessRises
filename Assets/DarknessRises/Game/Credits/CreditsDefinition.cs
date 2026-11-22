@@ -3,8 +3,8 @@ using UnityEngine;
 namespace DarknessRises.Game.Credits
 {
     /// <summary>
-    /// Authored tuning for Credits: the rate a Run's Score pays them at, the flat bonus a cleared Level pays on top, and
-    /// how the end screen pays them out. Never changed at runtime.
+    /// Authored tuning for Credits: the rate a Run's Score pays them at, the flat bonus a cleared Level pays on top, the
+    /// end-of-Run ad that multiplies a Run's Credits, and how the end screen pays them out. Never changed at runtime.
     /// </summary>
     [CreateAssetMenu(menuName = "Darkness Rises/Credits Definition", fileName = "CreditsDefinition", order = 95)]
     public sealed class CreditsDefinition : ScriptableObject
@@ -18,12 +18,16 @@ namespace DarknessRises.Game.Credits
         [SerializeField, Tooltip("The flat Credits a cleared Level (its Boss beaten) pays on top of the Score's, growing with the Level number, so surviving pays even with poor aim.")]
         private LevelClearBonusSettings levelClearBonus = new();
 
+        [SerializeField, Tooltip("The one rewarded ad the end screen offers, which multiplies the Credits the Run earned (its Score's and its clear bonus). It stacks with the x2 Score boost.")]
+        private EndOfRunAdSettings endOfRunAd = new();
+
         [SerializeField, Tooltip("How the end screen pays out the Run's Score as Credits and shows the new total.")]
         private CreditsEndScreenSettings endScreen = new();
 
         public Color Color => color;
         public ScoreToCreditsSettings ScoreToCredits => scoreToCredits;
         public LevelClearBonusSettings LevelClearBonus => levelClearBonus;
+        public EndOfRunAdSettings EndOfRunAd => endOfRunAd;
         public CreditsEndScreenSettings EndScreen => endScreen;
     }
 }

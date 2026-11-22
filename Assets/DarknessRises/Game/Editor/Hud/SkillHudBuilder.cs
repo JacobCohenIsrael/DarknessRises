@@ -26,6 +26,9 @@ namespace DarknessRises.Game.Editor.Hud
 
         private const float SecondsFontSize = 48f;
         private const float NameFontSize = 24f;
+
+        // A long name (ADRENALINE) shrinks to fit on one line under its disc rather than wrapping.
+        private const float NameMinFontSize = 16f;
         private const float KeyFontSize = 26f;
 
         // Placeholders until the Skills' looks and the settings colour them at runtime.
@@ -107,6 +110,10 @@ namespace DarknessRises.Game.Editor.Hud
             nameRect.pivot = new Vector2(0.5f, 0f);
             nameRect.offsetMin = new Vector2(-Gap / 2f, 0f);
             nameRect.offsetMax = new Vector2(Gap / 2f, NameHeight);
+            name.textWrappingMode = TextWrappingModes.NoWrap;
+            name.enableAutoSizing = true;
+            name.fontSizeMin = NameMinFontSize;
+            name.fontSizeMax = NameFontSize;
 
             var view = root.GetComponent<SkillHudView>();
             var serialized = new SerializedObject(view);

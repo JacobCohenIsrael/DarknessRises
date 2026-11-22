@@ -1,0 +1,857 @@
+time from the Boss beaten (s) | output peak dBFS | RMS dBFS | samples >= full scale | phase | sources playing (scene/path[clip] v=effective volume g=category gain)
+  -9.20 peak   -3.3 rms  -14.6 clip    0 boss/BossFight         Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.685 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -9.14 peak   -4.8 rms  -15.4 clip    0 boss/BossFight         Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.672 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -9.09 peak   -6.0 rms  -16.6 clip    0 boss/BossFight         Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.655 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.563 g=1.00
+  -9.04 peak   -3.8 rms  -15.4 clip    0 boss/BossFight         Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.655 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.563 g=1.00
+  -9.00 peak   -3.1 rms  -14.6 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.680 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.638 g=1.00
+  -8.94 peak   -4.4 rms  -15.5 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.772 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.626 g=1.00
+  -8.88 peak   -4.3 rms  -14.1 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.862 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.612 g=1.00
+  -8.84 peak   -3.6 rms  -14.4 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.599 g=1.00
+  -8.80 peak   -3.5 rms  -14.3 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.583 g=1.00
+  -8.74 peak   -2.9 rms  -15.1 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.565 g=1.00
+  -8.69 peak   -5.0 rms  -16.2 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.553 g=1.00
+  -8.64 peak   -4.6 rms  -14.7 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.540 g=1.00
+  -8.60 peak   -2.6 rms  -15.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.540 g=1.00
+  -8.54 peak   -2.7 rms  -14.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.514 g=1.00
+  -8.49 peak   -2.9 rms  -15.2 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.501 g=1.00
+  -8.44 peak   -5.2 rms  -15.6 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.488 g=1.00
+  -8.40 peak   -4.8 rms  -14.8 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.488 g=1.00
+  -8.34 peak   -3.4 rms  -15.3 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.942 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.463 g=1.00
+  -8.28 peak   -2.9 rms  -14.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.929 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.450 g=1.00
+  -8.24 peak   -3.5 rms  -13.4 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.917 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.437 g=1.00
+  -8.20 peak   -3.0 rms  -14.8 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.917 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.437 g=1.00
+  -8.13 peak   -3.9 rms  -15.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.900 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.420 g=1.00
+  -8.09 peak   -2.6 rms  -11.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.888 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.407 g=1.00
+  -8.04 peak   -1.9 rms   -8.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.875 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.394 g=1.00
+  -8.00 peak   -1.7 rms   -9.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.863 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.381 g=1.00
+  -7.94 peak   -1.7 rms   -9.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.850 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.368 g=1.00
+  -7.89 peak   -1.4 rms   -9.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.833 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.351 g=1.00
+  -7.84 peak   -2.1 rms   -9.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.821 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.338 g=1.00
+  -7.80 peak   -1.5 rms   -9.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.808 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.325 g=1.00
+  -7.73 peak   -1.9 rms  -11.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.795 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.312 g=1.00
+  -7.68 peak   -4.7 rms  -12.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.783 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.299 g=1.00
+  -7.64 peak   -3.8 rms  -13.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.770 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.286 g=1.00
+  -7.60 peak   -4.6 rms  -14.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.770 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.286 g=1.00
+  -7.54 peak   -5.4 rms  -14.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.742 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.257 g=1.00
+  -7.48 peak   -4.6 rms  -14.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.729 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.243 g=1.00
+  -7.44 peak   -3.5 rms  -11.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.729 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.243 g=1.00
+  -7.40 peak   -6.3 rms  -15.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.713 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.227 g=1.00
+  -7.34 peak   -7.6 rms  -16.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.700 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.214 g=1.00
+  -7.29 peak   -5.7 rms  -16.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.688 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.201 g=1.00
+  -7.24 peak   -8.0 rms  -18.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.675 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.188 g=1.00
+  -7.20 peak  -11.3 rms  -19.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.663 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.175 g=1.00
+  -7.14 peak   -8.3 rms  -18.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.650 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.162 g=1.00
+  -7.08 peak   -8.0 rms  -19.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.637 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.149 g=1.00
+  -7.04 peak   -6.1 rms  -17.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.625 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.137 g=1.00
+  -7.00 peak  -11.0 rms  -19.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.613 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.124 g=1.00
+  -6.94 peak   -9.5 rms  -21.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.600 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.111 g=1.00
+  -6.89 peak  -10.7 rms  -18.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.588 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.098 g=1.00
+  -6.84 peak  -10.7 rms  -19.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.575 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.085 g=1.00
+  -6.80 peak  -13.8 rms  -21.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.562 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.072 g=1.00
+  -6.74 peak  -10.9 rms  -18.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.550 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.059 g=1.00
+  -6.69 peak  -10.5 rms  -18.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.537 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.047 g=1.00
+  -6.64 peak   -7.2 rms  -16.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.525 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.034 g=1.00
+  -6.60 peak   -9.2 rms  -17.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.512 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.021 g=1.00
+  -6.54 peak   -9.9 rms  -19.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00; Level/Lightning/Warning 1[Ghost Manifestation 2] v=0.008 g=1.00
+  -6.48 peak  -11.2 rms  -20.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.47 ** STOP stopped Level/Level/Rooms/Room Boss Room/Colossus[-] at vol=1.000
+  -6.44 peak  -14.6 rms  -23.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.40 peak  -12.8 rms  -20.9 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.34 peak  -13.7 rms  -20.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.29 peak  -13.5 rms  -21.2 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.24 peak  -14.4 rms  -22.6 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.20 peak  -14.3 rms  -21.5 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.14 peak  -13.2 rms  -23.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.09 peak  -16.2 rms  -24.1 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.04 peak  -14.5 rms  -23.2 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -6.00 peak  -12.0 rms  -21.2 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.94 peak  -11.3 rms  -20.5 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.88 peak  -12.1 rms  -21.5 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.84 peak  -12.1 rms  -21.6 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.80 peak  -13.7 rms  -22.2 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.74 peak  -13.9 rms  -22.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.68 peak  -14.7 rms  -24.4 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.64 peak  -13.9 rms  -20.9 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.60 peak  -12.8 rms  -21.3 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.54 peak  -14.5 rms  -22.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.49 peak  -15.7 rms  -23.9 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.43 peak  -12.5 rms  -20.3 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.40 peak  -16.5 rms  -25.4 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.34 peak  -15.7 rms  -22.8 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.28 peak  -12.0 rms  -22.7 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.23 peak  -12.4 rms  -21.0 clip    0 boss/BossFight         Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.21 ** EVENT beating the Boss
+  -5.20 peak  -11.8 rms  -19.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.13 peak  -12.8 rms  -22.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.08 peak   -6.7 rms  -15.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.03 peak   -6.6 rms  -18.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -5.00 peak   -8.5 rms  -18.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.93 peak  -10.9 rms  -20.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.88 peak  -11.6 rms  -21.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.83 peak   -9.2 rms  -20.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.80 peak   -8.7 rms  -19.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.73 peak   -7.1 rms  -18.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.68 peak   -6.0 rms  -15.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.63 peak   -5.9 rms  -13.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.60 peak   -5.8 rms  -14.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.53 peak   -6.0 rms  -15.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.48 peak   -6.6 rms  -13.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.43 peak   -6.4 rms  -16.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.40 peak   -7.3 rms  -17.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.33 peak   -6.6 rms  -14.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.28 peak   -5.9 rms  -14.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.23 peak   -6.0 rms  -15.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.20 peak   -8.0 rms  -17.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.13 peak   -6.2 rms  -15.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.08 peak  -11.5 rms  -21.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.03 peak   -7.1 rms  -15.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -4.00 peak   -8.4 rms  -19.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.93 peak   -7.6 rms  -17.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.88 peak   -9.0 rms  -18.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.83 peak   -9.3 rms  -18.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.80 peak   -9.3 rms  -18.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.73 peak   -7.4 rms  -17.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.68 peak   -6.9 rms  -17.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.63 peak   -9.7 rms  -21.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.60 peak   -7.2 rms  -16.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.53 peak   -6.6 rms  -17.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.48 peak   -6.9 rms  -17.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.43 peak   -7.0 rms  -17.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.40 peak  -11.0 rms  -19.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.33 peak   -8.9 rms  -17.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.28 peak   -8.4 rms  -16.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.23 peak   -5.7 rms  -13.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.20 peak   -6.1 rms  -14.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.13 peak   -7.3 rms  -15.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.08 peak   -6.9 rms  -17.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.03 peak   -8.5 rms  -16.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -3.00 peak   -8.2 rms  -16.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.93 peak   -7.0 rms  -15.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.88 peak   -9.4 rms  -18.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.83 peak   -6.0 rms  -15.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.80 peak   -5.7 rms  -14.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.73 peak   -6.5 rms  -14.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.68 peak   -5.9 rms  -14.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.63 peak   -5.8 rms  -14.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.60 peak   -5.9 rms  -13.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.53 peak   -5.9 rms  -14.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.49 peak   -7.5 rms  -15.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.43 peak   -7.0 rms  -16.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.40 peak   -5.5 rms  -17.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.34 peak   -7.9 rms  -16.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.28 peak   -7.1 rms  -16.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.23 peak   -6.4 rms  -14.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.20 peak   -9.0 rms  -18.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.13 peak   -9.0 rms  -18.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.08 peak   -9.2 rms  -18.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.04 peak   -8.3 rms  -18.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -2.00 peak  -11.5 rms  -18.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -1.94 peak   -8.5 rms  -18.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -1.89 peak  -11.0 rms  -19.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -1.84 peak   -8.8 rms  -18.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -1.80 peak   -9.9 rms  -20.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  -1.74 peak  -10.1 rms  -18.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.561 g=1.00
+  -1.68 peak   -8.9 rms  -19.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.651 g=1.00
+  -1.64 peak   -5.7 rms  -15.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.741 g=1.00
+  -1.60 peak   -2.8 rms  -12.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.831 g=1.00
+  -1.54 peak   -3.3 rms  -14.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.49 peak   -2.7 rms  -10.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.44 peak   -2.8 rms  -12.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.40 peak   -6.1 rms  -14.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.34 peak   -6.0 rms  -14.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.29 peak   -9.3 rms  -17.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.24 peak   -6.0 rms  -15.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.20 peak   -5.5 rms  -15.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.14 peak   -6.1 rms  -13.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.08 peak   -5.7 rms  -15.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.04 peak   -4.0 rms  -12.4 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -1.00 peak   -2.1 rms  -13.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.946 g=1.00
+  -0.94 peak   -2.4 rms  -10.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.933 g=1.00
+  -0.89 peak   -3.0 rms  -12.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.921 g=1.00
+  -0.84 peak   -4.2 rms  -12.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.908 g=1.00
+  -0.80 peak   -5.6 rms  -14.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.892 g=1.00
+  -0.74 peak   -2.7 rms  -12.7 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.879 g=1.00
+  -0.69 peak   -5.8 rms  -13.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.866 g=1.00
+  -0.64 peak   -7.9 rms  -14.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.854 g=1.00
+  -0.59 peak   -5.1 rms  -15.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.841 g=1.00
+  -0.54 peak   -2.9 rms  -14.3 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.829 g=1.00
+  -0.48 peak   -2.8 rms  -10.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.816 g=1.00
+  -0.44 peak   -3.0 rms  -11.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.804 g=1.00
+  -0.40 peak   -4.0 rms  -13.8 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.791 g=1.00
+  -0.34 peak   -3.0 rms  -12.5 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.779 g=1.00
+  -0.29 peak   -4.2 rms  -14.6 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.825 g=1.00
+  -0.24 peak   -4.7 rms  -13.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.859 g=1.00
+  -0.20 peak   -6.4 rms  -15.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.893 g=1.00
+  -0.14 peak   -2.6 rms  -11.2 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.927 g=1.00
+  -0.09 peak   -2.3 rms   -9.9 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -0.04 peak   -4.3 rms  -13.1 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  -0.02 ** EVENT phase LevelEnd
+   0.00 ** EVENT the Boss is beaten
+   0.00 peak   -2.5 rms  -13.0 clip    0 boss/BossFight         Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+   0.06 peak   -2.7 rms  -12.4 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.931 g=1.00
+   0.12 peak   -2.6 rms  -11.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.912 g=1.00
+   0.16 peak   -3.0 rms  -11.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.887 g=1.00
+   0.21 peak   -3.2 rms  -11.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.861 g=1.00
+   0.26 peak   -3.0 rms  -12.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.842 g=1.00
+   0.31 peak   -2.9 rms  -11.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.823 g=1.00
+   0.37 peak   -2.8 rms  -11.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.804 g=1.00
+   0.41 peak   -2.5 rms  -11.1 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.782 g=1.00
+   0.46 peak   -2.6 rms  -11.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.782 g=1.00
+   0.51 peak   -4.3 rms  -12.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.743 g=1.00
+   0.56 peak   -4.1 rms  -12.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.715 g=1.00
+   0.61 peak   -2.7 rms  -11.4 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.687 g=1.00
+   0.66 peak   -5.1 rms  -14.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.659 g=1.00
+   0.71 peak   -5.3 rms  -13.4 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.633 g=1.00
+   0.76 peak   -7.2 rms  -17.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.606 g=1.00
+   0.80 peak   -7.2 rms  -15.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.572 g=1.00
+   0.86 peak   -5.1 rms  -16.6 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.547 g=1.00
+   0.91 peak   -9.1 rms  -19.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.522 g=1.00
+   0.97 peak   -7.6 rms  -17.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.498 g=1.00
+   1.01 peak   -8.1 rms  -16.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.474 g=1.00
+   1.06 peak   -9.7 rms  -18.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.451 g=1.00
+   1.11 peak   -6.8 rms  -17.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.428 g=1.00
+   1.16 peak   -9.6 rms  -19.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.399 g=1.00
+   1.21 peak  -10.5 rms  -19.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.377 g=1.00
+   1.26 peak   -6.5 rms  -17.4 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.377 g=1.00
+   1.31 peak   -8.1 rms  -18.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.349 g=1.00
+   1.36 peak  -10.6 rms  -19.1 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.329 g=1.00
+   1.41 peak   -7.0 rms  -17.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.309 g=1.00
+   1.46 peak   -7.9 rms  -18.5 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.290 g=1.00
+   1.51 peak   -8.4 rms  -18.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.271 g=1.00
+   1.57 peak   -9.2 rms  -18.5 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.253 g=1.00
+   1.61 peak   -8.7 rms  -20.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.235 g=1.00
+   1.66 peak   -8.3 rms  -19.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.218 g=1.00
+   1.71 peak  -10.3 rms  -20.5 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.201 g=1.00
+   1.76 peak   -9.5 rms  -20.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.184 g=1.00
+   1.81 peak  -10.2 rms  -19.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.163 g=1.00
+   1.86 peak  -12.0 rms  -20.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.148 g=1.00
+   1.91 peak  -10.0 rms  -20.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.134 g=1.00
+   1.96 peak  -11.5 rms  -19.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.119 g=1.00
+   2.01 peak  -12.8 rms  -20.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.106 g=1.00
+   2.06 peak  -12.2 rms  -21.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.093 g=1.00
+   2.11 peak  -11.4 rms  -21.1 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.080 g=1.00
+   2.17 peak  -10.7 rms  -21.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.068 g=1.00
+   2.21 peak  -12.6 rms  -21.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.056 g=1.00
+   2.26 peak  -11.3 rms  -21.4 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.046 g=1.00
+   2.31 peak  -10.7 rms  -20.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.033 g=1.00
+   2.36 peak  -11.6 rms  -20.6 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.023 g=1.00
+   2.41 peak  -12.4 rms  -20.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.013 g=1.00
+   2.46 peak  -12.5 rms  -20.5 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.003 g=1.00
+   2.51 peak  -12.3 rms  -20.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.003 g=1.00
+   2.56 peak  -10.6 rms  -20.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.61 peak  -10.9 rms  -20.5 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.66 peak  -10.4 rms  -20.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.71 peak  -10.0 rms  -19.5 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.77 peak   -8.6 rms  -17.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.81 peak   -8.1 rms  -20.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.86 peak   -9.5 rms  -19.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.91 peak   -8.9 rms  -20.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   2.96 peak  -10.3 rms  -18.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   3.01 peak   -9.3 rms  -18.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=1.000 g=1.00
+   3.06 peak  -11.3 rms  -20.2 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.978 g=1.00
+   3.11 peak  -11.1 rms  -20.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.945 g=1.00
+   3.16 peak  -12.6 rms  -21.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.911 g=1.00
+   3.21 peak  -12.4 rms  -21.5 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.878 g=1.00
+   3.26 peak  -12.4 rms  -21.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.833 g=1.00
+   3.31 peak  -13.4 rms  -21.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.789 g=1.00
+   3.37 peak  -12.5 rms  -23.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.756 g=1.00
+   3.42 peak  -13.6 rms  -21.4 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.722 g=1.00
+   3.46 peak  -14.6 rms  -23.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.722 g=1.00
+   3.51 peak  -15.2 rms  -24.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.678 g=1.00
+   3.56 peak  -14.3 rms  -22.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.644 g=1.00
+   3.61 peak  -15.9 rms  -24.1 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.611 g=1.00
+   3.66 peak  -15.7 rms  -24.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.579 g=1.00
+   3.71 peak  -15.8 rms  -24.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.534 g=1.00
+   3.76 peak  -15.0 rms  -25.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.499 g=1.00
+   3.81 peak  -16.5 rms  -26.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.455 g=1.00
+   3.86 peak  -18.1 rms  -27.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.455 g=1.00
+   3.91 peak  -16.9 rms  -25.7 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.411 g=1.00
+   3.97 peak  -18.1 rms  -27.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.378 g=1.00
+   4.01 peak  -19.0 rms  -28.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.334 g=1.00
+   4.06 peak  -20.1 rms  -28.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.289 g=1.00
+   4.11 peak  -20.1 rms  -29.8 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.256 g=1.00
+   4.16 peak  -22.0 rms  -30.3 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.223 g=1.00
+   4.21 peak  -23.2 rms  -33.4 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.189 g=1.00
+   4.26 peak  -24.2 rms  -34.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.156 g=1.00
+   4.31 peak  -27.1 rms  -36.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.122 g=1.00
+   4.36 peak  -28.2 rms  -38.9 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.089 g=1.00
+   4.41 peak  -34.6 rms  -43.0 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.055 g=1.00
+   4.46 peak  -35.8 rms  -47.1 clip    0 end/LevelEnd           Level/Level/Rooms/Room Boss Room/Colossus[-] v=0.022 g=1.00
+   4.51 peak  -45.8 rms  -61.1 clip    0 end/LevelEnd           
+   4.57 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.61 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.66 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.71 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.76 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.81 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.86 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.91 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   4.96 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.01 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.06 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.11 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.17 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.21 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.26 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.31 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.36 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.41 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.46 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.51 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.56 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.61 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.66 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.71 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.77 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.81 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.86 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.91 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   5.96 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.01 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.06 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.11 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.16 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.21 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.26 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.31 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.37 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.40 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.46 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.51 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.56 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.61 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.66 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.71 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.76 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.80 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.86 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.91 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   6.97 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.01 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.06 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.11 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.16 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.21 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.26 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.31 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.36 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.40 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.46 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.51 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.57 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.60 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.66 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.71 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.76 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.81 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.86 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.91 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   7.96 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   8.01 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   8.06 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   8.11 peak   -inf rms   -inf clip    0 end/LevelEnd           
+   8.16 ** EVENT phase LevelStart
+   8.16 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.20 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.26 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.31 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.36 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.40 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.46 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.51 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.56 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.60 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.64 ** EVENT level scene unloaded
+   8.66 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.71 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.76 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.80 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.86 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.91 peak   -inf rms   -inf clip    0 end/LevelStart         
+   8.96 peak   -inf rms   -inf clip    0 end/LevelStart         
+   9.00 peak   -inf rms   -inf clip    0 end/LevelStart         
+   9.07 peak   -inf rms   -inf clip    0 end/LevelStart         
+   9.11 ** EVENT level scene loaded
+   9.12 peak   -inf rms   -inf clip    0 end/LevelStart         
+   9.16 peak  -49.6 rms  -61.3 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.004 g=1.00
+   9.20 peak  -40.9 rms  -51.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.018 g=1.00
+   9.26 peak  -35.2 rms  -44.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.032 g=1.00
+   9.31 peak  -31.5 rms  -41.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.032 g=1.00
+   9.36 peak  -28.7 rms  -38.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.045 g=1.00
+   9.41 peak  -27.8 rms  -37.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.055 g=1.00
+   9.49 peak  -26.3 rms  -35.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.064 g=1.00
+   9.52 peak  -27.2 rms  -36.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.077 g=1.00
+   9.56 peak  -25.2 rms  -34.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.077 g=1.00
+   9.60 peak  -27.6 rms  -36.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.090 g=1.00
+   9.66 peak  -21.5 rms  -31.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.098 g=1.00
+   9.71 peak  -20.4 rms  -29.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.106 g=1.00
+   9.76 peak  -19.3 rms  -28.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.116 g=1.00
+   9.80 peak  -18.6 rms  -26.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.123 g=1.00
+   9.87 peak  -18.8 rms  -27.3 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.132 g=1.00
+   9.91 peak  -21.1 rms  -29.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.139 g=1.00
+   9.97 peak  -17.5 rms  -25.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.139 g=1.00
+  10.00 peak  -19.6 rms  -28.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.146 g=1.00
+  10.07 peak  -20.2 rms  -29.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.152 g=1.00
+  10.12 peak  -16.0 rms  -22.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.157 g=1.00
+  10.16 peak  -15.9 rms  -24.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.162 g=1.00
+  10.20 peak  -15.6 rms  -23.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.168 g=1.00
+  10.26 peak  -16.3 rms  -24.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.172 g=1.00
+  10.31 peak  -16.9 rms  -25.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.176 g=1.00
+  10.36 peak  -16.2 rms  -24.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.180 g=1.00
+  10.40 peak  -18.4 rms  -26.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.183 g=1.00
+  10.46 peak  -16.2 rms  -26.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.186 g=1.00
+  10.51 peak  -14.9 rms  -24.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.189 g=1.00
+  10.57 peak  -17.8 rms  -27.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.192 g=1.00
+  10.61 peak  -21.8 rms  -30.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.192 g=1.00
+  10.66 peak  -19.8 rms  -28.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.195 g=1.00
+  10.71 peak  -18.5 rms  -29.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.200 g=1.00
+  10.76 peak  -16.9 rms  -26.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.206 g=1.00
+  10.80 peak  -16.2 rms  -28.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.206 g=1.00
+  10.86 peak  -16.7 rms  -26.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.219 g=1.00
+  10.91 peak  -19.4 rms  -27.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.225 g=1.00
+  10.96 peak  -18.8 rms  -27.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.231 g=1.00
+  11.00 peak  -17.3 rms  -26.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.231 g=1.00
+  11.06 peak  -13.5 rms  -23.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.240 g=1.00
+  11.11 peak  -16.0 rms  -25.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.248 g=1.00
+  11.17 peak  -14.8 rms  -24.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.254 g=1.00
+  11.21 peak  -14.7 rms  -24.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.259 g=1.00
+  11.26 peak  -16.2 rms  -24.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.269 g=1.00
+  11.31 peak  -18.3 rms  -26.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.275 g=1.00
+  11.36 peak  -16.6 rms  -24.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.281 g=1.00
+  11.40 peak  -16.5 rms  -25.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.281 g=1.00
+  11.46 peak  -14.0 rms  -23.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.294 g=1.00
+  11.51 peak  -15.9 rms  -24.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.300 g=1.00
+  11.56 peak  -12.6 rms  -22.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.306 g=1.00
+  11.60 peak  -13.8 rms  -23.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.306 g=1.00
+  11.66 peak  -13.4 rms  -22.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.319 g=1.00
+  11.71 peak  -15.2 rms  -24.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.325 g=1.00
+  11.76 peak  -14.2 rms  -23.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.332 g=1.00
+  11.80 peak  -13.8 rms  -22.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.332 g=1.00
+  11.86 peak  -11.1 rms  -22.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.340 g=1.00
+  11.91 peak  -13.2 rms  -22.3 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.346 g=1.00
+  11.96 peak  -10.6 rms  -20.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.352 g=1.00
+  12.00 peak  -10.2 rms  -18.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.359 g=1.00
+  12.06 peak  -10.2 rms  -18.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.365 g=1.00
+  12.11 peak   -8.7 rms  -16.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.373 g=1.00
+  12.17 peak  -11.4 rms  -20.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.382 g=1.00
+  12.20 peak  -11.7 rms  -20.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.382 g=1.00
+  12.26 peak  -12.5 rms  -20.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.394 g=1.00
+  12.31 peak  -12.0 rms  -20.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.400 g=1.00
+  12.36 peak  -10.5 rms  -18.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.407 g=1.00
+  12.40 peak   -9.7 rms  -18.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.407 g=1.00
+  12.47 peak  -10.4 rms  -20.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.419 g=1.00
+  12.52 peak  -10.4 rms  -19.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.425 g=1.00
+  12.57 peak  -13.0 rms  -21.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.432 g=1.00
+  12.60 peak   -7.7 rms  -16.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.432 g=1.00
+  12.67 peak   -8.6 rms  -17.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.444 g=1.00
+  12.72 peak   -7.8 rms  -16.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.451 g=1.00
+  12.77 peak   -8.8 rms  -17.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.457 g=1.00
+  12.80 peak   -7.3 rms  -17.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.457 g=1.00
+  12.87 peak   -9.0 rms  -18.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.469 g=1.00
+  12.92 peak   -8.6 rms  -19.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.476 g=1.00
+  12.97 peak  -11.5 rms  -20.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.509 g=1.00
+  13.00 peak  -12.7 rms  -20.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.509 g=1.00
+  13.07 peak  -11.3 rms  -19.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.701 g=1.00
+  13.12 peak   -6.8 rms  -14.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.801 g=1.00
+  13.17 peak   -3.5 rms  -12.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.891 g=1.00
+  13.20 peak   -5.1 rms  -13.3 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.891 g=1.00
+  13.27 peak   -7.5 rms  -15.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.32 peak   -4.3 rms  -13.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.37 peak   -2.3 rms  -10.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.40 peak   -7.7 rms  -16.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.47 peak   -3.8 rms  -14.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.52 peak   -3.8 rms  -11.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.57 peak   -2.7 rms  -14.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.60 peak   -4.8 rms  -14.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.67 peak   -4.1 rms  -14.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.72 peak   -6.0 rms  -13.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  13.77 peak   -4.0 rms  -13.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.937 g=1.00
+  13.80 peak   -3.7 rms  -15.5 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.925 g=1.00
+  13.87 peak   -5.9 rms  -15.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.913 g=1.00
+  13.92 peak   -6.8 rms  -17.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.900 g=1.00
+  13.97 peak   -8.9 rms  -16.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.888 g=1.00
+  14.00 peak   -9.5 rms  -18.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.875 g=1.00
+  14.07 peak   -5.9 rms  -15.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.862 g=1.00
+  14.12 peak   -6.3 rms  -13.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.850 g=1.00
+  14.17 peak   -5.2 rms  -15.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.837 g=1.00
+  14.20 peak  -10.8 rms  -20.3 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.825 g=1.00
+  14.27 peak  -10.9 rms  -19.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.808 g=1.00
+  14.32 peak   -7.3 rms  -14.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.796 g=1.00
+  14.37 peak   -6.4 rms  -17.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.783 g=1.00
+  14.40 peak  -11.1 rms  -20.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.783 g=1.00
+  14.47 peak  -12.8 rms  -21.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.758 g=1.00
+  14.52 peak  -11.8 rms  -19.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.758 g=1.00
+  14.57 peak  -11.7 rms  -20.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.741 g=1.00
+  14.60 peak  -12.8 rms  -20.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.725 g=1.00
+  14.67 peak  -13.9 rms  -21.8 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.712 g=1.00
+  14.72 peak  -13.2 rms  -22.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.700 g=1.00
+  14.77 peak  -12.0 rms  -20.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.687 g=1.00
+  14.80 peak  -10.1 rms  -20.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.675 g=1.00
+  14.87 peak  -11.5 rms  -19.9 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.662 g=1.00
+  14.92 peak  -12.3 rms  -21.1 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.650 g=1.00
+  14.97 peak  -10.0 rms  -18.7 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.637 g=1.00
+  15.01 peak  -10.9 rms  -18.6 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.625 g=1.00
+  15.07 peak   -8.0 rms  -16.4 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.612 g=1.00
+  15.12 peak   -9.1 rms  -17.2 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.600 g=1.00
+  15.17 peak   -9.3 rms  -19.0 clip    0 next/LevelStart        Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.587 g=1.00
+  15.18 ** EVENT phase Walking
+  15.20 peak  -12.3 rms  -18.5 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.575 g=1.00
+  15.27 peak  -11.9 rms  -20.3 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.562 g=1.00
+  15.32 peak  -13.2 rms  -21.2 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.640 g=1.00
+  15.37 peak   -7.8 rms  -17.0 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.717 g=1.00
+  15.40 peak   -9.0 rms  -17.8 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.795 g=1.00
+  15.47 peak  -10.7 rms  -17.4 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.872 g=1.00
+  15.52 peak   -9.2 rms  -18.1 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.57 peak   -6.5 rms  -16.2 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.60 peak   -8.6 rms  -17.4 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.67 peak   -8.4 rms  -17.4 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.72 peak  -10.3 rms  -17.8 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.77 peak   -9.5 rms  -19.8 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.80 peak  -10.0 rms  -19.3 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.86 ** EVENT phase StationFight
+  15.87 peak  -10.7 rms  -18.1 clip    0 next/Walking           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  15.92 peak   -2.1 rms  -12.2 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  15.97 peak   -2.9 rms  -10.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.00 peak   -2.5 rms  -10.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.07 peak   -2.4 rms  -10.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.938 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.12 peak   -3.1 rms  -10.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.925 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.17 peak   -3.4 rms  -10.9 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.912 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.20 peak   -4.7 rms  -13.5 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.900 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.27 peak   -5.1 rms  -11.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.887 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.32 peak   -3.9 rms  -12.5 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.875 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.37 peak   -8.2 rms  -15.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.862 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.40 peak   -8.1 rms  -16.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.850 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.47 peak  -10.1 rms  -18.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.837 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.52 peak   -8.2 rms  -16.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.825 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.57 peak   -6.0 rms  -14.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.813 g=1.00; Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00
+  16.60 peak  -10.3 rms  -16.7 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.800 g=1.00
+  16.67 peak   -7.4 rms  -16.5 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.788 g=1.00
+  16.72 peak   -3.8 rms  -14.3 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.775 g=1.00
+  16.77 peak   -4.0 rms  -13.2 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.762 g=1.00
+  16.80 peak   -5.0 rms  -13.8 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.750 g=1.00
+  16.87 peak   -3.3 rms  -15.2 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.737 g=1.00
+  16.92 peak   -3.2 rms  -12.8 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.725 g=1.00
+  16.97 peak   -3.4 rms  -11.5 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.712 g=1.00
+  17.00 peak   -2.7 rms  -10.6 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.700 g=1.00
+  17.07 peak   -2.6 rms  -11.4 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.687 g=1.00
+  17.12 peak   -4.0 rms  -13.1 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.675 g=1.00
+  17.17 peak   -2.8 rms  -11.2 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.662 g=1.00
+  17.20 peak   -2.8 rms  -12.8 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.650 g=1.00
+  17.26 peak   -3.3 rms  -10.2 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.637 g=1.00
+  17.31 peak   -5.5 rms  -14.0 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.625 g=1.00
+  17.37 peak   -5.0 rms  -14.4 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.612 g=1.00
+  17.40 peak   -5.0 rms  -13.1 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.612 g=1.00
+  17.47 peak   -8.7 rms  -17.6 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.583 g=1.00
+  17.52 peak   -7.5 rms  -17.0 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.583 g=1.00
+  17.57 peak   -8.2 rms  -18.8 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.566 g=1.00
+  17.60 peak   -7.7 rms  -19.1 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.554 g=1.00
+  17.67 peak  -10.6 rms  -19.3 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.541 g=1.00
+  17.72 peak   -7.3 rms  -17.8 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.525 g=1.00
+  17.76 peak   -7.5 rms  -16.5 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.512 g=1.00
+  17.80 peak   -6.3 rms  -16.8 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  17.86 peak  -13.4 rms  -21.2 clip    0 next/StationFight      Level/HUD/Station Banner/Voice 1[Metal Impact 7] v=0.800 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  17.90 ** STOP stopped Level/HUD/Station Banner/Voice 1[Metal Impact 7] at vol=0.800
+  17.91 peak  -12.6 rms  -22.3 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  17.96 peak  -10.7 rms  -21.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.00 peak  -11.3 rms  -21.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.06 peak  -15.4 rms  -23.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.11 peak  -13.0 rms  -23.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.16 peak  -12.5 rms  -22.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.20 peak  -13.6 rms  -22.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.26 peak   -8.4 rms  -18.5 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.31 peak  -13.2 rms  -20.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.36 peak   -8.0 rms  -16.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.40 peak  -12.8 rms  -21.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.500 g=1.00
+  18.46 peak  -11.9 rms  -20.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.588 g=1.00
+  18.51 peak   -9.0 rms  -17.9 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.680 g=1.00
+  18.56 peak   -7.0 rms  -15.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.801 g=1.00
+  18.60 peak   -4.9 rms  -15.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.891 g=1.00
+  18.66 peak   -7.7 rms  -17.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  18.71 peak   -9.9 rms  -18.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  18.76 peak   -5.5 rms  -15.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00
+  18.80 peak   -2.9 rms  -12.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00
+  18.86 peak   -3.6 rms  -12.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00
+  18.91 peak   -2.4 rms  -12.9 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00
+  18.96 peak   -2.6 rms  -10.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00
+  19.00 peak   -3.7 rms  -12.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00
+  19.06 peak   -2.7 rms  -13.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00
+  19.11 peak   -2.4 rms  -10.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00
+  19.16 peak   -2.7 rms  -10.3 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00
+  19.20 peak   -2.7 rms  -11.3 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.937 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00
+  19.26 peak   -3.0 rms  -11.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.925 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.004 g=1.00
+  19.31 peak   -3.6 rms  -13.2 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.908 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.009 g=1.00
+  19.36 peak   -5.4 rms  -14.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.895 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.013 g=1.00
+  19.40 peak   -5.3 rms  -14.5 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.883 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.017 g=1.00
+  19.46 peak   -2.9 rms  -11.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.883 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.017 g=1.00
+  19.51 peak   -2.9 rms  -12.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.867 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.022 g=1.00
+  19.56 peak   -2.7 rms  -11.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.854 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.449 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.026 g=1.00
+  19.57 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] at vol=0.449
+  19.60 peak   -3.8 rms  -14.2 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.842 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.030 g=1.00
+  19.67 peak   -3.5 rms  -12.9 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.829 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.034 g=1.00
+  19.71 peak   -6.7 rms  -15.2 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.813 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.040 g=1.00
+  19.76 peak   -4.4 rms  -13.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.800 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.044 g=1.00
+  19.81 peak   -8.3 rms  -16.9 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.788 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.048 g=1.00
+  19.86 peak   -5.2 rms  -16.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.775 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.375 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.052 g=1.00
+  19.88 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] at vol=0.375
+  19.91 peak   -5.7 rms  -14.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.762 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.056 g=1.00
+  19.96 peak   -4.8 rms  -13.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.746 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.061 g=1.00
+  20.01 peak   -4.0 rms  -13.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.733 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.065 g=1.00
+  20.06 peak   -4.4 rms  -14.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.721 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.069 g=1.00
+  20.11 peak   -2.5 rms  -13.3 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.708 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.073 g=1.00
+  20.16 peak   -7.1 rms  -15.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.696 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.077 g=1.00
+  20.21 peak   -5.5 rms  -12.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.683 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.081 g=1.00
+  20.26 peak   -8.3 rms  -17.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.671 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.085 g=1.00
+  20.31 peak   -8.5 rms  -18.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.658 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.089 g=1.00
+  20.36 peak   -6.5 rms  -16.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.645 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.093 g=1.00
+  20.41 peak   -8.1 rms  -17.2 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.645 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.093 g=1.00
+  20.46 peak   -7.1 rms  -16.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.645 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.093 g=1.00
+  20.51 peak   -3.6 rms  -15.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.645 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.093 g=1.00
+  20.56 peak   -8.7 rms  -17.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.599 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.095 g=1.00
+  20.60 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] at vol=0.550
+  20.61 peak   -4.4 rms  -15.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.689 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.113 g=1.00
+  20.66 peak   -3.8 rms  -13.2 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.759 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.117 g=1.00
+  20.71 peak   -7.2 rms  -16.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.829 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.121 g=1.00
+  20.76 peak   -2.6 rms  -12.8 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.899 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.125 g=1.00
+  20.81 peak   -4.0 rms  -12.2 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.129 g=1.00
+  20.86 peak   -8.6 rms  -17.6 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.133 g=1.00
+  20.91 peak   -6.2 rms  -15.0 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.133 g=1.00
+  20.92 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] at vol=0.450
+  20.96 peak   -3.3 rms  -15.1 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.138 g=1.00
+  21.01 peak   -5.7 rms  -13.7 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.143 g=1.00
+  21.06 peak   -4.4 rms  -13.4 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] v=0.302 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.147 g=1.00
+  21.09 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] at vol=0.302
+  21.11 peak   -5.7 rms  -15.3 clip    0 next/StationFight      Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.151 g=1.00
+  21.14 ** EVENT Exit + Leave: to the Shop
+  21.14 ** EVENT phase Ended
+  21.16 peak   -3.0 rms  -14.7 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.155 g=1.00
+  21.21 peak   -5.1 rms  -13.9 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.145 g=1.00
+  21.26 peak   -5.1 rms  -14.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.950 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.137 g=1.00
+  21.31 peak   -6.3 rms  -14.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.946 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.129 g=1.00
+  21.36 peak   -2.7 rms  -12.6 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.946 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.129 g=1.00
+  21.41 peak   -4.2 rms  -12.3 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.930 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.120 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.119 g=1.00
+  21.42 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] at vol=0.120
+  21.46 peak   -4.2 rms  -12.7 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.917 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.111 g=1.00
+  21.51 peak   -5.3 rms  -14.7 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.900 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.101 g=1.00
+  21.55 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] at vol=0.550
+  21.56 peak   -3.5 rms  -14.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.884 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.090 g=1.00
+  21.61 peak   -6.7 rms  -17.6 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.871 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.083 g=1.00
+  21.66 peak   -6.6 rms  -16.3 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.859 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.075 g=1.00
+  21.71 peak   -6.1 rms  -15.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.846 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.067 g=1.00
+  21.76 peak   -5.3 rms  -14.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.834 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.059 g=1.00
+  21.81 peak   -6.3 rms  -15.6 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.821 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.051 g=1.00
+  21.86 peak   -7.0 rms  -15.5 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.821 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.051 g=1.00
+  21.91 peak   -7.0 rms  -15.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.805 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.041 g=1.00
+  21.96 peak   -3.3 rms  -13.5 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.792 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.033 g=1.00
+  22.01 peak   -4.1 rms  -14.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.780 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.026 g=1.00
+  22.02 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] at vol=0.550
+  22.06 peak   -5.5 rms  -15.5 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.767 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.018 g=1.00
+  22.11 peak   -6.4 rms  -14.9 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.750 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.008 g=1.00
+  22.16 peak   -7.5 rms  -17.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.734 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.197 g=1.00
+  22.21 peak   -9.1 rms  -18.6 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.734 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.197 g=1.00
+  22.26 peak   -9.5 rms  -17.3 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.717 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.183 g=1.00
+  22.31 peak   -8.4 rms  -18.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.705 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.173 g=1.00
+  22.36 peak   -9.6 rms  -19.7 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.692 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_004] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.163 g=1.00
+  22.41 peak   -9.7 rms  -20.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.680 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.153 g=1.00
+  22.46 peak   -8.1 rms  -18.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.667 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.143 g=1.00
+  22.51 peak   -9.1 rms  -19.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.654 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.134 g=1.00
+  22.53 ** STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] at vol=0.550
+  22.56 peak   -6.8 rms  -17.9 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.638 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.120 g=1.00
+  22.61 peak   -4.9 rms  -16.9 clip    0 toShop/Ended           Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.700 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.626 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.110 g=1.00
+  22.66 peak   -6.3 rms  -16.2 clip    0 toShop/Ended           Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.700 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.613 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.550 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.450 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.100 g=1.00
+  22.71 peak   -4.4 rms  -13.0 clip    0 toShop/Ended           Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.680 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.588 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.534 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.437 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.437 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.437 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.088 g=1.00
+  22.76 peak   -4.6 rms  -13.4 clip    0 toShop/Ended           Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.622 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.565 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.489 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.400 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.400 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.400 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.071 g=1.00
+  22.81 peak   -4.1 rms  -14.3 clip    0 toShop/Ended           Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.564 g=1.00; Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.541 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.443 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.362 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.362 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Foley_Crawling_A_001] v=0.362 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.057 g=1.00
+  22.86 peak   -4.3 rms  -13.4 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.518 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.505 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.397 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.397 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.325 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.325 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.044 g=1.00
+  22.91 peak   -4.8 rms  -14.5 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.495 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.447 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.351 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.351 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] v=0.287 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.287 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.032 g=1.00
+  22.96 peak   -8.0 rms  -17.4 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.473 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.388 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.305 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.305 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.305 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.250 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.022 g=1.00
+  23.00 peak  -10.0 rms  -19.6 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.473 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.388 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.305 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.305 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.305 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.250 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.022 g=1.00
+  23.06 peak  -10.3 rms  -21.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.440 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.310 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.244 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.244 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.244 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.200 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.012 g=1.00
+  23.11 peak  -10.4 rms  -21.3 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.417 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.233 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.150 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.005 g=1.00
+  23.16 peak  -12.8 rms  -21.7 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.417 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.233 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.150 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.005 g=1.00
+  23.20 peak  -12.0 rms  -24.3 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.417 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.233 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.150 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.005 g=1.00
+  23.26 peak  -13.7 rms  -25.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.417 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.233 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.150 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.005 g=1.00
+  23.31 peak  -14.8 rms  -25.9 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.417 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.233 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.183 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.150 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.005 g=1.00
+  23.36 peak  -16.3 rms  -24.5 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.360 g=1.00; Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] v=0.214 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] v=0.168 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] v=0.168 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] v=0.145 g=1.00; Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] v=0.137 g=1.00; Level/Game Root/Ambient Bed/Ambient Bed Voice[Bat Short] v=0.003 g=1.00
+  23.40 ** STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] at vol=0.168
+  23.40 ** STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] at vol=0.145
+  23.40 ** STOP destroyed Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] at vol=0.214
+  23.40 ** STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] at vol=0.168
+  23.40 ** STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] at vol=0.137
+  23.40 peak  -21.7 rms  -29.5 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.350 g=1.00
+  23.46 peak  -19.4 rms  -27.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.336 g=1.00
+  23.51 peak  -16.1 rms  -27.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.326 g=1.00
+  23.56 peak  -18.0 rms  -26.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.316 g=1.00
+  23.60 peak  -16.4 rms  -24.6 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.316 g=1.00
+  23.66 peak  -13.6 rms  -23.8 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.303 g=1.00
+  23.71 peak  -14.8 rms  -25.5 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.293 g=1.00
+  23.76 peak  -14.3 rms  -24.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.283 g=1.00
+  23.78 ** EVENT level scene unloaded
+  23.80 peak  -16.6 rms  -25.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.273 g=1.00
+  23.86 peak  -15.6 rms  -23.9 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.256 g=1.00
+  23.92 peak  -15.6 rms  -25.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.246 g=1.00
+  23.96 peak  -14.5 rms  -22.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.246 g=1.00
+  24.01 peak  -17.9 rms  -26.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.233 g=1.00
+  24.07 peak  -16.2 rms  -27.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.221 g=1.00
+  24.12 peak  -18.0 rms  -27.3 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.210 g=1.00
+  24.16 peak  -19.4 rms  -29.1 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.200 g=1.00
+  24.20 peak  -19.6 rms  -29.3 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.190 g=1.00
+  24.26 peak  -20.2 rms  -30.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.180 g=1.00
+  24.31 peak  -17.9 rms  -28.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.166 g=1.00
+  24.37 peak  -23.5 rms  -31.0 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.156 g=1.00
+  24.39 ** EVENT shop scene loaded
+  24.40 peak  -21.7 rms  -33.2 clip    0 toShop/Ended           Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.156 g=1.00
+  24.48 peak  -23.6 rms  -31.6 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.143 g=1.00
+  24.51 peak  -24.9 rms  -32.7 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.130 g=1.00
+  24.56 peak  -23.5 rms  -32.8 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.120 g=1.00
+  24.61 peak  -25.2 rms  -33.5 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.110 g=1.00
+  24.66 peak  -24.9 rms  -32.7 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.100 g=1.00
+  24.71 peak  -22.6 rms  -32.3 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.090 g=1.00
+  24.76 peak  -24.8 rms  -32.7 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.076 g=1.00
+  24.81 peak  -25.9 rms  -35.4 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.066 g=1.00
+  24.86 peak  -29.7 rms  -37.9 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.056 g=1.00
+  24.91 peak  -35.2 rms  -43.3 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.046 g=1.00
+  24.96 peak  -34.2 rms  -42.5 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.036 g=1.00
+  25.01 peak  -36.4 rms  -43.9 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.026 g=1.00
+  25.06 peak  -39.3 rms  -47.2 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.016 g=1.00
+  25.11 peak  -46.3 rms  -55.4 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.016 g=1.00
+  25.16 peak  -53.4 rms  -64.3 clip    0 shop/Ended             Boot/Storm Bed[Thunder strikes 30 second- Loop] v=0.003 g=1.00
+  25.20 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.26 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.31 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.36 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.41 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.46 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.51 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.56 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.61 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.66 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.71 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.76 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.81 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.86 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.91 peak   -inf rms   -inf clip    0 shop/Ended             
+  25.96 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.01 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.06 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.11 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.16 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.21 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.26 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.31 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.36 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.41 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.46 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.51 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.56 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.61 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.66 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.71 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.76 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.81 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.86 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.91 peak   -inf rms   -inf clip    0 shop/Ended             
+  26.96 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.00 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.06 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.11 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.16 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.20 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.26 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.31 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.36 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.41 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.46 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.51 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.56 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.60 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.66 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.71 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.76 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.81 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.87 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.91 peak   -inf rms   -inf clip    0 shop/Ended             
+  27.96 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.00 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.06 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.11 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.16 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.20 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.26 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.31 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.36 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.40 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.47 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.51 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.56 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.60 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.66 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.71 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.76 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.80 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.86 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.91 peak   -inf rms   -inf clip    0 shop/Ended             
+  28.96 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.00 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.07 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.11 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.16 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.20 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.26 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.31 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.36 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.40 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.46 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.51 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.56 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.60 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.67 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.71 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.76 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.80 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.86 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.91 peak   -inf rms   -inf clip    0 shop/Ended             
+  29.96 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.00 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.06 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.11 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.16 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.20 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.27 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.31 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.36 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.40 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.41 ** EVENT done
+  30.46 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.51 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.56 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.60 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.66 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.71 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.76 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.80 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.87 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.91 peak   -inf rms   -inf clip    0 shop/Ended             
+  30.96 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.00 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.06 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.11 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.16 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.20 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.26 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.31 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.36 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.40 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.47 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.51 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.56 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.60 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.66 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.71 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.76 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.80 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.86 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.91 peak   -inf rms   -inf clip    0 shop/Ended             
+  31.96 peak   -inf rms   -inf clip    0 shop/Ended             
+  32.00 peak   -inf rms   -inf clip    0 shop/Ended             
+  32.07 peak   -inf rms   -inf clip    0 shop/Ended             
+  32.11 peak   -inf rms   -inf clip    0 shop/Ended             

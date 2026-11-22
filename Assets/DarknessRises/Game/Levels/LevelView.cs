@@ -93,6 +93,12 @@ namespace DarknessRises.Game.Levels
         /// <summary>Raised when the last fight is over and the end beat starts.</summary>
         public event Action EndBeatStarted;
 
+        /// <summary>
+        /// Raised when the calm is over and the character walks out the far door as the screen fades to black: the
+        /// Level's sounds fade out with it (issue #121).
+        /// </summary>
+        public event Action WalkOutStarted;
+
         /// <summary>Raised once the character has walked out the far door and the Level is over.</summary>
         public event Action Finished;
 
@@ -328,6 +334,7 @@ namespace DarknessRises.Game.Levels
 
             // The character walks out the far door as the screen fades to black.
             exitStation.Clear();
+            WalkOutStarted?.Invoke();
             for (var elapsed = 0f; elapsed < end.FadeOutSeconds || !progress.IsFinished; elapsed += Time.deltaTime)
             {
                 screenFade.Alpha = end.ScreenFadeAt(elapsed);

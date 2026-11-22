@@ -35,7 +35,8 @@ namespace DarknessRises.Game.Boot
     /// And it owns the sounds that carry across scenes (ADR 0011): the storm plays on the boot's own
     /// <see cref="StormPlayer"/>, which each Level drives while it plays, so it rolls on through a Level change instead of
     /// dying with the old scene, and fades out for the Shop. Its volumes follow the scene that is showing, and its own
-    /// ears (<see cref="BootEars"/>) hear it while no scene's are there.
+    /// ears (<see cref="BootEars"/>) hear it while no scene's are there. Every other sound belongs to its scene and fades
+    /// with it before the boot unloads it (<see cref="SceneAudioVolumes.FadeOut"/>), so nothing stops dead in a scene change.
     /// </summary>
     public sealed class Bootstrap : MonoBehaviour
     {
@@ -118,6 +119,9 @@ namespace DarknessRises.Game.Boot
         {
             versionLabel.Show(definition.VersionLabel, VersionLabel.Text(Application.version, Debug.isDebugBuild));
             loadingScreen.Use(definition.LoadingScreen);
+
+            // Before any sound plays: on the Web, sounds that pile up are held under full scale instead of clipping.
+            WebAudioLimiter.Install(definition.WebAudioLimiter);
             loadingScreen.Show();
             lifetime = new CancellationTokenSource();
             Save = PlayerSave.Load(SaveStorages.OfThisPlayer());
@@ -210,7 +214,7 @@ namespace DarknessRises.Game.Boot
             // at the Level's last volumes through the change, heard by the boot's ears while the Level's are gone.
             await UniTask.Yield(cancellationToken);
             audioVolumes.Unfollow();
-            await UnloadSceneAsync(scene, cancellationToken);
+            await UnloadSceneAsync(scene, gameRoot.AudioVolumes, cancellationToken);
             LevelUnloaded?.Invoke();
             return next;
         }
@@ -229,7 +233,7 @@ namespace DarknessRises.Game.Boot
             shop.Opened += loadingScreen.Hide;
             await shop.RunAsync(Save, cancellationToken);
             audioVolumes.Unfollow();
-            await UnloadSceneAsync(scene, cancellationToken);
+            await UnloadSceneAsync(scene, shop.AudioVolumes, cancellationToken);
             ShopUnloaded?.Invoke();
         }
 
@@ -253,18 +257,51 @@ namespace DarknessRises.Game.Boot
             return scene;
         }
 
-        private async UniTask UnloadSceneAsync(Scene scene, CancellationToken cancellationToken)
+        // The scene's own sounds fade to silence first (a Level that ended already has, with its end beat), so nothing in it
+        // is still playing to stop dead as it goes (issue #121). The sounds the boot carries across scenes fade on their own.
+        private async UniTask UnloadSceneAsync(Scene scene, SceneAudioVolumes sceneVolumes, CancellationToken cancellationToken)
         {
+            if (sceneVolumes != null)
+            {
+                sceneVolumes.FadeOut(definition.SceneSoundFadeOutSeconds);
+                await UniTask.WaitUntil(() => sceneVolumes == null || sceneVolumes.IsSilent, cancellationToken: cancellationToken);
+            }
+
             loadingScreen.Show();
             loadingCamera.enabled = true;
 
             // The scene's ears go with it; the boot's hear on, so a sound that carries across scenes never cuts.
             ears.TakeFrom(scene);
+            AuditUnload(scene);
             await sceneScope.EndAsync();
             sceneScope = null;
 
             // Whatever the scene made at runtime and nothing holds any more goes too.
             await Resources.UnloadUnusedAssets().ToUniTask(cancellationToken: cancellationToken);
+        }
+
+        // The Editor and development builds name every source of the scene that would still stop dead as it unloads.
+        [System.Diagnostics.Conditional("UNITY_EDITOR"), System.Diagnostics.Conditional("DEBUG")]
+        private void AuditUnload(Scene scene)
+        {
+            var readings = new List<SceneUnloadAudit.Reading>();
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                foreach (var source in root.GetComponentsInChildren<AudioSource>(true))
+                {
+                    readings.Add(new SceneUnloadAudit.Reading(
+                        $"{scene.name}/{source.name}{(source.clip != null ? $" ({source.clip.name})" : string.Empty)}",
+                        source.isActiveAndEnabled && source.isPlaying,
+                        source.volume));
+                }
+            }
+
+            var cuts = new List<SceneUnloadAudit.Reading>();
+            SceneUnloadAudit.FindCuts(readings, definition.UnloadLoudnessWarning, cuts);
+            foreach (var cut in cuts)
+            {
+                Debug.LogWarning($"[Audio] {cut.Name} is still playing at volume {cut.Volume:0.000} as its scene unloads: it stops dead.", this);
+            }
         }
 
         private void OnLevelStarted(int _)

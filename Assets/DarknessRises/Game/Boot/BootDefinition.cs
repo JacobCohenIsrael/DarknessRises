@@ -1,3 +1,4 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Hud;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -32,10 +33,34 @@ namespace DarknessRises.Game.Boot
         [SerializeField, Tooltip("The loading screen: what covers the screen while a Level or the Shop loads, until it's ready to be seen.")]
         private LoadingScreenSettings loadingScreen = new();
 
+        [SerializeField, Min(0f), Tooltip(
+            "Seconds every sound still playing in a Level or the Shop takes to fade to silence before the boot unloads that scene " +
+            "(on the way to the Shop, after Restart, after PLAY), so none stops dead with it. A Level that ended has already faded with its end beat.")]
+        private float sceneSoundFadeOutSeconds = 0.6f;
+
+        [SerializeField, Range(0f, 1f), Tooltip(
+            "Development builds and the Editor: a source of a scene that is still playing louder than this (its effective volume) when the " +
+            "scene unloads is logged as a warning, since it stops dead there.")]
+        private float unloadLoudnessWarning = 0.01f;
+
+        [SerializeField, Tooltip(
+            "The Web player's safety limiter: holds the summed output under full scale where sounds pile up, since the browser has no " +
+            "mixer between the game's sounds and its output and clips them hard.")]
+        private WebAudioLimiterSettings webAudioLimiter = new();
+
         public AssetReference LevelScene => levelScene;
         public AssetReference ShopScene => shopScene;
         public AssetReference TestRoomScene => testRoomScene;
         public VersionLabelSettings VersionLabel => versionLabel;
         public LoadingScreenSettings LoadingScreen => loadingScreen;
+
+        /// <summary>Seconds a scene's sounds take to fade to silence before the boot unloads it.</summary>
+        public float SceneSoundFadeOutSeconds => sceneSoundFadeOutSeconds;
+
+        /// <summary>The effective volume above which a source still playing when its scene unloads is reported (dev builds).</summary>
+        public float UnloadLoudnessWarning => unloadLoudnessWarning;
+
+        /// <summary>The Web player's safety limiter.</summary>
+        public WebAudioLimiterSettings WebAudioLimiter => webAudioLimiter;
     }
 }

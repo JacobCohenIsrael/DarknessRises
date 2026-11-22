@@ -16,6 +16,9 @@ namespace DarknessRises.Game.Levels
         [SerializeField, Min(0f), Tooltip("Seconds the screen takes to fade to black as the character walks out.")]
         private float fadeOutSeconds = 1.5f;
 
+        [SerializeField, Min(0f), Tooltip("Seconds every sound of the Level (the Boss's defeat, Enemy footsteps, the character) takes to fade to silence once the character walks out, so nothing is loud over the black screen and nothing is still playing to stop dead when the Level unloads. At most the screen's fade, so it's silent by black.")]
+        private float soundFadeOutSeconds = 1.5f;
+
         [Header("Calm light by the far door")]
         [SerializeField, Tooltip("Shadowless light by the exit. It rises during the calm.")]
         private Color calmLightColor = new(1f, 0.82f, 0.6f);
@@ -38,6 +41,9 @@ namespace DarknessRises.Game.Levels
         public float CalmSeconds => calmSeconds;
         public float CardHoldSeconds => cardHoldSeconds;
         public float FadeOutSeconds => fadeOutSeconds;
+
+        /// <summary>Seconds the Level's own sounds take to fade to silence once the character walks out.</summary>
+        public float SoundFadeOutSeconds => soundFadeOutSeconds;
         public Color CalmLightColor => calmLightColor;
         public float CalmLightRange => calmLightRange;
 

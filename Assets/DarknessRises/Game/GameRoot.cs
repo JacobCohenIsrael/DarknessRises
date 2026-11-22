@@ -754,6 +754,7 @@ namespace DarknessRises.Game
                     level.BossFightStarted += OnBossFightStarted;
                     level.BossFightEnded += OnBossFightEnded;
                     level.EndBeatStarted += OnEndBeatStarted;
+                    level.WalkOutStarted += OnWalkOutStarted;
                     level.Finished += OnLevelFinished;
                 }
                 else
@@ -767,6 +768,7 @@ namespace DarknessRises.Game
                     level.BossFightStarted -= OnBossFightStarted;
                     level.BossFightEnded -= OnBossFightEnded;
                     level.EndBeatStarted -= OnEndBeatStarted;
+                    level.WalkOutStarted -= OnWalkOutStarted;
                     level.Finished -= OnLevelFinished;
                 }
             }
@@ -843,6 +845,14 @@ namespace DarknessRises.Game
         }
 
         // The Level is over: a reload under way stops being heard, fading out rather than cut dead.
+        // The character walks out as the screen fades to black: every sound of the Level fades with it, the Boss's long
+        // defeat rumble among them, so the black screen and the card are quiet and nothing is left to stop dead when the
+        // boot unloads the Level (issue #121).
+        private void OnWalkOutStarted()
+        {
+            audioVolumes.FadeOut(configuration.Level.End.SoundFadeOutSeconds);
+        }
+
         private void OnEndBeatStarted()
         {
             reloadSound.Interrupt();

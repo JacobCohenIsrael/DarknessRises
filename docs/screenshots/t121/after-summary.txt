@@ -1,0 +1,52 @@
+samples from the Boss kill on: 747, windows with samples >= full scale: 0, clipped samples: 0
+max peak   -2.1 dBFS, max RMS   -9.9 dBFS
+loudest windows:
+    15.92 peak   -2.1 rms  -12.2 clip 0
+    -1.00 peak   -2.1 rms  -13.5 clip 0
+    -0.09 peak   -2.3 rms   -9.9 clip 0
+    13.37 peak   -2.3 rms  -10.0 clip 0
+    -0.94 peak   -2.4 rms  -10.7 clip 0
+    16.07 peak   -2.4 rms  -10.6 clip 0
+    19.11 peak   -2.4 rms  -10.8 clip 0
+    18.91 peak   -2.4 rms  -12.9 clip 0
+     0.00 peak   -2.5 rms  -13.0 clip 0
+     0.41 peak   -2.5 rms  -11.1 clip 0
+abrupt stops logged by the probe (playing above 0.02 at one sample, gone at the next):
+   -13.53 STOP stopped Level/HUD/Station Banner/Voice 1[Metal Impact 7] at vol=0.800
+    -6.47 STOP stopped Level/Level/Rooms/Room Boss Room/Colossus[-] at vol=1.000
+    17.90 STOP stopped Level/HUD/Station Banner/Voice 1[Metal Impact 7] at vol=0.800
+    19.57 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] at vol=0.449
+    19.88 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] at vol=0.375
+    20.60 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] at vol=0.550
+    20.92 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] at vol=0.450
+    21.09 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_004] at vol=0.302
+    21.42 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 2[Foley_Crawling_A_001] at vol=0.120
+    21.55 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_003] at vol=0.550
+    22.02 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] at vol=0.550
+    22.53 STOP stopped Level/Game Root/Enemy Footsteps/Footstep Voice 4[Footsteps_Zombie_concret_002] at vol=0.550
+    23.40 STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 1[Footsteps_Zombie_concret_002] at vol=0.168
+    23.40 STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 3[Footsteps_Zombie_concret_001] at vol=0.145
+    23.40 STOP destroyed Level/Level/Enemies/Shambler/Tell Voice[Monster Bite] at vol=0.214
+    23.40 STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 2[Footsteps_Zombie_concret_003] at vol=0.168
+    23.40 STOP destroyed Level/Game Root/Enemy Footsteps/Footstep Voice 4[Foley_Crawling_A_001] at vol=0.137
+events:
+   -21.61 EVENT level scene loaded
+   -16.26 EVENT phase Walking
+   -16.25 EVENT volumes sound=100 ambient=100 music=80
+   -15.58 EVENT phase StationFight
+   -13.24 EVENT phase Walking
+   -13.24 EVENT skipped to the Boss
+   -13.23 EVENT phase BossFight
+    -5.21 EVENT beating the Boss
+    -0.02 EVENT phase LevelEnd
+     0.00 EVENT the Boss is beaten
+     8.16 EVENT phase LevelStart
+     8.64 EVENT level scene unloaded
+     9.11 EVENT level scene loaded
+    15.18 EVENT phase Walking
+    15.86 EVENT phase StationFight
+    21.14 EVENT Exit + Leave: to the Shop
+    21.14 EVENT phase Ended
+    23.78 EVENT level scene unloaded
+    24.39 EVENT shop scene loaded
+    30.41 EVENT done

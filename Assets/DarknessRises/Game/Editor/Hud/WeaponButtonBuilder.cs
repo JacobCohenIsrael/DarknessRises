@@ -15,15 +15,18 @@ namespace DarknessRises.Game.Editor.Hud
     /// </summary>
     public static class WeaponButtonBuilder
     {
-        // The magazine count is 360 wide, 56 from the right edge and 48 from the bottom: the tile sits beside it.
+        // The magazine count is 360 wide, 56 from the right edge and 48 from the bottom: the tile sits beside it, inside
+        // the safe area. 416 wide fits the longest name, FLAMETHROWER (about 280 at the full 30), beside the icon, so every
+        // name shows at the same size. At 4:3 (a 1440-wide HUD) its left edge is at 592, clear of the Skill bar's 496.
         private static readonly Vector2 Margin = new(432f, 48f);
-        private static readonly Vector2 Size = new(250f, 120f);
-        private const float Padding = 10f;
+        private static readonly Vector2 Size = new(416f, 120f);
+        private const float Padding = 14f;
         private const float NameFontSize = 30f;
         private const float ReserveFontSize = 26f;
 
-        // The icon fills the left of the upper half; the name takes the rest. A silhouette is twice as wide as tall.
-        private const float IconWidth = 96f;
+        // The icon sits in a fixed box at the left of the upper half, fitted in proportion (a silhouette is twice as wide
+        // as tall); the name starts a fixed gap after it.
+        private static readonly Vector2 IconBox = new(84f, 42f);
         private const float IconGap = 14f;
 
         // Until the Weapon button's settings colour them at runtime.
@@ -44,7 +47,7 @@ namespace DarknessRises.Game.Editor.Hud
 
             var tile = new GameObject("Weapon Button", typeof(RectTransform), typeof(Image), typeof(Button), typeof(WeaponButtonView));
             var rect = tile.GetComponent<RectTransform>();
-            rect.SetParent(hud.transform, false);
+            rect.SetParent(HudBuilder.SafeArea(hud.transform), false);
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 0f);
             rect.anchoredPosition = new Vector2(-Margin.x, Margin.y);
             rect.sizeDelta = Size;
@@ -56,7 +59,8 @@ namespace DarknessRises.Game.Editor.Hud
             var icon = AddIcon(rect);
             var weaponName = AddLine(rect, "Name", "PISTOL", NameFontSize, upperHalf: true);
             weaponName.fontStyle = FontStyles.Bold;
-            weaponName.rectTransform.offsetMin += Vector2.right * (IconWidth + IconGap);
+            weaponName.rectTransform.offsetMin += Vector2.right * (IconBox.x + IconGap);
+            weaponName.alignment = TextAlignmentOptions.MidlineLeft;
             var reserve = AddLine(rect, "Reserve", "RESERVE 0", ReserveFontSize, upperHalf: false);
 
             var view = tile.GetComponent<WeaponButtonView>();
@@ -79,11 +83,11 @@ namespace DarknessRises.Game.Editor.Hud
             var icon = new GameObject("Icon", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             var rect = icon.rectTransform;
             rect.SetParent(tile, false);
-            rect.anchorMin = new Vector2(0f, 0.5f);
-            rect.anchorMax = new Vector2(0f, 1f);
+            // Centred in the upper half, as the name is.
+            rect.anchorMin = rect.anchorMax = new Vector2(0f, 0.75f);
             rect.pivot = new Vector2(0f, 0.5f);
-            rect.offsetMin = new Vector2(Padding, 0f);
-            rect.offsetMax = new Vector2(Padding + IconWidth, -Padding);
+            rect.sizeDelta = IconBox;
+            rect.anchoredPosition = new Vector2(Padding, -Padding / 2f);
             icon.preserveAspect = true;
             icon.raycastTarget = false;
             icon.color = TextColor;
@@ -107,7 +111,8 @@ namespace DarknessRises.Game.Editor.Hud
             label.alignment = TextAlignmentOptions.Center;
             label.raycastTarget = false;
             label.enableAutoSizing = true;
-            label.fontSizeMin = fontSize * 0.55f;
+            // The tile fits every Weapon's name at full size; shrinking is only a safety net.
+            label.fontSizeMin = fontSize * 0.8f;
             label.fontSizeMax = fontSize;
             label.textWrappingMode = TextWrappingModes.NoWrap;
             return label;

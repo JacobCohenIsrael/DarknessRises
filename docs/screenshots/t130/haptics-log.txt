@@ -1,0 +1,472 @@
+# #130 Haptics: the effect log of a played Run (dev Web build 0.1.19-dev, headless Chrome 157, muted)
+# Played on its own by a temporary probe (never committed): Level 1 with the Pistol (Skills, a Grenade, a pause, the Boss, death),
+# the Shop (a tap the bank can't cover, a purchase, an unlock, VIBRATION off and on), then Level 1 with the Machine gun.
+# Times on the left are seconds since the page opened; [Haptics] times are the game's real-time clock.
+[   4.0 s] [Haptics] Web: 112 patterns handed to navigator.vibrate.
+[   4.0 s] [Haptics] Ready: this device can vibrate, switch on, 112 waveforms prepared.
+[   9.7 s] [T130] phase Walking
+[   9.7 s] [T130] STAGE A: Level 1 with the Pistol
+[  10.3 s] [T130] phase StationFight
+[  13.8 s] [Haptics]   11.948s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  14.3 s] [Haptics]   12.414s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  14.8 s] [Haptics]   12.881s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  15.1 s] [Haptics]   13.215s PLAY ComboUp x1 (priority 15, 10 ms)
+[  15.1 s] [Haptics]   13.215s drop EnemyHit: Weaker
+[  15.3 s] [Haptics]   13.365s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  15.3 s] [Haptics]   13.365s drop EnemyHit: Weaker
+[  15.6 s] [Haptics]   13.748s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  15.9 s] [Haptics]   13.982s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  16.1 s] [Haptics]   14.233s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  16.1 s] [Haptics]   14.233s drop ComboUp: Weaker
+[  16.1 s] [Haptics]   14.233s drop EnemyHit: Weaker
+[  17.3 s] [Haptics]   15.367s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  17.5 s] [Haptics]   15.617s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  17.7 s] [T130] press Q (Flare)
+[  17.7 s] [Haptics]   15.817s PLAY Flare x1 (priority 45, 340 ms)
+[  18.6 s] [Haptics]   16.718s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  18.9 s] [Haptics]   17.018s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  19.2 s] [Haptics]   17.285s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  19.2 s] [Haptics]   17.285s drop EnemyHit: Weaker
+[  19.2 s] [Haptics]   17.302s PLAY StationClearS x1 (priority 55, 420 ms)
+[  22.0 s] [T130] phase Walking
+[  25.7 s] [T130] press E (Adrenaline)
+[  25.7 s] [Haptics]   23.824s PLAY Adrenaline x1 (priority 45, 210 ms)
+[  26.1 s] [T130] phase StationFight
+[  28.9 s] [Haptics]   27.026s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  29.2 s] [Haptics]   27.278s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  29.4 s] [Haptics]   27.527s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  29.7 s] [Haptics]   27.778s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  29.7 s] [Haptics]   27.778s drop ComboUp: Weaker
+[  29.7 s] [Haptics]   27.778s drop EnemyHit: Weaker
+[  31.3 s] [Haptics]   29.446s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  31.6 s] [Haptics]   29.697s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  31.8 s] [Haptics]   29.946s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  32.1 s] [Haptics]   30.213s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  32.1 s] [Haptics]   30.213s drop ComboUp: Weaker
+[  32.1 s] [Haptics]   30.213s drop EnemyHit: Weaker
+[  33.6 s] [Haptics]   31.680s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  33.7 s] [T130] press F (Lure)
+[  33.7 s] [Haptics]   31.815s PLAY LureThrow x1 (priority 20, 12 ms)
+[  34.2 s] [Haptics]   32.266s PLAY LureLand x1 (priority 30, 40 ms)
+[  34.5 s] [Haptics]   32.614s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  34.8 s] [Haptics]   32.865s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  35.0 s] [Haptics]   33.132s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  35.3 s] [Haptics]   33.399s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  35.3 s] [Haptics]   33.399s drop ComboUp: Weaker
+[  35.3 s] [Haptics]   33.399s drop EnemyHit: Weaker
+[  38.5 s] [Haptics]   36.584s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  38.7 s] [Haptics]   36.835s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  39.0 s] [Haptics]   37.085s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  39.2 s] [Haptics]   37.352s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  39.2 s] [Haptics]   37.352s drop ComboUp: Weaker
+[  39.2 s] [Haptics]   37.352s drop EnemyHit: Weaker
+[  39.7 s] [T130] right-click (Grenade)
+[  40.5 s] [Haptics]   38.653s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  40.8 s] [Haptics]   38.903s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  41.1 s] [Haptics]   39.170s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  41.1 s] [Haptics]   39.203s PLAY GrenadeExplosion x1 (priority 75, 250 ms)
+[  41.1 s] [Haptics]   39.203s drop EnemyKilled: Weaker
+[  41.4 s] [Haptics]   39.504s PLAY ComboUp x1 (priority 15, 10 ms)
+[  41.4 s] [Haptics]   39.504s drop EnemyHit: Weaker
+[  41.4 s] [Haptics]   39.537s drop EnemyHit: TooSoon
+[  42.5 s] [Haptics]   40.622s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  42.6 s] [Haptics]   40.705s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  42.9 s] [Haptics]   40.971s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  43.1 s] [Haptics]   41.222s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  43.1 s] [Haptics]   41.222s drop ComboUp: Weaker
+[  43.1 s] [Haptics]   41.222s drop EnemyHit: Weaker
+[  43.5 s] [Haptics]   41.655s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  43.8 s] [Haptics]   41.906s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  44.1 s] [Haptics]   42.172s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  44.1 s] [Haptics]   42.172s drop EnemyHit: Weaker
+[  44.1 s] [Haptics]   42.189s PLAY StationClearS x1 (priority 55, 420 ms)
+[  45.7 s] [T130] press P (pause) for 3 s
+[  49.0 s] [T130] press P (resume)
+[  50.2 s] [T130] phase Walking
+[  50.8 s] [Haptics]   48.861s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  51.0 s] [Haptics]   49.095s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  51.2 s] [Haptics]   49.329s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  51.5 s] [Haptics]   49.562s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  51.5 s] [Haptics]   49.562s drop ComboUp: Weaker
+[  51.5 s] [Haptics]   49.562s drop EnemyHit: Weaker
+[  54.6 s] [T130] phase StationFight
+[  58.5 s] [Haptics]   56.567s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  59.4 s] [Haptics]   57.536s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  59.6 s] [Haptics]   57.735s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  59.9 s] [Haptics]   58.003s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  60.1 s] [Haptics]   58.254s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  60.1 s] [Haptics]   58.254s drop ComboUp: Weaker
+[  60.1 s] [Haptics]   58.254s drop EnemyHit: Weaker
+[  61.5 s] [Haptics]   59.638s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  61.8 s] [Haptics]   59.888s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  62.1 s] [Haptics]   60.190s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  62.4 s] [Haptics]   60.455s PLAY ComboUp x1 (priority 15, 10 ms)
+[  62.4 s] [Haptics]   60.455s drop EnemyHit: Weaker
+[  62.5 s] [Haptics]   60.623s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  62.8 s] [Haptics]   60.872s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  62.8 s] [Haptics]   60.872s drop EnemyHit: Weaker
+[  63.8 s] [Haptics]   61.939s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  64.0 s] [Haptics]   62.122s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  64.2 s] [Haptics]   62.323s PLAY ComboUp x1 (priority 15, 10 ms)
+[  64.2 s] [Haptics]   62.323s drop EnemyHit: Weaker
+[  64.5 s] [Haptics]   62.590s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  64.8 s] [Haptics]   62.857s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  64.8 s] [Haptics]   62.857s drop EnemyHit: Weaker
+[  65.0 s] [Haptics]   63.090s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  65.2 s] [Haptics]   63.324s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  65.2 s] [Haptics]   63.324s drop ComboUp: Weaker
+[  65.2 s] [Haptics]   63.324s drop EnemyHit: Weaker
+[  67.0 s] [Haptics]   65.108s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  67.3 s] [Haptics]   65.376s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  67.5 s] [Haptics]   65.609s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  67.8 s] [Haptics]   65.859s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  67.8 s] [Haptics]   65.859s drop ComboUp: Weaker
+[  67.8 s] [Haptics]   65.859s drop EnemyHit: Weaker
+[  69.2 s] [Haptics]   67.327s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  69.3 s] [Haptics]   67.427s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  69.6 s] [Haptics]   67.677s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  69.8 s] [Haptics]   67.927s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  70.1 s] [Haptics]   68.179s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  70.1 s] [Haptics]   68.179s drop ComboUp: Weaker
+[  70.1 s] [Haptics]   68.179s drop EnemyHit: Weaker
+[  70.4 s] [Haptics]   68.480s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  70.6 s] [Haptics]   68.745s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  70.9 s] [Haptics]   68.995s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  71.2 s] [Haptics]   69.262s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  71.2 s] [Haptics]   69.262s drop ComboUp: Weaker
+[  71.2 s] [Haptics]   69.262s drop EnemyHit: Weaker
+[  71.6 s] [Haptics]   69.729s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  71.9 s] [Haptics]   69.979s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  72.1 s] [Haptics]   70.246s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  73.2 s] [Haptics]   71.264s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  73.3 s] [Haptics]   71.414s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  73.3 s] [Haptics]   71.414s drop ComboUp: Weaker
+[  73.3 s] [Haptics]   71.414s drop EnemyHit: Weaker
+[  73.6 s] [Haptics]   71.681s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  73.8 s] [Haptics]   71.930s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  74.1 s] [Haptics]   72.197s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  74.3 s] [Haptics]   72.448s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  74.3 s] [Haptics]   72.448s drop ComboUp: Weaker
+[  74.3 s] [Haptics]   72.448s drop EnemyHit: Weaker
+[  74.4 s] [Haptics]   72.465s PLAY StationClearS x1 (priority 55, 420 ms)
+[  77.2 s] [T130] phase Walking
+[  81.1 s] [T130] phase StationFight
+[  82.4 s] [Haptics]   80.488s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  82.6 s] [Haptics]   80.738s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  82.9 s] [Haptics]   80.988s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  83.8 s] [Haptics]   81.874s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[  83.8 s] [Haptics]   81.874s drop ComboUp: Weaker
+[  83.8 s] [Haptics]   81.874s drop EnemyHit: Weaker
+[  84.7 s] [T130] skip to the Boss
+[  84.7 s] [T130] phase Walking
+[  84.7 s] [T130] phase BossFight
+[  86.7 s] [Haptics]   84.774s PLAY BossWindUp x1 (priority 40, 560 ms)
+[  89.8 s] [Haptics]   87.877s PLAY Hurt x1 (priority 70, 160 ms)
+[  89.8 s] [Haptics]   87.877s PLAY BossStomp x1 (priority 85, 500 ms)
+[  90.7 s] [Haptics]   88.815s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  90.9 s] [Haptics]   88.978s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  91.1 s] [Haptics]   89.228s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  91.4 s] [Haptics]   89.478s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  91.6 s] [Haptics]   89.729s PLAY ComboUp x1 (priority 15, 10 ms)
+[  91.6 s] [Haptics]   89.729s drop EnemyHit: Weaker
+[  91.9 s] [Haptics]   89.979s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  92.1 s] [Haptics]   90.229s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  92.4 s] [Haptics]   90.479s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  92.6 s] [Haptics]   90.731s PLAY ComboUp x1 (priority 15, 10 ms)
+[  92.6 s] [Haptics]   90.731s drop EnemyHit: Weaker
+[  92.9 s] [Haptics]   90.981s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  93.1 s] [Haptics]   91.230s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  94.7 s] [Haptics]   92.765s PLAY ReloadDone x1 (priority 20, 18 ms)
+[  95.4 s] [Haptics]   93.483s PLAY BossWindUp x1 (priority 40, 560 ms)
+[  98.5 s] [Haptics]   96.586s PLAY BossStomp x1 (priority 85, 500 ms)
+[  98.9 s] [Haptics]   97.035s drop EnemyHit: Weaker
+[  99.2 s] [Haptics]   97.285s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  99.4 s] [Haptics]   97.536s PLAY EnemyHit x1 (priority 10, 12 ms)
+[  99.7 s] [Haptics]   97.785s PLAY ComboUp x1 (priority 15, 10 ms)
+[  99.7 s] [Haptics]   97.785s drop EnemyHit: Weaker
+[  99.9 s] [Haptics]   98.019s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 100.2 s] [Haptics]   98.286s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 100.4 s] [Haptics]   98.519s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 100.7 s] [Haptics]   98.770s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 100.7 s] [Haptics]   98.770s drop EnemyHit: Weaker
+[ 100.9 s] [Haptics]   99.020s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 101.2 s] [Haptics]   99.271s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 102.1 s] [Haptics]  100.254s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 104.1 s] [Haptics]  102.189s PLAY BossWindUp x1 (priority 40, 560 ms)
+[ 107.2 s] [Haptics]  105.275s PLAY Hurt x1 (priority 70, 160 ms)
+[ 107.2 s] [Haptics]  105.275s PLAY BossStomp x1 (priority 85, 500 ms)
+[ 107.2 s] [Haptics]  105.292s drop HeartbeatFast: Weaker
+[ 107.2 s] [T130] god mode on at 1 hit points
+[ 107.5 s] [Haptics]  105.593s drop EnemyHit: Weaker
+[ 107.8 s] [Haptics]  105.878s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 107.8 s] [Haptics]  105.878s drop EnemyHit: Weaker
+[ 108.0 s] [Haptics]  106.111s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 108.3 s] [Haptics]  106.362s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 108.3 s] [Haptics]  106.428s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 108.5 s] [Haptics]  106.627s drop EnemyHit: Weaker
+[ 108.8 s] [Haptics]  106.860s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 108.8 s] [Haptics]  106.860s drop EnemyHit: Weaker
+[ 108.9 s] [Haptics]  107.010s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 109.0 s] [Haptics]  107.110s drop EnemyHit: Weaker
+[ 109.3 s] [Haptics]  107.377s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 109.5 s] [Haptics]  107.577s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 110.0 s] [Haptics]  108.145s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 110.3 s] [Haptics]  108.444s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 110.5 s] [Haptics]  108.561s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 110.6 s] [Haptics]  108.694s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 111.2 s] [Haptics]  109.279s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 111.7 s] [Haptics]  109.779s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 111.7 s] [Haptics]  109.846s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 111.9 s] [Haptics]  110.029s drop EnemyHit: Weaker
+[ 112.2 s] [Haptics]  110.297s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 112.3 s] [Haptics]  110.412s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 112.5 s] [Haptics]  110.580s drop EnemyHit: Weaker
+[ 112.6 s] [Haptics]  110.713s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 112.6 s] [Haptics]  110.713s drop EnemyHit: Weaker
+[ 112.8 s] [Haptics]  110.880s PLAY BossWindUp x1 (priority 40, 560 ms)
+[ 112.9 s] [Haptics]  110.980s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 112.9 s] [Haptics]  110.980s drop EnemyHit: Weaker
+[ 113.1 s] [Haptics]  111.232s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 113.4 s] [Haptics]  111.497s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 113.4 s] [Haptics]  111.497s drop EnemyHit: Weaker
+[ 113.4 s] [Haptics]  111.547s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 114.0 s] [Haptics]  112.114s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 114.0 s] [Haptics]  112.130s drop HeartbeatFast: TooSoon
+[ 114.3 s] [Haptics]  112.415s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 114.5 s] [Haptics]  112.598s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 114.5 s] [Haptics]  112.598s drop EnemyHit: Weaker
+[ 114.6 s] [Haptics]  112.698s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 114.8 s] [Haptics]  112.865s drop EnemyHit: Weaker
+[ 115.0 s] [Haptics]  113.115s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 115.1 s] [Haptics]  113.249s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 115.3 s] [Haptics]  113.382s drop EnemyKilled: Weaker
+[ 115.3 s] [Haptics]  113.382s drop EnemyHit: Weaker
+[ 115.5 s] [Haptics]  113.615s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 115.5 s] [Haptics]  113.615s drop ComboUp: Weaker
+[ 115.5 s] [Haptics]  113.615s drop EnemyHit: Weaker
+[ 115.7 s] [Haptics]  113.833s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 115.8 s] [Haptics]  113.899s drop EnemyHit: Weaker
+[ 116.1 s] [Haptics]  114.166s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 116.3 s] [Haptics]  114.383s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 116.3 s] [Haptics]  114.400s drop HeartbeatFast: TooSoon
+[ 116.3 s] [Haptics]  114.416s drop EnemyKilled: Weaker
+[ 116.3 s] [Haptics]  114.416s drop EnemyHit: Weaker
+[ 116.5 s] [Haptics]  114.583s PLAY BossStomp x1 (priority 85, 500 ms)
+[ 116.7 s] [Haptics]  114.767s drop ComboUp: Weaker
+[ 116.7 s] [Haptics]  114.767s drop EnemyHit: Weaker
+[ 116.9 s] [Haptics]  114.967s drop HeartbeatFast: Weaker
+[ 116.9 s] [Haptics]  115.017s drop EnemyHit: Weaker
+[ 117.2 s] [Haptics]  115.284s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 117.4 s] [Haptics]  115.534s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 118.0 s] [Haptics]  116.101s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 118.2 s] [Haptics]  116.351s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 118.4 s] [Haptics]  116.468s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 118.6 s] [Haptics]  116.668s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 118.6 s] [Haptics]  116.734s drop EnemyHit: Weaker
+[ 118.9 s] [Haptics]  116.985s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 118.9 s] [Haptics]  116.985s drop EnemyHit: Weaker
+[ 119.1 s] [Haptics]  117.219s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 119.1 s] [Haptics]  117.235s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 119.4 s] [Haptics]  117.469s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 119.6 s] [Haptics]  117.719s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 119.7 s] [Haptics]  117.802s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 119.9 s] [Haptics]  117.969s drop ComboUp: Weaker
+[ 119.9 s] [Haptics]  117.969s drop EnemyHit: Weaker
+[ 120.4 s] [Haptics]  118.386s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 120.7 s] [Haptics]  118.803s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 120.8 s] [Haptics]  118.937s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 121.0 s] [Haptics]  119.070s drop EnemyHit: Weaker
+[ 121.4 s] [Haptics]  119.337s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 121.4 s] [Haptics]  119.504s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 121.5 s] [Haptics]  119.587s drop EnemyKilled: Weaker
+[ 121.5 s] [Haptics]  119.587s drop ComboUp: Weaker
+[ 121.5 s] [Haptics]  119.587s drop EnemyHit: Weaker
+[ 122.0 s] [Haptics]  120.071s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 122.2 s] [Haptics]  120.188s PLAY BossWindUp x1 (priority 40, 560 ms)
+[ 122.2 s] [Haptics]  120.304s drop ReloadDone: Weaker
+[ 122.7 s] [Haptics]  120.655s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 122.7 s] [Haptics]  120.723s drop EnemyHit: Weaker
+[ 122.9 s] [Haptics]  120.988s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 123.1 s] [Haptics]  121.206s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 123.1 s] [Haptics]  121.239s drop EnemyHit: Weaker
+[ 123.5 s] [Haptics]  121.507s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 123.5 s] [Haptics]  121.507s drop ComboUp: Weaker
+[ 123.5 s] [Haptics]  121.507s drop EnemyHit: Weaker
+[ 123.7 s] [Haptics]  121.789s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 124.4 s] [Haptics]  122.357s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 124.8 s] [Haptics]  122.925s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 125.4 s] [Haptics]  123.491s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 125.8 s] [Haptics]  123.875s PLAY BossStomp x1 (priority 85, 500 ms)
+[ 126.0 s] [Haptics]  124.058s drop HeartbeatFast: Weaker
+[ 126.1 s] [Haptics]  124.241s drop EnemyHit: Weaker
+[ 126.4 s] [Haptics]  124.509s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 126.5 s] [Haptics]  124.625s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 126.7 s] [Haptics]  124.759s drop EnemyHit: Weaker
+[ 126.9 s] [Haptics]  125.010s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 127.1 s] [Haptics]  125.192s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 127.2 s] [Haptics]  125.259s drop ComboUp: Weaker
+[ 127.2 s] [Haptics]  125.259s drop EnemyHit: Weaker
+[ 127.7 s] [Haptics]  125.760s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 128.2 s] [Haptics]  126.293s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 128.2 s] [Haptics]  126.327s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 128.4 s] [Haptics]  126.460s drop EnemyHit: Weaker
+[ 128.6 s] [Haptics]  126.710s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 128.8 s] [Haptics]  126.895s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 128.8 s] [Haptics]  126.911s drop HeartbeatFast: TooSoon
+[ 128.9 s] [Haptics]  126.962s drop EnemyHit: Weaker
+[ 129.1 s] [Haptics]  127.211s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 129.1 s] [Haptics]  127.211s drop EnemyHit: Weaker
+[ 129.4 s] [Haptics]  127.465s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 129.7 s] [T130] god mode off: the Boss may end the Run
+[ 129.9 s] [Haptics]  128.028s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 130.5 s] [Haptics]  128.612s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 130.9 s] [Haptics]  128.995s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 131.1 s] [Haptics]  129.163s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 131.1 s] [Haptics]  129.180s drop HeartbeatFast: TooSoon
+[ 131.1 s] [Haptics]  129.230s drop EnemyHit: Weaker
+[ 131.4 s] [Haptics]  129.479s PLAY BossWindUp x1 (priority 40, 560 ms)
+[ 131.4 s] [Haptics]  129.495s drop EnemyHit: Weaker
+[ 131.6 s] [Haptics]  129.696s drop ComboUp: Weaker
+[ 131.6 s] [Haptics]  129.696s drop EnemyHit: Weaker
+[ 131.6 s] [Haptics]  129.746s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 132.2 s] [Haptics]  130.313s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 132.7 s] [Haptics]  130.797s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 132.8 s] [Haptics]  130.880s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 133.0 s] [Haptics]  131.097s drop EnemyHit: Weaker
+[ 133.3 s] [Haptics]  131.366s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 133.3 s] [Haptics]  131.449s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 133.5 s] [Haptics]  131.630s drop EnemyKilled: Weaker
+[ 133.5 s] [Haptics]  131.630s drop EnemyHit: Weaker
+[ 133.9 s] [Haptics]  132.015s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 134.0 s] [Haptics]  132.098s drop EnemyKilled: Weaker
+[ 134.0 s] [Haptics]  132.098s drop ComboUp: Weaker
+[ 134.0 s] [Haptics]  132.098s drop EnemyHit: Weaker
+[ 134.5 s] [Haptics]  132.582s PLAY HeartbeatFast x1 (priority 40, 220 ms)
+[ 134.5 s] [T130] phase Dead
+[ 134.5 s] [Haptics]  132.582s PLAY Death x1 (priority 95, 1300 ms)
+[ 134.5 s] [Haptics]  132.582s drop BossStomp: Weaker
+[ 134.5 s] [T130] dead: waiting for the end screen
+[ 147.0 s] [T130] phase Ended
+[ 147.5 s] [Haptics]  145.609s PLAY NewBest x1 (priority 60, 520 ms)
+[ 148.2 s] [Haptics]  146.293s PLAY CreditsLanded x1 (priority 45, 100 ms)
+[ 153.0 s] [T130] end screen: to the Shop
+[ 156.4 s] [T130] STAGE S: the Shop
+[ 156.4 s] [T130] tap DAMAGE Row, which the bank can't cover
+[ 156.4 s] [Haptics]  154.450s PLAY CannotAfford x1 (priority 40, 120 ms)
+[ 158.0 s] [T130] dev tools: Credits now 6248
+[ 159.4 s] [T130] tap DAMAGE Row (buy)
+[ 159.4 s] [Haptics]  157.485s PLAY Bought x1 (priority 50, 110 ms)
+[ 160.9 s] [T130] tap MACHINE GUN Card (unlock)
+[ 160.9 s] [Haptics]  159.003s PLAY WeaponUnlocked x1 (priority 60, 310 ms)
+[ 162.9 s] [T130] Volume panel open: VIBRATION shown True, label ON
+[ 162.9 s] [T130] VIBRATION tapped: label OFF, kept -1 in PlayerPrefs
+[ 163.5 s] [T130] tap DAMAGE Row (buy, with VIBRATION off)
+[ 163.5 s] [Haptics]  161.555s drop Bought: Off
+[ 165.5 s] [T130] VIBRATION tapped again: label ON
+[ 166.5 s] [T130] tap PLAY
+[ 166.5 s] [Haptics]  164.592s drop ButtonTap: Unauthored
+[ 167.2 s] [T130] phase LevelStart
+[ 172.3 s] [T130] phase Walking
+[ 172.3 s] [T130] STAGE B: Level 1 with the Machine gun
+[ 172.4 s] [Haptics]  170.546s PLAY WeaponSwitch x1 (priority 20, 15 ms)
+[ 173.0 s] [T130] phase StationFight
+[ 174.1 s] [T130] equipped: 2 carried
+[ 176.4 s] [Haptics]  174.533s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 176.5 s] [Haptics]  174.633s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 176.6 s] [Haptics]  174.716s drop EnemyHit: Cooldown
+[ 177.0 s] [Haptics]  175.150s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 177.0 s] [Haptics]  175.150s drop ComboUp: Weaker
+[ 177.0 s] [Haptics]  175.150s drop EnemyHit: Weaker
+[ 177.5 s] [Haptics]  175.567s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 177.5 s] [Haptics]  175.650s drop EnemyHit: Cooldown
+[ 177.6 s] [Haptics]  175.751s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 177.7 s] [Haptics]  175.851s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 177.7 s] [Haptics]  175.851s drop EnemyHit: Weaker
+[ 179.8 s] [Haptics]  177.902s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 179.9 s] [Haptics]  177.985s drop EnemyHit: Cooldown
+[ 180.0 s] [Haptics]  178.085s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 180.1 s] [Haptics]  178.186s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 180.1 s] [Haptics]  178.186s drop ComboUp: Weaker
+[ 180.1 s] [Haptics]  178.186s drop EnemyHit: Weaker
+[ 180.1 s] [Haptics]  178.202s PLAY StationClearS x1 (priority 55, 420 ms)
+[ 182.9 s] [T130] phase Walking
+[ 187.0 s] [T130] phase StationFight
+[ 189.1 s] [T130] right-click (Grenade)
+[ 189.8 s] [Haptics]  187.878s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 189.9 s] [Haptics]  187.961s drop EnemyHit: Cooldown
+[ 190.0 s] [Haptics]  188.078s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 190.1 s] [Haptics]  188.179s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 190.1 s] [Haptics]  188.179s drop ComboUp: Weaker
+[ 190.1 s] [Haptics]  188.179s drop EnemyHit: Weaker
+[ 190.2 s] [Haptics]  188.261s PLAY GrenadeExplosion x1 (priority 75, 250 ms)
+[ 192.3 s] [Haptics]  190.431s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 192.3 s] [Haptics]  190.431s drop EnemyHit: Cooldown
+[ 192.4 s] [Haptics]  190.531s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 192.5 s] [Haptics]  190.630s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 192.5 s] [Haptics]  190.630s drop EnemyHit: Weaker
+[ 192.6 s] [Haptics]  190.730s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 192.6 s] [Haptics]  190.730s drop EnemyHit: Weaker
+[ 192.9 s] [Haptics]  190.998s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 193.0 s] [Haptics]  191.098s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 193.1 s] [Haptics]  191.197s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 193.1 s] [Haptics]  191.197s drop EnemyHit: Weaker
+[ 195.5 s] [Haptics]  193.618s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 196.7 s] [Haptics]  194.783s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 196.8 s] [Haptics]  194.885s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 196.9 s] [Haptics]  194.966s drop EnemyHit: Cooldown
+[ 197.0 s] [Haptics]  195.084s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 197.0 s] [Haptics]  195.084s drop ComboUp: Weaker
+[ 197.0 s] [Haptics]  195.084s drop EnemyHit: Weaker
+[ 198.0 s] [Haptics]  196.084s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 198.1 s] [Haptics]  196.184s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 198.2 s] [Haptics]  196.302s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 198.6 s] [Haptics]  196.751s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 198.6 s] [Haptics]  196.751s drop ComboUp: Weaker
+[ 198.6 s] [Haptics]  196.751s drop EnemyHit: Weaker
+[ 199.0 s] [Haptics]  197.135s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 199.1 s] [Haptics]  197.235s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 199.2 s] [Haptics]  197.336s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 199.3 s] [Haptics]  197.419s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 199.3 s] [Haptics]  197.419s drop EnemyHit: Cooldown
+[ 200.6 s] [Haptics]  198.736s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 200.6 s] [Haptics]  198.736s drop EnemyHit: Weaker
+[ 200.7 s] [Haptics]  198.805s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 200.8 s] [Haptics]  198.920s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 201.2 s] [Haptics]  199.338s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 201.2 s] [Haptics]  199.338s drop EnemyHit: Weaker
+[ 201.2 s] [Haptics]  199.353s PLAY StationClearS x1 (priority 55, 420 ms)
+[ 204.0 s] [T130] phase Walking
+[ 204.7 s] [Haptics]  202.840s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 204.8 s] [Haptics]  202.923s drop EnemyHit: Cooldown
+[ 204.9 s] [Haptics]  203.023s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 205.0 s] [Haptics]  203.123s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 205.0 s] [Haptics]  203.123s drop ComboUp: Weaker
+[ 205.0 s] [Haptics]  203.123s drop EnemyHit: Weaker
+[ 208.5 s] [T130] phase StationFight
+[ 212.3 s] [Haptics]  210.396s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 212.4 s] [Haptics]  210.479s drop EnemyHit: Cooldown
+[ 212.5 s] [Haptics]  210.596s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 212.6 s] [Haptics]  210.696s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 212.6 s] [Haptics]  210.696s drop ComboUp: Weaker
+[ 212.6 s] [Haptics]  210.696s drop EnemyHit: Weaker
+[ 215.1 s] [Haptics]  213.215s PLAY ReloadDone x1 (priority 20, 18 ms)
+[ 215.3 s] [Haptics]  213.415s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 215.4 s] [Haptics]  213.515s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 215.5 s] [Haptics]  213.615s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 215.6 s] [Haptics]  213.715s PLAY ComboUp x1 (priority 15, 10 ms)
+[ 215.6 s] [Haptics]  213.715s drop EnemyHit: Weaker
+[ 215.7 s] [Haptics]  213.816s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 215.8 s] [Haptics]  213.915s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 215.8 s] [Haptics]  213.915s drop EnemyHit: Weaker
+[ 215.9 s] [Haptics]  214.015s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 216.0 s] [Haptics]  214.116s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 216.0 s] [Haptics]  214.116s drop ComboUp: Weaker
+[ 216.0 s] [Haptics]  214.116s drop EnemyHit: Weaker
+[ 216.2 s] [Haptics]  214.282s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 218.0 s] [Haptics]  216.101s PLAY EnemyHit x1 (priority 10, 12 ms)
+[ 218.1 s] [Haptics]  216.184s drop EnemyHit: Cooldown
+[ 218.2 s] [Haptics]  216.284s PLAY EnemyKilled x1 (priority 30, 28 ms)
+[ 218.2 s] [Haptics]  216.284s drop ComboUp: Weaker
+[ 218.2 s] [Haptics]  216.284s drop EnemyHit: Weaker
+[ 219.1 s] [T130] DONE
+[ 222.8 s] [Haptics]  220.938s PLAY Hurt x0.75 (priority 70, 160 ms)

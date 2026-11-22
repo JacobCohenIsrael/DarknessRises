@@ -38,10 +38,10 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The Credits in the bank.")]
         private TMP_Text creditsValue;
 
-        [SerializeField, Tooltip("The small word over the best Score, beside PLAY.")]
+        [SerializeField, Tooltip("The small words before the best Score, under the title.")]
         private TMP_Text bestScoreCaption;
 
-        [SerializeField, Tooltip("The best Score of any Run, beside PLAY. Small: it buys nothing.")]
+        [SerializeField, Tooltip("The best Score of any Run, under the title. Small: it buys nothing.")]
         private TMP_Text bestScoreValue;
 
         [SerializeField, Tooltip("Says what owning a Weapon means: it comes along on every Run.")]

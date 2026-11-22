@@ -58,6 +58,9 @@ namespace DarknessRises.Game.Scoring
         /// <summary>Seconds of play left on the running boost; 0 with none running.</summary>
         public float SecondsLeft { get; private set; }
 
+        /// <summary>Whether the last boost ended because its time ran out, rather than with the Run.</summary>
+        public bool TimeRanOut { get; private set; }
+
         /// <summary>How many boosts this Run has had.</summary>
         public int StartedCount { get; private set; }
 
@@ -110,7 +113,7 @@ namespace DarknessRises.Game.Scoring
             SecondsLeft -= deltaSeconds;
             if (SecondsLeft <= 0f)
             {
-                End();
+                Finish(timeRanOut: true);
             }
         }
 
@@ -118,13 +121,16 @@ namespace DarknessRises.Game.Scoring
         public bool IsEnding(float warningSeconds) => IsRunning && SecondsLeft <= warningSeconds;
 
         /// <summary>The Run ended: a running boost ends with it.</summary>
-        public void End()
+        public void End() => Finish(timeRanOut: false);
+
+        private void Finish(bool timeRanOut)
         {
             if (!IsRunning)
             {
                 return;
             }
 
+            TimeRanOut = timeRanOut;
             IsRunning = false;
             SecondsLeft = 0f;
             Ended?.Invoke();

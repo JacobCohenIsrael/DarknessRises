@@ -72,6 +72,7 @@ namespace DarknessRises.Game.EditModeTests.Scoring
             Assert.That(boost.IsRunning, Is.False);
             Assert.That(boost.SecondsLeft, Is.Zero);
             Assert.That(ended, Is.EqualTo(1));
+            Assert.That(boost.TimeRanOut, Is.True);
             Assert.That(boost.IsOffered, Is.True);
             Assert.That(boost.Apply(30), Is.EqualTo(30));
         }
@@ -187,6 +188,7 @@ namespace DarknessRises.Game.EditModeTests.Scoring
             run.Exit();
 
             Assert.That(boost.IsRunning, Is.False);
+            Assert.That(boost.TimeRanOut, Is.False);
         }
 
         [Test]

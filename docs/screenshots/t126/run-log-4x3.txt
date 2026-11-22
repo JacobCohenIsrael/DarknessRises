@@ -1,0 +1,32 @@
+t=  12.9s  [Score] Station cleared: accuracy 80 % (12 hits, 3 misses), x1.5: 300 + 150 bonus = 450, Grade S, boost off
+t=  16.9s  -- the player taps WATCH AD: x2 SCORE on the Result card (real time 22.6s)
+t=  16.9s  [Score] Score boost ad started; the Level holds still.
+t=  16.9s  [Score] Score boost ad watched to the end.
+t=  16.9s  [Score] Score boost x2 started: 60s of play. Run Score 450.
+t=  16.9s  -- back in the Level with the boost running, 60.0s left (real time 27.3s)
+t=  23.1s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (53.8s left).
+t=  26.0s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (50.9s left).
+t=  27.7s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (49.2s left).
+t=  31.8s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (45.1s left).
+t=  35.4s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (41.5s left).
+t=  35.9s  [Score] Kill doubled by the boost: 100 x Combo 2 x2 = +400 (41.0s left).
+t=  37.5s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (39.4s left).
+t=  37.5s  [Score] Station cleared: accuracy 67 % (28 hits, 14 misses), x1.25: 1600 + 400 bonus = 2000, Grade A, boost running
+t=  43.4s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (33.5s left).
+t=  48.5s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (28.4s left).
+t=  50.7s  [Score] Kill doubled by the boost: 100 x Combo 2 x2 = +400 (26.2s left).
+t=  51.5s  [Score] Kill doubled by the boost: 100 x Combo 2 x2 = +400 (25.4s left).
+t=  52.6s  [Score] Kill doubled by the boost: 100 x Combo 3 x2 = +600 (24.3s left).
+t=  56.3s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (20.6s left).
+t=  59.0s  [Score] Kill doubled by the boost: 100 x Combo 3 x2 = +600 (17.9s left).
+t=  59.5s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (17.4s left).
+t=  62.7s  [Score] Kill doubled by the boost: 100 x Combo 2 x2 = +400 (14.2s left).
+t=  62.9s  [Score] Kill doubled by the boost: 100 x Combo 2 x2 = +400 (14.0s left).
+t=  62.9s  [Score] Station cleared: accuracy 77 % (36 hits, 11 misses), x1.25: 3400 + 850 bonus = 4250, Grade A, boost running
+t=  69.7s  [Score] Kill doubled by the boost: 100 x Combo 1 x2 = +200 (7.3s left).
+t=  75.2s  [Score] Kill doubled by the boost: 100 x Combo 2 x2 = +400 (1.7s left).
+t=  76.0s  [Score] Kill doubled by the boost: 100 x Combo 3 x2 = +600 (0.9s left).
+t=  76.9s  [Score] Score boost ended (its time is up). Run Score 8100.
+t=  91.9s  [Score] Station cleared: accuracy 80 % (44 hits, 11 misses), x1.5: 2200 + 1100 bonus = 3300, Grade S, boost off
+t=  97.0s  -- Exit from the pause menu with a Run Score of 10400 (real time 117.3s)
+t=  97.0s  -- end screen: Score 10400, best before 0, NEW BEST True (real time 118.8s)

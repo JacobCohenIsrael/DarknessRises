@@ -63,9 +63,9 @@ namespace DarknessRises.Game.Editor.Hud
         private const float PointsFontSize = 58f;
 
         // The accuracy stamp, right of the points; it punches about its own middle.
-        private static readonly Vector2 StampPosition = new(430f, StatTopRow - 3f * StatRowHeight - 12f);
+        private static readonly Vector2 StampPosition = new(490f, StatTopRow - 3f * StatRowHeight - 12f);
         private static readonly Vector2 StampSize = new(400f, 70f);
-        private const float StampFontSize = 46f;
+        private const float StampFontSize = 42f;
         private const float StampTiltDegrees = 6f;
 
         // The Score boost offer, under the card.

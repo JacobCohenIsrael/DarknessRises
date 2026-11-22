@@ -810,7 +810,7 @@ namespace DarknessRises.Game
 
         private void OnScoreBoostEnded()
         {
-            LogScore($"[Score] Score boost ended ({(run.IsInRun ? "time up" : "the Run ended")}). Run Score {run.Record.Score}.");
+            LogScore($"[Score] Score boost ended ({(scoreBoost.TimeRanOut ? "its time is up" : "the Run ended")}). Run Score {run.Record.Score}.");
         }
 
         // The Run log of the Score (each Station's bonus, the boost, the kills it doubled): the Editor and debug builds only.

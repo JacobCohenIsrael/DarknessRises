@@ -78,13 +78,13 @@ namespace DarknessRises.Game.Editor.Health
         private static readonly Vector2 EndScorePosition = new(0f, 300f);
         private static readonly Vector2 EndLevelPosition = new(0f, 235f);
 
-        // Right of the Score's value: the best Score, small, and NEW BEST! stamped over the title's end, tilted.
+        // Right of the Score's value: the best Score, small, and under it NEW BEST!, tilted, right of the Level reached.
         private static readonly Vector2 EndBestPosition = new(530f, 300f);
         private static readonly Vector2 EndBestSize = new(340f, 60f);
         private const float EndBestFontSize = 34f;
-        private static readonly Vector2 EndNewBestPosition = new(500f, 372f);
+        private static readonly Vector2 EndNewBestPosition = new(515f, 226f);
         private static readonly Vector2 EndNewBestSize = new(420f, 90f);
-        private const float EndNewBestFontSize = 60f;
+        private const float EndNewBestFontSize = 50f;
         private const float EndNewBestTiltDegrees = 8f;
         private static readonly Color EndNewBestColor = new(1f, 0.85f, 0.2f, 1f);
         private static readonly Vector2 EndKillsPosition = new(0f, 170f);

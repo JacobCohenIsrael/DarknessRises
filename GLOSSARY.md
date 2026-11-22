@@ -288,7 +288,7 @@ A timed multiplier on every Score earned (x2 for 60 s of play, authored), starte
 _Avoid_: double score, score multiplier, power-up
 
 **Best Score**:
-The highest Score of any Run, kept in the save (since save version 4; older saves start at 0). The end screen shows it beside the Run's Score and stamps NEW BEST! when the Run beat it; the Shop shows it beside PLAY.
+The highest Score of any Run, kept in the save (since save version 4; older saves start at 0). The end screen shows it beside the Run's Score and stamps NEW BEST! when the Run beat it; the Shop shows it under its title.
 _Avoid_: high score, record
 
 **Combo**:

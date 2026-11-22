@@ -14,7 +14,7 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The small word beside the Credits in the bank.")]
         private string creditsCaption = "CREDITS";
 
-        [SerializeField, Tooltip("The small word over the best Score of any Run, beside PLAY.")]
+        [SerializeField, Tooltip("The small words before the best Score of any Run, under the title.")]
         private string bestScoreCaption = "BEST SCORE";
 
         [SerializeField, Tooltip("The big button that starts a new Run.")]

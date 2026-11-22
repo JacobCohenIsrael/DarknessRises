@@ -35,6 +35,7 @@ namespace DarknessRises.Game.Editor
             EditorBuildSettings.RemoveConfigObject(ProjectWideInputActionsKey);
 
             Lightning.LightningShadowSetup.Apply();
+            Splash.SplashScreenSetup.Apply();
             AddressableContent.Setup();
 
             AssetDatabase.SaveAssets();

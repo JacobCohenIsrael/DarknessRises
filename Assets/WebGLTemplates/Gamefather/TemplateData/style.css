@@ -1,0 +1,23 @@
+/* The Gamefather's page for Darkness Rises: Unity's Default layout, black, with the game's thin loading bar. */
+/* Sizes in cqh are hundredths of the game's height, as the in-game loading screen scales its 1080-pixel reference. */
+body { padding: 0; margin: 0; background: #000 }
+#unity-container { position: absolute }
+#unity-container.unity-desktop { left: 50%; top: 50%; transform: translate(-50%, -50%) }
+#unity-container.unity-mobile { position: fixed; width: 100%; height: 100% }
+.unity-mobile #unity-fullscreen-container { width: 100%; height: 100% }
+#unity-fullscreen-container { position: relative; }
+#unity-canvas { position: absolute; width: 100%; height: 100%; background: {{{ BACKGROUND_COLOR }}} }
+#unity-loading-container { position: absolute; width: 100%; height: 100%; background: {{{ BACKGROUND_COLOR }}}; container-type: size; display: block }
+#unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center }
+/* The logo the splash shows next, about as large as it shows it. */
+#gamefather-logo { display: block; width: min(56cqh, 80cqw); height: auto; animation: gamefather-fade-in 0.4s ease-out both }
+/* The loading screen's bar: 520 x 4 of 1080, dim fill on a barely-there track. */
+#unity-progress-bar-empty { width: min(48.15cqh, 70cqw); height: max(2px, 0.37cqh); margin-top: 3cqh; background: rgba(204, 204, 204, 0.15) }
+#unity-progress-bar-full { width: 0%; height: 100%; background: rgba(204, 204, 204, 0.85) }
+@keyframes gamefather-fade-in { from { opacity: 0 } to { opacity: 1 } }
+#unity-footer { position: relative; height: 38px }
+.unity-mobile #unity-footer { display: none }
+#gamefather-logo-footer { float: left; height: 30px; margin: 4px 0 0 6px }
+#unity-build-title { float: right; margin-right: 10px; line-height: 38px; font-family: arial; font-size: 18px; color: #ccc }
+#unity-fullscreen-button { cursor: pointer; float: right; width: 38px; height: 38px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38 38' fill='none' stroke='%23ccc' stroke-width='2.5'%3E%3Cpath d='M11 17v-6h6M21 11h6v6M27 21v6h-6M17 27h-6v-6'/%3E%3C/svg%3E") no-repeat center }
+#unity-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none }

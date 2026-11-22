@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Credits;
 using DarknessRises.Game.Scoring;
 using DarknessRises.Game.Weapons;
 
@@ -19,6 +20,14 @@ namespace DarknessRises.Game.Runs
     /// </remarks>
     public sealed class RunFlow
     {
+        // How every Run's Score pays Credits. One point per Credit until the Level hands in the authored rate.
+        private ScoreToCredits scoreToCredits = ScoreToCredits.OnePerPoint;
+
+        public RunFlow()
+        {
+            Record = new RunRecord(scoreToCredits);
+        }
+
         /// <summary>Raised when a Level starts: the first of a new Run, the next one in the chain, or a jump. Carries its index.</summary>
         public event Action<int> LevelStarted;
 
@@ -43,7 +52,7 @@ namespace DarknessRises.Game.Runs
         public int LevelIndex { get; private set; }
 
         /// <summary>The current Run's Level reached and Enemies killed. A new one for every Run.</summary>
-        public RunRecord Record { get; private set; } = new();
+        public RunRecord Record { get; private set; }
 
         /// <summary>How many times the character has Continued in this Run. Back to 0 with every new Run.</summary>
         public int ContinuesUsed { get; private set; }
@@ -213,7 +222,7 @@ namespace DarknessRises.Game.Runs
             return true;
         }
 
-        /// <summary>A kill earned <paramref name="points"/> of Score. Counts while a Run is on, like the kill itself.</summary>
+        /// <summary>A kill (or a Station's accuracy bonus) earned <paramref name="points"/> of Score, which also pays the Run's Credits. Counts while a Run is on, like the kill itself.</summary>
         public bool AddScore(int points)
         {
             if (!IsInRun)
@@ -262,10 +271,22 @@ namespace DarknessRises.Game.Runs
         }
 
         /// <summary>
-        /// A kill or a cleared Level paid <paramref name="credits"/>. Counts while a Run is on, like the kill itself.
-        /// Credits are flat: the Combo never multiplies them.
+        /// Sets how the Run's Score pays Credits, from the authored rate: for the current Run and every one after it. A
+        /// Level hands it in as it starts. The current Run takes it only while its Score has paid nothing yet, so a rate
+        /// never changes under Credits already counted.
         /// </summary>
-        public bool EarnCredits(int credits)
+        /// <returns>Whether the current Run converts at <paramref name="rule"/>.</returns>
+        public bool ConvertScoreAt(ScoreToCredits rule)
+        {
+            scoreToCredits = rule;
+            return Record.Credits.ConvertAt(rule);
+        }
+
+        /// <summary>
+        /// A cleared Level paid <paramref name="credits"/> flat Credits, on top of what the Run's Score pays. Counts while
+        /// a Run is on.
+        /// </summary>
+        public bool EarnClearBonus(int credits)
         {
             if (!IsInRun)
             {
@@ -298,7 +319,7 @@ namespace DarknessRises.Game.Runs
 
         private void BeginRun()
         {
-            Record = new RunRecord();
+            Record = new RunRecord(scoreToCredits);
             ContinuesUsed = 0;
             Loadout = null;
             ScoreBoost = null;

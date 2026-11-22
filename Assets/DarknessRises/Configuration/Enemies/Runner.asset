@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Enemies.EnemyDefinition
   hitPoints: 2
   scorePoints: 150
-  credits: 8
   speed: 4.2
   acceleration: 14
   turnSpeed: 420

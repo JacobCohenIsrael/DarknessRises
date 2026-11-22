@@ -186,11 +186,8 @@ namespace DarknessRises.Game
         private ContinueBurstView continueBurst;
 
         [Header("Credits")]
-        [SerializeField, Tooltip("The end screen, which shows the Credits a Run earned and offers the end-of-Run ad.")]
+        [SerializeField, Tooltip("The end screen, which pays out the Run's Score as Credits.")]
         private EndScreenView endScreen;
-
-        [SerializeField, Tooltip("The placeholder ad watched to multiply a Run's Credits. A real ad network replaces it later.")]
-        private FakeAdView endOfRunAd;
 
         // The Run this scene plays a Level of: handed in by the boot, or the scene's own when it's played on its own.
         private RunFlow run;
@@ -314,6 +311,9 @@ namespace DarknessRises.Game
             }
 
             await UniTask.WaitUntil(this, root => root.run != null, cancellationToken: cancellationToken);
+
+            // The Run's Score pays Credits at the authored rate. The boot's Run has no configuration of its own.
+            run.ConvertScoreAt(configuration.Credits.ScoreToCredits.ToRule());
 
             var ramp = configuration.Ramp.ToRamp();
             var rampStep = ramp.StepAt(run.LevelIndex);
@@ -631,13 +631,12 @@ namespace DarknessRises.Game
             ShowCredits();
         }
 
-        // Credits are earned in the Level and shown on the end screen, which also offers the end-of-Run ad.
+        // Credits come from the Run's Score and the Levels it clears, and are paid out on the end screen.
         private void ShowCredits()
         {
             var credits = configuration.Credits;
             levelClearBonus = credits.LevelClearBonus.ToBonus();
-            endOfRunAd.Use(credits.EndOfRunAd.FakeAdSeconds);
-            endScreen.Use(credits, endOfRunAd, save, content.Clip(credits.EndScreen.BonusClip), configuration.ScoreHud);
+            endScreen.Use(credits, save, content.Clip(credits.EndScreen.PayoutClip), configuration.ScoreHud);
         }
 
         // Score comes from what the Level's fights report: every Shot's hit or miss drives the Combo, every kill earns
@@ -821,12 +820,11 @@ namespace DarknessRises.Game
             Debug.Log(message);
         }
 
-        // A kill earns its Enemy's points times the Combo, shown floating up from where it died, and its Credits, which
-        // the Combo doesn't touch.
+        // A kill earns its Enemy's points times the Combo, shown floating up from where it died. The Score pays the
+        // Run's Credits.
         private void OnEnemyKilled(EnemyView enemy)
         {
             AwardScore(enemy.Definition.ScorePoints, enemy.transform.position);
-            run.EarnCredits(enemy.Definition.Credits);
         }
 
         private void AwardScore(int basePoints, Vector3 position)
@@ -945,11 +943,10 @@ namespace DarknessRises.Game
             routeWalker.TakeBackPlacement();
             StopBossLightning();
 
-            // Beating the Boss is the Level's biggest kill, and it clears the Level, which pays its bonus.
+            // Beating the Boss is the Level's biggest kill, and it clears the Level, which pays its flat Credits.
             var boss = configuration.Level.Boss;
             AwardScore(boss.ScorePoints, character.position);
-            run.EarnCredits(boss.Credits);
-            run.EarnCredits(levelClearBonus.For(run.LevelIndex));
+            run.EarnClearBonus(levelClearBonus.For(run.LevelIndex));
         }
 
         // Back to the weather, if the Boss had Lightning.

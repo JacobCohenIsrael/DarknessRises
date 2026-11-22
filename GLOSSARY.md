@@ -268,7 +268,7 @@ Ending the current Run and starting a new one from the first Level, straight awa
 _Avoid_: retry
 
 **Exit**:
-Ending the Run, after dying or from the pause menu. The end screen shows the Run's Score, the Level reached and Enemies killed, then the Credits the Run earned and the new total in the bank, counted up. It offers the end-of-Run ad, and it leads to the Shop.
+Ending the Run, after dying or from the pause menu. The end screen shows the Run's Score, the Level reached and Enemies killed, then pays the Run out, counted up arcade-style: its Score turned into Credits ("SCORE 42300 > +846 CREDITS"), the Level clear bonus, and the new total in the bank. It offers no ad, and it leads to the Shop.
 _Avoid_: quit, give up
 
 **Pause**:
@@ -276,7 +276,7 @@ Freezing the Level while the character is alive in it: Enemies, Lightning, Skill
 _Avoid_: stop, break
 
 **Score**:
-The points a Run earns for its kills. Each Enemy type and Boss is worth its own points, multiplied by the Combo at the moment it dies, and by the Score boost while one runs. Each Station's fight adds its Accuracy bonus on top. It shows on the HUD, pops up over every kill, and ends up on the end screen beside the Best Score. It buys nothing: it isn't Credits.
+The points a Run earns for its kills. Each Enemy type and Boss is worth its own points, multiplied by the Combo at the moment it dies, and by the Score boost while one runs. Each Station's fight adds its Accuracy bonus on top. It shows on the HUD, pops up over every kill, and ends up on the end screen beside the Best Score. It pays the Run's Credits: every authored number of points (the Score per Credit) is one Credit.
 _Avoid_: points (for the Run's total), credits
 
 **Accuracy bonus**:
@@ -284,7 +284,7 @@ What a Station's fight adds to its Score for its accuracy: the Station's Score m
 _Avoid_: accuracy multiplier (that's its number), precision bonus
 
 **Score boost**:
-A timed multiplier on every Score earned (x2 for 60 s of play, authored), started by watching its own rewarded ad, offered by a button on the Result card. It doubles each kill after the Combo, and so the Accuracy bonus of what it doubled. Its timer runs only while the game plays: not while paused, during an ad, on a loading screen or while the character is dead. It carries over from Level to Level and ends when its time is up or the Run ends. While one runs, no Result card offers another. On the HUD it shows beside the Score with its seconds left, pulsing as it's about to end.
+A timed multiplier on every Score earned (x2 for 60 s of play, authored), started by watching its own rewarded ad, offered by a button on the Result card. It doubles each kill after the Combo, and so the Accuracy bonus of what it doubled, and the Credits that Score pays. It's the only ad that speeds up progress. Its timer runs only while the game plays: not while paused, during an ad, on a loading screen or while the character is dead. It carries over from Level to Level and ends when its time is up or the Run ends. While one runs, no Result card offers another. On the HUD it shows beside the Score with its seconds left, pulsing as it's about to end.
 _Avoid_: double score, score multiplier, power-up
 
 **Best Score**:
@@ -308,15 +308,15 @@ The red mark that flashes where a Shot hurts an Enemy: the hit confirmation. Not
 _Avoid_: hit indicator, crosshair
 
 **Credits**:
-Currency earned during a Run and spent in the Shop. Each Enemy type and Boss pays its own Credits for a kill, and a cleared Level (its Boss beaten) pays a bonus that grows with the Level number. Credits are flat: the Combo never multiplies them. Not the Score: the Score says how well a Run went, Credits are what it pays.
+Currency earned during a Run and spent in the Shop. They come from the Run's Score, converted at an authored rate (the Score per Credit, rounded down over the Run's whole Score so nothing is lost to rounding), plus a flat Level clear bonus for each cleared Level (its Boss beaten) that grows with the Level number, so surviving pays even with poor aim. So the Combo, the Accuracy bonus and the Score boost all raise them. Not the Score itself: the Score says how well a Run went, Credits are what it pays.
 _Avoid_: coins, gold, money, score
 
 **Bank**:
-The Credits the player holds between Runs, kept in the save. A Run's Credits are banked when the Run ends, whichever way it ends (Exit, the Continue countdown running out, or Restart), and when the app goes to the background mid-Run, so they're never lost.
+The Credits the player holds between Runs, kept in the save. A Run's Credits are banked when the Run ends, whichever way it ends (Exit, the Continue countdown running out, or Restart), and when the app goes to the background mid-Run, so they're never lost. Each banking converts the Run's whole Score so far and takes only what wasn't banked yet: none is banked twice, and points short of a Credit count towards the next.
 _Avoid_: wallet, balance, purse
 
 **End-of-Run ad**:
-The rewarded ad the end screen offers after a Run: watching it through multiplies the Credits that Run earned. It's separate from the Score boost's ad, which the Result card offers. It's optional, pays once per Run, and never blocks moving on. An ad that isn't watched through pays nothing and leaves the offer standing. A Run that earned too few Credits isn't offered one.
+_Retired (#127)._ The rewarded ad the end screen used to offer, which doubled a Run's Credits. Since Credits come from the Score, the Score boost is the only ad that speeds up progress. The save never recorded it.
 _Avoid_: bonus ad, double-up, reward video
 
 **Loading screen**:

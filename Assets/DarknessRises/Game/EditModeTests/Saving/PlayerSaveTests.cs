@@ -55,7 +55,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
 
             Assert.That(save.Bank(credits), Is.Zero);
             credits.Earn(30);
-            credits.AddAdBonus(150);
+            credits.AddScore(150);
             Assert.That(save.Bank(credits), Is.EqualTo(180));
 
             Assert.That(save.Credits, Is.EqualTo(300));

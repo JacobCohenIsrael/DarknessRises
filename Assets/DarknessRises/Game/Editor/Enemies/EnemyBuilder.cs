@@ -149,7 +149,6 @@ namespace DarknessRises.Game.Editor.Enemies
         public static EnemyDefinition LoadOrCreateRunner()
         {
             var runner = LoadOrCreateRunnerDefinition();
-            Credits.CreditsBuilder.AuthorRunnerCredits(runner);
             AuthorRunnerEyeOpening(runner);
             AuthorFootsteps(runner, isRunner: true);
             return runner;

@@ -61,7 +61,7 @@ namespace DarknessRises.Game.EditModeTests.Boot
             var save = PlayerSave.Load(storage);
             using var banking = new RunBanking(run, save);
             run.StartNewRun();
-            run.EarnCredits(40);
+            run.EarnClearBonus(40);
 
             banking.BankNow();
 

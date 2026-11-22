@@ -9,7 +9,7 @@ namespace DarknessRises.Game.Editor.Hud
 {
     /// <summary>
     /// Builds the Weapon button: a small tile at the bottom right of the HUD, just left of the magazine count, showing
-    /// the equipped Primary weapon's name over its ammo reserve. A tap or click on it presses the Next Weapon command.
+    /// the equipped Primary weapon's icon and name over its ammo reserve. A tap or click on it presses the Next Weapon command.
     /// It sits in the ammo corner, clear of the Grenade button, the Skill buttons and the pause button, and has nothing
     /// on it that looks like a movement control. Call it once the HUD, the Grenade button and the Gesture input are built.
     /// </summary>
@@ -21,6 +21,10 @@ namespace DarknessRises.Game.Editor.Hud
         private const float Padding = 10f;
         private const float NameFontSize = 30f;
         private const float ReserveFontSize = 26f;
+
+        // The icon fills the left of the upper half; the name takes the rest. A silhouette is twice as wide as tall.
+        private const float IconWidth = 96f;
+        private const float IconGap = 14f;
 
         // Until the Weapon button's settings colour them at runtime.
         private static readonly Color FaceColor = new(0.1f, 0.1f, 0.11f, 0.6f);
@@ -49,14 +53,17 @@ namespace DarknessRises.Game.Editor.Hud
             var button = tile.GetComponent<Button>();
             button.targetGraphic = face;
 
+            var icon = AddIcon(rect);
             var weaponName = AddLine(rect, "Name", "PISTOL", NameFontSize, upperHalf: true);
             weaponName.fontStyle = FontStyles.Bold;
+            weaponName.rectTransform.offsetMin += Vector2.right * (IconWidth + IconGap);
             var reserve = AddLine(rect, "Reserve", "RESERVE 0", ReserveFontSize, upperHalf: false);
 
             var view = tile.GetComponent<WeaponButtonView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("button").objectReferenceValue = button;
             serialized.FindProperty("face").objectReferenceValue = face;
+            serialized.FindProperty("icon").objectReferenceValue = icon;
             serialized.FindProperty("weaponName").objectReferenceValue = weaponName;
             serialized.FindProperty("reserve").objectReferenceValue = reserve;
             serialized.FindProperty("gestures").objectReferenceValue = gestures;
@@ -64,6 +71,23 @@ namespace DarknessRises.Game.Editor.Hud
 
             serializedRoot.FindProperty("weaponButton").objectReferenceValue = view;
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        // The equipped Weapon's silhouette, left of its name, kept in proportion.
+        private static Image AddIcon(RectTransform tile)
+        {
+            var icon = new GameObject("Icon", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            var rect = icon.rectTransform;
+            rect.SetParent(tile, false);
+            rect.anchorMin = new Vector2(0f, 0.5f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.offsetMin = new Vector2(Padding, 0f);
+            rect.offsetMax = new Vector2(Padding + IconWidth, -Padding);
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+            icon.color = TextColor;
+            return icon;
         }
 
         // One line of the tile, filling its upper or lower half, kept on one line however long the Weapon's name is.

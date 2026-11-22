@@ -55,6 +55,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 4dafe49b9d0409347a2f21c42c6b4bea
+    m_Address: FlamethrowerMuzzleFlash
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 4dc8e0d67c65d5247bbf69778eb2f48b
     m_Address: HitSpark
     m_ReadOnly: 0
@@ -71,6 +79,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 6649862a12cd1974c982eae3d2727ba5
+    m_Address: PistolMuzzleFlash
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 6739c01659ad96d47987f4ddee226b36
     m_Address: Hand Gun 1
     m_ReadOnly: 0
@@ -81,6 +97,30 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: 688c6b22d6fbcf843b1886d15e51e8d7
     m_Address: Shot
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 6a36831b018895c49a49552506f3703e
+    m_Address: MachineGunModel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 6adabe7c0653c0540a554f8da9451e8e
+    m_Address: PistolModel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: 6c633e2f47adf914495854c5489244c8
+    m_Address: MachineGunMuzzleFlash
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level
@@ -137,6 +177,14 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: 9930d5b4be15bb04c9d0a6fa0d7e6b2e
     m_Address: Heavy Object Impact 4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: a0916d303efed1149b059125d4422f72
+    m_Address: FlamethrowerModel
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level

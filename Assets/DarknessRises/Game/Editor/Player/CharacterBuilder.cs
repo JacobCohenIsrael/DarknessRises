@@ -32,8 +32,8 @@ namespace DarknessRises.Game.Editor.Player
         private const string ThrowPath = "Assets/ExplosiveLLC/Crafting Mecanim Animation Pack FREE/Animations/Crafter@Carry-Handoff.FBX";
 
         private const string ModelName = "Model";
+        private const string SwitchName = "Switch";
         private const string RecoilName = "Recoil";
-        private const string PlaceholderPistolName = "Placeholder Pistol";
 
         // Animator parameters, matching CharacterAnimationView.
         private const string MoveForward = "MoveForward";
@@ -44,7 +44,7 @@ namespace DarknessRises.Game.Editor.Player
         private const int UpperBodyLayer = 1;
 
         // Two-handed grip on the Weapon, in the weapon mount's space (metres): the right hand holds it,
-        // the left cups it from below and to the side.
+        // the left cups it from below and to the side. Where the hands start; each Primary's model moves them to its own grips.
         private static readonly Vector3 RightGrip = new(0.02f, -0.05f, 0.3f);
         private static readonly Vector3 LeftGrip = new(-0.05f, -0.08f, 0.32f);
         private static readonly Vector3 LeftGripTurn = new(0f, 25f, 0f);
@@ -104,8 +104,14 @@ namespace DarknessRises.Game.Editor.Player
             animator.runtimeAnimatorController = controller;
             animator.applyRootMotion = false;
 
-            var mount = (Transform)new SerializedObject(primaryWeapon).FindProperty("mount").objectReferenceValue;
-            var recoil = BuildGrips(mount, out var rightGrip, out var leftGrip);
+            var serializedWeapon = new SerializedObject(primaryWeapon);
+            var mount = (Transform)serializedWeapon.FindProperty("mount").objectReferenceValue;
+            var recoil = BuildGrips(mount, out var switchPivot, out var rightGrip, out var leftGrip);
+            serializedWeapon.FindProperty("switchPivot").objectReferenceValue = switchPivot;
+            serializedWeapon.FindProperty("modelHolder").objectReferenceValue = recoil;
+            serializedWeapon.FindProperty("rightGrip").objectReferenceValue = rightGrip;
+            serializedWeapon.FindProperty("leftGrip").objectReferenceValue = leftGrip;
+            serializedWeapon.ApplyModifiedPropertiesWithoutUndo();
 
             var view = character.gameObject.AddComponent<CharacterAnimationView>();
             var serialized = new SerializedObject(view);
@@ -123,18 +129,16 @@ namespace DarknessRises.Game.Editor.Player
             return view;
         }
 
-        // The Weapon's model moves onto a recoil pivot with the grips, so a shot kicks the gun and the hands back together.
-        // The muzzle stays where it is: Shots always leave from it.
-        private static Transform BuildGrips(Transform mount, out Transform rightGrip, out Transform leftGrip)
+        // The Weapon's models go on a recoil pivot with the grips, so a shot kicks the gun and the hands back together,
+        // and that sits on a switch pivot that tips them down together for the switch beat.
+        // The muzzle stays on the mount: Shots always leave from it.
+        private static Transform BuildGrips(Transform mount, out Transform switchPivot, out Transform rightGrip, out Transform leftGrip)
         {
-            var recoil = new GameObject(RecoilName).transform;
-            recoil.SetParent(mount, false);
+            switchPivot = new GameObject(SwitchName).transform;
+            switchPivot.SetParent(mount, false);
 
-            var pistol = mount.Find(PlaceholderPistolName);
-            if (pistol != null)
-            {
-                pistol.SetParent(recoil, false);
-            }
+            var recoil = new GameObject(RecoilName).transform;
+            recoil.SetParent(switchPivot, false);
 
             rightGrip = new GameObject("Right Grip").transform;
             rightGrip.SetParent(recoil, false);

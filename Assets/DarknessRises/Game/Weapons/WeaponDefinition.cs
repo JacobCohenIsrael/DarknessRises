@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DarknessRises.Game.Weapons
 {
@@ -22,6 +23,14 @@ namespace DarknessRises.Game.Weapons
 
         [SerializeField, Min(0), Tooltip("Damage one Shot deals to the Enemy it hits.")]
         private int damage = 1;
+
+        [Header("Look")]
+        [SerializeField, Tooltip(
+            "The gun in the character's hands: a prefab with a Weapon Model, which says where the hands hold it and where its Shots start.")]
+        private AssetReferenceGameObject model = new(string.Empty);
+
+        [SerializeField, Tooltip("A small silhouette of the gun, made from its model: on the Weapon button, and anywhere else the Weapon is shown.")]
+        private Sprite icon;
 
         [Header("Ammo")]
         [SerializeField, Tooltip(
@@ -62,6 +71,8 @@ namespace DarknessRises.Game.Weapons
         public float ReloadSeconds => reloadSeconds;
         public float ShotSpeed => shotSpeed;
         public int Damage => damage;
+        public AssetReferenceGameObject Model => model;
+        public Sprite Icon => icon;
 
         /// <summary>Rounds in a full ammo reserve, or <see cref="WeaponRunStats.UnlimitedAmmo"/> when the Weapon reloads forever.</summary>
         public int ReserveRounds => hasUnlimitedAmmo ? WeaponRunStats.UnlimitedAmmo : ammoReserve;

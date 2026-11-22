@@ -59,6 +59,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField, Tooltip("The reload meter and sounds, shared by every Primary weapon.")]
         private ReloadFeedbackSettings reloadFeedback = new();
 
+        [SerializeField, Tooltip("The switch beat every Primary weapon shares: the gun goes down, the new one comes up, a click plays.")]
+        private WeaponSwitchSettings weaponSwitch = new();
+
         [SerializeField, Tooltip("The voices on the character that every Primary weapon's Gunshots share.")]
         private GunshotVoiceSettings gunshotVoices = new();
 
@@ -128,6 +131,7 @@ namespace DarknessRises.Game.Configuration
         public StationRhythmSettings StationRhythm => stationRhythm;
         public StationBannerSettings StationBanners => stationBanners;
         public WeaponButtonSettings WeaponButton => weaponButton;
+        public WeaponSwitchSettings WeaponSwitch => weaponSwitch;
         public CrosshairSettings Crosshair => crosshair;
         public ShootHintSettings ShootHint => shootHint;
         public ScoreSettings Score => score;

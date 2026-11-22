@@ -389,12 +389,13 @@ namespace DarknessRises.Game
             lights.Add(aura.Light);
             lights.Add(lightning.KeyLight);
             lights.Add(characterSkills.FlareLight);
-            var loadout = primaryWeapon.Arm(primaryWeapons, stats.Primaries, RunLoadout(), carriedPlaces, content, lights);
+            var loadout = primaryWeapon.Arm(
+                primaryWeapons, stats.Primaries, RunLoadout(), carriedPlaces, content, lights, configuration.WeaponSwitch);
             gunshotSound.Use(configuration.GunshotVoices, primaryWeapons, loadout, content);
             ammoHud.Show(primaryWeapon.Weapon);
             if (weaponButton != null)
             {
-                weaponButton.Show(loadout, primaryNames, configuration.WeaponButton);
+                weaponButton.Show(loadout, primaryNames, primaryWeapons, configuration.WeaponButton);
             }
             reloadMeter.Use(configuration.ReloadFeedback, character);
             reloadMeter.Show(primaryWeapon.Weapon);

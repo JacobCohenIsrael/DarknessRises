@@ -37,6 +37,9 @@ namespace DarknessRises.Game.Audio
         private AudioVolumes volumes;
         private SceneAudioVolumes leader;
 
+        // The scene's own sounds on their way out, before it unloads. Never followed: each scene fades its own.
+        private readonly SceneSoundFade fade = new();
+
         // Reused by every lookup, so finding a scene's volumes allocates nothing.
         private static readonly List<GameObject> Roots = new();
         private static readonly List<AudioCategorySource> Found = new();
@@ -67,6 +70,15 @@ namespace DarknessRises.Game.Audio
                 return volumes;
             }
         }
+
+        /// <summary>
+        /// The factor every source of this scene plays at on top of its category's gain: 1 while the scene plays, down to
+        /// 0 once it fades out before it unloads (<see cref="FadeOut"/>). The scenes that follow these don't take it.
+        /// </summary>
+        public float Fade => fade.Level;
+
+        /// <summary>Whether the scene's sounds have faded all the way to silence.</summary>
+        public bool IsSilent => fade.IsSilent;
 
         /// <summary>The volumes this one follows, or null.</summary>
         public SceneAudioVolumes Leader => leader;
@@ -175,6 +187,17 @@ namespace DarknessRises.Game.Audio
         }
 
         /// <summary>
+        /// Fades every sound of the scene to silence over <paramref name="seconds"/> of real time, whatever plays it, so
+        /// nothing still playing when the scene unloads stops dead (issue #121). Real time, so it ends even while the game
+        /// is paused. A shorter fade during a longer one takes over.
+        /// </summary>
+        public void FadeOut(float seconds)
+        {
+            fade.FadeOut(seconds);
+            ApplyAll();
+        }
+
+        /// <summary>
         /// Lets the sources of <paramref name="category"/> play on while <c>AudioListener.pause</c> holds every other
         /// sound, or stops letting them. The pause menu's sliders use it for Ambient while they're open.
         /// </summary>
@@ -231,6 +254,14 @@ namespace DarknessRises.Game.Audio
             for (var i = 0; i < sources.Count; i++)
             {
                 sources[i].Apply();
+            }
+        }
+
+        private void Update()
+        {
+            if (fade.Tick(Time.unscaledDeltaTime))
+            {
+                ApplyAll();
             }
         }
 

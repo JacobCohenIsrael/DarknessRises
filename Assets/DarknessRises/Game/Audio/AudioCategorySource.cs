@@ -124,11 +124,12 @@ namespace DarknessRises.Game.Audio
             }
         }
 
-        /// <summary>Plays the source at its own volume times its category's gain now.</summary>
+        /// <summary>Plays the source at its own volume times its category's gain and its scene's fade now.</summary>
         internal void Apply()
         {
             KeepBuiltVolume();
-            Source.volume = volume * Gain;
+            var sceneVolumes = Volumes();
+            Source.volume = sceneVolumes != null ? volume * sceneVolumes.Gain(category) * sceneVolumes.Fade : volume;
         }
 
         private void KeepBuiltVolume()

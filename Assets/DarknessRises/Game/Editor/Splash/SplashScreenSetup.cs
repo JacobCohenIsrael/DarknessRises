@@ -28,8 +28,10 @@ namespace DarknessRises.Game.Editor.Splash
         // Seconds the logo is on screen, fades included: long enough to read the wordmark, short enough not to keep anyone waiting.
         private const float LogoSeconds = 2f;
 
-        // The logo is a 1672 x 941 wordmark shown full-screen on a phone: no mipmaps, no compression to blur its edges.
+        // The logo is a 1672 x 941 wordmark shown full-screen on a phone: full size, no mipmaps, and high-quality compression
+        // (ASTC 4x4 on Android), which keeps a flat white wordmark's edges clean at a quarter of RGBA32's 6 MB.
         private const int LogoMaxTextureSize = 2048;
+        private const TextureImporterCompression LogoCompression = TextureImporterCompression.CompressedHQ;
 
         // No background image, so nothing to dim: the black shows as it is.
         private const float OverlayOpacity = 0f;
@@ -92,7 +94,7 @@ namespace DarknessRises.Game.Editor.Splash
                           || settings.spriteMode != (int)SpriteImportMode.Single
                           || importer.mipmapEnabled
                           || !importer.alphaIsTransparency
-                          || importer.textureCompression != TextureImporterCompression.Uncompressed
+                          || importer.textureCompression != LogoCompression
                           || importer.maxTextureSize != LogoMaxTextureSize
                           || importer.wrapMode != TextureWrapMode.Clamp
                           || importer.filterMode != FilterMode.Bilinear;
@@ -102,7 +104,7 @@ namespace DarknessRises.Game.Editor.Splash
                 importer.spriteImportMode = SpriteImportMode.Single;
                 importer.mipmapEnabled = false;
                 importer.alphaIsTransparency = true;
-                importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.textureCompression = LogoCompression;
                 importer.maxTextureSize = LogoMaxTextureSize;
                 importer.wrapMode = TextureWrapMode.Clamp;
                 importer.filterMode = FilterMode.Bilinear;

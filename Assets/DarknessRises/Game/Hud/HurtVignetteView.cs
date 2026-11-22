@@ -34,6 +34,14 @@ namespace DarknessRises.Game.Hud
         private Action onHurt;
         private Action onDied;
         private Action onRestored;
+        private HeartbeatBeats slowBeats;
+        private HeartbeatBeats fastBeats;
+
+        /// <summary>
+        /// Raised on each strong beat of the heartbeat heard (the slow loop or the fast one, whichever the hit points
+        /// call for), read from the loop's own playback so whatever follows it stays on the beat.
+        /// </summary>
+        public event Action<HeartbeatTier> Beat;
 
         /// <summary>The rule behind the edge, for checks.</summary>
         public HurtFeedback Feedback => feedback;
@@ -58,6 +66,8 @@ namespace DarknessRises.Game.Hud
             onRestored ??= OnRestored;
 
             feedback = new HurtFeedback(settings.ToTiming());
+            slowBeats = new HeartbeatBeats(settings.Slow.ToRhythm());
+            fastBeats = new HeartbeatBeats(settings.Fast.ToRhythm());
             health = characterHealth;
             health.Hurt += onHurt;
             health.Died += onDied;
@@ -85,8 +95,25 @@ namespace DarknessRises.Game.Hud
                 return;
             }
 
-            feedback.Tick(Time.deltaTime);
+            var deltaSeconds = Time.deltaTime;
+            feedback.Tick(deltaSeconds);
             Apply();
+            FindBeat(deltaSeconds);
+        }
+
+        private void FindBeat(float deltaSeconds)
+        {
+            if (!feedback.IsLow)
+            {
+                return;
+            }
+
+            var slowBeat = slowHeartbeat.isPlaying && slowBeats.Advance(slowHeartbeat.time, deltaSeconds);
+            var fastBeat = fastHeartbeat.isPlaying && fastBeats.Advance(fastHeartbeat.time, deltaSeconds);
+            if (feedback.Tier == HeartbeatTier.Slow ? slowBeat : fastBeat)
+            {
+                Beat?.Invoke(feedback.Tier);
+            }
         }
 
         private void OnDestroy()
@@ -142,6 +169,8 @@ namespace DarknessRises.Game.Hud
             else if (!wasLow)
             {
                 // Both loops start together from their first beat, so the crossfade between them stays in step.
+                slowBeats.Reset();
+                fastBeats.Reset();
                 Play(slowHeartbeat);
                 Play(fastHeartbeat);
             }
@@ -162,6 +191,8 @@ namespace DarknessRises.Game.Hud
 
         private void Silence()
         {
+            slowBeats?.Reset();
+            fastBeats?.Reset();
             slowHeartbeat.Stop();
             fastHeartbeat.Stop();
         }

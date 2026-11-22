@@ -4,11 +4,13 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
+using DarknessRises.Game.Haptics;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Lightning;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Saving;
 using DarknessRises.Game.Shop;
+using DarknessRises.Game.Storage;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -88,6 +90,9 @@ namespace DarknessRises.Game.Boot
         // Banks each Run's Credits in the save, however the Run ends.
         private RunBanking banking;
 
+        // The dev log of the Haptics: the Editor and development builds only.
+        private HapticsLog hapticsLog;
+
         /// <summary>Raised each time a Level scene has loaded, is the active scene and has been handed the Run.</summary>
         public event Action<GameRoot> LevelLoaded;
 
@@ -115,6 +120,12 @@ namespace DarknessRises.Game.Boot
         /// <summary>The player's save: the Credits in the bank and what they bought. Read from the device at start.</summary>
         public PlayerSave Save { get; private set; }
 
+        /// <summary>
+        /// The game's Haptics, which outlive every Level and the Shop: each is handed them. Held while the loading screen
+        /// is up and while the app is in the background. Null without an authored definition: nothing vibrates.
+        /// </summary>
+        public HapticsPlayer Haptics { get; private set; }
+
         private void Start()
         {
             versionLabel.Show(definition.VersionLabel, VersionLabel.Text(Application.version, Debug.isDebugBuild));
@@ -123,6 +134,13 @@ namespace DarknessRises.Game.Boot
             // Before any sound plays: on the Web, sounds that pile up are held under full scale instead of clipping.
             WebAudioLimiter.Install(definition.WebAudioLimiter);
             loadingScreen.Show();
+            if (definition.Haptics != null)
+            {
+                Haptics = new HapticsPlayer(definition.Haptics, HapticDevices.OfThisPlayer(), DeviceSettings.OfThisPlayer());
+                hapticsLog = HapticsLog.Follow(Haptics);
+                Haptics.SetHeld(HapticsHold.Loading, true);
+            }
+
             lifetime = new CancellationTokenSource();
             Save = PlayerSave.Load(SaveStorages.OfThisPlayer());
             banking = new RunBanking(Run, Save);
@@ -135,6 +153,7 @@ namespace DarknessRises.Game.Boot
         // On a phone the app may never come back from the background, so what the Run has earned is banked on the way out.
         private void OnApplicationPause(bool isPaused)
         {
+            Haptics?.SetHeld(HapticsHold.Background, isPaused);
             if (isPaused)
             {
                 banking?.BankNow();
@@ -146,8 +165,21 @@ namespace DarknessRises.Game.Boot
             banking?.BankNow();
         }
 
+        // Real time, so the Haptics' gaps and cooldowns hold through Adrenaline and the pause alike.
+        private void Update()
+        {
+            if (Haptics == null)
+            {
+                return;
+            }
+
+            Haptics.Tick(Time.unscaledDeltaTime);
+            Haptics.SetHeld(HapticsHold.Loading, loadingScreen.IsShown);
+        }
+
         private void OnDestroy()
         {
+            hapticsLog?.Dispose();
             banking?.Dispose();
             Run.LevelStarted -= OnLevelStarted;
             Run.Left -= OnRunLeft;
@@ -185,7 +217,7 @@ namespace DarknessRises.Game.Boot
             loadingCamera.enabled = false;
             var gameRoot = Find<GameRoot>(scene);
             storm.Hush(false);
-            gameRoot.Play(Run, Save, storm);
+            gameRoot.Play(Run, Save, storm, Haptics);
 
             // The scene is in, but its content (Enemies, sounds) may still be downloading: on a first visit that takes
             // seconds. The Level stays behind the loading screen until it has started.
@@ -231,7 +263,7 @@ namespace DarknessRises.Game.Boot
 
             // The Shop stays behind the loading screen until its content has loaded and its screen shows the save.
             shop.Opened += loadingScreen.Hide;
-            await shop.RunAsync(Save, cancellationToken);
+            await shop.RunAsync(Save, Haptics, cancellationToken);
             audioVolumes.Unfollow();
             await UnloadSceneAsync(scene, shop.AudioVolumes, cancellationToken);
             ShopUnloaded?.Invoke();

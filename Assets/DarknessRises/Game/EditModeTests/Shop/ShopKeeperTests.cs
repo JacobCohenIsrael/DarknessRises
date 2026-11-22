@@ -246,5 +246,20 @@ namespace DarknessRises.Game.EditModeTests.Shop
 
             Assert.That(() => CarriedPrimaries.For(locked, weapon => keeper.Owns(weapon), out _), Throws.InstanceOf<ArgumentException>());
         }
+
+        [Test]
+        public void Only_a_ware_the_bank_cant_cover_is_short_of_Credits()
+        {
+            var machineGunMagazine = new ShopItem("machine-gun.magazine", new[] { 400 }, startLevel: 0, requires: machineGun);
+
+            Assert.That(keeper.IsShortOfCredits(magazine), Is.True, "250 to buy, none in the bank");
+            Assert.That(keeper.IsShortOfCredits(pistol), Is.False, "maxed: nothing to save up for");
+            Assert.That(keeper.IsShortOfCredits(machineGunMagazine), Is.False, "locked until the Machine gun is unlocked");
+
+            Earn(250);
+            Assert.That(keeper.IsShortOfCredits(magazine), Is.False);
+            keeper.Buy(magazine);
+            Assert.That(keeper.IsShortOfCredits(magazine), Is.True, "the next level costs 500");
+        }
     }
 }

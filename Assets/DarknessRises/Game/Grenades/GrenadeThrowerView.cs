@@ -1,3 +1,4 @@
+using System;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Player;
@@ -60,6 +61,9 @@ namespace DarknessRises.Game.Grenades
         private SceneLights sceneLights;
 
         public GrenadeCharges Charges { get; private set; }
+
+        /// <summary>Raised when a thrown Grenade goes off, where it went off.</summary>
+        public event Action<Vector3> Exploded;
 
         /// <summary>
         /// Gives the character a full set of Grenades built from <paramref name="grenadeDefinition"/>, with the charges,
@@ -174,6 +178,7 @@ namespace DarknessRises.Game.Grenades
         private void Explode(Vector3 position)
         {
             explosions.Get().Explode(position);
+            Exploded?.Invoke(position);
 
             var found = Physics.OverlapSphereNonAlloc(
                 position, stats.BlastRadius, blastColliders, blastLayers, QueryTriggerInteraction.Ignore);

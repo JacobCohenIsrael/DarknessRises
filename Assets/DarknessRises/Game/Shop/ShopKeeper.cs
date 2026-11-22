@@ -86,6 +86,15 @@ namespace DarknessRises.Game.Shop
         }
 
         /// <summary>
+        /// Whether the only thing between the player and the next level of <paramref name="item"/> is Credits: there is
+        /// one, what it requires is owned, and the bank can't cover it.
+        /// </summary>
+        public bool IsShortOfCredits(ShopItem item)
+        {
+            return !IsMaxed(item) && !IsLocked(item) && save.Credits < NextPrice(item);
+        }
+
+        /// <summary>
         /// Buys the next level of <paramref name="item"/>: takes its price from the bank, raises the level by one and
         /// writes the save. Does nothing when it's maxed, locked or the bank can't cover it.
         /// </summary>

@@ -90,6 +90,9 @@ namespace DarknessRises.Game.Lightning
         /// <summary>The Enemy whose shadow the last strike threw at the character, or null when it was an ordinary strike.</summary>
         public EnemyView LastLoomingEnemy { get; private set; }
 
+        /// <summary>Raised when a strike looms from behind a near Enemy: Lightning close by.</summary>
+        public event Action<EnemyView> Loomed;
+
         /// <summary>When (Unity time) the last Rumble started, or -1 before the first.</summary>
         public float LastRumbleTime { get; private set; } = -1f;
 
@@ -243,6 +246,10 @@ namespace DarknessRises.Game.Lightning
             flashElapsedSeconds = 0f;
             SetBrightness(flash.Brightness(0f));
             LastFlashTime = Time.time;
+            if (LastLoomingEnemy != null)
+            {
+                Loomed?.Invoke(LastLoomingEnemy);
+            }
         }
 
         /// <summary>

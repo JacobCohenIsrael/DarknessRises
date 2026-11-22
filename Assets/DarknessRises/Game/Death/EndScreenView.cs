@@ -164,6 +164,12 @@ namespace DarknessRises.Game.Death
             await shopButton.OnClickAsync(cancellationToken);
         }
 
+        /// <summary>Raised when NEW BEST! stamps in.</summary>
+        public event Action NewBestStamped;
+
+        /// <summary>Raised when the Credits total has counted up to the bank and jumps as it lands.</summary>
+        public event Action CreditsLanded;
+
         private void PlayPayout()
         {
             if (payoutClip == null)
@@ -197,6 +203,7 @@ namespace DarknessRises.Game.Death
             if (wasCountingTotal && !totalCount.IsCounting)
             {
                 kickSecondsLeft = look.LandKickSeconds;
+                CreditsLanded?.Invoke();
             }
 
             wasCountingTotal = totalCount.IsCounting;
@@ -234,6 +241,10 @@ namespace DarknessRises.Game.Death
             if (newBest.enabled != newBestStamp.IsStamped)
             {
                 newBest.enabled = newBestStamp.IsStamped;
+                if (newBest.enabled)
+                {
+                    NewBestStamped?.Invoke();
+                }
             }
 
             if (!newBestStamp.IsStamped)

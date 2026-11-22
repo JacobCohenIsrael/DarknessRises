@@ -1,0 +1,66 @@
+# #130 Web: navigator.vibrate in headless Chrome 157 (dev Web build 0.1.19-dev, muted, no window)
+# navigator.vibrate was stubbed before the page loaded (Page.addScriptToEvaluateOnNewDocument) to record every call,
+# and navigator.maxTouchPoints reported 5, as on an Android phone. One real tap on the canvas gave the page its user gesture.
+# Each [Haptics] PLAY line is paired, in order, with a recorded call, and the call's pattern is checked against the
+# Web pattern worked out from the authored HapticsDefinition.asset (as HapticWaveform does). Every call: navigator-vibrate-calls.json.
+
+== STAGE B
+  played : {'EnemyHit': 33, 'EnemyKilled': 15, 'ComboUp': 3, 'StationClearS': 2, 'ReloadDone': 2, 'WeaponSwitch': 1, 'GrenadeExplosion': 1, 'Hurt': 1}
+  dropped: {'EnemyHit: Weaker': 17, 'EnemyHit: Cooldown': 10, 'ComboUp: Weaker': 9}
+== STAGE A
+  played : {'EnemyHit': 95, 'HeartbeatFast': 46, 'EnemyKilled': 23, 'ReloadDone': 15, 'ComboUp': 13, 'BossWindUp': 6, 'BossStomp': 5, 'StationClearS': 3, 'Hurt': 2, 'Flare': 1, 'Adrenaline': 1, 'LureThrow': 1, 'LureLand': 1, 'GrenadeExplosion': 1, 'Death': 1, 'NewBest': 1, 'CreditsLanded': 1}
+  dropped: {'EnemyHit: Weaker': 67, 'ComboUp: Weaker': 23, 'EnemyKilled: Weaker': 6, 'HeartbeatFast: TooSoon': 4, 'HeartbeatFast: Weaker': 3, 'EnemyHit: TooSoon': 1, 'ReloadDone: Weaker': 1, 'BossStomp: Weaker': 1}
+== STAGE S
+  played : {'CannotAfford': 1, 'Bought': 1, 'WeaponUnlocked': 1}
+  dropped: {'Bought: Off': 1, 'ButtonTap: Unauthored': 1}
+
+PLAY lines 277, navigator.vibrate calls 277
+  Adrenaline       x1.0     1x navigator.vibrate([42, 128, 20])  ok
+  BossStomp        x1.0     5x navigator.vibrate([246, 54, 70])  ok
+  BossWindUp       x1.0     6x navigator.vibrate([8, 132, 14, 126, 21, 119, 31])  ok
+  Bought           x1.0     1x navigator.vibrate([12, 58, 40])  ok
+  CannotAfford     x1.0     1x navigator.vibrate([12, 83, 12])  ok
+  ComboUp          x1.0    16x navigator.vibrate([8])  ok
+  CreditsLanded    x1.0     1x navigator.vibrate([10, 55, 30])  ok
+  Death            x1.0     1x navigator.vibrate([350, 150, 200, 300, 60])  ok
+  EnemyHit         x1.0   128x navigator.vibrate([8])  ok
+  EnemyKilled      x1.0    38x navigator.vibrate([18])  ok
+  Flare            x1.0     1x navigator.vibrate([8, 62, 14, 56, 22, 48, 32, 38, 12])  ok
+  GrenadeExplosion x1.0     2x navigator.vibrate([126, 44, 20])  ok
+  HeartbeatFast    x1.0    46x navigator.vibrate([30, 160, 14])  ok
+  Hurt             x0.75    1x navigator.vibrate([68, 22, 24])  ok
+  Hurt             x1.0     2x navigator.vibrate([122])  ok
+  LureLand         x1.0     1x navigator.vibrate([30])  ok
+  LureThrow        x1.0     1x navigator.vibrate([8])  ok
+  NewBest          x1.0     1x navigator.vibrate([28, 92, 28, 92, 28, 92, 160])  ok
+  ReloadDone       x1.0    17x navigator.vibrate([13])  ok
+  StationClearS    x1.0     5x navigator.vibrate([18, 82, 18, 82, 24, 76, 120])  ok
+  WeaponSwitch     x1.0     1x navigator.vibrate([8])  ok
+  WeaponUnlocked   x1.0     1x navigator.vibrate([21, 69, 21, 69, 130])  ok
+mismatches: 0
+
+Machine gun stage: 58 effects over 50 s, most in any one second: 7
+  shortest gap between two starts: 15 ms
+
+# The VIBRATION switch is kept in the browser (a second run, after the switch went off and back on):
+localStorage {"DarknessRises.settings.haptics.on":"1",...}
+
+# itch.io's iframe
+# itch.io embeds a Web game in <iframe id="game_drop" src="https://html-classic.itch.zone/html/..." allow="autoplay; fullscreen *;
+# geolocation; microphone; camera; midi; monetization; xr-spatial-tracking; gamepad; gyroscope; accelerometer; xr;
+# cross-origin-isolated; web-share">: a cross-origin frame (read from three public itch.io game pages on 2026-11-22).
+# vibrate isn't a Permissions Policy feature, so that list neither grants nor blocks it. What Chrome does instead was
+# checked with that exact allow list: a page at 127.0.0.1 embedding a frame from localhost (another site), headless Chrome 157:
+  EMBEDDED as on itch.io (the iframe has itch.io's allow list).
+  before any tap: {"vibrate":"function","hasBeenActive":false,"maxTouchPoints":0,"coarse":false,"tapped":0,"vibrateReturned":false}
+  after a tap in the game frame: {"vibrate":"function","hasBeenActive":true,"maxTouchPoints":0,"coarse":false,"tapped":1,"vibrateReturned":true}
+  ON ITS OWN (top level, the same page).
+  before any tap: {"vibrate":"function","hasBeenActive":false,"maxTouchPoints":0,"coarse":false,"tapped":0,"vibrateReturned":false}
+  after a tap: {"vibrate":"function","hasBeenActive":true,"maxTouchPoints":0,"coarse":false,"tapped":1,"vibrateReturned":true}
+  console: Blocked call to navigator.vibrate inside a cross-origin iframe because the frame has never been activated by the user: https://www.chromestatus.com/feature/5682658461876224. http://localhost:8391/probe/
+  console: Blocked call to navigator.vibrate because user hasn't tapped on the frame or any embedded frame yet: https://www.chromestatus.com/feature/5644273861001216. http://localhost:8391/probe/
+# So on itch.io vibrate works once the player has tapped inside the game's frame, which the first shot or button
+# press is. Before that Chrome refuses it with a console error; WebHaptics.jslib checks
+# navigator.userActivation.hasBeenActive first and skips quietly instead. On a desktop browser (no touch screen) and on
+# iOS Safari (no navigator.vibrate) the device reports it can't vibrate: nothing is called and the switch is hidden.
+# Caveat: this is desktop headless Chrome standing in for Chrome on Android (same Blink user-activation rules); no phone was available to feel it.

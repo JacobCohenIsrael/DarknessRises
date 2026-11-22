@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Haptics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,6 +41,21 @@ namespace DarknessRises.Game.Audio
         [SerializeField, Tooltip("Plays the sample, in the Sound category.")]
         private AudioSource sample;
 
+        [Header("Vibration")]
+        [SerializeField, Tooltip("The VIBRATION switch's name. Hidden with the switch where the device can't vibrate.")]
+        private TextMeshProUGUI vibrationName;
+
+        [SerializeField, Tooltip("The VIBRATION switch: a tap turns Haptics on or off.")]
+        private Button vibrationButton;
+
+        [SerializeField, Tooltip("The switch's ON or OFF.")]
+        private TextMeshProUGUI vibrationLabel;
+
+        [SerializeField, Tooltip("The switch's face, coloured on or off.")]
+        private Image vibrationFace;
+
+        private IHapticsSwitch vibration;
+
         private AudioVolumeSettings settings;
         private AudioClip sampleClip;
 
@@ -64,11 +80,18 @@ namespace DarknessRises.Game.Audio
         /// <summary>The sample's source.</summary>
         public AudioSource Sample => sample;
 
+        /// <summary>The VIBRATION switch, for checks and headless probes; null in a panel built before it.</summary>
+        public Button VibrationButton => vibrationButton;
+
+        /// <summary>Whether the VIBRATION switch shows: the device can vibrate.</summary>
+        public bool IsVibrationShown => vibrationButton != null && vibrationButton.gameObject.activeSelf;
+
         /// <summary>
         /// Readies the panel with its wording and <paramref name="sound"/>, the sample for the Sound slider. The open
-        /// button works from here on.
+        /// button works from here on. The VIBRATION switch sets <paramref name="haptics"/>; without them, or where the
+        /// device can't vibrate, it's hidden.
         /// </summary>
-        public void Use(AudioVolumeSettings volumeSettings, AudioClip sound)
+        public void Use(AudioVolumeSettings volumeSettings, AudioClip sound, IHapticsSwitch haptics = null)
         {
             settings = volumeSettings ?? throw new ArgumentNullException(nameof(volumeSettings));
             sampleClip = sound;
@@ -84,6 +107,16 @@ namespace DarknessRises.Game.Audio
             for (var i = 0; i < AudioVolumes.CategoryCount; i++)
             {
                 names[i].text = settings.LabelOf((AudioCategory)i);
+            }
+
+            vibration = haptics;
+            if (vibrationButton != null)
+            {
+                var shown = vibration != null && vibration.IsAvailable;
+                vibrationButton.gameObject.SetActive(shown);
+                vibrationName.gameObject.SetActive(shown);
+                vibrationName.text = settings.VibrationLabel;
+                ShowVibration();
             }
 
             Listen();
@@ -103,6 +136,7 @@ namespace DarknessRises.Game.Audio
                 ShowPercent((AudioCategory)i);
             }
 
+            ShowVibration();
             gameObject.SetActive(true);
             volumes.HearWhilePaused(AudioCategory.Ambient, true);
             Opened?.Invoke();
@@ -136,6 +170,11 @@ namespace DarknessRises.Game.Audio
             sample.ignoreListenerPause = true;
             openButton.onClick.AddListener(Open);
             closeButton.onClick.AddListener(Close);
+            if (vibrationButton != null)
+            {
+                vibrationButton.onClick.AddListener(ToggleVibration);
+            }
+
             sliderListeners = new UnityEngine.Events.UnityAction<float>[sliders.Length];
             releaseListeners = new Action[releases.Length];
             for (var i = 0; i < sliders.Length; i++)
@@ -168,11 +207,40 @@ namespace DarknessRises.Game.Audio
             }
 
             closeButton.onClick.RemoveListener(Close);
+            if (vibrationButton != null)
+            {
+                vibrationButton.onClick.RemoveListener(ToggleVibration);
+            }
+
             for (var i = 0; i < sliderListeners.Length; i++)
             {
                 sliders[i].onValueChanged.RemoveListener(sliderListeners[i]);
                 releases[i].Released -= releaseListeners[i];
             }
+        }
+
+        /// <summary>The VIBRATION switch was tapped: Haptics go on or off, and the choice is kept on the device.</summary>
+        public void ToggleVibration()
+        {
+            if (vibration == null || !vibration.IsAvailable)
+            {
+                return;
+            }
+
+            vibration.SetOn(!vibration.IsOn);
+            ShowVibration();
+        }
+
+        private void ShowVibration()
+        {
+            if (vibrationButton == null || settings == null || vibration == null)
+            {
+                return;
+            }
+
+            var on = vibration.IsOn;
+            vibrationLabel.text = on ? settings.VibrationOnLabel : settings.VibrationOffLabel;
+            vibrationFace.color = on ? settings.VibrationOnColor : settings.VibrationOffColor;
         }
 
         private void StopHearingAmbientWhilePaused()

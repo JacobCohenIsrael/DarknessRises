@@ -1,0 +1,37 @@
+# #130 Android: DarknessRises-0.1.19-dev.apk (debug-signed dev build of this branch merged with the integration branch)
+
+$ aapt2 dump badging (sdk lines) and dump permissions
+package: name='com.TheGamefather.DarknessRises' versionCode='119' versionName='0.1.19' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+minSdkVersion:'26'
+targetSdkVersion:'36'
+package: com.TheGamefather.DarknessRises
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.VIBRATE'
+permission: com.TheGamefather.DarknessRises.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission: name='com.TheGamefather.DarknessRises.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+
+# The integration branch's 0.1.18 APK, before this change: no VIBRATE.
+package: com.TheGamefather.DarknessRises
+uses-permission: name='android.permission.INTERNET'
+permission: com.TheGamefather.DarknessRises.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission: name='com.TheGamefather.DarknessRises.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+
+# Where VIBRATE comes from: Unity adds it to the manifest when the scripts call Handheld.Vibrate(), which
+# HandheldHapticDevice does (the crude fallback when the system vibrator can't be reached). No custom manifest,
+# no Plugins/Android folder, no ProjectSettings change.
+
+# The calls (Game/Haptics/AndroidHapticDevice.cs, compiled into the APK's libil2cpp.so):
+# - At start, once: SDK_INT; the Vibrator (VibratorManager.getDefaultVibrator on API 31+, else getSystemService("vibrator"));
+#   hasVibrator, hasAmplitudeControl; the method IDs of Vibrator.vibrate(VibrationEffect) and Vibrator.cancel().
+# - Prepare, once: one VibrationEffect per effect and strength step (28 effects x 4 = 112), each kept as an
+#   AndroidJavaObject with a ready jvalue[] argument: createPredefined(EFFECT_TICK/CLICK/HEAVY_CLICK/DOUBLE_CLICK) on
+#   API 29+ where a pattern names one; else createOneShot(ms, amplitude) or createWaveform(timings, amplitudes, -1);
+#   duration-only timings (createWaveform(timings, -1)) where the motor has no amplitude control.
+# - Each effect: AndroidJNI.CallVoidMethod(vibrator, vibrateMethod, cachedArguments[index]). Nothing is looked up or
+#   allocated; a pending Java exception is cleared so it can't break the next call.
+# - The dev build logs these to logcat as "[Haptics] Android API n: vibrator found, amplitude control yes|no" and
+#   "[Haptics] Android: 112 VibrationEffects cached (k predefined)", then the same PLAY/drop lines as haptics-log.txt.
+
+# Not run on a device: no Android phone or emulator is attached to this machine (adb devices lists none), so the
+# vibrator calls weren't observed on hardware. The same rules and the same pattern table were exercised end to end
+# on the Web build (web-check.txt).

@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Content;
+using DarknessRises.Game.Haptics;
 using DarknessRises.Game.Saving;
 using UnityEngine;
 #if UNITY_EDITOR || DEBUG
@@ -55,7 +56,13 @@ namespace DarknessRises.Game.Shop
         /// Opens the Shop over <paramref name="save"/> and waits until the player presses PLAY. What's bought is
         /// written to the save as it's bought.
         /// </summary>
-        public async UniTask RunAsync(PlayerSave save, CancellationToken cancellationToken)
+        public UniTask RunAsync(PlayerSave save, CancellationToken cancellationToken) => RunAsync(save, null, cancellationToken);
+
+        /// <summary>
+        /// Opens the Shop over <paramref name="save"/> and waits until the player presses PLAY. Buying vibrates through
+        /// <paramref name="haptics"/>, the game's; without them nothing vibrates.
+        /// </summary>
+        public async UniTask RunAsync(PlayerSave save, HapticsPlayer haptics, CancellationToken cancellationToken)
         {
             if (save == null)
             {
@@ -78,7 +85,8 @@ namespace DarknessRises.Game.Shop
             Catalog = shop.ToCatalog();
             Keeper = new ShopKeeper(save);
             view.Show(configuration, Catalog, Keeper, content.Clip(shop.Screen.BuyClip));
-            volumePanel.Use(audioVolumes, content.Clip(audioVolumes.SampleClip));
+            view.UseHaptics(haptics);
+            volumePanel.Use(audioVolumes, content.Clip(audioVolumes.SampleClip), haptics);
 #if UNITY_EDITOR || DEBUG
             // Built from code, so the scene doesn't reference it and release builds have none of it.
             ShopDebugMenuView.Create(transform, new SaveDebugCommands(save, shop));

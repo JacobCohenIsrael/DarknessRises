@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Configuration;
+using DarknessRises.Game.Haptics;
 using DarknessRises.Game.Hud;
 using DarknessRises.Game.Upgrades;
 using DarknessRises.Game.Weapons;
@@ -94,6 +95,9 @@ namespace DarknessRises.Game.Shop
         private Rect fittedSafeArea;
         private Action<WeaponCardView> onCardPressed;
         private Action<UpgradeRowView> onRowPressed;
+        private Action<WeaponCardView> onCardRefused;
+        private Action<UpgradeRowView> onRowRefused;
+        private IHaptics haptics;
         private Action onSaveChanged;
         private bool isShown;
 
@@ -133,6 +137,8 @@ namespace DarknessRises.Game.Shop
 
             onCardPressed = OnCardPressed;
             onRowPressed = OnRowPressed;
+            onCardRefused = card => Refuse(card.Item);
+            onRowRefused = row => Refuse(row.Upgrade.Item);
             BuildWeaponsPage();
             BuildGearPage();
             weaponsTab.onClick.AddListener(ShowWeaponsPage);
@@ -146,6 +152,23 @@ namespace DarknessRises.Game.Shop
             keeper.Changed += onSaveChanged;
             FitSafeArea();
             Refresh();
+        }
+
+        /// <summary>
+        /// From now on buying vibrates through <paramref name="shopHaptics"/>: a success for an Upgrade, a bigger one
+        /// for a Weapon, a "no" for what the bank can't cover, and (if ticks on buttons are on) a tick on PLAY and the tabs.
+        /// </summary>
+        public void UseHaptics(IHaptics shopHaptics)
+        {
+            if (haptics != null || shopHaptics == null)
+            {
+                return;
+            }
+
+            haptics = shopHaptics;
+            weaponsTab.onClick.AddListener(TapButton);
+            gearTab.onClick.AddListener(TapButton);
+            playButton.onClick.AddListener(TapButton);
         }
 
         /// <summary>Waits until the player presses PLAY.</summary>
@@ -165,6 +188,7 @@ namespace DarknessRises.Game.Shop
                 card.name = $"{weapon.Offer.DisplayName} Card";
                 card.Bind(weapon.Offer, weapon.Item);
                 card.Pressed += onCardPressed;
+                card.Refused += onCardRefused;
                 card.gameObject.SetActive(true);
                 weaponCards.Add(card);
                 AddRows(column, weapon.Upgrades, weapon.Offer.Weapon);
@@ -207,6 +231,7 @@ namespace DarknessRises.Game.Shop
                 row.Bind(
                     entry.Definition, entry.Upgrade, ConfiguredRunStats.BaseValue(entry.Upgrade.Stat, configuration, weapon), settings);
                 row.Pressed += onRowPressed;
+                row.Refused += onRowRefused;
                 row.gameObject.SetActive(true);
                 rows.Add(row);
             }
@@ -258,11 +283,19 @@ namespace DarknessRises.Game.Shop
             keeper.Changed -= onSaveChanged;
             weaponsTab.onClick.RemoveListener(ShowWeaponsPage);
             gearTab.onClick.RemoveListener(ShowGearPage);
+            if (haptics != null)
+            {
+                weaponsTab.onClick.RemoveListener(TapButton);
+                gearTab.onClick.RemoveListener(TapButton);
+                playButton.onClick.RemoveListener(TapButton);
+            }
+
             for (var i = 0; i < weaponCards.Count; i++)
             {
                 if (weaponCards[i] != null)
                 {
                     weaponCards[i].Pressed -= onCardPressed;
+                    weaponCards[i].Refused -= onCardRefused;
                 }
             }
 
@@ -271,6 +304,7 @@ namespace DarknessRises.Game.Shop
                 if (rows[i] != null)
                 {
                     rows[i].Pressed -= onRowPressed;
+                    rows[i].Refused -= onRowRefused;
                 }
             }
         }
@@ -284,9 +318,21 @@ namespace DarknessRises.Game.Shop
             }
 
             PlayBuySound();
+            haptics?.Play(HapticEffect.WeaponUnlocked);
             card.Pop(settings.PopScale, settings.PopSeconds);
             Refresh();
         }
+
+        // A tap on a ware the bank can't cover says no. A maxed or locked one says nothing: there's nothing to save up for.
+        private void Refuse(ShopItem item)
+        {
+            if (keeper.IsShortOfCredits(item))
+            {
+                haptics?.Play(HapticEffect.CannotAfford);
+            }
+        }
+
+        private void TapButton() => haptics?.Play(HapticEffect.ButtonTap);
 
         // An Upgrade's button buys its next level.
         private void OnRowPressed(UpgradeRowView row)
@@ -297,6 +343,7 @@ namespace DarknessRises.Game.Shop
             }
 
             PlayBuySound();
+            haptics?.Play(HapticEffect.Bought);
             row.Pop(settings.PopScale, settings.PopSeconds);
             Refresh();
         }

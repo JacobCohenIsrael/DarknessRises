@@ -328,7 +328,7 @@ The player's durable progress on the device: the bank, and what was bought in th
 _Avoid_: profile, account, progress (that's how far along the Route the character is)
 
 **Device settings**:
-What belongs to the device rather than to the player's progress: the Volume panel's sliders, where the Grenade button was dropped, whether a one-time hint was shown. They're kept apart from the Save, and like it they survive app restarts, updates and new uploads on the Web.
+What belongs to the device rather than to the player's progress: the Volume panel's sliders and VIBRATION switch, where the Grenade button was dropped, whether a one-time hint was shown. They're kept apart from the Save, and like it they survive app restarts, updates and new uploads on the Web.
 _Avoid_: preferences, options, config
 
 **Shop**:
@@ -365,5 +365,15 @@ _Avoid_: atmosphere, background, environment
 The Audio category of music. The game has none yet; the category and its slider are ready for it.
 
 **Volume panel**:
-The panel with a slider for each Audio category, from 0 % (silent) to 100 % (as authored), opened from the pause menu's Sound button or the Shop's SOUND button. A slider changes its sounds as it moves, letting go of the Sound slider plays a short sample, and the settings stay on the device.
+The panel with a slider for each Audio category, from 0 % (silent) to 100 % (as authored), opened from the pause menu's Sound button or the Shop's SOUND button. A slider changes its sounds as it moves, letting go of the Sound slider plays a short sample, and the settings stay on the device. Under the sliders, where the device can vibrate, is the VIBRATION switch for Haptics.
 _Avoid_: settings menu, options, mixer
+
+## Haptics
+
+**Haptics**:
+The phone vibrating with the game's moments: a Grenade going off, a Shot hitting an Enemy, the Colossus's stomp, being hurt, the low-health heartbeat, buying in the Shop. Each moment asks for a Haptic effect by name; whether it plays is decided by rules that keep it from turning into one long buzz (a stronger effect cuts a weaker one, a minimum gap, a cap per second), and nothing plays while the game is paused, during an ad or on the loading screen. The VIBRATION switch in the Volume panel turns them off; it's a Device setting, and only shows where the device can vibrate (Android, and Chrome on an Android phone).
+_Avoid_: rumble, vibration (except as the switch's label), force feedback
+
+**Haptic effect**:
+One authored vibration, such as the Grenade's or a hit's: its pulses (each a pause, a length and a strength), how it ranks against the others, and how often it may come.
+_Avoid_: pattern (that's its pulses), buzz

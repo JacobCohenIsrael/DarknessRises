@@ -1,0 +1,382 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dcebe7873942364980ad403f2a48ad8, type: 3}
+  m_Name: HapticsDefinition
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Haptics.HapticsDefinition
+  onByDefault: 1
+  minGapSeconds: 0.04
+  maxPerSecond: 12
+  strengthSteps: 4
+  shortestPulseMs: 8
+  hurtBaseStrength: 0.6
+  hurtStrengthPerHitPoint: 0.2
+  tickOnButtons: 0
+  grenadeExplosion:
+    pulses:
+    - delayMs: 0
+      durationMs: 60
+      amplitude: 1
+    - delayMs: 0
+      durationMs: 110
+      amplitude: 0.6
+    - delayMs: 0
+      durationMs: 80
+      amplitude: 0.25
+    priority: 75
+    cooldownSeconds: 0.1
+    quietBeforeSeconds: 0
+    predefined: -1
+  enemyHit:
+    pulses:
+    - delayMs: 0
+      durationMs: 12
+      amplitude: 0.35
+    priority: 10
+    cooldownSeconds: 0.09
+    quietBeforeSeconds: 0
+    predefined: 2
+  enemyKilled:
+    pulses:
+    - delayMs: 0
+      durationMs: 28
+      amplitude: 0.65
+    priority: 30
+    cooldownSeconds: 0.06
+    quietBeforeSeconds: 0
+    predefined: 0
+  bossWindUp:
+    pulses:
+    - delayMs: 0
+      durationMs: 140
+      amplitude: 0.06
+    - delayMs: 0
+      durationMs: 140
+      amplitude: 0.1
+    - delayMs: 0
+      durationMs: 140
+      amplitude: 0.15
+    - delayMs: 0
+      durationMs: 140
+      amplitude: 0.22
+    priority: 40
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  bossStomp:
+    pulses:
+    - delayMs: 0
+      durationMs: 120
+      amplitude: 1
+    - delayMs: 0
+      durationMs: 180
+      amplitude: 0.7
+    - delayMs: 0
+      durationMs: 200
+      amplitude: 0.35
+    priority: 85
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  bossDefeated:
+    pulses:
+    - delayMs: 0
+      durationMs: 300
+      amplitude: 1
+    - delayMs: 0
+      durationMs: 400
+      amplitude: 0.6
+    - delayMs: 0
+      durationMs: 450
+      amplitude: 0.3
+    - delayMs: 0
+      durationMs: 450
+      amplitude: 0.12
+    priority: 90
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  hurt:
+    pulses:
+    - delayMs: 0
+      durationMs: 90
+      amplitude: 1
+    - delayMs: 0
+      durationMs: 70
+      amplitude: 0.45
+    priority: 70
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  heartbeatSlow:
+    pulses:
+    - delayMs: 0
+      durationMs: 45
+      amplitude: 0.55
+    - delayMs: 265
+      durationMs: 35
+      amplitude: 0.3
+    priority: 35
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  heartbeatFast:
+    pulses:
+    - delayMs: 0
+      durationMs: 40
+      amplitude: 0.75
+    - delayMs: 150
+      durationMs: 30
+      amplitude: 0.45
+    priority: 40
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  death:
+    pulses:
+    - delayMs: 0
+      durationMs: 500
+      amplitude: 0.7
+    - delayMs: 0
+      durationMs: 500
+      amplitude: 0.4
+    - delayMs: 0
+      durationMs: 300
+      amplitude: 0.2
+    priority: 95
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  comboUp:
+    pulses:
+    - delayMs: 0
+      durationMs: 10
+      amplitude: 0.3
+    priority: 15
+    cooldownSeconds: 0.1
+    quietBeforeSeconds: 0
+    predefined: 2
+  reloadDone:
+    pulses:
+    - delayMs: 0
+      durationMs: 18
+      amplitude: 0.7
+    priority: 20
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: 0
+  weaponSwitch:
+    pulses:
+    - delayMs: 0
+      durationMs: 15
+      amplitude: 0.5
+    priority: 20
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: 2
+  ranDry:
+    pulses:
+    - delayMs: 0
+      durationMs: 15
+      amplitude: 0.6
+    - delayMs: 60
+      durationMs: 15
+      amplitude: 0.6
+    priority: 25
+    cooldownSeconds: 0.3
+    quietBeforeSeconds: 0
+    predefined: 1
+  flare:
+    pulses:
+    - delayMs: 0
+      durationMs: 70
+      amplitude: 0.1
+    - delayMs: 0
+      durationMs: 70
+      amplitude: 0.2
+    - delayMs: 0
+      durationMs: 70
+      amplitude: 0.32
+    - delayMs: 0
+      durationMs: 70
+      amplitude: 0.45
+    - delayMs: 0
+      durationMs: 60
+      amplitude: 0.2
+    priority: 45
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  adrenaline:
+    pulses:
+    - delayMs: 0
+      durationMs: 50
+      amplitude: 0.85
+    - delayMs: 120
+      durationMs: 40
+      amplitude: 0.5
+    priority: 45
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  lureThrow:
+    pulses:
+    - delayMs: 0
+      durationMs: 12
+      amplitude: 0.4
+    priority: 20
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: 2
+  lureLand:
+    pulses:
+    - delayMs: 0
+      durationMs: 40
+      amplitude: 0.75
+    priority: 30
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: 5
+  lightningNear:
+    pulses:
+    - delayMs: 0
+      durationMs: 220
+      amplitude: 0.18
+    - delayMs: 0
+      durationMs: 220
+      amplitude: 0.08
+    priority: 5
+    cooldownSeconds: 2
+    quietBeforeSeconds: 1.5
+    predefined: -1
+  stationClear:
+    pulses:
+    - delayMs: 0
+      durationMs: 30
+      amplitude: 0.6
+    - delayMs: 70
+      durationMs: 30
+      amplitude: 0.6
+    - delayMs: 70
+      durationMs: 60
+      amplitude: 0.9
+    priority: 50
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  stationClearS:
+    pulses:
+    - delayMs: 0
+      durationMs: 30
+      amplitude: 0.6
+    - delayMs: 70
+      durationMs: 30
+      amplitude: 0.6
+    - delayMs: 70
+      durationMs: 30
+      amplitude: 0.8
+    - delayMs: 70
+      durationMs: 120
+      amplitude: 1
+    priority: 55
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  scoreBoost:
+    pulses:
+    - delayMs: 0
+      durationMs: 30
+      amplitude: 0.6
+    - delayMs: 60
+      durationMs: 90
+      amplitude: 1
+    priority: 55
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  newBest:
+    pulses:
+    - delayMs: 0
+      durationMs: 40
+      amplitude: 0.7
+    - delayMs: 80
+      durationMs: 40
+      amplitude: 0.7
+    - delayMs: 80
+      durationMs: 40
+      amplitude: 0.7
+    - delayMs: 80
+      durationMs: 160
+      amplitude: 1
+    priority: 60
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  creditsLanded:
+    pulses:
+    - delayMs: 0
+      durationMs: 20
+      amplitude: 0.5
+    - delayMs: 45
+      durationMs: 35
+      amplitude: 0.85
+    priority: 45
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  bought:
+    pulses:
+    - delayMs: 0
+      durationMs: 20
+      amplitude: 0.6
+    - delayMs: 50
+      durationMs: 40
+      amplitude: 1
+    priority: 50
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  weaponUnlocked:
+    pulses:
+    - delayMs: 0
+      durationMs: 30
+      amplitude: 0.7
+    - delayMs: 60
+      durationMs: 30
+      amplitude: 0.7
+    - delayMs: 60
+      durationMs: 130
+      amplitude: 1
+    priority: 60
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
+  cannotAfford:
+    pulses:
+    - delayMs: 0
+      durationMs: 25
+      amplitude: 0.5
+    - delayMs: 70
+      durationMs: 25
+      amplitude: 0.5
+    priority: 40
+    cooldownSeconds: 0.25
+    quietBeforeSeconds: 0
+    predefined: -1
+  buttonTap:
+    pulses:
+    - delayMs: 0
+      durationMs: 8
+      amplitude: 0.25
+    priority: 5
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: 2

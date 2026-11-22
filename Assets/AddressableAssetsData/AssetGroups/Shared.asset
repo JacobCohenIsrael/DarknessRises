@@ -23,6 +23,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 1fe68c2517a664847a898bbf500a952a
+    m_Address: Grenade
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 2e071f5b8b8467d45a5e6e24c23c6ad4
     m_Address: Metal Impact 7
     m_ReadOnly: 0
@@ -55,14 +63,6 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: 4dafe49b9d0409347a2f21c42c6b4bea
-    m_Address: FlamethrowerMuzzleFlash
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Level
-    - Shop
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
   - m_GUID: 4dc8e0d67c65d5247bbf69778eb2f48b
     m_Address: HitSpark
     m_ReadOnly: 0
@@ -79,14 +79,6 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: 6649862a12cd1974c982eae3d2727ba5
-    m_Address: PistolMuzzleFlash
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Level
-    - Shop
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
   - m_GUID: 6739c01659ad96d47987f4ddee226b36
     m_Address: Hand Gun 1
     m_ReadOnly: 0
@@ -97,30 +89,6 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: 688c6b22d6fbcf843b1886d15e51e8d7
     m_Address: Shot
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Level
-    - Shop
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
-  - m_GUID: 6a36831b018895c49a49552506f3703e
-    m_Address: MachineGunModel
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Level
-    - Shop
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
-  - m_GUID: 6adabe7c0653c0540a554f8da9451e8e
-    m_Address: PistolModel
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Level
-    - Shop
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
-  - m_GUID: 6c633e2f47adf914495854c5489244c8
-    m_Address: MachineGunMuzzleFlash
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level
@@ -175,6 +143,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: 96971dab9dac44143a0392a57e753c00
+    m_Address: Ring
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: 9930d5b4be15bb04c9d0a6fa0d7e6b2e
     m_Address: Heavy Object Impact 4
     m_ReadOnly: 0
@@ -183,8 +159,8 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: a0916d303efed1149b059125d4422f72
-    m_Address: FlamethrowerModel
+  - m_GUID: a65244ecca5d6774d83e596182fcd062
+    m_Address: SkillFlare
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level
@@ -199,8 +175,32 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: ab7a4ce196b898f45bb917d9bcd85cae
+    m_Address: HurtVignette
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: ac6034ade498bb94b87620cdf6eac48b
     m_Address: Monster Bite
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: cba26e1b22499ec48b3fc944fd1cf757
+    m_Address: Heartbeat Slow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: ce4ab45d11831e143b5c82fa7ca2a574
+    m_Address: Disc
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level
@@ -223,6 +223,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: d9d36016d3613e3469eb70fa7674fa8a
+    m_Address: SkillHeart
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: e05478d53ab27f9409619259809c5e6c
     m_Address: Handling_Gun_01_Reload_Sq_SFX
     m_ReadOnly: 0
@@ -233,6 +241,14 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: e17b921ca341d2f40bcee6d6621c39df
     m_Address: Configuration
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: e79e5599130b5ce4c94ad9a0f284a03e
+    m_Address: Heartbeat Fast
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level

@@ -44,6 +44,26 @@ namespace DarknessRises.Game.Editor.Hud
             var root = new GameObject("Crosshair", typeof(RectTransform), typeof(CrosshairView));
             var area = Stretch(root.GetComponent<RectTransform>(), hud);
 
+            // The reload ring around the crosshair, under it: a faint full ring with the fill over it.
+            var track = new GameObject("Reload Ring", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            track.rectTransform.SetParent(area, false);
+            track.rectTransform.anchorMin = track.rectTransform.anchorMax = track.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            track.sprite = HudIcons.Ring();
+            track.raycastTarget = false;
+            var ring = new GameObject("Fill", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            ring.rectTransform.SetParent(track.rectTransform, false);
+            ring.rectTransform.anchorMin = Vector2.zero;
+            ring.rectTransform.anchorMax = Vector2.one;
+            ring.rectTransform.offsetMin = ring.rectTransform.offsetMax = Vector2.zero;
+            ring.sprite = track.sprite;
+            ring.type = Image.Type.Filled;
+            ring.fillMethod = Image.FillMethod.Radial360;
+            ring.fillOrigin = (int)Image.Origin360.Top;
+            ring.fillClockwise = true;
+            ring.fillAmount = 0f;
+            ring.raycastTarget = false;
+            track.gameObject.SetActive(false);
+
             var crosshair = new GameObject("Reticle", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             crosshair.rectTransform.SetParent(area, false);
             crosshair.rectTransform.anchorMin = crosshair.rectTransform.anchorMax = crosshair.rectTransform.pivot = new Vector2(0.5f, 0.5f);
@@ -55,6 +75,8 @@ namespace DarknessRises.Game.Editor.Hud
             var serialized = new SerializedObject(view);
             serialized.FindProperty("area").objectReferenceValue = area;
             serialized.FindProperty("crosshair").objectReferenceValue = crosshair;
+            serialized.FindProperty("reloadTrack").objectReferenceValue = track;
+            serialized.FindProperty("reloadRing").objectReferenceValue = ring;
             serialized.FindProperty("controls").objectReferenceValue = controls;
             serialized.FindProperty("weaponView").objectReferenceValue = primaryWeapon;
             serialized.ApplyModifiedPropertiesWithoutUndo();

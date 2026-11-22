@@ -32,6 +32,17 @@ namespace DarknessRises.Game.Hud
         [SerializeField, Tooltip("With a mouse, hide the system cursor while the crosshair stands in for it. It comes back on the pause and death screens.")]
         private bool hideMouseCursor = true;
 
+        [Header("Reload ring")]
+        [SerializeField, Min(1f), Tooltip("Width and height of the thin ring around the crosshair that fills while the Primary weapon reloads. " +
+            "On touch it stays where the crosshair last was.")]
+        private float reloadRingSize = 150f;
+
+        [SerializeField, Tooltip("The ring's fill, clockwise from the top as the reload runs.")]
+        private Color reloadRingColor = new(1f, 0.72f, 0.3f, 0.95f);
+
+        [SerializeField, Tooltip("The faint full ring behind the fill, showing how much is left. Clear for none.")]
+        private Color reloadTrackColor = new(1f, 1f, 1f, 0.18f);
+
         public float Size => size;
         public Color Color => color;
         public float KickScale => kickScale;
@@ -39,5 +50,8 @@ namespace DarknessRises.Game.Hud
         public float TouchLingerSeconds => touchLingerSeconds;
         public float FadeSeconds => fadeSeconds;
         public bool HideMouseCursor => hideMouseCursor;
+        public float ReloadRingSize => reloadRingSize;
+        public Color ReloadRingColor => reloadRingColor;
+        public Color ReloadTrackColor => reloadTrackColor;
     }
 }

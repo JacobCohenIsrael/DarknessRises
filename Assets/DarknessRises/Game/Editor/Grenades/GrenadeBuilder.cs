@@ -3,6 +3,7 @@ using DarknessRises.Game.Controls;
 using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Health;
+using DarknessRises.Game.Editor.Hud;
 using DarknessRises.Game.Grenades;
 using DarknessRises.Game.Hud;
 using Unity.Cinemachine;
@@ -80,9 +81,9 @@ namespace DarknessRises.Game.Editor.Grenades
 
         // HUD: a row of pips above the ammo readout, right-aligned with it. Reference pixels at 1920x1080.
         private static readonly Vector2 GrenadesMargin = new(56f, 186f);
-        private static readonly Vector2 GrenadesSize = new(360f, 44f);
-        private const float PipSize = 40f;
-        private const float PipSpacing = 14f;
+        private static readonly Vector2 GrenadesSize = new(360f, 56f);
+        private const float PipSize = 56f;
+        private const float PipSpacing = 8f;
         private static readonly Color PipEmptyColor = new(0.85f, 0.85f, 0.85f, 0.22f);
         private static readonly Color PipFullColor = new(1f, 0.6f, 0.25f, 0.9f);
 
@@ -167,7 +168,9 @@ namespace DarknessRises.Game.Editor.Grenades
 
             var serializedRoot = new SerializedObject(gameRoot);
             serializedRoot.FindProperty("grenadeThrower").objectReferenceValue = thrower;
-            var cornerCharges = BuildGrenadeHud(GrenadesMargin, GrenadesSize, PipSize, PipSpacing, TextAnchor.LowerRight);
+            var hud = GameObject.Find("HUD").transform;
+            var cornerCharges = BuildGrenadeHud(
+                HudBuilder.SafeArea(hud), GrenadesMargin, GrenadesSize, PipSize, PipSpacing, TextAnchor.LowerRight);
             serializedRoot.FindProperty("grenadeHud").objectReferenceValue = cornerCharges;
             serializedRoot.FindProperty("grenadeButton").objectReferenceValue = BuildGrenadeButton(controls, cornerCharges.gameObject);
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
@@ -236,7 +239,7 @@ namespace DarknessRises.Game.Editor.Grenades
                 buttonRect, "Label", "GRENADE", ButtonLabelFontSize, ButtonLabelColor, ButtonLabelOffset, ButtonLabelSize);
             label.raycastTarget = false;
 
-            var pips = BuildGrenadeHud(Vector2.zero, ButtonPipsSize, ButtonPipSize, ButtonPipSpacing, TextAnchor.MiddleCenter);
+            var pips = BuildGrenadeHud(hud.transform, Vector2.zero, ButtonPipsSize, ButtonPipSize, ButtonPipSpacing, TextAnchor.MiddleCenter);
             var pipsRect = (RectTransform)pips.transform;
             pipsRect.SetParent(buttonRect, false);
             pipsRect.anchorMin = pipsRect.anchorMax = pipsRect.pivot = new Vector2(0.5f, 0.5f);
@@ -260,12 +263,13 @@ namespace DarknessRises.Game.Editor.Grenades
             return view;
         }
 
-        private static GrenadeHudView BuildGrenadeHud(Vector2 margin, Vector2 size, float pipSize, float pipSpacing, TextAnchor alignment)
+        // A row of small grenade icons, one per charge: a dimmed outline with the lit icon filling up over it from the bottom.
+        private static GrenadeHudView BuildGrenadeHud(
+            Transform parent, Vector2 margin, Vector2 size, float pipSize, float pipSpacing, TextAnchor alignment)
         {
-            var hud = GameObject.Find("HUD");
             var grenades = new GameObject("Grenades", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(GrenadeHudView));
             var rect = grenades.GetComponent<RectTransform>();
-            rect.SetParent(hud.transform, false);
+            rect.SetParent(parent, false);
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 0f);
             rect.anchoredPosition = new Vector2(-margin.x, margin.y);
             rect.sizeDelta = size;
@@ -276,14 +280,15 @@ namespace DarknessRises.Game.Editor.Grenades
             layout.childControlWidth = layout.childControlHeight = false;
             layout.childForceExpandWidth = layout.childForceExpandHeight = false;
 
-            var sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(PipSpritePath);
-            var pip = new GameObject("Grenade Pip", typeof(RectTransform), typeof(Image));
+            var sprite = HudIcons.Grenade();
+            var pip = new GameObject("Grenade Icon", typeof(RectTransform), typeof(Image));
             var pipRect = pip.GetComponent<RectTransform>();
             pipRect.SetParent(rect, false);
             pipRect.sizeDelta = new Vector2(pipSize, pipSize);
             var empty = pip.GetComponent<Image>();
             empty.sprite = sprite;
             empty.color = PipEmptyColor;
+            empty.preserveAspect = true;
             empty.raycastTarget = false;
 
             var fill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
@@ -296,15 +301,15 @@ namespace DarknessRises.Game.Editor.Grenades
             fillImage.sprite = sprite;
             fillImage.color = PipFullColor;
             fillImage.type = Image.Type.Filled;
-            fillImage.fillMethod = Image.FillMethod.Radial360;
-            fillImage.fillOrigin = (int)Image.Origin360.Top;
-            fillImage.fillClockwise = true;
+            fillImage.fillMethod = Image.FillMethod.Vertical;
+            fillImage.fillOrigin = (int)Image.OriginVertical.Bottom;
+            fillImage.preserveAspect = true;
             fillImage.raycastTarget = false;
 
             var view = grenades.GetComponent<GrenadeHudView>();
             var serialized = new SerializedObject(view);
-            serialized.FindProperty("pipTemplate").objectReferenceValue = pipRect;
-            serialized.FindProperty("pipFillTemplate").objectReferenceValue = fillImage;
+            serialized.FindProperty("iconTemplate").objectReferenceValue = pipRect;
+            serialized.FindProperty("iconFillTemplate").objectReferenceValue = fillImage;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
         }

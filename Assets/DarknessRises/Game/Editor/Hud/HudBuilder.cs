@@ -69,6 +69,32 @@ namespace DarknessRises.Game.Editor.Hud
             return view;
         }
 
+        /// <summary>
+        /// The HUD's safe-area frame: a child of <paramref name="hud"/> kept over the screen's safe area at runtime, for
+        /// corner HUD that must stay clear of notches. Made on first use.
+        /// </summary>
+        public static RectTransform SafeArea(Transform hud)
+        {
+            const string frameName = "Safe Area";
+            var existing = hud.Find(frameName);
+            if (existing != null)
+            {
+                return (RectTransform)existing;
+            }
+
+            var frameObject = new GameObject(frameName, typeof(RectTransform), typeof(SafeAreaFrame));
+            var frame = frameObject.GetComponent<RectTransform>();
+            frame.SetParent(hud, false);
+            frame.anchorMin = Vector2.zero;
+            frame.anchorMax = Vector2.one;
+            frame.offsetMin = frame.offsetMax = Vector2.zero;
+
+            var serialized = new SerializedObject(frameObject.GetComponent<SafeAreaFrame>());
+            serialized.FindProperty("frame").objectReferenceValue = frame;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return frame;
+        }
+
         private static TextMeshProUGUI AddText(
             RectTransform parent,
             string name,

@@ -23,8 +23,13 @@ namespace DarknessRises.Game.Skills
         [SerializeField, Min(0f), Tooltip("Seconds Enemies take to slow down at the start and to speed back up at the end.")]
         private float easeSeconds = 0.25f;
 
+        [Header("HUD")]
+        [SerializeField, Tooltip("Slow-mo's button on the HUD: its icon, colour, name and key badge.")]
+        private SkillButtonLook button = new(new Color(1f, 0.36f, 0.42f, 0.95f), "SLOW-MO", "E");
+
         public SkillTiming Timing => new(durationSeconds, cooldownSeconds);
         public float EnemyTimeScale => enemyTimeScale;
         public float EaseSeconds => easeSeconds;
+        public SkillButtonLook Button => button;
     }
 }

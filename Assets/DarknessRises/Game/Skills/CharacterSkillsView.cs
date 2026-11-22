@@ -28,6 +28,9 @@ namespace DarknessRises.Game.Skills
         /// <summary>The Flare's light on the character.</summary>
         public Light FlareLight => flare.Light;
 
+        /// <summary>The Lure's small light, where it lies.</summary>
+        public Light LureLight => lure.Light;
+
         /// <summary>
         /// Gives the character fresh, ready Skills built from the definitions, lasting and cooling down by the Run's
         /// timings (Upgrades applied). Adrenaline slows <paramref name="enemyTime"/> and plays

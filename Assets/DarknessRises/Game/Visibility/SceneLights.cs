@@ -6,8 +6,8 @@ namespace DarknessRises.Game.Visibility
 {
     /// <summary>
     /// The lights that can reveal an Enemy: Lightning, Gunfire (Muzzle flashes and lit Shots), Hit sparks, the Aura,
-    /// the Flare and Grenade explosions. Whoever creates a light registers it once (pooled lights when they're created),
-    /// and <see cref="Gather"/> reads which of them are shining right now.
+    /// the Flare, the Lure's small light and Grenade explosions. Whoever creates a light registers it once (pooled lights
+    /// when they're created), and <see cref="Gather"/> reads which of them are shining right now.
     /// </summary>
     /// <remarks>
     /// An Enemy counts as visible while it's within the range of a shining point light, or while a directional light

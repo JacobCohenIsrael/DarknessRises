@@ -89,6 +89,9 @@ namespace DarknessRises.Game.Editor.Skills
             AddressableContent.ReferenceIfEmpty(rattle, () => GameplaySoundImport.Load(RattleClipPath), AddressableContent.SharedGroup);
             GameplaySoundImport.ApplyToReferenced(rattle);
             serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            // Writes fields added since the asset was made (its light), so they're authored in the asset.
+            EditorUtility.SetDirty(lure);
             return lure;
         }
 
@@ -160,6 +163,8 @@ namespace DarknessRises.Game.Editor.Skills
         // The Lure lives in the Room, not on the character: hidden until thrown, with its rattle on its body.
         private static LureView BuildLure(Transform character, PlayerControls controls)
         {
+            var definition = LoadOrCreateLure();
+
             var root = new GameObject("Lure");
             var view = root.AddComponent<LureView>();
 
@@ -173,8 +178,19 @@ namespace DarknessRises.Game.Editor.Skills
             can.transform.localScale = LureBodySize;
             Object.DestroyImmediate(can.GetComponent<Collider>());
             var renderer = can.GetComponent<MeshRenderer>();
-            renderer.sharedMaterial = TestRoomBuilder.LoadOrCreateMaterial("Lure", LureBodyColor);
+            renderer.sharedMaterial = LoadOrCreateLureMaterial(definition);
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+            // A small, dim, shadowless beacon on the can, dark until thrown. Only Lightning casts real-time shadows.
+            var glowLight = new GameObject("Light", typeof(Light)).GetComponent<Light>();
+            glowLight.transform.SetParent(body.transform, false);
+            glowLight.transform.localPosition = Vector3.up * definition.LightHeight;
+            glowLight.type = LightType.Point;
+            glowLight.shadows = LightShadows.None;
+            glowLight.color = definition.LightColor;
+            glowLight.range = definition.LightRange;
+            glowLight.intensity = 0f;
+            glowLight.enabled = false;
 
             var rattle = new GameObject("Rattle", typeof(AudioSource)).GetComponent<AudioSource>();
             rattle.transform.SetParent(body.transform, false);
@@ -189,8 +205,39 @@ namespace DarknessRises.Game.Editor.Skills
             serialized.FindProperty("thrower").objectReferenceValue = character;
             serialized.FindProperty("body").objectReferenceValue = body.transform;
             serialized.FindProperty("rattle").objectReferenceValue = rattle;
+            serialized.FindProperty("glowLight").objectReferenceValue = glowLight;
+            serialized.FindProperty("can").objectReferenceValue = renderer;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
+        }
+
+        // The can's material, glowing in the Lure's light colour at full strength. The light's pulse and fade scale the
+        // glow at runtime; the body is hidden whenever the Lure is dark. Emission stays on in the asset, so the emissive
+        // shader variant is in builds.
+        private static Material LoadOrCreateLureMaterial(LureDefinition definition)
+        {
+            var material = TestRoomBuilder.LoadOrCreateMaterial("Lure", LureBodyColor);
+            var emission = definition.LightColor * definition.GlowEmission;
+            emission.a = 1f;
+            if (material.globalIlluminationFlags != MaterialGlobalIlluminationFlags.None
+                || material.GetColor("_EmissionColor") != emission)
+            {
+                material.SetColor("_EmissionColor", emission);
+                material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+                EditorUtility.SetDirty(material);
+                AssetDatabase.SaveAssetIfDirty(material);
+            }
+
+            // Saving a changed emission colour turns the keyword off, so it's turned on after that save. The view also turns
+            // it on for its runtime copy of the material.
+            if (!material.IsKeywordEnabled("_EMISSION"))
+            {
+                material.EnableKeyword("_EMISSION");
+                EditorUtility.SetDirty(material);
+                AssetDatabase.SaveAssetIfDirty(material);
+            }
+
+            return material;
         }
 
         /// <summary>

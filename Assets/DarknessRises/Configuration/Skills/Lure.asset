@@ -29,6 +29,14 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   rattleVolume: 0.8
   rattleHearingRange: 22
+  lightColor: {r: 0.55, g: 0.85, b: 1, a: 1}
+  lightIntensity: 1.2
+  lightRange: 1.8
+  lightHeight: 0.35
+  pulseSeconds: 0.9
+  pulseDepth: 0.35
+  fadeOutSeconds: 0.6
+  glowEmission: 0.6
   button:
     icon: {fileID: 21300000, guid: 7074546add76c5a4b9b46ae716363d0c, type: 3}
     color: {r: 0.55, g: 0.85, b: 1, a: 0.95}

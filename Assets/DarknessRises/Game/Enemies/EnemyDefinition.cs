@@ -14,11 +14,8 @@ namespace DarknessRises.Game.Enemies
         [SerializeField, Min(1), Tooltip("Hit points of a freshly spawned Enemy. One Shot takes the Weapon's damage.")]
         private int hitPoints = 4;
 
-        [SerializeField, Min(0), Tooltip("Score a kill is worth, before the Combo multiplies it.")]
+        [SerializeField, Min(0), Tooltip("Score a kill is worth, before the Combo multiplies it. The Run's Score pays its Credits.")]
         private int scorePoints = 100;
-
-        [SerializeField, Min(0), Tooltip("Credits a kill pays. Flat: the Combo never multiplies them. They're spent in the Shop and aren't the Score.")]
-        private int credits = 5;
 
         [SerializeField, Min(0f), Tooltip("Metres per second it moves. Compare with the character's walking speed.")]
         private float speed = 1.4f;
@@ -49,7 +46,6 @@ namespace DarknessRises.Game.Enemies
 
         public int HitPoints => hitPoints;
         public int ScorePoints => scorePoints;
-        public int Credits => credits;
         public float Speed => speed;
         public float Acceleration => acceleration;
         public float TurnSpeed => turnSpeed;

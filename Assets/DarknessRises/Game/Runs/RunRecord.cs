@@ -1,4 +1,5 @@
 using System;
+using DarknessRises.Game.Credits;
 
 namespace DarknessRises.Game.Runs
 {
@@ -10,11 +11,26 @@ namespace DarknessRises.Game.Runs
     {
         public const int FirstLevel = 1;
 
+        /// <summary>A Run whose every point of Score is one Credit. Tests use it to earn exact amounts.</summary>
+        public RunRecord()
+            : this(ScoreToCredits.OnePerPoint)
+        {
+        }
+
+        /// <param name="scoreToCredits">How the Run's Score pays Credits.</param>
+        public RunRecord(ScoreToCredits scoreToCredits)
+        {
+            Credits = new RunCredits(scoreToCredits);
+        }
+
         public int LevelReached { get; private set; } = FirstLevel;
 
         public int EnemiesKilled { get; private set; }
 
-        /// <summary>The Run's Score: the points of every kill, multiplied by the Combo at the time. It isn't Credits.</summary>
+        /// <summary>
+        /// The Run's Score: the points of every kill, multiplied by the Combo at the time, and each Station's accuracy bonus.
+        /// It pays the Run's <see cref="Credits"/>.
+        /// </summary>
         public int Score { get; private set; }
 
         /// <summary>
@@ -32,8 +48,8 @@ namespace DarknessRises.Game.Runs
         /// <summary>The best Score with this Run counted.</summary>
         public int BestScore => Math.Max(Score, BestScoreBefore);
 
-        /// <summary>The Credits the Run earned, and how many of them are banked. They aren't the Score.</summary>
-        public RunCredits Credits { get; } = new();
+        /// <summary>The Credits the Run earned (from its Score and its cleared Levels), and how many of them are banked.</summary>
+        public RunCredits Credits { get; }
 
         public void CountKill()
         {
@@ -49,6 +65,7 @@ namespace DarknessRises.Game.Runs
             }
 
             Score += points;
+            Credits.AddScore(points);
         }
 
         /// <summary>The Run ended: it's compared with <paramref name="bestBefore"/>, the best Score of every Run before it.</summary>

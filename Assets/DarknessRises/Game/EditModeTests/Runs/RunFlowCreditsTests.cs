@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DarknessRises.Game.Credits;
 using DarknessRises.Game.Runs;
 using NUnit.Framework;
 
@@ -15,43 +16,73 @@ namespace DarknessRises.Game.EditModeTests.Runs
         }
 
         [Test]
-        public void Credits_are_earned_only_while_a_Run_is_on()
+        public void The_clear_bonus_is_earned_only_while_a_Run_is_on()
         {
-            Assert.That(run.EarnCredits(5), Is.False);
+            Assert.That(run.EarnClearBonus(5), Is.False);
 
             run.StartNewRun();
-            Assert.That(run.EarnCredits(5), Is.True);
-            Assert.That(run.EarnCredits(8), Is.True);
+            Assert.That(run.EarnClearBonus(5), Is.True);
+            Assert.That(run.EarnClearBonus(8), Is.True);
             run.Die();
-            Assert.That(run.EarnCredits(5), Is.True, "A Grenade still in the air can kill after the character died.");
+            Assert.That(run.EarnClearBonus(5), Is.True, "A Boss can still die to a Grenade in the air after the character did.");
             run.Exit();
-            Assert.That(run.EarnCredits(5), Is.False);
+            Assert.That(run.EarnClearBonus(5), Is.False);
 
             Assert.That(run.Record.Credits.Earned, Is.EqualTo(18));
         }
 
         [Test]
-        public void Credits_are_not_the_Score()
+        public void The_Score_pays_Credits_at_the_rate_the_Level_hands_in()
         {
             run.StartNewRun();
+            Assert.That(run.ConvertScoreAt(new ScoreToCredits(50)), Is.True);
 
-            run.AddScore(500);
-            run.EarnCredits(5);
+            run.AddScore(520);
+            run.EarnClearBonus(100);
 
-            Assert.That(run.Record.Score, Is.EqualTo(500));
-            Assert.That(run.Record.Credits.Earned, Is.EqualTo(5));
+            Assert.That(run.Record.Score, Is.EqualTo(520));
+            Assert.That(run.Record.Credits.FromScore, Is.EqualTo(10));
+            Assert.That(run.Record.Credits.Earned, Is.EqualTo(100));
+            Assert.That(run.Record.Credits.Total, Is.EqualTo(110));
+        }
+
+        [Test]
+        public void Every_new_Run_converts_at_the_rate_handed_in()
+        {
+            run.ConvertScoreAt(new ScoreToCredits(40));
+            run.StartNewRun();
+            run.AddScore(400);
+            run.Exit();
+
+            run.StartNewRun();
+            run.AddScore(80);
+
+            Assert.That(run.Record.Credits.ScorePerCredit, Is.EqualTo(40));
+            Assert.That(run.Record.Credits.FromScore, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void A_Run_that_has_scored_keeps_its_rate()
+        {
+            run.StartNewRun();
+            run.ConvertScoreAt(new ScoreToCredits(50));
+            run.AddScore(100);
+
+            Assert.That(run.ConvertScoreAt(new ScoreToCredits(50)), Is.True, "The next Level hands in the same rate.");
+            Assert.That(run.ConvertScoreAt(new ScoreToCredits(10)), Is.False);
+            Assert.That(run.Record.Credits.FromScore, Is.EqualTo(2));
         }
 
         [Test]
         public void Credits_carry_through_the_Levels_of_a_Run()
         {
             run.StartNewRun();
-            run.EarnCredits(10);
+            run.EarnClearBonus(10);
             run.FinishStartBeat();
             run.BeginLevelEnd();
             run.FinishLevel();
 
-            run.EarnCredits(7);
+            run.EarnClearBonus(7);
 
             Assert.That(run.LevelIndex, Is.EqualTo(2));
             Assert.That(run.Record.Credits.Earned, Is.EqualTo(17));
@@ -61,7 +92,7 @@ namespace DarknessRises.Game.EditModeTests.Runs
         public void A_new_Run_starts_with_no_Credits()
         {
             run.StartNewRun();
-            run.EarnCredits(10);
+            run.EarnClearBonus(10);
             run.Exit();
 
             run.StartNewRun();
@@ -75,7 +106,7 @@ namespace DarknessRises.Game.EditModeTests.Runs
             var ended = new List<RunRecord>();
             run.RunEnded += ended.Add;
             run.StartNewRun();
-            run.EarnCredits(25);
+            run.EarnClearBonus(25);
             var first = run.Record;
 
             run.Restart();

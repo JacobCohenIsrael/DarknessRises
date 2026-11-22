@@ -13,26 +13,25 @@ MonoBehaviour:
   m_Name: CreditsDefinition
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Credits.CreditsDefinition
   color: {r: 0.35, g: 1, b: 0.78, a: 1}
+  scoreToCredits:
+    scorePerCredit: 35
   levelClearBonus:
     firstLevelCredits: 100
     growthPerLevel: 50
     maxCredits: 500
-  endOfRunAd:
-    factor: 2
-    minimumCredits: 20
-    fakeAdSeconds: 5
-    offerFormat: 'WATCH AD: x{0} CREDITS'
-    bonusHintFormat: +{0} Credits for this Run
   endScreen:
     countUpSeconds: 1.2
-    bonusCountUpSeconds: 1
-    bonusKickScale: 1.35
-    bonusKickSeconds: 0.25
-    bonusClip:
+    scoreFormat: SCORE  {0}
+    arrowText: '>'
+    creditsFormat: +{0}  CREDITS
+    rateFormat: every {0} Score pays 1 Credit
+    landKickScale: 1.35
+    landKickSeconds: 0.25
+    payoutClip:
       m_AssetGUID: 34f9cbd28a9740349b6cc2f5e280dda3
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
-    bonusClipStartSeconds: 1.3
-    bonusVolume: 0.8
+    payoutClipStartSeconds: 1.3
+    payoutVolume: 0.8

@@ -57,7 +57,7 @@ namespace DarknessRises.Game.Content
             content.Add(hitReaction.DeathClip);
             content.Add(configuration.HurtFeedback.Slow.Clip);
             content.Add(configuration.HurtFeedback.Fast.Clip);
-            content.Add(configuration.Credits.EndScreen.BonusClip);
+            content.Add(configuration.Credits.EndScreen.PayoutClip);
             content.Add(configuration.AudioVolumes.SampleClip);
             content.Add(configuration.Lure.RattleClip);
 

@@ -17,7 +17,7 @@ namespace DarknessRises.Game.Saving
     public sealed class SaveRecord
     {
         /// <summary>The version this build writes.</summary>
-        public const int CurrentVersion = 3;
+        public const int CurrentVersion = 4;
 
         /// <summary>The version the record was written as. 0 means the text carried none.</summary>
         public int version;
@@ -33,6 +33,9 @@ namespace DarknessRises.Game.Saving
         /// Upgrades' ids to Adrenaline's.
         /// </summary>
         public List<SaveItem> items = new();
+
+        /// <summary>The best Score of any Run the player has finished. Since version 4; older saves start at 0.</summary>
+        public int bestScore;
     }
 
     /// <summary>One thing bought in the Shop: the item's id, as authored in the Shop definition, and its level.</summary>

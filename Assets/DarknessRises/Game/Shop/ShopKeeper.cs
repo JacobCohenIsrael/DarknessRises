@@ -44,6 +44,9 @@ namespace DarknessRises.Game.Shop
         /// <summary>The Credits in the bank.</summary>
         public int Credits => save.Credits;
 
+        /// <summary>The best Score of any Run. It buys nothing; the Shop only shows it.</summary>
+        public int BestScore => save.BestScore;
+
         /// <summary>The level the player has of <paramref name="item"/>: never below where it starts or above its top.</summary>
         public int LevelOf(ShopItem item)
         {

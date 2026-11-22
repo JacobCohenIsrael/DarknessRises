@@ -129,6 +129,13 @@ namespace DarknessRises.Game.Editor.Shop
         private const float HintLineHeight = 90f;
         private const float HintLineGapToMiddle = 80f;
         private static readonly Vector2 PlayButtonSize = new(460f, 120f);
+
+        // The best Score, one small line under the title, clear of the tabs at 4:3 and of the debug button at the bottom.
+        private const float BestScoreTop = 112f;
+        private const float BestScoreCaptionFontSize = 22f;
+        private const float BestScoreValueFontSize = 26f;
+        private static readonly Vector2 BestScoreCaptionSize = new(150f, 34f);
+        private static readonly Vector2 BestScoreValueSize = new(200f, 34f);
         private const float PlayFontSize = 84f;
 
         // The SOUND button that opens the volume panel, at the left of the bottom bar, before the hint line.
@@ -453,6 +460,13 @@ namespace DarknessRises.Game.Editor.Shop
             Corner((RectTransform)playButton.transform, new Vector2(1f, 0f), new Vector2(-SideMargin, (BottomBarHeight - PlayButtonSize.y) / 2f), PlayButtonSize);
             playLabel.fontStyle = FontStyles.Bold;
 
+            // The best Score, small, under the title: it buys nothing, so it stays out of the Credits' way.
+            var bestCaption = AddText(safeArea, "Best Score Caption", "BEST SCORE", BestScoreCaptionFontSize, DimTextColor, TextAlignmentOptions.Left);
+            Corner(bestCaption.rectTransform, new Vector2(0f, 1f), new Vector2(SideMargin + 6f, -BestScoreTop), BestScoreCaptionSize);
+            var bestValue = AddText(safeArea, "Best Score Value", "0", BestScoreValueFontSize, TextColor, TextAlignmentOptions.Left);
+            Corner(bestValue.rectTransform, new Vector2(0f, 1f), new Vector2(SideMargin + 6f + BestScoreCaptionSize.x, -BestScoreTop), BestScoreValueSize);
+            bestValue.fontStyle = FontStyles.Bold;
+
             var sound = new GameObject("Sound", typeof(AudioSource)).GetComponent<AudioSource>();
             sound.transform.SetParent(canvasObject.transform, false);
             sound.playOnAwake = false;
@@ -469,6 +483,8 @@ namespace DarknessRises.Game.Editor.Shop
             serialized.FindProperty("creditsCaption").objectReferenceValue = creditsCaption;
             serialized.FindProperty("creditsValue").objectReferenceValue = creditsValue;
             serialized.FindProperty("hintLine").objectReferenceValue = hintLine;
+            serialized.FindProperty("bestScoreCaption").objectReferenceValue = bestCaption;
+            serialized.FindProperty("bestScoreValue").objectReferenceValue = bestValue;
             serialized.FindProperty("weaponsPage").objectReferenceValue = weaponsPage;
             serialized.FindProperty("gearPage").objectReferenceValue = gearPage;
             serialized.FindProperty("weaponsTab").objectReferenceValue = weaponsTab;

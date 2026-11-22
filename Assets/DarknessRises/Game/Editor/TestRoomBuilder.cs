@@ -180,6 +180,7 @@ namespace DarknessRises.Game.Editor
             HealthBuilder.Build(gameRoot, character, cameraView);
             ContinueBuilder.Build(gameRoot, character);
             CreditsBuilder.Build(gameRoot);
+            ScoreHudBuilder.BuildBoostAd(gameRoot);
             PauseBuilder.Build(gameRoot, character.GetComponent<PlayerControls>(), volumes);
             GestureBuilder.Build(gameRoot, character);
             WeaponButtonBuilder.Build(gameRoot);

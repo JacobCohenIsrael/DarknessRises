@@ -77,6 +77,16 @@ namespace DarknessRises.Game.Editor.Health
         private static readonly Vector2 EndTitlePosition = new(0f, 420f);
         private static readonly Vector2 EndScorePosition = new(0f, 300f);
         private static readonly Vector2 EndLevelPosition = new(0f, 235f);
+
+        // Right of the Score's value: the best Score, small, and under it NEW BEST!, tilted, right of the Level reached.
+        private static readonly Vector2 EndBestPosition = new(530f, 300f);
+        private static readonly Vector2 EndBestSize = new(340f, 60f);
+        private const float EndBestFontSize = 34f;
+        private static readonly Vector2 EndNewBestPosition = new(515f, 226f);
+        private static readonly Vector2 EndNewBestSize = new(420f, 90f);
+        private const float EndNewBestFontSize = 50f;
+        private const float EndNewBestTiltDegrees = 8f;
+        private static readonly Color EndNewBestColor = new(1f, 0.85f, 0.2f, 1f);
         private static readonly Vector2 EndKillsPosition = new(0f, 170f);
         private static readonly Vector2 EndRulePosition = new(0f, 118f);
         private static readonly Vector2 EndRuleSize = new(900f, 3f);
@@ -329,6 +339,12 @@ namespace DarknessRises.Game.Editor.Health
             AddText(panel, "Title", "THE DARKNESS WINS", TitleFontSize, TitleColor, EndTitlePosition, new Vector2(1600f, 160f));
             AddStat(panel, "Score", "Score", EndScorePosition, out var score);
             AddStat(panel, "Level Reached", "Level reached", EndLevelPosition, out var levelReached);
+            var bestScore = AddText(panel, "Best Score", "BEST  0", EndBestFontSize, TextColor, EndBestPosition, EndBestSize);
+            bestScore.alignment = TextAlignmentOptions.Left;
+            var newBest = AddText(panel, "New Best", "NEW BEST!", EndNewBestFontSize, EndNewBestColor, EndNewBestPosition, EndNewBestSize);
+            newBest.fontStyle = FontStyles.Bold;
+            newBest.rectTransform.localRotation = Quaternion.Euler(0f, 0f, EndNewBestTiltDegrees);
+            newBest.enabled = false;
             AddStat(panel, "Enemies Killed", "Enemies killed", EndKillsPosition, out var enemiesKilled);
 
             var rule = new GameObject("Rule", typeof(RectTransform), typeof(Image));
@@ -381,6 +397,8 @@ namespace DarknessRises.Game.Editor.Health
             serialized.FindProperty("levelReached").objectReferenceValue = levelReached;
             serialized.FindProperty("enemiesKilled").objectReferenceValue = enemiesKilled;
             serialized.FindProperty("score").objectReferenceValue = score;
+            serialized.FindProperty("bestScore").objectReferenceValue = bestScore;
+            serialized.FindProperty("newBest").objectReferenceValue = newBest;
             serialized.FindProperty("creditsEarned").objectReferenceValue = creditsEarned;
             serialized.FindProperty("adBonusRow").objectReferenceValue = adBonusRow.gameObject;
             serialized.FindProperty("adBonus").objectReferenceValue = adBonus;

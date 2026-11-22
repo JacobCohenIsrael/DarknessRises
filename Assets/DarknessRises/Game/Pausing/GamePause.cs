@@ -31,7 +31,7 @@ namespace DarknessRises.Game.Pausing
         /// <summary>Whether the pause menu is up.</summary>
         public bool IsPaused => State == PauseState.Paused;
 
-        /// <summary>Whether everything in the Level is frozen: paused, or left from the pause menu.</summary>
+        /// <summary>Whether everything in the Level is frozen: paused, held for an ad, or left from the pause menu.</summary>
         public bool IsFrozen => State != PauseState.Playing;
 
         /// <summary>Whether <see cref="Pause"/> would pause now: the Level plays and the character is alive.</summary>
@@ -46,6 +46,33 @@ namespace DarknessRises.Game.Pausing
             }
 
             Enter(PauseState.Paused);
+            return true;
+        }
+
+        /// <summary>
+        /// Freezes the Level without the pause menu while a rewarded ad plays over it. Only when it could pause: while
+        /// held the player can't pause, and losing focus changes nothing (the ad itself carries on).
+        /// </summary>
+        public bool Hold()
+        {
+            if (!CanPause)
+            {
+                return false;
+            }
+
+            Enter(PauseState.Held);
+            return true;
+        }
+
+        /// <summary>The ad is over: the Level carries on where it froze.</summary>
+        public bool Release()
+        {
+            if (State != PauseState.Held)
+            {
+                return false;
+            }
+
+            Enter(PauseState.Playing);
             return true;
         }
 

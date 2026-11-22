@@ -1,5 +1,8 @@
 using System.IO;
+using DarknessRises.Game.Death;
 using DarknessRises.Game.Editor.Content;
+using DarknessRises.Game.Editor.Continues;
+using DarknessRises.Game.Editor.Health;
 using DarknessRises.Game.Hud;
 using TMPro;
 using UnityEditor;
@@ -9,8 +12,10 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Editor.Hud
 {
     /// <summary>
-    /// Builds the Score on the HUD: the running Score and the Combo under the hit points, the pooled points and hit
-    /// markers that pop up in the Room, and the result card under the Clear banner. Only the structure is built here;
+    /// Builds the Score on the HUD: the running Score and the Combo under the hit points with the Score boost beside the
+    /// Score, the pooled points and hit markers that pop up in the Room, and the result card under the Clear banner with
+    /// its accuracy stamp and Score boost offer. <see cref="BuildBoostAd"/> adds the boost's placeholder ad on the
+    /// Screens canvas, once the death and end screens are built. Only the structure is built here;
     /// wording, colours and timing come from the configuration's <see cref="ScoreHudSettings"/> when they're used.
     /// Call it once the HUD and the Station banner are built.
     /// </summary>
@@ -30,6 +35,12 @@ namespace DarknessRises.Game.Editor.Hud
         private static readonly Vector2 ComboSize = new(320f, 90f);
         private const float ComboFontSize = 64f;
         private static readonly Vector2 ComboBarSize = new(220f, 8f);
+
+        // The Score boost, right of the Score: "x2" over its seconds left.
+        private static readonly Vector2 BoostPosition = new(400f, -96f);
+        private static readonly Vector2 BoostSize = new(130f, 96f);
+        private const float BoostFontSize = 52f;
+        private const float BoostTimerFontSize = 28f;
 
         // Enough for the kills and hits of a held trigger; the oldest is reused when all are busy.
         private const int PointsPoolSize = 8;
@@ -51,6 +62,23 @@ namespace DarknessRises.Game.Editor.Hud
         private static readonly Vector2 StatValueSize = new(260f, 60f);
         private const float PointsFontSize = 58f;
 
+        // The accuracy stamp, right of the points; it punches about its own middle.
+        private static readonly Vector2 StampPosition = new(490f, StatTopRow - 3f * StatRowHeight - 12f);
+        private static readonly Vector2 StampSize = new(400f, 70f);
+        private const float StampFontSize = 42f;
+        private const float StampTiltDegrees = 6f;
+
+        // The Score boost offer, under the card.
+        private static readonly Vector2 OfferPosition = new(0f, -215f);
+        private static readonly Vector2 OfferSize = new(640f, 92f);
+        private const float OfferFontSize = 40f;
+        private const float OfferHintFontSize = 26f;
+        private static readonly Color OfferColor = new(0.07f, 0.3f, 0.24f, 1f);
+        private static readonly Color OfferTextColor = new(0.45f, 1f, 0.55f, 1f);
+
+        private const string BoostAdName = "Score Boost Fake Ad";
+        private const string BoostAdCountdownFormat = "Your x2 Score in {0}";
+
         public static void Build(GameRoot gameRoot, Camera worldCamera)
         {
             var serializedRoot = new SerializedObject(gameRoot);
@@ -59,6 +87,19 @@ namespace DarknessRises.Game.Editor.Hud
             serializedRoot.FindProperty("scorePopups").objectReferenceValue = BuildPopups(hud, worldCamera);
             serializedRoot.FindProperty("stationResult").objectReferenceValue = BuildResultCard(hud);
             serializedRoot.FindProperty("scoreHud").objectReferenceValue = BuildScoreHud(hud);
+            serializedRoot.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// The Score boost's placeholder ad, last on the Screens canvas so it covers everything. It can be closed
+        /// early, which earns nothing. Call it once the death and end screens are built.
+        /// </summary>
+        public static void BuildBoostAd(GameRoot gameRoot)
+        {
+            var serializedRoot = new SerializedObject(gameRoot);
+            var deathFlow = (DeathFlow)serializedRoot.FindProperty("deathFlow").objectReferenceValue;
+            serializedRoot.FindProperty("scoreBoostAd").objectReferenceValue =
+                ContinueBuilder.BuildFakeAd(deathFlow.transform, BoostAdName, BoostAdCountdownFormat, canClose: true);
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -108,6 +149,19 @@ namespace DarknessRises.Game.Editor.Hud
             bar.raycastTarget = false;
             combo.gameObject.SetActive(false);
 
+            // The Score boost beside the Score, shown only while it runs. It pulses about its own middle.
+            var boost = new GameObject("Score Boost", typeof(RectTransform)).GetComponent<RectTransform>();
+            boost.SetParent(hud, false);
+            boost.anchorMin = boost.anchorMax = new Vector2(0f, 1f);
+            boost.pivot = new Vector2(0.5f, 0.5f);
+            boost.sizeDelta = BoostSize;
+            boost.anchoredPosition = BoostPosition + new Vector2(BoostSize.x / 2f, -BoostSize.y / 2f);
+            var boostValue = AddText(boost, "Factor", "x2", BoostFontSize, TextAlignmentOptions.Top, true);
+            Stretch(boostValue.rectTransform);
+            var boostTimer = AddText(boost, "Timer", "60s", BoostTimerFontSize, TextAlignmentOptions.Bottom, true);
+            Stretch(boostTimer.rectTransform);
+            boost.gameObject.SetActive(false);
+
             var view = root.GetComponent<ScoreHudView>();
             var serialized = new SerializedObject(view);
             serialized.FindProperty("scoreCaption").objectReferenceValue = scoreCaption;
@@ -116,6 +170,9 @@ namespace DarknessRises.Game.Editor.Hud
             serialized.FindProperty("comboCaption").objectReferenceValue = comboCaption;
             serialized.FindProperty("comboValue").objectReferenceValue = comboValue;
             serialized.FindProperty("comboBar").objectReferenceValue = bar;
+            serialized.FindProperty("boostRoot").objectReferenceValue = boost;
+            serialized.FindProperty("boostValue").objectReferenceValue = boostValue;
+            serialized.FindProperty("boostTimer").objectReferenceValue = boostTimer;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
         }
@@ -194,6 +251,31 @@ namespace DarknessRises.Game.Editor.Hud
             points.rectTransform.pivot = new Vector2(0f, 0.5f);
             points.rectTransform.anchoredPosition = new Vector2(StatCaptionOffset.x, StatTopRow - 3f * StatRowHeight - 12f);
             points.rectTransform.sizeDelta = new Vector2(StatCaptionSize.x + StatValueSize.x, 70f);
+
+            var stamp = AddText(card, "Accuracy Stamp", "ACCURACY x1.5", StampFontSize, TextAlignmentOptions.Center, true);
+            Centre(stamp.rectTransform, card);
+            stamp.rectTransform.anchoredPosition = StampPosition;
+            stamp.rectTransform.sizeDelta = StampSize;
+            stamp.rectTransform.localRotation = Quaternion.Euler(0f, 0f, StampTiltDegrees);
+            stamp.enabled = false;
+
+            // The offer: the card's one control. Hidden until the boost is on offer.
+            var offer = HealthBuilder.AddButton(card, "Score Boost Offer", OfferPosition);
+            var offerRect = (RectTransform)offer.transform;
+            offerRect.sizeDelta = OfferSize;
+            offer.targetGraphic.color = OfferColor;
+            var offerLabel = offer.GetComponentInChildren<TextMeshProUGUI>();
+            offerLabel.rectTransform.sizeDelta = OfferSize;
+            offerLabel.fontSize = OfferFontSize;
+            offerLabel.fontStyle = FontStyles.Bold;
+            offerLabel.color = OfferTextColor;
+            offerLabel.text = "WATCH AD: x2 SCORE";
+            var offerHint = AddText(offerRect, "Hint", "for 60s of play", OfferHintFontSize, TextAlignmentOptions.Center, false);
+            Centre(offerHint.rectTransform, offerRect);
+            offerHint.rectTransform.anchoredPosition = new Vector2(0f, -(OfferSize.y / 2f + OfferHintFontSize));
+            offerHint.rectTransform.sizeDelta = new Vector2(OfferSize.x, OfferHintFontSize * 1.5f);
+            offerHint.color = OfferTextColor;
+            offer.gameObject.SetActive(false);
             card.gameObject.SetActive(false);
 
             var view = root.GetComponent<StationResultView>();
@@ -209,6 +291,10 @@ namespace DarknessRises.Game.Editor.Hud
             serialized.FindProperty("timeValue").objectReferenceValue = timeValue;
             serialized.FindProperty("pointsValue").objectReferenceValue = points;
             serialized.FindProperty("gradeLetter").objectReferenceValue = grade;
+            serialized.FindProperty("accuracyStamp").objectReferenceValue = stamp;
+            serialized.FindProperty("boostButton").objectReferenceValue = offer;
+            serialized.FindProperty("boostButtonLabel").objectReferenceValue = offerLabel;
+            serialized.FindProperty("boostHint").objectReferenceValue = offerHint;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return view;
         }

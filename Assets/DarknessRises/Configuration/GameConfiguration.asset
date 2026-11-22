@@ -229,6 +229,22 @@ MonoBehaviour:
       maxSecondsPerKill: 0
       maxHitsTaken: -1
     lowestGrade: 0
+    accuracyTiers:
+    - minAccuracy: 0.45
+      multiplier: 1.1
+    - minAccuracy: 0.65
+      multiplier: 1.25
+    - minAccuracy: 0.8
+      multiplier: 1.5
+    - minAccuracy: 0.9
+      multiplier: 1.75
+    - minAccuracy: 1
+      multiplier: 2
+    accuracyMinShots: 5
+    boostFactor: 2
+    boostSeconds: 60
+    boostsPerRun: 0
+    boostFakeAdSeconds: 5
   scoreHud:
     scoreCaption: SCORE
     scoreColor: {r: 0.95, g: 0.92, b: 0.8, a: 0.95}
@@ -236,6 +252,13 @@ MonoBehaviour:
     comboColor: {r: 1, g: 0.72, b: 0.2, a: 1}
     comboKickScale: 1.6
     comboKickSeconds: 0.2
+    boostFormat: x{0}
+    boostTimerFormat: '{0}s'
+    boostColor: {r: 0.45, g: 1, b: 0.55, a: 1}
+    boostWarningSeconds: 10
+    boostPulsesPerSecond: 2.5
+    boostPulseScale: 1.3
+    scoreCountSeconds: 0.5
     popupFontSize: 46
     popupColor: {r: 1, g: 1, b: 1, a: 1}
     popupComboColor: {r: 1, g: 0.72, b: 0.2, a: 1}
@@ -252,6 +275,23 @@ MonoBehaviour:
     cardPosition: {x: 0, y: 20}
     cardTextColor: {r: 0.92, g: 0.92, b: 0.92, a: 1}
     cardBandColor: {r: 0, g: 0, b: 0, a: 0.45}
+    accuracyStampFormat: ACCURACY x{0}
+    accuracyStampColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+    stampDelaySeconds: 0.45
+    stampSeconds: 0.18
+    stampScale: 2.2
+    countDelaySeconds: 0.12
+    countSeconds: 0.6
+    boostOfferFormat: 'WATCH AD: x{0} SCORE'
+    boostOfferHintFormat: for {0}s of play
+    boostButtonColor: {r: 0.07, g: 0.3, b: 0.24, a: 1}
+    offerLingerSeconds: 2.5
+    bestCaption: BEST
+    newBestText: NEW BEST!
+    newBestColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+    newBestDelaySeconds: 0.5
+    newBestPulsesPerSecond: 1.5
+    newBestPulseScale: 1.12
     gradeColors:
     - {r: 0.7, g: 0.7, b: 0.7, a: 1}
     - {r: 0.45, g: 0.75, b: 1, a: 1}

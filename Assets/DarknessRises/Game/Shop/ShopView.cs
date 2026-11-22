@@ -38,6 +38,12 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The Credits in the bank.")]
         private TMP_Text creditsValue;
 
+        [SerializeField, Tooltip("The small words before the best Score, under the title.")]
+        private TMP_Text bestScoreCaption;
+
+        [SerializeField, Tooltip("The best Score of any Run, under the title. Small: it buys nothing.")]
+        private TMP_Text bestScoreValue;
+
         [SerializeField, Tooltip("Says what owning a Weapon means: it comes along on every Run.")]
         private TMP_Text hintLine;
 
@@ -120,6 +126,8 @@ namespace DarknessRises.Game.Shop
             creditsCaption.color = creditsColor;
             creditsValue.color = creditsColor;
             hintLine.text = settings.CarryHint;
+            bestScoreCaption.text = settings.BestScoreCaption;
+            ShowBestScore();
             weaponsTabLabel.text = settings.WeaponsTab;
             gearTabLabel.text = settings.GearTab;
 
@@ -302,6 +310,8 @@ namespace DarknessRises.Game.Shop
                 creditsCount.CountTo(keeper.Credits, settings.CreditsCountSeconds);
             }
 
+            // The dev tools may reset the save.
+            ShowBestScore();
             Refresh();
         }
 
@@ -330,6 +340,11 @@ namespace DarknessRises.Game.Shop
             sound.SetVolume(settings.BuyVolume);
             sound.time = Mathf.Clamp(settings.BuyClipStartSeconds, 0f, Mathf.Max(0f, buyClip.length - 0.01f));
             sound.Play();
+        }
+
+        private void ShowBestScore()
+        {
+            bestScoreValue.SetText(NumberFormat, (float)keeper.BestScore);
         }
 
         private void ShowCredits(int credits)

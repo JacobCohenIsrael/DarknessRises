@@ -293,6 +293,7 @@ MonoBehaviour:
   screen:
     title: SHOP
     creditsCaption: CREDITS
+    bestScoreCaption: BEST SCORE
     playLabel: PLAY
     carryHint: Every unlocked Weapon comes along on a Run. Switch between them as you play.
     unlockFormat: UNLOCK  {0}

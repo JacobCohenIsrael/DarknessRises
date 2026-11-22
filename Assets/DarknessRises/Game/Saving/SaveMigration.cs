@@ -23,6 +23,9 @@ namespace DarknessRises.Game.Saving
         /// <summary>Slow-mo became Adrenaline: its Upgrades' ids changed.</summary>
         private const int AdrenalineVersion = 3;
 
+        /// <summary>Adds the best Score of any Run.</summary>
+        private const int BestScoreVersion = 4;
+
         // The Upgrade ids version 3 renamed, old to new. The levels bought carry over unchanged.
         private static readonly (string from, string to)[] AdrenalineIds =
         {
@@ -55,6 +58,13 @@ namespace DarknessRises.Game.Saving
             {
                 RenameItems(record, AdrenalineIds);
                 record.version = AdrenalineVersion;
+            }
+
+            if (record.version == AdrenalineVersion)
+            {
+                // No Run before this version kept its Score: the best starts from nothing.
+                record.bestScore = 0;
+                record.version = BestScoreVersion;
             }
 
             if (record.version > SaveRecord.CurrentVersion)
@@ -94,6 +104,7 @@ namespace DarknessRises.Game.Saving
         {
             record.credits = Math.Max(0, record.credits);
             record.runsFinished = Math.Max(0, record.runsFinished);
+            record.bestScore = Math.Max(0, record.bestScore);
             record.items ??= new List<SaveItem>();
 
             // One entry per item, at its highest level; entries without an id or a level are dropped.

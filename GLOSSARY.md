@@ -202,7 +202,7 @@ The reticle on the HUD where the player aims. It kicks with every Shot. With a m
 _Avoid_: cursor, pointer, hit marker (that marks a hit on an Enemy)
 
 **Hurt edge**:
-Red at the screen's edges that says the character is hurt. Every landed hit flashes it for a moment, stronger for a bigger hit. On the last few hit points (short of full) it pulses slowly with a heartbeat sound, a strong beat and a softer one; the heartbeat stops at once on death, a Continue or the Level's end.
+Red at the screen's edges that says the character is hurt. Every landed hit flashes it for a moment, stronger for a bigger hit. On the last few hit points (short of full) a slow heartbeat loops and the edge pulses in time with it; on the very last hit point a fast heartbeat crossfades in. The heartbeat stops at once on death, a Continue or the Level's end.
 _Avoid_: blood screen, damage overlay, red vignette
 
 **Shoot hint**:

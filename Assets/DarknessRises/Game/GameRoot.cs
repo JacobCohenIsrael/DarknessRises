@@ -592,7 +592,8 @@ namespace DarknessRises.Game
             hitPointsHud.Show(health);
             if (hurtVignette != null)
             {
-                hurtVignette.Show(health, configuration.HurtFeedback, content.Clip(configuration.HurtFeedback.HeartbeatClip));
+                var hurtFeedback = configuration.HurtFeedback;
+                hurtVignette.Show(health, hurtFeedback, content.Clip(hurtFeedback.Slow.Clip), content.Clip(hurtFeedback.Fast.Clip));
             }
 
             ReportToRun(true);

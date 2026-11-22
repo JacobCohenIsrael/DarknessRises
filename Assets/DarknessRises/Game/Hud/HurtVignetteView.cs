@@ -8,70 +8,73 @@ namespace DarknessRises.Game.Hud
 {
     /// <summary>
     /// The red at the screen's edges when the character is hurt, over the whole screen and under the rest of the HUD:
-    /// a flash on every landed hit, and a slow pulse with a heartbeat sound on the last few hit points
-    /// (<see cref="HurtFeedback"/>). The heartbeat plays in the Sound category and stops at once on death, a Continue
-    /// or <see cref="Stop"/>. Runs on scaled time, so the pause freezes it (and <c>AudioListener.pause</c> its sound).
+    /// a flash on every landed hit, and on the last few hit points a looping heartbeat, slow and then fast, with the
+    /// edge pulsing in time with it (<see cref="HurtFeedback"/>). The loops play in the Sound category and stop at once
+    /// on death, a Continue or <see cref="Stop"/>. Runs on scaled time, so the pause freezes the edge, and
+    /// <c>AudioListener.pause</c> the loops, which the pulse reads its beat from.
     /// </summary>
     public sealed class HurtVignetteView : MonoBehaviour
     {
         [SerializeField, Tooltip("Stretched over the whole screen: clear in the middle, coloured at the edges. Never a raycast target.")]
         private Image edge;
 
-        [SerializeField, Tooltip("A 2D source for the heartbeat, routed to the Sound category.")]
-        private AudioSource heartbeat;
+        [SerializeField, Tooltip("A looping 2D source for the slow heartbeat, routed to the Sound category.")]
+        private AudioSource slowHeartbeat;
+
+        [SerializeField, Tooltip("A looping 2D source for the fast heartbeat, routed to the Sound category.")]
+        private AudioSource fastHeartbeat;
 
         private HurtFeedbackSettings settings;
         private HurtFeedback feedback;
         private CharacterHealth health;
-        private AudioClip heartbeatClip;
         private int lastHitPoints;
         private float shownStrength = -1f;
+        private float shownSlowWeight = -1f;
+        private float shownFastWeight = -1f;
         private Action onHurt;
         private Action onDied;
         private Action onRestored;
-        private Action<bool> onBeat;
 
         /// <summary>The rule behind the edge, for checks.</summary>
         public HurtFeedback Feedback => feedback;
 
-        /// <summary>The heartbeat's source, for checks: read its state, never listen.</summary>
-        public AudioSource Heartbeat => heartbeat;
+        /// <summary>The slow loop's source, for checks: read its state, never listen.</summary>
+        public AudioSource SlowHeartbeat => slowHeartbeat;
 
-        /// <summary>Shows how hurt <paramref name="characterHealth"/> is from now on, with <paramref name="clip"/> (already loaded) for the heartbeat.</summary>
-        public void Show(CharacterHealth characterHealth, HurtFeedbackSettings hurtFeedback, AudioClip clip)
+        /// <summary>The fast loop's source, for checks: read its state, never listen.</summary>
+        public AudioSource FastHeartbeat => fastHeartbeat;
+
+        /// <summary>
+        /// Shows how hurt <paramref name="characterHealth"/> is from now on, with the slow and fast heartbeat loops
+        /// (already loaded) played as <paramref name="hurtFeedback"/> says.
+        /// </summary>
+        public void Show(CharacterHealth characterHealth, HurtFeedbackSettings hurtFeedback, AudioClip slowClip, AudioClip fastClip)
         {
             Unbind();
 
             settings = hurtFeedback ?? throw new ArgumentNullException(nameof(hurtFeedback));
-            heartbeatClip = clip;
             onHurt ??= OnHealthChanged;
             onDied ??= OnHealthChanged;
             onRestored ??= OnRestored;
-            onBeat ??= OnBeat;
 
             feedback = new HurtFeedback(settings.ToTiming());
-            feedback.Beat += onBeat;
             health = characterHealth;
             health.Hurt += onHurt;
             health.Died += onDied;
             health.Restored += onRestored;
             lastHitPoints = health.HitPoints;
-            feedback.SetHitPoints(health.HitPoints, health.MaxHitPoints);
 
-            heartbeat.playOnAwake = false;
-            heartbeat.loop = false;
-            heartbeat.pitch = settings.HeartbeatPitch;
-            heartbeat.SetVolume(settings.HeartbeatVolume);
-            heartbeat.Stop();
-            shownStrength = -1f;
-            Apply();
+            Prepare(slowHeartbeat, slowClip);
+            Prepare(fastHeartbeat, fastClip);
+            shownStrength = shownSlowWeight = shownFastWeight = -1f;
+            UpdateLow();
         }
 
         /// <summary>Clears the edge and silences the heartbeat at once: the Level is over.</summary>
         public void Stop()
         {
             feedback?.Stop();
-            heartbeat.Stop();
+            Silence();
             Apply();
         }
 
@@ -93,11 +96,6 @@ namespace DarknessRises.Game.Hud
 
         private void Unbind()
         {
-            if (feedback != null)
-            {
-                feedback.Beat -= onBeat;
-            }
-
             if (health == null)
             {
                 return;
@@ -107,6 +105,15 @@ namespace DarknessRises.Game.Hud
             health.Died -= onDied;
             health.Restored -= onRestored;
             health = null;
+        }
+
+        private static void Prepare(AudioSource source, AudioClip clip)
+        {
+            source.Stop();
+            source.clip = clip;
+            source.loop = true;
+            source.playOnAwake = false;
+            source.SetVolume(0f);
         }
 
         // A hit landed, survived or not: the flash is as strong as the hit points it took.
@@ -125,27 +132,63 @@ namespace DarknessRises.Game.Hud
 
         private void UpdateLow()
         {
+            var wasLow = feedback.IsLow;
             lastHitPoints = health.HitPoints;
             feedback.SetHitPoints(health.HitPoints, health.MaxHitPoints);
             if (!feedback.IsLow)
             {
-                heartbeat.Stop();
+                Silence();
+            }
+            else if (!wasLow)
+            {
+                // Both loops start together from their first beat, so the crossfade between them stays in step.
+                Play(slowHeartbeat);
+                Play(fastHeartbeat);
             }
 
             Apply();
         }
 
-        private void OnBeat(bool isSoft)
+        private static void Play(AudioSource source)
         {
-            if (heartbeatClip != null)
+            if (source.clip == null)
             {
-                heartbeat.PlayOneShot(heartbeatClip, isSoft ? settings.DubStrength : 1f);
+                return;
             }
+
+            source.time = 0f;
+            source.Play();
+        }
+
+        private void Silence()
+        {
+            slowHeartbeat.Stop();
+            fastHeartbeat.Stop();
         }
 
         private void Apply()
         {
-            var strength = feedback?.Strength ?? 0f;
+            if (feedback == null)
+            {
+                return;
+            }
+
+            var slowWeight = feedback.SlowWeight;
+            if (!Mathf.Approximately(slowWeight, shownSlowWeight))
+            {
+                shownSlowWeight = slowWeight;
+                slowHeartbeat.SetVolume(slowWeight * settings.Slow.Volume);
+            }
+
+            var fastWeight = feedback.FastWeight;
+            if (!Mathf.Approximately(fastWeight, shownFastWeight))
+            {
+                shownFastWeight = fastWeight;
+                fastHeartbeat.SetVolume(fastWeight * settings.Fast.Volume);
+            }
+
+            // The pulse follows the loops' own playback, so it stays on their beat through pauses and hitches.
+            var strength = feedback.Strength(slowHeartbeat.time, fastHeartbeat.time);
             if (Mathf.Approximately(strength, shownStrength))
             {
                 return;
@@ -158,7 +201,7 @@ namespace DarknessRises.Game.Hud
                 edge.enabled = visible;
             }
 
-            var tint = settings != null ? settings.EdgeColor : edge.color;
+            var tint = settings.EdgeColor;
             tint.a *= strength;
             edge.color = tint;
         }

@@ -166,20 +166,34 @@ MonoBehaviour:
     flashMaxStrength: 1
     flashSeconds: 0.45
     lowHitPoints: 2
-    beatPeriodSeconds: 1.1
-    dubDelaySeconds: 0.28
-    dubStrength: 0.6
+    criticalHitPoints: 1
+    crossfadeSeconds: 0.6
     pulseDecaySeconds: 0.45
     pulseRestStrength: 0.18
     pulsePeakStrength: 0.55
-    heartbeatClip:
-      m_AssetGUID: 7b69beceabbd8f24e8bc62d77ac7ca1c
-      m_SubObjectName: 
-      m_SubObjectType: 
-      m_SubObjectGUID: 
-      m_EditorAssetChanged: 0
-    heartbeatVolume: 0.8
-    heartbeatPitch: 0.6
+    softBeatStrength: 0.6
+    slow:
+      clip:
+        m_AssetGUID: cba26e1b22499ec48b3fc944fd1cf757
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      volume: 0.75
+      beatsPerMinute: 66.667
+      firstBeatSeconds: 0
+      softBeatDelaySeconds: 0.31
+    fast:
+      clip:
+        m_AssetGUID: e79e5599130b5ce4c94ad9a0f284a03e
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      volume: 0.85
+      beatsPerMinute: 106.667
+      firstBeatSeconds: 0
+      softBeatDelaySeconds: 0.19
   score:
     comboHitsPerStep: 4
     comboMaxMultiplier: 5

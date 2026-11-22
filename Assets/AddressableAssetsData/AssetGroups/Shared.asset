@@ -95,14 +95,6 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
-  - m_GUID: 7b69beceabbd8f24e8bc62d77ac7ca1c
-    m_Address: Heavy Object Impact 10
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Level
-    - Shop
-    FlaggedDuringContentUpdateRestriction: 0
-    m_FolderGuid: 
   - m_GUID: 7d156b8a5b340cd46bcf0a76557dd2dd
     m_Address: Dragon Spit Fire 1
     m_ReadOnly: 0
@@ -199,6 +191,14 @@ MonoBehaviour:
     - Shop
     FlaggedDuringContentUpdateRestriction: 0
     m_FolderGuid: 
+  - m_GUID: cba26e1b22499ec48b3fc944fd1cf757
+    m_Address: Heartbeat Slow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
   - m_GUID: ce4ab45d11831e143b5c82fa7ca2a574
     m_Address: Disc
     m_ReadOnly: 0
@@ -241,6 +241,14 @@ MonoBehaviour:
     m_FolderGuid: 
   - m_GUID: e17b921ca341d2f40bcee6d6621c39df
     m_Address: Configuration
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Level
+    - Shop
+    FlaggedDuringContentUpdateRestriction: 0
+    m_FolderGuid: 
+  - m_GUID: e79e5599130b5ce4c94ad9a0f284a03e
+    m_Address: Heartbeat Fast
     m_ReadOnly: 0
     m_SerializedLabels:
     - Level

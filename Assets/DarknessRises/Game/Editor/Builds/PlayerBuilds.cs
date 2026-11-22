@@ -125,8 +125,9 @@ namespace DarknessRises.Game.Editor.Builds
                     $"The Editor is on {EditorUserBuildSettings.activeBuildTarget}; start it with --target {target}.");
             }
 
-            // The shadow settings are code, not whatever the URP assets were left at.
+            // The shadow and splash settings are code, not whatever the assets and player settings were left at.
             Lightning.LightningShadowSetup.Apply();
+            Splash.SplashScreenSetup.Apply();
             AssetDatabase.SaveAssets();
             var options = new BuildPlayerOptions
             {
@@ -139,6 +140,8 @@ namespace DarknessRises.Game.Editor.Builds
 
             var report = BuildPipeline.BuildPlayer(options);
             var summary = report.summary;
+            Debug.Log($"[PlayerBuilds] {target} splash screen: {Splash.SplashScreenSetup.Describe()}; " +
+                      $"logo packed: {PackedSplashLogo(report)}");
             Debug.Log($"[PlayerBuilds] {target} {PlayerSettings.bundleVersion}{Suffix(development)}: {summary.result}, " +
                       $"{summary.totalSize / (1024f * 1024f):F1} MB, {summary.totalTime.TotalSeconds:F0} s, " +
                       $"{summary.totalErrors} errors -> {output}");
@@ -146,6 +149,23 @@ namespace DarknessRises.Game.Editor.Builds
             {
                 throw new BuildFailedException($"{target} build {summary.result}.");
             }
+        }
+
+        /// <summary>Where the build put the splash logo, read back from the build report: proof the player carries it.</summary>
+        private static string PackedSplashLogo(BuildReport report)
+        {
+            foreach (var file in report.packedAssets)
+            {
+                foreach (var asset in file.contents)
+                {
+                    if (asset.sourceAssetPath == Splash.SplashScreenSetup.LogoPath)
+                    {
+                        return $"{asset.type.Name} {asset.packedSize / 1024f:F0} KB in {file.shortPath}";
+                    }
+                }
+            }
+
+            return "not in the build report";
         }
 
         /// <summary>A major.minor.patch build version.</summary>

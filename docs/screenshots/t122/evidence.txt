@@ -1,0 +1,52 @@
+# Issue #122 evidence, 2026-11-22, Unity 6000.6.5f1 (Unity Personal), build 0.1.18 (not committed)
+
+## Android APK (release), from the build log and build report
+[PlayerBuilds] Android 0.1.18: Succeeded, 839.8 MB, 58 s, 0 errors -> Builds/Android/DarknessRises-0.1.18.apk
+[PlayerBuilds] Android splash screen: show=True, showUnityLogo=False, drawMode=AllSequential, animation=Static, background=RGBA(0.000, 0.000, 0.000, 1.000), overlayOpacity=0, logos=[the-gamefather-white-v2 2 s], webTemplate=PROJECT:Gamefather; logo packed: Texture2D 1542 KB in globalgamemanagers.assets
+
+## WebGL (release)
+[PlayerBuilds] WebGL 0.1.18: Succeeded, 39.3 MB, 19 s, 0 errors -> Builds/WebGL/DarknessRises-0.1.18
+[PlayerBuilds] WebGL splash screen: show=True, showUnityLogo=False, drawMode=AllSequential, animation=Static, background=RGBA(0.000, 0.000, 0.000, 1.000), overlayOpacity=0, logos=[the-gamefather-white-v2 2 s], webTemplate=PROJECT:Gamefather; logo packed: Texture2D 6146 KB in globalgamemanagers.assets
+[PlayerBuilds] WebGL zip for itch.io -> Builds/WebGL/DarknessRises-0.1.18-webgl.zip
+
+## Headless Chrome (fresh profile, muted, no window), 8 Mbit/s, desktop 960 x 600 page and Android phone 1200 x 540
+desktop:
+  first seen: {"page":0.08,"splash":24.5,"label":26.26,"bar":27,"level":48.51}
+  frames: {"page":81,"splash":4,"label":1,"bar":73,"level":5}
+  no page errors
+phone:
+  first seen: {"page":0.07,"splash":24.25,"bar":26.25,"level":48.01}
+  frames: {"page":65,"splash":4,"bar":48,"level":4}
+  no page errors
+
+States: page = the template's loader (Gamefather logo + bar); splash = Unity's splash (Gamefather logo); label/bar = the game's loading screen; level = the HUD.
+Logo bounds, page loader vs splash (pixels): desktop x 209-771 vs 207-773, phone x 295-928 vs 295-927.
+
+## index.html vs the Default template's 0.1.18 output
+6,7c6
+<     <title>Unity Web Player | Darkness Rises</title>
+<     <link rel="shortcut icon" href="TemplateData/favicon.ico">
+---
+>     <title>Darkness Rises</title>
+10a10,16
+>     <!--
+>       The Gamefather's page for Darkness Rises (issue #122): Unity's Default template with The Gamefather's logo and a
+>       thin bar in place of Unity's logo and progress bar, on black. Everything else is the Default template's: the
+>       canvas sizes, the full-window mobile layout, the banners, the loader config (decompression fallback included,
+>       which Unity's loader sets up from the player settings), and autoSyncPersistentDataPath left as Default has it
+>       (the game syncs its own saves, #110).
+>     -->
+13a20
+>         <!-- Shown from the first paint, before the loader script arrives, so the page is never blank or Unity's. -->
+16c23
+<             <div id="unity-logo"></div>
+---
+>             <img id="gamefather-logo" src="TemplateData/gamefather-logo.png" alt="The Gamefather">
+25,26c32,33
+<         <div id="unity-logo-title-footer"></div>
+<         <div id="unity-fullscreen-button"></div>
+---
+>         <img id="gamefather-logo-footer" src="TemplateData/gamefather-logo.png" alt="The Gamefather">
+>         <div id="unity-fullscreen-button" title="Full screen"></div>
+133a141
+>             // The engine has started and Unity's splash fades the same logo in on the same black.

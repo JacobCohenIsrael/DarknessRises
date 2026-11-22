@@ -4,7 +4,7 @@ namespace DarknessRises.Game.Enemies
 {
     /// <summary>
     /// The pitch an Enemy sound plays at: its own pitch (1, or a Tell's random pitch) slowed by the Enemy time scale,
-    /// so Slow-mo slows Enemy sounds the way it slows Enemies. Applied per AudioSource, with no AudioMixer, so it
+    /// so Adrenaline slows Enemy sounds the way it slows Enemies. Applied per AudioSource, with no AudioMixer, so it
     /// works on every platform (WebGL has no AudioMixer).
     /// </summary>
     public static class EnemyVoicePitch

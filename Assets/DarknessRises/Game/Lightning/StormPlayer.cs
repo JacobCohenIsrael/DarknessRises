@@ -43,7 +43,7 @@ namespace DarknessRises.Game.Lightning
         public StormBed Bed => bed;
 
         /// <summary>
-        /// The pitch the bed is scaled by: Enemy time, so Slow-mo slows the storm the way it slows Enemy sounds.
+        /// The pitch the bed is scaled by: Enemy time, so Adrenaline slows the storm the way it slows Enemy sounds.
         /// <see cref="EnemyTime.NormalScale"/> when no Level drives it.
         /// </summary>
         public float PitchScale { get; set; } = EnemyTime.NormalScale;

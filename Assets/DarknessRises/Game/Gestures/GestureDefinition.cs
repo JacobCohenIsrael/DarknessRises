@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DarknessRises.Game.Gestures
 {
     /// <summary>
-    /// Touch input: what counts as each Gesture, which Two-finger flick directions mean Flare and Slow-mo, and how strongly
+    /// Touch input: what counts as each Gesture, which Two-finger flick directions mean Flare, Adrenaline and the Lure, and how strongly
     /// Aim assist bends Shots on touch, and the Grenade button. Never changed at runtime.
     /// </summary>
     [CreateAssetMenu(menuName = "Darkness Rises/Gesture Definition", fileName = "GestureDefinition")]
@@ -14,8 +14,8 @@ namespace DarknessRises.Game.Gestures
         [SerializeField] private GestureThresholds thresholds = new();
 
         [SerializeField, Range(0f, 90f), Tooltip(
-            "Degrees either side of straight up (Flare) and straight down (Slow-mo) a Two-finger flick may be. "
-            + "A Two-finger flick in any other direction does nothing.")]
+            "Degrees either side of straight up (Flare), straight down (Adrenaline) and straight left or right (the Lure, "
+            + "thrown that way) a Two-finger flick may be. A Two-finger flick in any other direction does nothing.")]
         private float twoFingerFlickAxisHalfAngleDegrees = 45f;
 
         [SerializeField, Tooltip("On touch, bends Shots toward the nearest visible Enemy close to the finger, more in later Levels. The mouse's is on the root configuration.")]

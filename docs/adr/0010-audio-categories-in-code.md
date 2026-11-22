@@ -2,7 +2,7 @@
 
 Players set the volume of Music, Sound and Ambient with sliders (issue #87), so every sound in the game has to belong to one of those Audio categories and follow its slider, including sounds added later.
 
-The usual tool is an `AudioMixer` with a group per category and exposed volume parameters. We don't use one. The game ships to WebGL (itch.io) as well as Android, and Unity's Web platform doesn't support the AudioMixer, so sources routed to mixer groups would ignore the sliders there. The project already keeps every other audio effect (Slow-mo's pitch, the storm's swell) on plain `AudioSource` volume and pitch for the same reason. A `.mixer` asset also can't be built from code through a public API, and the project never hand-edits asset YAML.
+The usual tool is an `AudioMixer` with a group per category and exposed volume parameters. We don't use one. The game ships to WebGL (itch.io) as well as Android, and Unity's Web platform doesn't support the AudioMixer, so sources routed to mixer groups would ignore the sliders there. The project already keeps every other audio effect (Adrenaline's pitch, the storm's swell) on plain `AudioSource` volume and pitch for the same reason. A `.mixer` asset also can't be built from code through a public API, and the project never hand-edits asset YAML.
 
 So the categories are applied in code:
 

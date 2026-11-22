@@ -41,7 +41,9 @@ namespace DarknessRises.Game.Configuration
         [SerializeField] private WeaponDefinition flamethrower;
         [SerializeField] private LightningDefinition lightning;
         [SerializeField] private FlareDefinition flare;
-        [SerializeField] private SlowMoDefinition slowMo;
+        [SerializeField, FormerlySerializedAs("slowMo")] private AdrenalineDefinition adrenaline;
+        [SerializeField, Tooltip("The Lure Skill: a rattling noisemaker that draws nearby Enemies away from the character.")]
+        private LureDefinition lure;
         [SerializeField, Tooltip("The Level the game boots into.")] private LevelDefinition level;
         [SerializeField] private GrenadeDefinition grenade;
         [SerializeField, Tooltip("How each Level after the first gets harder.")] private RampDefinition ramp;
@@ -121,7 +123,8 @@ namespace DarknessRises.Game.Configuration
         public WeaponDefinition Flamethrower => flamethrower;
         public LightningDefinition Lightning => lightning;
         public FlareDefinition Flare => flare;
-        public SlowMoDefinition SlowMo => slowMo;
+        public AdrenalineDefinition Adrenaline => adrenaline;
+        public LureDefinition Lure => lure;
         public LevelDefinition Level => level;
         public GrenadeDefinition Grenade => grenade;
         public RampDefinition Ramp => ramp;

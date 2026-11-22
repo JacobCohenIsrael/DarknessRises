@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e1f8bb3c5c751e4396a77b26dbc0419, type: 3}
-  m_Name: SlowMo
+  m_Name: Adrenaline
   m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Skills.SlowMoDefinition
   durationSeconds: 4
   cooldownSeconds: 15
   enemyTimeScale: 0.35
   easeSeconds: 0.25
+  heartbeatVolume: 0.3
   button:
     icon: {fileID: 21300000, guid: d9d36016d3613e3469eb70fa7674fa8a, type: 3}
     color: {r: 1, g: 0.36, b: 0.42, a: 0.95}
-    displayName: SLOW-MO
+    displayName: ADRENALINE
     keyBadge: E

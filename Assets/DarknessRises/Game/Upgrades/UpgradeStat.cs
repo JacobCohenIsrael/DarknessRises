@@ -36,11 +36,17 @@ namespace DarknessRises.Game.Upgrades
         /// <summary>Seconds from the end of the Flare until it can be used again.</summary>
         FlareCooldownSeconds = 21,
 
-        /// <summary>Seconds Enemies stay slowed by Slow-mo.</summary>
-        SlowMoDurationSeconds = 22,
+        /// <summary>Seconds Enemies stay slowed by Adrenaline.</summary>
+        AdrenalineDurationSeconds = 22,
 
-        /// <summary>Seconds from the end of Slow-mo until it can be used again.</summary>
-        SlowMoCooldownSeconds = 23,
+        /// <summary>Seconds from the end of Adrenaline until it can be used again.</summary>
+        AdrenalineCooldownSeconds = 23,
+
+        /// <summary>Seconds the Lure rattles on the floor, drawing Enemies.</summary>
+        LureDurationSeconds = 24,
+
+        /// <summary>Seconds from the end of the Lure until it can be thrown again.</summary>
+        LureCooldownSeconds = 25,
 
         /// <summary>Hit points the character starts a Run with.</summary>
         MaxHitPoints = 30,

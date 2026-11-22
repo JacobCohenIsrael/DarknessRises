@@ -6,7 +6,7 @@ namespace DarknessRises.Game.Weapons
 {
     /// <summary>
     /// What a Primary weapon sounds like when it fires: a Gunshot per Shot, or one Firing loop for a Weapon that fires
-    /// continuously. Played in 2D on the character, which Slow-mo never slows, so they keep their pitch.
+    /// continuously. Played in 2D on the character, which Adrenaline never slows, so they keep their pitch.
     /// </summary>
     [Serializable]
     public sealed class WeaponSoundSettings

@@ -11,14 +11,14 @@ using UnityEngine.Pool;
 namespace DarknessRises.Game.Enemies
 {
     /// <summary>
-    /// A pooled Enemy in the scene. It chases the character with its NavMesh agent, and shows what its
+    /// A pooled Enemy in the scene. It chases the character (or a Lure that drew it, see <see cref="Quarry"/>) with its NavMesh agent, and shows what its
     /// <see cref="EnemyBehaviour"/> decides: a Wind-up (flaring eyes, rearing back, a sound), the attack (a lunge that
     /// hurts the character if it lands) and a Stagger (rearing back). It forwards Shots to its <see cref="Enemies.Enemy"/>
     /// rule, and when that dies, lies still, sinks into the floor and fades out, then goes back to its pool. A hit that
     /// damages it also pushes it across the NavMesh (<see cref="EnemyKnockback"/>), on top of whatever it's doing.
     /// </summary>
     /// <remarks>
-    /// Everything it does runs on <see cref="EnemyTime"/>, never the global time scale, so Slow-mo slows Enemies
+    /// Everything it does runs on <see cref="EnemyTime"/>, never the global time scale, so Adrenaline slows Enemies
     /// alone: frame time (including the Wind-up, recovery, Stagger and Knockback), NavMesh agent speed, and its sounds'
     /// pitch (<see cref="EnemyVoicePitch"/>).
     /// </remarks>
@@ -56,8 +56,13 @@ namespace DarknessRises.Game.Enemies
         private Material[] windUpLivingMaterials;
         private Material fadeInstance;
         private Color fadeColor;
+        // What it goes for now: the character it was spawned hunting, or a Lure that drew it (see Quarry).
         private Transform target;
         private IEnemyAttackTarget attackTarget;
+        private Transform character;
+        private IEnemyAttackTarget characterAttackTarget;
+        private Transform lure;
+        private IEnemyAttackTarget lureAttackTarget;
         private float secondsUntilPathRefresh;
         private float secondsDead;
         private Vector3 deathPosition;
@@ -86,6 +91,9 @@ namespace DarknessRises.Game.Enemies
         public EnemyBehaviour Behaviour { get; private set; }
 
         public EnemyKnockback Knockback { get; private set; }
+
+        /// <summary>Whether it goes for the character or a Lure. It only changes while the Enemy is chasing.</summary>
+        public EnemyQuarry Quarry { get; } = new();
 
         /// <summary>When its feet come down while it walks. Ticked by the footsteps view, from <see cref="WalkingSpeed"/>.</summary>
         public FootstepCadence Footsteps { get; private set; }
@@ -182,8 +190,13 @@ namespace DarknessRises.Game.Enemies
 
         public void Spawn(Vector3 position, Transform hunted)
         {
-            target = hunted;
-            target.TryGetComponent(out attackTarget);
+            character = hunted;
+            character.TryGetComponent(out characterAttackTarget);
+            target = character;
+            attackTarget = characterAttackTarget;
+            lure = null;
+            lureAttackTarget = null;
+            Quarry.Reset();
             var facing = target.position - position;
             facing.y = 0f;
             var rotation = facing.sqrMagnitude > 0f ? Quaternion.LookRotation(facing, Vector3.up) : Quaternion.identity;
@@ -231,6 +244,28 @@ namespace DarknessRises.Game.Enemies
         }
 
         /// <summary>
+        /// A Lure at <paramref name="lureTransform"/> draws the Enemy: it goes for it (and attacks
+        /// <paramref name="lureTarget"/>) as soon as it's chasing, so an attack already under way finishes first.
+        /// </summary>
+        public void DrawTo(Transform lureTransform, IEnemyAttackTarget lureTarget)
+        {
+            if (!Enemy.IsAlive)
+            {
+                return;
+            }
+
+            lure = lureTransform;
+            lureAttackTarget = lureTarget;
+            Quarry.Draw();
+        }
+
+        /// <summary>The Lure that drew it ended: it goes back to the character as soon as it's chasing.</summary>
+        public void Release()
+        {
+            Quarry.Release();
+        }
+
+        /// <summary>
         /// Shoves the living Enemy across the floor at <paramref name="velocity"/> for <paramref name="seconds"/> of Enemy
         /// time, staying on the NavMesh. It stops chasing while it slides, then picks the hunt up again.
         /// </summary>
@@ -247,7 +282,7 @@ namespace DarknessRises.Game.Enemies
 
         private void Update()
         {
-            // Enemy time: Slow-mo slows the Wind-up, recovery and Stagger along with the chase.
+            // Enemy time: Adrenaline slows the Wind-up, recovery and Stagger along with the chase.
             var deltaSeconds = time.Scaled(Time.deltaTime);
             voiceTail.Tick(Time.deltaTime, voice.pitch);
             if (!Enemy.IsAlive)
@@ -261,7 +296,12 @@ namespace DarknessRises.Game.Enemies
                 ScaleAgentTime(time.Scale);
             }
 
-            Behaviour.Tick(deltaSeconds, IsCharacterInRange());
+            if (Quarry.Settle(Behaviour.State))
+            {
+                Retarget();
+            }
+
+            Behaviour.Tick(deltaSeconds, IsTargetInRange());
             ShowWindUp(Behaviour.State == EnemyBehaviourState.WindingUp);
 
             var walks = false;
@@ -285,7 +325,7 @@ namespace DarknessRises.Game.Enemies
             BeKnockedBack(deltaSeconds);
         }
 
-        // The agent's velocity runs on Enemy time already (Slow-mo scales it), so it's scaled back to Enemy time here.
+        // The agent's velocity runs on Enemy time already (Adrenaline scales it), so it's scaled back to Enemy time here.
         private void ShowWalkingSpeed(bool walks)
         {
             if (!walks || !agent.isOnNavMesh)
@@ -323,7 +363,17 @@ namespace DarknessRises.Game.Enemies
             Destroy(fadeInstance);
         }
 
-        private bool IsCharacterInRange()
+        // Steers to what the Quarry now goes for, picking a fresh path at once.
+        private void Retarget()
+        {
+            var lured = Quarry.IsLured && lure != null;
+            target = lured ? lure : character;
+            attackTarget = lured ? lureAttackTarget : characterAttackTarget;
+            secondsUntilPathRefresh = 0f;
+        }
+
+        // Whether what it goes for (the character or a Lure) is within attack range and can be attacked.
+        private bool IsTargetInRange()
         {
             if (attackTarget == null || !attackTarget.CanBeAttacked)
             {
@@ -358,7 +408,7 @@ namespace DarknessRises.Game.Enemies
             agent.SetDestination(target.position);
         }
 
-        // Winding up, recovering or reeling: stands its ground, turns to the character and leans to show what it's doing.
+        // Winding up, recovering or reeling: stands its ground, turns to what it goes for and leans to show what it's doing.
         private void HoldStill(float deltaSeconds)
         {
             StopAgent();

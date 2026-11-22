@@ -2,6 +2,7 @@ using System;
 using DarknessRises.Game.Gestures;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace DarknessRises.Game.Controls
 {
@@ -23,8 +24,11 @@ namespace DarknessRises.Game.Controls
         [SerializeField, Tooltip("Gameplay/Flare: triggers the Flare Skill.")]
         private InputActionReference flare;
 
-        [SerializeField, Tooltip("Gameplay/SlowMo: triggers the Slow-mo Skill.")]
-        private InputActionReference slowMo;
+        [SerializeField, FormerlySerializedAs("slowMo"), Tooltip("Gameplay/Adrenaline: triggers the Adrenaline Skill.")]
+        private InputActionReference adrenaline;
+
+        [SerializeField, Tooltip("Gameplay/Lure: throws the Lure at the aim point (F), or the way a sideways Two-finger flick went.")]
+        private InputActionReference lure;
 
         [SerializeField, Tooltip("Gameplay/Grenade: throws a Grenade at the aim point.")]
         private InputActionReference grenade;
@@ -64,6 +68,10 @@ namespace DarknessRises.Game.Controls
         private bool hasGrenadeAim;
         private Vector2 grenadeAim;
 
+        // The screen direction of the Two-finger flick that pressed Lure: the next Lure is thrown that way, not at the pointer.
+        private bool hasLureFlick;
+        private Vector2 lureFlick;
+
         private Action<InputAction.CallbackContext> onCommand;
 
         /// <summary>
@@ -97,8 +105,9 @@ namespace DarknessRises.Game.Controls
 
         public bool WasReloadPressedThisFrame => reload.action.WasPressedThisFrame();
         public bool WasFlarePressedThisFrame => flare.action.WasPressedThisFrame();
-        public bool WasSlowMoPressedThisFrame => slowMo.action.WasPressedThisFrame();
+        public bool WasAdrenalinePressedThisFrame => adrenaline.action.WasPressedThisFrame();
         public bool WasGrenadePressedThisFrame => grenade.action.WasPressedThisFrame();
+        public bool WasLurePressedThisFrame => lure != null && lure.action.WasPressedThisFrame();
         public bool WasNextWeaponPressedThisFrame => nextWeapon != null && nextWeapon.action.WasPressedThisFrame();
         public bool WasPreviousWeaponPressedThisFrame => previousWeapon != null && previousWeapon.action.WasPressedThisFrame();
 
@@ -183,6 +192,65 @@ namespace DarknessRises.Game.Controls
         }
 
         /// <summary>
+        /// Throws the next Lure the way <paramref name="screenDirection"/> points (x right, y up on screen) instead of at
+        /// the pointer. A sideways Two-finger flick sets it when it presses Lure.
+        /// </summary>
+        public void AimLureToward(Vector2 screenDirection)
+        {
+            lureFlick = screenDirection;
+            hasLureFlick = screenDirection != Vector2.zero;
+        }
+
+        /// <summary>
+        /// Where a Lure thrown now from <paramref name="from"/> lands, on the floor at <paramref name="from"/>'s height:
+        /// <paramref name="flickMetres"/> along the floor the way a Two-finger flick went (used once), or else the aim point
+        /// under the pointer, pulled in to <paramref name="maxRange"/> metres.
+        /// </summary>
+        public bool TryGetLureAimPoint(Vector3 from, float flickMetres, float maxRange, out Vector3 aimPoint)
+        {
+            if (!hasLureFlick)
+            {
+                if (!TryGetAimPoint(from.y, out aimPoint))
+                {
+                    return false;
+                }
+
+                aimPoint = ClampToRange(from, aimPoint, maxRange);
+                return true;
+            }
+
+            hasLureFlick = false;
+
+            // The flick's screen direction, laid on the floor: where a point a little way along it from the character lands.
+            var screenFrom = (Vector2)viewCamera.WorldToScreenPoint(from);
+            var reach = Mathf.Max(1f, Mathf.Min(Screen.width, Screen.height) * 0.1f);
+            if (!AimPlane.TryIntersect(viewCamera.ScreenPointToRay(screenFrom + lureFlick.normalized * reach), from.y, out var along))
+            {
+                aimPoint = from;
+                return false;
+            }
+
+            var direction = along - from;
+            direction.y = 0f;
+            if (direction.sqrMagnitude <= 0f)
+            {
+                aimPoint = from;
+                return false;
+            }
+
+            aimPoint = from + direction.normalized * flickMetres;
+            return true;
+        }
+
+        private static Vector3 ClampToRange(Vector3 from, Vector3 point, float maxRange)
+        {
+            var flat = point - from;
+            flat.y = 0f;
+            var distance = flat.magnitude;
+            return distance <= maxRange || distance <= 0f ? point : from + flat * (maxRange / distance);
+        }
+
+        /// <summary>
         /// Holds the player's commands while the game is paused: the Gameplay actions are disabled, so nothing fires,
         /// reloads, throws or triggers a Skill, and a held trigger counts as released. Releasing turns them back on.
         /// </summary>
@@ -225,7 +293,8 @@ namespace DarknessRises.Game.Controls
             fire.action.Enable();
             reload.action.Enable();
             flare.action.Enable();
-            slowMo.action.Enable();
+            adrenaline.action.Enable();
+            Set(lure, true);
             grenade.action.Enable();
             SetWeaponActions(true);
             if (relocate != null)
@@ -251,7 +320,8 @@ namespace DarknessRises.Game.Controls
             fire.action.Disable();
             reload.action.Disable();
             flare.action.Disable();
-            slowMo.action.Disable();
+            adrenaline.action.Disable();
+            Set(lure, false);
             grenade.action.Disable();
             SetWeaponActions(false);
             if (relocate != null)
@@ -299,6 +369,7 @@ namespace DarknessRises.Game.Controls
             if (!IsTouchActive)
             {
                 hasGrenadeAim = false;
+                hasLureFlick = false;
             }
         }
 

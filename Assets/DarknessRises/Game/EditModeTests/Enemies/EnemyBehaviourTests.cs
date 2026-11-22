@@ -154,7 +154,7 @@ namespace DarknessRises.Game.EditModeTests.Enemies
         }
 
         [Test]
-        public void Enemy_time_stretches_the_Wind_up_under_Slow_mo()
+        public void Enemy_time_stretches_the_Wind_up_under_Adrenaline()
         {
             var time = new EnemyTime { Scale = 0.5f };
             behaviour.Tick(time.Scaled(0.1f), true);

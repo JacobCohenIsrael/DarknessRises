@@ -16,8 +16,9 @@ namespace DarknessRises.Game.Gestures
         public const int ReloadBit = 1;
         public const int GrenadeBit = 2;
         public const int FlareBit = 3;
-        public const int SlowMoBit = 4;
+        public const int AdrenalineBit = 4;
         public const int NextWeaponBit = 5;
+        public const int LureBit = 6;
 
         public static FourCC Format => new('G', 'S', 'T', 'R');
 
@@ -25,8 +26,9 @@ namespace DarknessRises.Game.Gestures
         [InputControl(name = "reload", layout = "Button", bit = ReloadBit, displayName = "Reload")]
         [InputControl(name = "grenade", layout = "Button", bit = GrenadeBit, displayName = "Grenade")]
         [InputControl(name = "flare", layout = "Button", bit = FlareBit, displayName = "Flare")]
-        [InputControl(name = "slowMo", layout = "Button", bit = SlowMoBit, displayName = "Slow-mo")]
+        [InputControl(name = "adrenaline", layout = "Button", bit = AdrenalineBit, displayName = "Adrenaline")]
         [InputControl(name = "nextWeapon", layout = "Button", bit = NextWeaponBit, displayName = "Next Weapon")]
+        [InputControl(name = "lure", layout = "Button", bit = LureBit, displayName = "Lure")]
         [FieldOffset(0)]
         public uint buttons;
 
@@ -61,8 +63,9 @@ namespace DarknessRises.Game.Gestures
         public ButtonControl Reload { get; private set; }
         public ButtonControl Grenade { get; private set; }
         public ButtonControl Flare { get; private set; }
-        public ButtonControl SlowMo { get; private set; }
+        public ButtonControl Adrenaline { get; private set; }
         public ButtonControl NextWeapon { get; private set; }
+        public ButtonControl Lure { get; private set; }
         public Vector2Control Relocate { get; private set; }
 
         // Touching the static constructor registers the layout before any scene or actions asset needs it.
@@ -78,8 +81,9 @@ namespace DarknessRises.Game.Gestures
             Reload = GetChildControl<ButtonControl>("reload");
             Grenade = GetChildControl<ButtonControl>("grenade");
             Flare = GetChildControl<ButtonControl>("flare");
-            SlowMo = GetChildControl<ButtonControl>("slowMo");
+            Adrenaline = GetChildControl<ButtonControl>("adrenaline");
             NextWeapon = GetChildControl<ButtonControl>("nextWeapon");
+            Lure = GetChildControl<ButtonControl>("lure");
             Relocate = GetChildControl<Vector2Control>("relocate");
         }
     }

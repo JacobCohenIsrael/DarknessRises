@@ -17,7 +17,7 @@ namespace DarknessRises.Game.Pausing
     /// <remarks>
     /// <para>
     /// How the freeze works, one approach for everything: <c>Time.timeScale = 0</c> and <c>AudioListener.pause</c>.
-    /// Every gameplay clock advances by the scaled <c>Time.deltaTime</c>: the Route walk, Enemy time (Slow-mo scales
+    /// Every gameplay clock advances by the scaled <c>Time.deltaTime</c>: the Route walk, Enemy time (Adrenaline scales
     /// it further), Skill cooldowns, Grenade refill, Weapons and Shots, Lightning, Waves and Stragglers, invulnerability
     /// and the Level's beats. NavMesh agents, Animators, physics and Cinemachine (impulse included) run on scaled time
     /// too, so they all stop on the same frame and carry on from there on Resume. Every sound pauses and resumes with
@@ -27,7 +27,7 @@ namespace DarknessRises.Game.Pausing
     /// UniTask flows wait for frames (<c>NextFrame</c>, <c>Yield</c>, <c>WaitUntil</c>) and count scaled seconds, so
     /// they freeze too. Any <c>UniTask.Delay</c> in gameplay must keep its default <c>DelayType.DeltaTime</c> (scaled),
     /// never <c>Realtime</c> or <c>UnscaledDeltaTime</c>. The UI (EventSystem, button transitions) runs on unscaled
-    /// time, so the menus work while frozen. Nothing else in the game touches <c>Time.timeScale</c> (Slow-mo scales
+    /// time, so the menus work while frozen. Nothing else in the game touches <c>Time.timeScale</c> (Adrenaline scales
     /// only Enemy time); the scale from before the freeze is put back.
     /// </para>
     /// </remarks>

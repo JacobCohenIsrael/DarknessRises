@@ -59,7 +59,7 @@ namespace DarknessRises.Game.Lightning
         /// <summary>The bed's volume right now.</summary>
         public float Volume => presence * (envelope.BaseVolume + (envelope.SwellPeakVolume - envelope.BaseVolume) * swell);
 
-        /// <summary>The bed's own pitch right now: 1, nudged during a Rumble. Slow-mo is applied on top by the view.</summary>
+        /// <summary>The bed's own pitch right now: 1, nudged during a Rumble. Adrenaline is applied on top by the view.</summary>
         public float Pitch { get; private set; } = NormalPitch;
 
         /// <summary>

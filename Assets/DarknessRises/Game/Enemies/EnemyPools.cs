@@ -24,7 +24,7 @@ namespace DarknessRises.Game.Enemies
         private readonly ILoadedContent content;
         private readonly RampStep ramp;
 
-        /// <param name="enemyTime">How fast time runs for every pooled Enemy (Slow-mo).</param>
+        /// <param name="enemyTime">How fast time runs for every pooled Enemy (Adrenaline).</param>
         /// <param name="loadedContent">Where each Enemy type's prefab and sounds are, already loaded. The pools never release it.</param>
         /// <param name="rampStep">The Ramp of the Level these Enemies fight in: how much tougher and faster than authored they are.</param>
         public EnemyPools(Transform parent, EnemyTime enemyTime, ILoadedContent loadedContent, RampStep rampStep)

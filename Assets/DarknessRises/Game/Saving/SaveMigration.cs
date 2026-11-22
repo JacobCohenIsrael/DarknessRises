@@ -20,6 +20,16 @@ namespace DarknessRises.Game.Saving
         /// <summary>Adds what was bought in the Shop.</summary>
         private const int ShopVersion = 2;
 
+        /// <summary>Slow-mo became Adrenaline: its Upgrades' ids changed.</summary>
+        private const int AdrenalineVersion = 3;
+
+        // The Upgrade ids version 3 renamed, old to new. The levels bought carry over unchanged.
+        private static readonly (string from, string to)[] AdrenalineIds =
+        {
+            ("slow-mo.duration", "adrenaline.duration"),
+            ("slow-mo.cooldown", "adrenaline.cooldown"),
+        };
+
         /// <summary>Migrates <paramref name="record"/> in place to <see cref="SaveRecord.CurrentVersion"/> and returns it.</summary>
         public static SaveRecord ToCurrent(SaveRecord record)
         {
@@ -41,6 +51,12 @@ namespace DarknessRises.Game.Saving
                 record.version = ShopVersion;
             }
 
+            if (record.version == ShopVersion)
+            {
+                RenameItems(record, AdrenalineIds);
+                record.version = AdrenalineVersion;
+            }
+
             if (record.version > SaveRecord.CurrentVersion)
             {
                 record.version = SaveRecord.CurrentVersion;
@@ -48,6 +64,30 @@ namespace DarknessRises.Game.Saving
 
             PutRight(record);
             return record;
+        }
+
+        private static void RenameItems(SaveRecord record, (string from, string to)[] renames)
+        {
+            if (record.items == null)
+            {
+                return;
+            }
+
+            foreach (var item in record.items)
+            {
+                if (item == null)
+                {
+                    continue;
+                }
+
+                foreach (var (from, to) in renames)
+                {
+                    if (item.id == from)
+                    {
+                        item.id = to;
+                    }
+                }
+            }
         }
 
         private static void PutRight(SaveRecord record)

@@ -163,6 +163,55 @@ namespace DarknessRises.Game.EditModeTests.Saving
         }
 
         [Test]
+        public void A_version_2_save_with_Slow_mo_Upgrades_bought_keeps_them_as_Adrenaline_Upgrades()
+        {
+            // As a build before the rename wrote it: Slow-mo's two Upgrades bought, beside others.
+            const string text = "{\"version\":2,\"credits\":40,\"runsFinished\":6,\"items\":["
+                + "{\"id\":\"slow-mo.duration\",\"level\":2},"
+                + "{\"id\":\"slow-mo.cooldown\",\"level\":3},"
+                + "{\"id\":\"flare.duration\",\"level\":1}]}";
+            var storage = new MemorySaveStorage { Text = text };
+
+            var save = PlayerSave.Load(storage);
+
+            Assert.That(save.LevelOf("adrenaline.duration"), Is.EqualTo(2));
+            Assert.That(save.LevelOf("adrenaline.cooldown"), Is.EqualTo(3));
+            Assert.That(save.LevelOf("flare.duration"), Is.EqualTo(1), "Other Upgrades are untouched.");
+            Assert.That(save.LevelOf("slow-mo.duration"), Is.Zero, "The old ids are gone.");
+            Assert.That(save.Credits, Is.EqualTo(40));
+        }
+
+        [Test]
+        public void A_migrated_Adrenaline_Upgrade_is_written_back_under_its_new_id()
+        {
+            var storage = new MemorySaveStorage
+            {
+                Text = "{\"version\":2,\"items\":[{\"id\":\"slow-mo.duration\",\"level\":1}]}",
+            };
+            var save = PlayerSave.Load(storage);
+
+            // The next save point (a Run banking Credits) writes the migrated record.
+            save.AddCredits(1);
+            save.Write();
+
+            Assert.That(storage.Text, Does.Contain("adrenaline.duration"));
+            Assert.That(storage.Text, Does.Not.Contain("slow-mo"));
+            Assert.That(PlayerSave.Load(storage).LevelOf("adrenaline.duration"), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void An_Adrenaline_id_in_a_version_3_save_is_left_alone()
+        {
+            var record = new SaveRecord { version = 3 };
+            record.items.Add(new SaveItem { id = "adrenaline.cooldown", level = 2 });
+
+            SaveMigration.ToCurrent(record);
+
+            Assert.That(record.items[0].id, Is.EqualTo("adrenaline.cooldown"));
+            Assert.That(record.items[0].level, Is.EqualTo(2));
+        }
+
+        [Test]
         public void An_older_save_loads_through_the_migration()
         {
             var storage = new MemorySaveStorage { Text = "{\"credits\":300,\"runsFinished\":2}" };

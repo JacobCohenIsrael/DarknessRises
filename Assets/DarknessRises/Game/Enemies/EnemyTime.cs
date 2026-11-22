@@ -4,7 +4,7 @@ namespace DarknessRises.Game.Enemies
 {
     /// <summary>
     /// How fast time runs for Enemies, apart from the global time scale: 1 is normal speed, lower is slower.
-    /// Enemy rules and views scale their frame time, movement and sounds by it, so Slow-mo slows Enemies
+    /// Enemy rules and views scale their frame time, movement and sounds by it, so Adrenaline slows Enemies
     /// while the character, Shots and Skills keep full speed. Plain C# (ADR 0003), owned by the composition root.
     /// </summary>
     public sealed class EnemyTime

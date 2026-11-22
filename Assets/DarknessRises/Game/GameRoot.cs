@@ -132,7 +132,7 @@ namespace DarknessRises.Game
         [SerializeField, Tooltip("The Skill buttons at the bottom left: one per Skill, drawn from each Skill's authored look.")]
         private SkillBarView skillBar;
 
-        // How fast time runs for Enemies. Slow-mo slows it; the global time scale is never touched.
+        // How fast time runs for Enemies. Adrenaline slows it; the global time scale is never touched.
         private readonly EnemyTime enemyTime = new();
 
         // The footsteps of the living Enemies, made once the Level's content has loaded.
@@ -466,12 +466,23 @@ namespace DarknessRises.Game
             }
 
             lightningScheduler = new LightningScheduler(configuration.Lightning.Timing, lightningRandom);
-            var skills = characterSkills.Use(configuration.Flare, configuration.SlowMo, stats.Flare, stats.SlowMo, enemyTime);
+            var skills = characterSkills.Use(
+                configuration.Flare,
+                configuration.Adrenaline,
+                configuration.Lure,
+                stats.Flare,
+                stats.Adrenaline,
+                stats.Lure,
+                enemyTime,
+                livingEnemies,
+                content.Clip(configuration.HurtFeedback.Fast.Clip),
+                content.Clip(configuration.Lure.RattleClip));
             flareSkill = skills.Flare.Skill;
             skillBar.Show(
                 configuration.SkillHud,
                 new SkillButton(skills.Flare.Skill, configuration.Flare.Button),
-                new SkillButton(skills.SlowMo.Skill, configuration.SlowMo.Button));
+                new SkillButton(skills.Adrenaline.Skill, configuration.Adrenaline.Button),
+                new SkillButton(skills.Lure.Skill, configuration.Lure.Button));
             if (gestureInput != null)
             {
                 gestureInput.Use(configuration.Gestures);
@@ -897,7 +908,7 @@ namespace DarknessRises.Game
                 return;
             }
 
-            // The Boss runs on Enemy time, so a flash it asks for is timed on it too: Slow-mo stretches both alike.
+            // The Boss runs on Enemy time, so a flash it asks for is timed on it too: Adrenaline stretches both alike.
             var deltaSeconds = Time.deltaTime;
             scoreKeeper?.Tick(deltaSeconds);
             lightningScheduler.Tick(lightningScheduler.Mode == LightningMode.BossDriven ? enemyTime.Scaled(deltaSeconds) : deltaSeconds);

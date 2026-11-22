@@ -23,7 +23,7 @@ namespace DarknessRises.Game.Shop
         [SerializeField, Tooltip("The Grenade's Upgrades: charges, refill time, blast radius.")]
         private UpgradeDefinition[] grenadeUpgrades = Array.Empty<UpgradeDefinition>();
 
-        [SerializeField, Tooltip("The Skills' Upgrades: the Flare's and Slow-mo's duration and cooldown.")]
+        [SerializeField, Tooltip("The Skills' Upgrades: the Flare's, Adrenaline's and the Lure's duration and cooldown.")]
         private UpgradeDefinition[] skillUpgrades = Array.Empty<UpgradeDefinition>();
 
         [SerializeField, Tooltip(

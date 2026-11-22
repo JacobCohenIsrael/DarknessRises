@@ -44,12 +44,20 @@ namespace DarknessRises.Game.Upgrades
                 upgrades.Value(UpgradeStat.FlareCooldownSeconds, timing.CooldownSeconds));
         }
 
-        /// <summary>Slow-mo's duration and cooldown, as the Skills' Upgrades set them.</summary>
-        public static SkillTiming SlowMo(SkillTiming timing, OwnedUpgrades upgrades)
+        /// <summary>The Lure's time on the floor and cooldown, as the Skills' Upgrades set them.</summary>
+        public static SkillTiming Lure(SkillTiming timing, OwnedUpgrades upgrades)
         {
             return new SkillTiming(
-                upgrades.Value(UpgradeStat.SlowMoDurationSeconds, timing.DurationSeconds),
-                upgrades.Value(UpgradeStat.SlowMoCooldownSeconds, timing.CooldownSeconds));
+                upgrades.Value(UpgradeStat.LureDurationSeconds, timing.DurationSeconds),
+                upgrades.Value(UpgradeStat.LureCooldownSeconds, timing.CooldownSeconds));
+        }
+
+        /// <summary>Adrenaline's duration and cooldown, as the Skills' Upgrades set them.</summary>
+        public static SkillTiming Adrenaline(SkillTiming timing, OwnedUpgrades upgrades)
+        {
+            return new SkillTiming(
+                upgrades.Value(UpgradeStat.AdrenalineDurationSeconds, timing.DurationSeconds),
+                upgrades.Value(UpgradeStat.AdrenalineCooldownSeconds, timing.CooldownSeconds));
         }
 
         /// <summary>The hit points the character starts a Run with, as the character's Upgrades set them.</summary>

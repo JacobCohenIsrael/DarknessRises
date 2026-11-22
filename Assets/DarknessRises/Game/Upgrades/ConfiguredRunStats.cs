@@ -39,7 +39,8 @@ namespace DarknessRises.Game.Upgrades
                 RunStatsBuilder.Grenade(
                     grenade.ChargeStats, grenade.BlastRadius, new OwnedUpgrades(ShopCatalog.UpgradesOf(catalog.Grenade), levelOf)),
                 RunStatsBuilder.Flare(configuration.Flare.Timing, skills),
-                RunStatsBuilder.SlowMo(configuration.SlowMo.Timing, skills),
+                RunStatsBuilder.Adrenaline(configuration.Adrenaline.Timing, skills),
+                RunStatsBuilder.Lure(configuration.Lure.Timing, skills),
                 RunStatsBuilder.MaxHitPoints(configuration.Player.HitPoints, character),
                 RunStatsBuilder.AuraRange(configuration.Player.Aura.Range, character));
         }
@@ -72,10 +73,14 @@ namespace DarknessRises.Game.Upgrades
                     return configuration.Flare.Timing.DurationSeconds;
                 case UpgradeStat.FlareCooldownSeconds:
                     return configuration.Flare.Timing.CooldownSeconds;
-                case UpgradeStat.SlowMoDurationSeconds:
-                    return configuration.SlowMo.Timing.DurationSeconds;
-                case UpgradeStat.SlowMoCooldownSeconds:
-                    return configuration.SlowMo.Timing.CooldownSeconds;
+                case UpgradeStat.AdrenalineDurationSeconds:
+                    return configuration.Adrenaline.Timing.DurationSeconds;
+                case UpgradeStat.AdrenalineCooldownSeconds:
+                    return configuration.Adrenaline.Timing.CooldownSeconds;
+                case UpgradeStat.LureDurationSeconds:
+                    return configuration.Lure.Timing.DurationSeconds;
+                case UpgradeStat.LureCooldownSeconds:
+                    return configuration.Lure.Timing.CooldownSeconds;
                 case UpgradeStat.MaxHitPoints:
                     return configuration.Player.HitPoints;
                 case UpgradeStat.AuraRange:

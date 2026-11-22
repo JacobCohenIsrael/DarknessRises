@@ -12,7 +12,7 @@ namespace DarknessRises.Game.Weapons
     /// <remarks>
     /// The sound follows the reload's own clock, read from the Weapon after it has been ticked this frame. A reload
     /// that stops advancing while game time runs (the weapon was put away, as on death) counts as cut short; the pause
-    /// stops game time, so it only freezes the sound (with <c>AudioListener.pause</c>). Slow-mo leaves the character's
+    /// stops game time, so it only freezes the sound (with <c>AudioListener.pause</c>). Adrenaline leaves the character's
     /// reloads at full speed, and so this sound at its own pitch. The clip plays only once its audio data has loaded.
     /// </remarks>
     [DefaultExecutionOrder(AfterPrimaryWeapon)]

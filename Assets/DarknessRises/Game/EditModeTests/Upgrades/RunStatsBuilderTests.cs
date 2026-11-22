@@ -186,18 +186,24 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             var upgrades = Owned(
                 NewUpgrade("flare.duration", UpgradeStat.FlareDurationSeconds, 5f, 6f),
                 NewUpgrade("flare.cooldown", UpgradeStat.FlareCooldownSeconds, 13f, 11f),
-                NewUpgrade("slow-mo.duration", UpgradeStat.SlowMoDurationSeconds, 5f, 6f),
-                NewUpgrade("slow-mo.cooldown", UpgradeStat.SlowMoCooldownSeconds, 13f, 11f));
+                NewUpgrade("adrenaline.duration", UpgradeStat.AdrenalineDurationSeconds, 5f, 6f),
+                NewUpgrade("adrenaline.cooldown", UpgradeStat.AdrenalineCooldownSeconds, 13f, 11f),
+                NewUpgrade("lure.duration", UpgradeStat.LureDurationSeconds, 6f, 7f),
+                NewUpgrade("lure.cooldown", UpgradeStat.LureCooldownSeconds, 15f, 12f));
             levels["flare.duration"] = 2;
-            levels["slow-mo.cooldown"] = 1;
+            levels["adrenaline.cooldown"] = 1;
+            levels["lure.duration"] = 1;
 
             var flare = RunStatsBuilder.Flare(authored, upgrades);
-            var slowMo = RunStatsBuilder.SlowMo(authored, upgrades);
+            var adrenaline = RunStatsBuilder.Adrenaline(authored, upgrades);
 
             Assert.That(flare.DurationSeconds, Is.EqualTo(6f));
             Assert.That(flare.CooldownSeconds, Is.EqualTo(15f));
-            Assert.That(slowMo.DurationSeconds, Is.EqualTo(4f));
-            Assert.That(slowMo.CooldownSeconds, Is.EqualTo(13f));
+            Assert.That(adrenaline.DurationSeconds, Is.EqualTo(4f));
+            Assert.That(adrenaline.CooldownSeconds, Is.EqualTo(13f));
+            var lure = RunStatsBuilder.Lure(new SkillTiming(5f, 18f), upgrades);
+            Assert.That(lure.DurationSeconds, Is.EqualTo(6f));
+            Assert.That(lure.CooldownSeconds, Is.EqualTo(18f));
         }
 
         [Test]
@@ -238,7 +244,7 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             var grenade = new GrenadeRunStats(new GrenadeChargeStats(3, 20f), 3.5f);
             var timing = new SkillTiming(4f, 15f);
 
-            var stats = new RunStats(new[] { pistol, machineGun }, grenade, timing, timing, 5, 4.5f);
+            var stats = new RunStats(new[] { pistol, machineGun }, grenade, timing, timing, timing, 5, 4.5f);
 
             Assert.That(stats.Primaries.Count, Is.EqualTo(2));
             Assert.That(stats.Primaries[0].Firing.MagazineSize, Is.EqualTo(12));
@@ -254,9 +260,9 @@ namespace DarknessRises.Game.EditModeTests.Upgrades
             var grenade = new GrenadeRunStats(new GrenadeChargeStats(3, 20f), 3.5f);
             var timing = new SkillTiming(4f, 15f);
 
-            Assert.That(() => new RunStats(Array.Empty<WeaponRunStats>(), grenade, timing, timing, 5, 4.5f), Throws.InstanceOf<ArgumentException>());
-            Assert.That(() => new RunStats(new[] { weapon }, grenade, timing, timing, 0, 4.5f), Throws.InstanceOf<ArgumentOutOfRangeException>());
-            Assert.That(() => new RunStats(new[] { weapon }, grenade, timing, timing, 5, -1f), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => new RunStats(Array.Empty<WeaponRunStats>(), grenade, timing, timing, timing, 5, 4.5f), Throws.InstanceOf<ArgumentException>());
+            Assert.That(() => new RunStats(new[] { weapon }, grenade, timing, timing, timing, 0, 4.5f), Throws.InstanceOf<ArgumentOutOfRangeException>());
+            Assert.That(() => new RunStats(new[] { weapon }, grenade, timing, timing, timing, 5, -1f), Throws.InstanceOf<ArgumentOutOfRangeException>());
             Assert.That(() => new WeaponRunStats(Pistol, -1), Throws.InstanceOf<ArgumentOutOfRangeException>());
             Assert.That(() => new GrenadeRunStats(new GrenadeChargeStats(3, 20f), 0f), Throws.InstanceOf<ArgumentOutOfRangeException>());
         }

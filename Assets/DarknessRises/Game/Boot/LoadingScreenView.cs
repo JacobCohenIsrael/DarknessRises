@@ -155,7 +155,7 @@ namespace DarknessRises.Game.Boot
             Draw();
         }
 
-        // Runs only while the screen is covered. Unscaled: Slow-mo and a pause don't hold the dots.
+        // Runs only while the screen is covered. Unscaled: Adrenaline and a pause don't hold the dots.
         private void Update()
         {
             if (screen == null)

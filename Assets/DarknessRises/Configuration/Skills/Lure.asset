@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26690a8eadce6964ea198615b776ea64, type: 3}
+  m_Name: Lure
+  m_EditorClassIdentifier: DarknessRises.Game::DarknessRises.Game.Skills.LureDefinition
+  durationSeconds: 5
+  cooldownSeconds: 18
+  radius: 6
+  flickThrowMetres: 6
+  maxThrowMetres: 9
+  floorSnapMetres: 3
+  flightSeconds: 0.45
+  gravity: 25
+  releaseHeight: 1.2
+  rattleClip:
+    m_AssetGUID: 9b713c76b05f8b04882a23a60605b0d2
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  rattleVolume: 0.8
+  rattleHearingRange: 22
+  button:
+    icon: {fileID: 21300000, guid: 7074546add76c5a4b9b46ae716363d0c, type: 3}
+    color: {r: 0.55, g: 0.85, b: 1, a: 0.95}
+    displayName: LURE
+    keyBadge: F

@@ -1,0 +1,4 @@
+3 switches with their beats (model swap, grips, muzzle, click): 0 bytes
+Primary 0: 4 Shots (Shot, Muzzle flash, recoil, Gunshot): 0 bytes
+Primary 1: 7 Shots (Shot, Muzzle flash, recoil, Gunshot): 0 bytes
+Primary 2: 8 Shots (Shot, Muzzle flash, recoil, Gunshot): 0 bytes

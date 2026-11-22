@@ -213,16 +213,16 @@ namespace DarknessRises.Game.EditModeTests.Scoring
         }
 
         [Test]
-        public void The_authored_boost_doubles_for_a_minute_with_no_limit()
+        public void The_authored_boost_doubles_for_two_minutes_with_no_limit()
         {
             var boost = new ScoreSettings().ToBoost();
 
             Assert.That(boost.Factor, Is.EqualTo(2));
-            Assert.That(boost.DurationSeconds, Is.EqualTo(60f));
+            Assert.That(boost.DurationSeconds, Is.EqualTo(120f));
             for (var i = 0; i < 5; i++)
             {
                 Assert.That(boost.Start(), Is.True);
-                boost.Tick(61f);
+                boost.Tick(121f);
             }
         }
 

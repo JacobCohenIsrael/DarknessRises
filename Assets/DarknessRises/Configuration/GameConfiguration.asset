@@ -242,7 +242,7 @@ MonoBehaviour:
       multiplier: 2
     accuracyMinShots: 5
     boostFactor: 2
-    boostSeconds: 60
+    boostSeconds: 120
     boostsPerRun: 0
     boostFakeAdSeconds: 5
   scoreHud:

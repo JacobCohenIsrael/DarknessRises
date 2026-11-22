@@ -1,15 +1,16 @@
 using DarknessRises.Game.Credits;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Editor.Content;
+using DarknessRises.Game.Editor.Continues;
 using UnityEditor;
 using UnityEngine;
 
 namespace DarknessRises.Game.Editor.Credits
 {
     /// <summary>
-    /// Builds Credits: their definition asset with its placeholder sound, and the end screen's place on the
-    /// <see cref="GameRoot"/>. The end screen itself, with its pay-out lines, is built with the other screens
-    /// (<see cref="Health.HealthBuilder"/>).
+    /// Builds Credits: their definition asset with its placeholder sound, the end screen's place on the
+    /// <see cref="GameRoot"/>, and the fake end-of-Run ad's placeholder screen on the Screens canvas. The end screen
+    /// itself, with its pay-out lines and the ad's offer, is built with the other screens (<see cref="Health.HealthBuilder"/>).
     /// Call <see cref="Build"/> once the death and end screens and the Continue are built.
     /// </summary>
     public static class CreditsBuilder
@@ -19,6 +20,9 @@ namespace DarknessRises.Game.Editor.Credits
         // An approved Free Pack placeholder, shared with the Clear banner: its coins start after a quiet lead-in.
         private const string BonusClipPath = "Assets/Free Pack/Magic Spell_Coins_2.wav";
         private const float BonusClipStartSeconds = 1.3f;
+
+        private const string FakeAdName = "End Of Run Fake Ad";
+        private const string FakeAdCountdownFormat = "Your Credits in {0}";
 
         /// <summary>Loads the Credits definition, creating it with default tuning and its placeholder sound if it's missing.</summary>
         public static CreditsDefinition LoadOrCreateCredits()
@@ -46,7 +50,10 @@ namespace DarknessRises.Game.Editor.Credits
             var deathFlow = (DeathFlow)serializedRoot.FindProperty("deathFlow").objectReferenceValue;
             var endScreen = (EndScreenView)new SerializedObject(deathFlow).FindProperty("endScreen").objectReferenceValue;
 
+            // Last on the Screens canvas, so the ad covers the end screen that offered it.
             serializedRoot.FindProperty("endScreen").objectReferenceValue = endScreen;
+            serializedRoot.FindProperty("endOfRunAd").objectReferenceValue =
+                ContinueBuilder.BuildFakeAd(deathFlow.transform, FakeAdName, FakeAdCountdownFormat, canClose: true);
             serializedRoot.ApplyModifiedPropertiesWithoutUndo();
         }
     }

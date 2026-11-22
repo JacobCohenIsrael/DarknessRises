@@ -187,8 +187,11 @@ namespace DarknessRises.Game
         private ContinueBurstView continueBurst;
 
         [Header("Credits")]
-        [SerializeField, Tooltip("The end screen, which pays out the Run's Score as Credits.")]
+        [SerializeField, Tooltip("The end screen, which pays out the Run's Score as Credits and offers the end-of-Run ad.")]
         private EndScreenView endScreen;
+
+        [SerializeField, Tooltip("The placeholder ad watched to multiply a Run's Credits. A real ad network replaces it later.")]
+        private FakeAdView endOfRunAd;
 
         // The Run this scene plays a Level of: handed in by the boot, or the scene's own when it's played on its own.
         private RunFlow run;
@@ -662,12 +665,14 @@ namespace DarknessRises.Game
             ShowCredits();
         }
 
-        // Credits come from the Run's Score and the Levels it clears, and are paid out on the end screen.
+        // Credits come from the Run's Score and the Levels it clears, and are paid out on the end screen, which also
+        // offers the end-of-Run ad.
         private void ShowCredits()
         {
             var credits = configuration.Credits;
             levelClearBonus = credits.LevelClearBonus.ToBonus();
-            endScreen.Use(credits, save, content.Clip(credits.EndScreen.PayoutClip), configuration.ScoreHud);
+            endOfRunAd.Use(credits.EndOfRunAd.FakeAdSeconds);
+            endScreen.Use(credits, endOfRunAd, save, content.Clip(credits.EndScreen.PayoutClip), configuration.ScoreHud);
         }
 
         // Score comes from what the Level's fights report: every Shot's hit or miss drives the Combo, every kill earns
@@ -1085,8 +1090,9 @@ namespace DarknessRises.Game
             lightningScheduler.Tick(lightningScheduler.Mode == LightningMode.BossDriven ? enemyTime.Scaled(deltaSeconds) : deltaSeconds);
             lightning.SetStormAudible(lightningScheduler.IsStormRunning);
 
-            // Nothing vibrates while a Continue's ad plays (the Score boost's holds the Level, which holds Haptics too).
-            var adShowing = continueAd.gameObject.activeSelf;
+            // Nothing vibrates while a Continue's ad or the end-of-Run ad plays (the Score boost's holds the Level, which
+            // holds Haptics too).
+            var adShowing = continueAd.gameObject.activeSelf || endOfRunAd.gameObject.activeSelf;
             if (levelHaptics != null && adShowing != isAdShowing)
             {
                 isAdShowing = adShowing;

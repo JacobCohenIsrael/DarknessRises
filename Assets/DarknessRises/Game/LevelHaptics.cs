@@ -63,6 +63,7 @@ namespace DarknessRises.Game
         private readonly Action onScoreBoostStarted;
         private readonly Action onNewBest;
         private readonly Action onCreditsLanded;
+        private readonly Action onAdBonusLanded;
         private readonly Action<PauseState> onPauseChanged;
 
         private readonly WeaponSwitchBeat switchBeat;
@@ -125,6 +126,7 @@ namespace DarknessRises.Game
             onScoreBoostStarted = () => haptics.Play(HapticEffect.ScoreBoost);
             onNewBest = () => haptics.Play(HapticEffect.NewBest);
             onCreditsLanded = () => haptics.Play(HapticEffect.CreditsLanded);
+            onAdBonusLanded = () => haptics.Play(HapticEffect.AdBonus);
             onPauseChanged = state => haptics.SetHeld(HapticsHold.Paused, state != PauseState.Playing);
 
             grenades.Exploded += onGrenadeExploded;
@@ -174,6 +176,7 @@ namespace DarknessRises.Game
             scoreBoost.Started += onScoreBoostStarted;
             endScreen.NewBestStamped += onNewBest;
             endScreen.CreditsLanded += onCreditsLanded;
+            endScreen.AdBonusLanded += onAdBonusLanded;
             pause.StateChanged += onPauseChanged;
             haptics.SetHeld(HapticsHold.Paused, pause.IsFrozen);
         }
@@ -232,6 +235,7 @@ namespace DarknessRises.Game
             scoreBoost.Started -= onScoreBoostStarted;
             endScreen.NewBestStamped -= onNewBest;
             endScreen.CreditsLanded -= onCreditsLanded;
+            endScreen.AdBonusLanded -= onAdBonusLanded;
             pause.StateChanged -= onPauseChanged;
 
             // The game's Haptics outlive the Level: nothing it held stays held.

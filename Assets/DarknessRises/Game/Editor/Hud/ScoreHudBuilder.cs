@@ -1,4 +1,5 @@
 using System.IO;
+using DarknessRises.Game.Configuration;
 using DarknessRises.Game.Death;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Editor.Continues;
@@ -78,6 +79,23 @@ namespace DarknessRises.Game.Editor.Hud
 
         private const string BoostAdName = "Score Boost Fake Ad";
         private const string BoostAdCountdownFormat = "Your x2 Score in {0}";
+
+        // The Score boost lasted 60 s of play until the user asked for 120 (#133). Set once, while it still has the old
+        // value, so a later tuning by hand stays.
+        private const float OldBoostSeconds = 60f;
+        private const float BoostSeconds = 120f;
+
+        /// <summary>Gives the Score boost its 120 s of play, unless its length was already tuned away from the old 60.</summary>
+        public static void AuthorBoostSeconds(GameConfiguration configuration)
+        {
+            var serialized = new SerializedObject(configuration);
+            var seconds = serialized.FindProperty("score.boostSeconds");
+            if (Mathf.Approximately(seconds.floatValue, OldBoostSeconds))
+            {
+                seconds.floatValue = BoostSeconds;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
+        }
 
         public static void Build(GameRoot gameRoot, Camera worldCamera)
         {

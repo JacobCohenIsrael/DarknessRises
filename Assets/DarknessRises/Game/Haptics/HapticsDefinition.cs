@@ -125,6 +125,10 @@ namespace DarknessRises.Game.Haptics
         private HapticPattern creditsLanded = new(45, 0f, 0f, HapticPredefined.None,
             new HapticPulse(0, 20, 0.5f), new HapticPulse(45, 35, 0.85f));
 
+        [SerializeField, Tooltip("The end-of-Run ad paid out and its bonus lands on the end screen: a success pattern.")]
+        private HapticPattern adBonus = new(55, 0f, 0f, HapticPredefined.None,
+            new HapticPulse(0, 30, 0.6f), new HapticPulse(60, 30, 0.8f), new HapticPulse(60, 90, 1f));
+
         [Header("Menus and the Shop")]
         [SerializeField, Tooltip("An Upgrade is bought: a crisp success.")]
         private HapticPattern bought = new(50, 0f, 0f, HapticPredefined.None,
@@ -182,6 +186,7 @@ namespace DarknessRises.Game.Haptics
             HapticEffect.ScoreBoost => scoreBoost,
             HapticEffect.NewBest => newBest,
             HapticEffect.CreditsLanded => creditsLanded,
+            HapticEffect.AdBonus => adBonus,
             HapticEffect.Bought => bought,
             HapticEffect.WeaponUnlocked => weaponUnlocked,
             HapticEffect.CannotAfford => cannotAfford,

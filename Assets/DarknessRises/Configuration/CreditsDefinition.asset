@@ -19,8 +19,15 @@ MonoBehaviour:
     firstLevelCredits: 100
     growthPerLevel: 50
     maxCredits: 500
+  endOfRunAd:
+    factor: 2
+    minimumCredits: 20
+    fakeAdSeconds: 5
+    offerFormat: 'WATCH AD: x{0} CREDITS'
+    bonusHintFormat: +{0} Credits for this Run
   endScreen:
     countUpSeconds: 1.2
+    bonusCountUpSeconds: 0.8
     scoreFormat: SCORE  {0}
     arrowText: '>'
     creditsFormat: +{0}  CREDITS

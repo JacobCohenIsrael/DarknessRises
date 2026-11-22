@@ -7,14 +7,17 @@ namespace DarknessRises.Game.Credits
 {
     /// <summary>
     /// How the end screen pays a Run's Credits out, arcade-style: the Run's Score is turned into Credits
-    /// ("SCORE 42300 &gt; +846 CREDITS"), the Level clear bonus counts up beside it, and the new total in the bank counts
-    /// up with them, then lands with a jump and a sound.
+    /// ("SCORE 42300 &gt; +846 CREDITS"), then the Level clear bonus counts up, then the new total in the bank, which lands
+    /// with a jump. The end-of-Run ad's bonus, once watched, counts up on its own line and the total climbs again.
     /// </summary>
     [Serializable]
     public sealed class CreditsEndScreenSettings
     {
-        [SerializeField, Min(0f), Tooltip("Seconds the Credits the Score paid, the clear bonus and the total take to count up. Real time: the Level behind the screen may be frozen.")]
+        [SerializeField, Min(0f), Tooltip("Seconds the Credits the Score paid, and then the total, take to count up. Real time: the Level behind the screen may be frozen.")]
         private float countUpSeconds = 1.2f;
+
+        [SerializeField, Min(0f), Tooltip("Seconds the Level clear bonus, and the end-of-Run ad's bonus after the ad, take to count up.")]
+        private float bonusCountUpSeconds = 0.8f;
 
         [SerializeField, Tooltip("The Score being paid out, left of the arrow. {0} is the Run's Score.")]
         private string scoreFormat = "SCORE  {0}";
@@ -44,6 +47,7 @@ namespace DarknessRises.Game.Credits
         private float payoutVolume = 0.8f;
 
         public float CountUpSeconds => countUpSeconds;
+        public float BonusCountUpSeconds => bonusCountUpSeconds;
         public string ScoreFormat => scoreFormat;
         public string ArrowText => arrowText;
         public string CreditsFormat => creditsFormat;

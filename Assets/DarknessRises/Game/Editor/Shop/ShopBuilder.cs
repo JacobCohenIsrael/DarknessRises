@@ -34,9 +34,9 @@ namespace DarknessRises.Game.Editor.Shop
         private const string BuyClipPath = "Assets/Free Pack/Magic Spell_Coins_2.wav";
         private const float BuyClipStartSeconds = 1.3f;
 
-        // First-pass prices. A new player who dies in the second Room earns about 125 Credits (250 with the end-of-Run ad)
-        // and a cleared Level 1 pays about 575 (1150 with the ad). So the cheapest Upgrades (250 to 400) come after one or
-        // two Runs, the ad halves that wait, and a Weapon takes a few Runs that clear a Level.
+        // First-pass prices, set when Credits were flat per kill; kept when Credits came from the Score (#127), whose rate
+        // was tuned so an average Run pays about what it did. So the cheapest Upgrades (250 to 400) come after one or two
+        // Runs, and a Weapon takes a few Runs that clear a Level; better play (and the x2 Score boost) shortens that.
         private const int MachineGunPrice = 2500;
         private const int FlamethrowerPrice = 6000;
 

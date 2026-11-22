@@ -30,6 +30,7 @@ namespace DarknessRises.Game.Haptics
         StationClearS,
         ScoreBoost,
         NewBest,
+        CreditsLanded,
 
         // Menus and the Shop.
         Bought,

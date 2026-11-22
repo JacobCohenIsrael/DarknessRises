@@ -320,6 +320,18 @@ MonoBehaviour:
     cooldownSeconds: 0
     quietBeforeSeconds: 0
     predefined: -1
+  creditsLanded:
+    pulses:
+    - delayMs: 0
+      durationMs: 20
+      amplitude: 0.5
+    - delayMs: 45
+      durationMs: 35
+      amplitude: 0.85
+    priority: 45
+    cooldownSeconds: 0
+    quietBeforeSeconds: 0
+    predefined: -1
   bought:
     pulses:
     - delayMs: 0

@@ -1,4 +1,3 @@
-using DarknessRises.Game.Ads;
 using DarknessRises.Game.Credits;
 using DarknessRises.Game.Runs;
 using DarknessRises.Game.Saving;
@@ -45,7 +44,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void Exit_from_the_pause_menu_banks_the_Runs_Credits()
         {
             run.StartNewRun();
-            run.EarnCredits(60);
+            run.EarnClearBonus(60);
 
             run.Exit();
 
@@ -58,7 +57,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void Game_over_banks_the_Runs_Credits()
         {
             run.StartNewRun();
-            run.EarnCredits(45);
+            run.EarnClearBonus(45);
             run.Die();
 
             // The Continue countdown ran out, or the player took Exit on the death screen.
@@ -72,7 +71,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void Restart_banks_the_Runs_Credits_before_the_new_Run_starts()
         {
             run.StartNewRun();
-            run.EarnCredits(30);
+            run.EarnClearBonus(30);
 
             run.Restart();
 
@@ -86,7 +85,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void Restart_after_death_banks_too()
         {
             run.StartNewRun();
-            run.EarnCredits(30);
+            run.EarnClearBonus(30);
             run.Die();
 
             run.Restart();
@@ -99,10 +98,10 @@ namespace DarknessRises.Game.EditModeTests.Saving
         {
             run.StartNewRun();
             run.FinishStartBeat();
-            run.EarnCredits(30);
+            run.EarnClearBonus(30);
             run.Die();
             run.Continue(1);
-            run.EarnCredits(20);
+            run.EarnClearBonus(20);
             run.Die();
 
             run.Exit();
@@ -115,7 +114,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void The_app_going_to_the_background_mid_Run_banks_what_it_earned_so_far()
         {
             run.StartNewRun();
-            run.EarnCredits(25);
+            run.EarnClearBonus(25);
 
             banking.BankNow();
 
@@ -127,11 +126,11 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void A_Run_that_carries_on_after_that_banks_only_the_rest()
         {
             run.StartNewRun();
-            run.EarnCredits(25);
+            run.EarnClearBonus(25);
             banking.BankNow();
-            run.EarnCredits(15);
+            run.EarnClearBonus(15);
             banking.BankNow();
-            run.EarnCredits(10);
+            run.EarnClearBonus(10);
 
             run.Exit();
 
@@ -143,7 +142,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void An_app_killed_mid_Run_keeps_what_was_banked_on_the_way_out()
         {
             run.StartNewRun();
-            run.EarnCredits(25);
+            run.EarnClearBonus(25);
             banking.BankNow();
 
             StartApp();
@@ -155,13 +154,13 @@ namespace DarknessRises.Game.EditModeTests.Saving
         public void Credits_add_up_across_two_Runs_and_an_app_restart()
         {
             run.StartNewRun();
-            run.EarnCredits(120);
+            run.EarnClearBonus(120);
             run.Die();
             run.Exit();
             Assert.That(save.Credits, Is.EqualTo(120));
 
             run.StartNewRun();
-            run.EarnCredits(80);
+            run.EarnClearBonus(80);
             run.Restart();
             Assert.That(save.Credits, Is.EqualTo(200));
 
@@ -171,42 +170,61 @@ namespace DarknessRises.Game.EditModeTests.Saving
             Assert.That(save.RunsFinished, Is.EqualTo(2));
 
             run.StartNewRun();
-            run.EarnCredits(5);
+            run.EarnClearBonus(5);
             run.Exit();
             Assert.That(StoredCredits, Is.EqualTo(205));
         }
 
         [Test]
-        public void The_end_of_Run_ad_banks_its_bonus_on_top()
+        public void The_Score_so_far_is_banked_when_the_app_goes_to_the_background_and_never_twice()
         {
+            run.ConvertScoreAt(new ScoreToCredits(50));
             run.StartNewRun();
-            run.EarnCredits(150);
-            run.Exit();
-            var record = run.Record;
-            var ad = new EndOfRunAd(record.Credits, factor: 2f, minimumCredits: 20);
+            run.AddScore(1240);
 
-            // What the end screen does once the ad was watched through.
-            Assert.That(ad.Finish(AdOutcome.Watched), Is.EqualTo(150));
-            save.Bank(record.Credits);
+            banking.BankNow();
+            Assert.That(StoredCredits, Is.EqualTo(24), "1240 Score pays 24 Credits; the 40 points left over wait.");
 
-            Assert.That(save.Credits, Is.EqualTo(300));
-            Assert.That(StoredCredits, Is.EqualTo(300));
-            Assert.That(save.RunsFinished, Is.EqualTo(1), "The ad doesn't finish the Run a second time.");
+            // The killed app comes back: what was banked is there.
+            StartApp();
+            Assert.That(save.Credits, Is.EqualTo(24));
         }
 
         [Test]
-        public void An_ad_that_wasnt_watched_changes_nothing_in_the_bank()
+        public void Points_short_of_a_Credit_at_one_banking_count_towards_the_next()
         {
+            run.ConvertScoreAt(new ScoreToCredits(50));
             run.StartNewRun();
-            run.EarnCredits(150);
+            run.AddScore(1240);
+            banking.BankNow();
+
+            run.AddScore(10);
+            banking.BankNow();
+            Assert.That(save.Credits, Is.EqualTo(25), "40 + 10 left over make one more Credit.");
+
+            run.AddScore(49);
+            run.EarnClearBonus(100);
             run.Exit();
-            var record = run.Record;
-            var ad = new EndOfRunAd(record.Credits, factor: 2f, minimumCredits: 20);
 
-            ad.Finish(AdOutcome.NotWatched);
-            save.Bank(record.Credits);
+            // 1299 Score pays 25 Credits in all, plus the flat 100: nothing banked twice, nothing lost to rounding.
+            Assert.That(save.Credits, Is.EqualTo(125));
+            Assert.That(StoredCredits, Is.EqualTo(125));
+        }
 
-            Assert.That(StoredCredits, Is.EqualTo(150));
+        [Test]
+        public void Banking_mid_Run_then_ending_the_Run_banks_the_same_as_ending_it_once()
+        {
+            run.ConvertScoreAt(new ScoreToCredits(50));
+            run.StartNewRun();
+            for (var i = 0; i < 37; i++)
+            {
+                run.AddScore(130);
+                banking.BankNow();
+            }
+
+            run.Exit();
+
+            Assert.That(save.Credits, Is.EqualTo(37 * 130 / 50));
         }
 
         [Test]
@@ -214,7 +232,7 @@ namespace DarknessRises.Game.EditModeTests.Saving
         {
             banking.Dispose();
             run.StartNewRun();
-            run.EarnCredits(60);
+            run.EarnClearBonus(60);
 
             run.Exit();
 

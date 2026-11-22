@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DarknessRises.Game.Ads;
 using DarknessRises.Game.Audio;
 using DarknessRises.Game.Credits;
 using DarknessRises.Game.Hud;
@@ -15,10 +14,9 @@ namespace DarknessRises.Game.Death
 {
     /// <summary>
     /// The end screen after Exit: the Run's Score beside the best Score of every Run (with NEW BEST! stamped in when
-    /// the Run beat it), the Level reached and the Enemies killed, then the Credits the Run
-    /// earned and the new total in the bank, counted up arcade-style. It offers the end-of-Run ad, which multiplies the
-    /// Run's Credits (<see cref="EndOfRunAd"/> decides when and how much), and never blocks moving on. It leads to the
-    /// Shop, where a new Run starts.
+    /// the Run beat it), the Level reached and the Enemies killed, then the Run's pay-out, counted up arcade-style: its
+    /// Score turned into Credits ("SCORE 42300 &gt; +846 CREDITS"), the flat bonus of the Levels it cleared, and the new
+    /// total in the bank. It never blocks moving on. It leads to the Shop, where a new Run starts.
     /// </summary>
     /// <remarks>
     /// It counts in real time: the Level behind it may be frozen (Exit from the pause menu). Numbers are written only
@@ -28,9 +26,6 @@ namespace DarknessRises.Game.Death
     {
         private const string NumberFormat = "{0}";
         private const string GainFormat = "+{0}";
-
-        // The order the choices are waited on.
-        private const int MoveOnPicked = 0;
 
         [SerializeField] private TMP_Text levelReached;
         [SerializeField] private TMP_Text enemiesKilled;
@@ -43,13 +38,22 @@ namespace DarknessRises.Game.Death
         private TMP_Text newBest;
 
         [Header("Credits")]
-        [SerializeField, Tooltip("The Credits the Run earned.")]
-        private TMP_Text creditsEarned;
+        [SerializeField, Tooltip("The pay-out's left side: the Run's Score being paid out.")]
+        private TMP_Text payoutScore;
 
-        [SerializeField, Tooltip("The end-of-Run ad's bonus: its label and value. Shown once the ad has paid out.")]
-        private GameObject adBonusRow;
+        [SerializeField, Tooltip("Between the Score and the Credits it pays.")]
+        private TMP_Text payoutArrow;
 
-        [SerializeField] private TMP_Text adBonus;
+        [SerializeField, Tooltip("The pay-out's right side: the Credits the Score paid, counted up.")]
+        private TMP_Text payoutCredits;
+
+        [SerializeField, Tooltip("Under the pay-out: the Score that pays one Credit.")]
+        private TMP_Text payoutRate;
+
+        [SerializeField, Tooltip("The flat Credits of the Levels the Run cleared: its label and value. Shown only when it cleared one.")]
+        private GameObject clearBonusRow;
+
+        [SerializeField] private TMP_Text clearBonus;
 
         [SerializeField, Tooltip("The Credits in the bank, this Run's included.")]
         private TMP_Text creditsTotal;
@@ -57,22 +61,13 @@ namespace DarknessRises.Game.Death
         [SerializeField, Tooltip("Every text in the Credits' colour.")]
         private TMP_Text[] creditsTexts;
 
-        [Header("End-of-Run ad")]
-        [SerializeField, Tooltip("The offer. Hidden when the Run earned too little, and once the ad has paid out.")]
-        private Button adButton;
-
-        [SerializeField] private TMP_Text adButtonLabel;
-
-        [SerializeField, Tooltip("Under the button: the Credits the ad would add.")]
-        private TMP_Text adHint;
-
-        [SerializeField, Tooltip("Plays the bonus landing.")]
+        [SerializeField, Tooltip("Plays the pay-out.")]
         private AudioSource sound;
 
         [SerializeField, Tooltip("Leaves the end screen for the Shop.")]
         private Button shopButton;
 
-        private readonly CountUp earnedCount = new();
+        private readonly CountUp payoutCount = new();
         private readonly CountUp bonusCount = new();
         private readonly CountUp totalCount = new();
 
@@ -81,18 +76,17 @@ namespace DarknessRises.Game.Death
         private BonusReveal newBestStamp;
         private string bestFormat;
         private float pulseSeconds;
-        private IRewardedAd ad;
         private PlayerSave save;
-        private AudioClip bonusClip;
+        private AudioClip payoutClip;
         private float kickSecondsLeft;
+        private bool wasCountingTotal;
         private bool isWatching;
 
         /// <summary>
-        /// Gets the screen ready to show Credits as <paramref name="credits"/> says, bank the ad's bonus in
-        /// <paramref name="playerSave"/> and show <paramref name="rewardedAd"/> for it.
+        /// Gets the screen ready to pay Credits out as <paramref name="credits"/> says, into the bank of
+        /// <paramref name="playerSave"/>, with <paramref name="payoutSound"/> as it counts.
         /// </summary>
-        public void Use(
-            CreditsDefinition credits, IRewardedAd rewardedAd, PlayerSave playerSave, AudioClip bonusSound, ScoreHudSettings scoreHud)
+        public void Use(CreditsDefinition credits, PlayerSave playerSave, AudioClip payoutSound, ScoreHudSettings scoreHud)
         {
             scoreLook = scoreHud ?? throw new ArgumentNullException(nameof(scoreHud));
 
@@ -104,9 +98,9 @@ namespace DarknessRises.Game.Death
             newBestStamp = new BonusReveal(scoreLook.NewBestDelaySeconds, scoreLook.StampSeconds, scoreLook.StampScale, 0f, 0f);
 
             settings = credits ? credits : throw new ArgumentNullException(nameof(credits));
-            ad = rewardedAd ?? throw new ArgumentNullException(nameof(rewardedAd));
             save = playerSave ?? throw new ArgumentNullException(nameof(playerSave));
-            bonusClip = bonusSound;
+            payoutClip = payoutSound;
+            payoutArrow.text = settings.EndScreen.ArrowText;
 
             // Exit from the pause menu leaves the Level frozen and the listener paused; the screen's sound still plays.
             sound.ignoreListenerPause = true;
@@ -120,16 +114,13 @@ namespace DarknessRises.Game.Death
             if (!isWatching)
             {
                 isWatching = true;
-                earnedCount.ValueChanged += ShowEarned;
+                payoutCount.ValueChanged += ShowPayout;
                 bonusCount.ValueChanged += ShowBonus;
                 totalCount.ValueChanged += ShowTotal;
             }
         }
 
-        /// <summary>Raised when NEW BEST! stamps in.</summary>
-        public event Action NewBestStamped;
-
-        /// <summary>Shows <paramref name="record"/> and the Credits it earned until the player moves on.</summary>
+        /// <summary>Shows <paramref name="record"/> and pays out the Credits it earned until the player moves on.</summary>
         public async UniTask ShowAsync(RunRecord record, CancellationToken cancellationToken)
         {
             // TMP's numeric SetText formats without allocating; {0} prints no decimals.
@@ -153,79 +144,44 @@ namespace DarknessRises.Game.Death
             save.Bank(credits);
 
             var look = settings.EndScreen;
-            Begin(earnedCount, creditsEarned, GainFormat, 0);
-            Begin(bonusCount, adBonus, GainFormat, credits.AdBonus);
+            payoutScore.SetText(look.ScoreFormat, (float)credits.Score);
+            payoutRate.SetText(look.RateFormat, (float)credits.ScorePerCredit);
+            Begin(payoutCount, payoutCredits, look.CreditsFormat, 0);
+            Begin(bonusCount, clearBonus, GainFormat, 0);
             Begin(totalCount, creditsTotal, NumberFormat, save.Credits - credits.Total);
-            earnedCount.CountTo(credits.Earned, look.CountUpSeconds);
+            payoutCount.CountTo(credits.FromScore, look.CountUpSeconds);
+            bonusCount.CountTo(credits.Earned, look.CountUpSeconds);
             totalCount.CountTo(save.Credits, look.CountUpSeconds);
-            adBonusRow.SetActive(credits.AdBonus > 0);
-
-            var offer = settings.EndOfRunAd.ToAd(credits);
-            adButtonLabel.SetText(settings.EndOfRunAd.OfferFormat, offer.Factor);
-            ShowOffer(offer);
+            clearBonusRow.SetActive(credits.Earned > 0);
+            wasCountingTotal = totalCount.IsCounting;
+            kickSecondsLeft = 0f;
             gameObject.SetActive(true);
-
-            while (true)
+            if (wasCountingTotal)
             {
-                if (await PickAsync(offer.IsOffered, cancellationToken) == MoveOnPicked)
-                {
-                    return;
-                }
-
-                // An ad that wasn't watched through adds nothing, and the offer stays.
-                var bonus = offer.Finish(await ad.ShowAsync(cancellationToken));
-                if (bonus > 0)
-                {
-                    save.Bank(credits);
-                    LandBonus(bonus);
-                }
-
-                ShowOffer(offer);
+                PlayPayout();
             }
+
+            await shopButton.OnClickAsync(cancellationToken);
         }
 
-        // Waits for the player to move on or, while the ad is on offer, to take it.
-        private async UniTask<int> PickAsync(bool isAdOffered, CancellationToken cancellationToken)
-        {
-            using var picking = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            try
-            {
-                return await UniTask.WhenAny(
-                    shopButton.OnClickAsync(picking.Token),
-                    isAdOffered ? adButton.OnClickAsync(picking.Token) : UniTask.Never(picking.Token));
-            }
-            finally
-            {
-                // Stops the wait on the button that wasn't picked.
-                picking.Cancel();
-            }
-        }
+        /// <summary>Raised when NEW BEST! stamps in.</summary>
+        public event Action NewBestStamped;
 
-        private void ShowOffer(EndOfRunAd offer)
-        {
-            var isOffered = offer.IsOffered;
-            adButton.gameObject.SetActive(isOffered);
-            if (isOffered)
-            {
-                adHint.SetText(settings.EndOfRunAd.BonusHintFormat, (float)offer.Bonus);
-            }
-        }
+        /// <summary>Raised when the Credits total has counted up to the bank and jumps as it lands.</summary>
+        public event Action CreditsLanded;
 
-        // The ad paid out: its bonus counts up on its own line, and the total with it.
-        private void LandBonus(int bonus)
+        private void PlayPayout()
         {
+            if (payoutClip == null)
+            {
+                return;
+            }
+
             var look = settings.EndScreen;
-            adBonusRow.SetActive(true);
-            bonusCount.CountTo(bonus, look.BonusCountUpSeconds);
-            totalCount.CountTo(save.Credits, look.BonusCountUpSeconds);
-            kickSecondsLeft = look.BonusKickSeconds;
-            if (bonusClip != null)
-            {
-                sound.clip = bonusClip;
-                sound.SetVolume(look.BonusVolume);
-                sound.time = Mathf.Clamp(look.BonusClipStartSeconds, 0f, Mathf.Max(0f, bonusClip.length - 0.01f));
-                sound.Play();
-            }
+            sound.clip = payoutClip;
+            sound.SetVolume(look.PayoutVolume);
+            sound.time = Mathf.Clamp(look.PayoutClipStartSeconds, 0f, Mathf.Max(0f, payoutClip.length - 0.01f));
+            sound.Play();
         }
 
         private void Update()
@@ -237,18 +193,26 @@ namespace DarknessRises.Game.Death
 
             // Real time, capped like game time, so a hitch (or the app coming back to the front) doesn't skip the count.
             var deltaSeconds = Mathf.Min(Time.unscaledDeltaTime, Time.maximumDeltaTime);
-            earnedCount.Tick(deltaSeconds);
+            payoutCount.Tick(deltaSeconds);
             bonusCount.Tick(deltaSeconds);
             totalCount.Tick(deltaSeconds);
             ShowNewBest(deltaSeconds);
 
+            // The total jumps as it lands.
+            var look = settings.EndScreen;
+            if (wasCountingTotal && !totalCount.IsCounting)
+            {
+                kickSecondsLeft = look.LandKickSeconds;
+                CreditsLanded?.Invoke();
+            }
+
+            wasCountingTotal = totalCount.IsCounting;
             var total = creditsTotal.rectTransform;
             if (kickSecondsLeft > 0f || total.localScale.x != 1f)
             {
-                var look = settings.EndScreen;
                 kickSecondsLeft = Mathf.Max(0f, kickSecondsLeft - deltaSeconds);
-                var kick = look.BonusKickSeconds > 0f ? kickSecondsLeft / look.BonusKickSeconds : 0f;
-                var scale = Mathf.Lerp(1f, look.BonusKickScale, kick);
+                var kick = look.LandKickSeconds > 0f ? kickSecondsLeft / look.LandKickSeconds : 0f;
+                var scale = Mathf.Lerp(1f, look.LandKickScale, kick);
                 total.localScale = new Vector3(scale, scale, 1f);
             }
         }
@@ -260,7 +224,7 @@ namespace DarknessRises.Game.Death
                 return;
             }
 
-            earnedCount.ValueChanged -= ShowEarned;
+            payoutCount.ValueChanged -= ShowPayout;
             bonusCount.ValueChanged -= ShowBonus;
             totalCount.ValueChanged -= ShowTotal;
         }
@@ -306,9 +270,9 @@ namespace DarknessRises.Game.Death
             text.SetText(format, (float)value);
         }
 
-        private void ShowEarned(int value) => creditsEarned.SetText(GainFormat, (float)value);
+        private void ShowPayout(int value) => payoutCredits.SetText(settings.EndScreen.CreditsFormat, (float)value);
 
-        private void ShowBonus(int value) => adBonus.SetText(GainFormat, (float)value);
+        private void ShowBonus(int value) => clearBonus.SetText(GainFormat, (float)value);
 
         private void ShowTotal(int value) => creditsTotal.SetText(NumberFormat, (float)value);
     }

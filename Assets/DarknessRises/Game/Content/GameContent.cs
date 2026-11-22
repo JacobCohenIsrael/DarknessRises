@@ -9,7 +9,7 @@ namespace DarknessRises.Game.Content
 {
     /// <summary>
     /// The content a playable scene loads before it starts, read from the definitions' Addressables references:
-    /// the Primary weapons' Shots, hit sparks, Gunshots, Firing loops and reload sounds, the Station banners' sounds, the Grenade,
+    /// the Primary weapons' models, Shots, Muzzle flashes, hit sparks, switch click, Gunshots, Firing loops and reload sounds, the Station banners' sounds, the Grenade,
     /// the character's sounds, the storm loop, the end screen's Credits sound, the prefab and sounds (footsteps included) of
     /// every Enemy type its fights use, the Critters, the Phantom eyes, the ambient bed, and its Boss's sounds.
     /// </summary>
@@ -28,6 +28,8 @@ namespace DarknessRises.Game.Content
             {
                 content.Add(primaryWeapons[i].Shot.Prefab);
                 content.Add(primaryWeapons[i].HitSpark.Prefab);
+                content.Add(primaryWeapons[i].MuzzleFlash.Prefab);
+                content.Add(primaryWeapons[i].Model);
                 var sound = primaryWeapons[i].Sound;
                 for (var j = 0; j < sound.Gunshots.Count; j++)
                 {
@@ -38,6 +40,7 @@ namespace DarknessRises.Game.Content
             }
 
             content.Add(configuration.ReloadFeedback.Clip);
+            content.Add(configuration.WeaponSwitch.Clip);
 
             var banners = configuration.StationBanners;
             content.Add(banners.Ready.Clip);

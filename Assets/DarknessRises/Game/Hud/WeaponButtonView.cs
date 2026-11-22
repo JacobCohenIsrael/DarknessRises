@@ -10,8 +10,8 @@ using UnityEngine.UI;
 namespace DarknessRises.Game.Hud
 {
     /// <summary>
-    /// The Weapon button, beside the magazine count on the HUD: it shows the equipped Primary weapon's name and its ammo
-    /// reserve, and a tap or click on it switches to the next unlocked Primary that has ammo. It's there only while
+    /// The Weapon button, beside the magazine count on the HUD: it shows the equipped Primary weapon's icon (its
+    /// silhouette), its name and its ammo reserve, and a tap or click on it switches to the next unlocked Primary that has ammo. It's there only while
     /// the character carries more than one Primary; with the Pistol alone there is nothing to switch to. When a
     /// Weapon runs dry and the Pistol takes over, its face flashes, so the player sees why the Weapon changed.
     /// </summary>
@@ -30,6 +30,9 @@ namespace DarknessRises.Game.Hud
         [SerializeField, Tooltip("The button's face.")]
         private Image face;
 
+        [SerializeField, Tooltip("The equipped Primary weapon's icon, beside its name. Hidden for a Weapon without one.")]
+        private Image icon;
+
         [SerializeField, Tooltip("The equipped Primary weapon's name.")]
         private TMP_Text weaponName;
 
@@ -42,6 +45,7 @@ namespace DarknessRises.Game.Hud
         private WeaponButtonSettings settings;
         private PrimaryWeaponLoadout loadout;
         private IReadOnlyList<string> names;
+        private IReadOnlyList<WeaponDefinition> definitions;
         private AmmoReserve shownReserve;
         private RunDryFlash flash;
         private Action<PrimaryWeapon> onSwitched;
@@ -52,15 +56,21 @@ namespace DarknessRises.Game.Hud
         public bool IsShown => loadout != null && loadout.Count > 1;
 
         /// <summary>
-        /// Shows <paramref name="carried"/>'s equipped Primary, named by <paramref name="weaponNames"/> (one for each
-        /// Primary carried, in the same order).
+        /// Shows <paramref name="carried"/>'s equipped Primary, named by <paramref name="weaponNames"/> and drawn with the
+        /// icon of its definition in <paramref name="weaponDefinitions"/> (one of each for each Primary carried, in the
+        /// same order).
         /// </summary>
-        public void Show(PrimaryWeaponLoadout carried, IReadOnlyList<string> weaponNames, WeaponButtonSettings buttonSettings)
+        public void Show(
+            PrimaryWeaponLoadout carried,
+            IReadOnlyList<string> weaponNames,
+            IReadOnlyList<WeaponDefinition> weaponDefinitions,
+            WeaponButtonSettings buttonSettings)
         {
             Unbind();
 
             loadout = carried ?? throw new ArgumentNullException(nameof(carried));
             names = weaponNames ?? throw new ArgumentNullException(nameof(weaponNames));
+            definitions = weaponDefinitions ?? throw new ArgumentNullException(nameof(weaponDefinitions));
             settings = buttonSettings ?? throw new ArgumentNullException(nameof(buttonSettings));
             flash = new RunDryFlash(settings.RunDryFlashSeconds);
             onSwitched ??= OnSwitched;
@@ -74,6 +84,11 @@ namespace DarknessRises.Game.Hud
             enabled = false;
             face.color = settings.FaceColor;
             weaponName.color = settings.TextColor;
+            if (icon != null)
+            {
+                icon.color = settings.IconColor;
+            }
+
             gameObject.SetActive(IsShown);
             ShowEquipped();
         }
@@ -141,6 +156,13 @@ namespace DarknessRises.Game.Hud
         {
             var index = loadout.EquippedIndex;
             weaponName.text = index < names.Count ? names[index] : string.Empty;
+            if (icon != null)
+            {
+                var sprite = index < definitions.Count && definitions[index] != null ? definitions[index].Icon : null;
+                icon.sprite = sprite;
+                icon.enabled = sprite != null;
+            }
+
             WatchReserve(loadout.Equipped.Reserve);
             ShowReserve();
         }

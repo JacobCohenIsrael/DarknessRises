@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Content;
 using DarknessRises.Game.Controls;
 using DarknessRises.Game.Visibility;
@@ -10,7 +11,9 @@ namespace DarknessRises.Game.Weapons
     /// <summary>
     /// Holds the character's Primary weapons in the scene: forwards the player's Fire, Reload and Weapon commands to
     /// the Run's <see cref="PrimaryWeaponLoadout"/>, turns the weapon mount toward the aim point,
-    /// and shows each shot through that Weapon's <see cref="PrimaryWeaponEffects"/>.
+    /// and shows each shot through that Weapon's <see cref="PrimaryWeaponEffects"/>. It holds every carried Primary's
+    /// model under the mount and shows only the equipped one's, with the hands' grips and the muzzle where that model
+    /// has them, and plays the <see cref="WeaponSwitchBeat"/> on a switch: the gun dips, the new one comes up, a click.
     /// </summary>
     /// <remarks>
     /// Runs after the default execution order so the character has already walked this frame,
@@ -32,6 +35,21 @@ namespace DarknessRises.Game.Weapons
         [SerializeField, Tooltip("Where Shots and the Muzzle flash start. A child of the mount.")]
         private Transform muzzle;
 
+        [SerializeField, Tooltip("Tips and drops the gun for the switch beat. A child of the mount, at its origin.")]
+        private Transform switchPivot;
+
+        [SerializeField, Tooltip("Where the carried Primaries' models go: the recoil pivot, under the switch pivot.")]
+        private Transform modelHolder;
+
+        [SerializeField, Tooltip("The right hand's grip, moved to where the equipped model has it. A child of the model holder.")]
+        private Transform rightGrip;
+
+        [SerializeField, Tooltip("The left hand's grip, moved to where the equipped model has it. A child of the model holder.")]
+        private Transform leftGrip;
+
+        [SerializeField, Tooltip("2D, not played on awake. Plays the switch click.")]
+        private AudioSource switchSound;
+
         [SerializeField, Tooltip("What a Shot stops at.")]
         private LayerMask shotHitLayers = Physics.DefaultRaycastLayers;
 
@@ -41,6 +59,19 @@ namespace DarknessRises.Game.Weapons
         // For each Primary in the Shop's order, where it is in the loadout, or -1 when it isn't carried.
         private int[] places = Array.Empty<int>();
         private Action<ShotOutcome, Vector3> onShotLanded;
+        private WeaponModel[] models = Array.Empty<WeaponModel>();
+        private WeaponModel shownModel;
+        private WeaponSwitchSettings switchSettings;
+        private WeaponSwitchBeat beat;
+        private Action onSwapped;
+        private AudioClip switchClip;
+        private float switchSoundSecondsLeft;
+
+        /// <summary>The switch beat, while the character is armed.</summary>
+        public WeaponSwitchBeat Beat => beat;
+
+        /// <summary>The model in the hands: the equipped Primary's, or the one going down in a switch beat.</summary>
+        public WeaponModel ShownModel => shownModel;
 
         public PrimaryWeaponLoadout Loadout { get; private set; }
 
@@ -64,6 +95,7 @@ namespace DarknessRises.Game.Weapons
         /// the loadout (-1 when it isn't unlocked), for the Weapon 1, 2, 3 commands.
         /// Their Shots and hit sparks come from <paramref name="content"/>, already loaded.
         /// Their lights are added to <paramref name="lights"/>, so what Gunfire lights counts as visible.
+        /// A switch plays the beat in <paramref name="switchBeat"/>.
         /// </summary>
         public PrimaryWeaponLoadout Arm(
             IReadOnlyList<WeaponDefinition> definitions,
@@ -71,7 +103,8 @@ namespace DarknessRises.Game.Weapons
             PrimaryWeaponLoadout loadout,
             int[] carriedPlaces,
             ILoadedContent content,
-            SceneLights lights)
+            SceneLights lights,
+            WeaponSwitchSettings switchBeat)
         {
             if (runStats == null || runStats.Count != definitions.Count)
             {
@@ -105,6 +138,25 @@ namespace DarknessRises.Game.Weapons
                 Loadout[i].Fired += onFired[i];
             }
 
+            // Every carried model is made once, here, and only switched on and off after.
+            models = new WeaponModel[definitions.Count];
+            for (var i = 0; i < definitions.Count; i++)
+            {
+                if (ContentReferences.IsSet(definitions[i].Model))
+                {
+                    models[i] = Instantiate(content.Prefab<WeaponModel>(definitions[i].Model), modelHolder);
+                    models[i].gameObject.SetActive(false);
+                }
+            }
+
+            switchSettings = switchBeat ?? throw new ArgumentNullException(nameof(switchBeat));
+            switchClip = content.Clip(switchSettings.Clip);
+            beat = new WeaponSwitchBeat(switchSettings.LowerSeconds, switchSettings.RaiseSeconds);
+            onSwapped ??= OnSwapped;
+            beat.Swapped += onSwapped;
+            ShowModel(Loadout.EquippedIndex);
+            PoseSwitch();
+
             Loadout.Switched += OnSwitched;
             return Loadout;
         }
@@ -131,6 +183,21 @@ namespace DarknessRises.Game.Weapons
                 effects[i].Dispose();
             }
 
+            if (beat != null)
+            {
+                beat.Swapped -= onSwapped;
+            }
+
+            for (var i = 0; i < models.Length; i++)
+            {
+                if (models[i] != null)
+                {
+                    Destroy(models[i].gameObject);
+                }
+            }
+
+            models = Array.Empty<WeaponModel>();
+            shownModel = null;
             Loadout = null;
             effects = null;
             onFired = null;
@@ -189,7 +256,11 @@ namespace DarknessRises.Game.Weapons
                 weapon.ReleaseTrigger();
             }
 
-            Loadout.Tick(Time.deltaTime);
+            var deltaSeconds = Time.deltaTime;
+            beat.Tick(deltaSeconds);
+            Loadout.Tick(deltaSeconds, beat.MayFire);
+            PoseSwitch();
+            StopClickWhenDone(deltaSeconds);
         }
 
         private void OnDestroy()
@@ -202,7 +273,93 @@ namespace DarknessRises.Game.Weapons
 
         private void OnSwitched(PrimaryWeapon equipped)
         {
+            beat.Start();
             Switched?.Invoke(equipped);
+        }
+
+        // The bottom of the beat: the equipped Primary's model takes the old one's place and comes up, with a click.
+        private void OnSwapped()
+        {
+            ShowModel(Loadout.EquippedIndex);
+            PlayClick();
+        }
+
+        // Only the model in the hands is on. The grips and the muzzle go where it has them.
+        private void ShowModel(int index)
+        {
+            var model = index < models.Length ? models[index] : null;
+            if (shownModel != null && shownModel != model)
+            {
+                shownModel.gameObject.SetActive(false);
+            }
+
+            shownModel = model;
+            if (model == null)
+            {
+                return;
+            }
+
+            model.gameObject.SetActive(true);
+            CopyPose(model.RightGrip, rightGrip);
+            CopyPose(model.LeftGrip, leftGrip);
+            if (model.Muzzle != null)
+            {
+                muzzle.localPosition = model.MuzzlePoint;
+            }
+        }
+
+        private static void CopyPose(Transform from, Transform to)
+        {
+            if (from == null || to == null)
+            {
+                return;
+            }
+
+            from.GetPositionAndRotation(out var position, out var rotation);
+            to.SetPositionAndRotation(position, rotation);
+        }
+
+        // Tips the gun down about the mount and drops it, eased in and out, by how far down the beat has it.
+        private void PoseSwitch()
+        {
+            if (switchPivot == null)
+            {
+                return;
+            }
+
+            var down = Mathf.SmoothStep(0f, 1f, beat.Lowered);
+            switchPivot.localRotation = Quaternion.Euler(switchSettings.LowerDegrees * down, 0f, 0f);
+            switchPivot.localPosition = Vector3.down * (switchSettings.LowerMetres * down);
+        }
+
+        // A cut of the clip: it starts partway in and stops after the authored length.
+        private void PlayClick()
+        {
+            if (switchSound == null || switchClip == null || switchClip.loadState != AudioDataLoadState.Loaded)
+            {
+                return;
+            }
+
+            switchSound.clip = switchClip;
+            switchSound.pitch = switchSettings.Pitch;
+            switchSound.SetVolume(switchSettings.Volume);
+            switchSound.Play();
+            switchSound.time = Mathf.Min(switchSettings.ClipStartSeconds, switchClip.length);
+            switchSoundSecondsLeft = switchSettings.ClipSeconds / switchSettings.Pitch;
+        }
+
+        private void StopClickWhenDone(float deltaSeconds)
+        {
+            if (switchSoundSecondsLeft <= 0f)
+            {
+                return;
+            }
+
+            switchSoundSecondsLeft -= deltaSeconds;
+            if (switchSoundSecondsLeft <= 0f)
+            {
+                switchSound.Stop();
+            }
         }
 
         private void OnShotLanded(ShotOutcome outcome, Vector3 point)

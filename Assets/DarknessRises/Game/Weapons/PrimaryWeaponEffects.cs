@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 namespace DarknessRises.Game.Weapons
 {
     /// <summary>
-    /// What one Primary weapon's shots look like in the scene: its pooled Shots, Muzzle flashes and hit sparks,
+    /// What one Primary weapon's shots look like in the scene: its pooled Shots, its own Muzzle flashes and hit sparks,
     /// all built from its definition. A Shot that hits something throws a hit spark and damages and pushes it (Knockback) if it's an
     /// <see cref="IShotTarget"/>. Each Primary in the loadout has its own, so switching Weapons never rebuilds pools
     /// and Shots already flying finish their flight.
@@ -25,6 +25,7 @@ namespace DarknessRises.Game.Weapons
         private readonly Material shotGlowMaterial;
         private readonly ShotView shotPrefab;
         private readonly HitSparkView hitSparkPrefab;
+        private readonly MuzzleFlashView muzzleFlashPrefab;
         private readonly ObjectPool<ShotView> shots;
         private readonly ObjectPool<MuzzleFlashView> muzzleFlashes;
         private readonly ObjectPool<HitSparkView> hitSparks;
@@ -55,6 +56,9 @@ namespace DarknessRises.Game.Weapons
             onShotSpent = OnShotSpent;
             shotPrefab = content.Prefab<ShotView>(definition.Shot.Prefab);
             hitSparkPrefab = content.Prefab<HitSparkView>(definition.HitSpark.Prefab);
+            muzzleFlashPrefab = ContentReferences.IsSet(definition.MuzzleFlash.Prefab)
+                ? content.Prefab<MuzzleFlashView>(definition.MuzzleFlash.Prefab)
+                : null;
 
             effectsRoot = new GameObject($"{definition.name} Effects").transform;
             shotGlowMaterial = new Material(shotPrefab.BodyMaterial) { name = $"{definition.name} Shot Glow" };
@@ -90,7 +94,7 @@ namespace DarknessRises.Game.Weapons
 
             var leadIn = ShotFlight.LeadInFrom(breech, muzzle, aimDirection);
             shots.Get().Launch(muzzle, aimDirection, definition.ShotSpeed, definition.Range, NextShotIsLit(), leadIn);
-            muzzleFlashes.Get().Flash(muzzle);
+            muzzleFlashes.Get().Flash(muzzle, aimDirection);
         }
 
         public void Dispose()
@@ -180,14 +184,16 @@ namespace DarknessRises.Game.Weapons
             return shot;
         }
 
+        // The Weapon's own flash; a bare light when it has none.
         private MuzzleFlashView CreateMuzzleFlash()
         {
-            var flashObject = new GameObject("Muzzle Flash", typeof(Light), typeof(MuzzleFlashView));
-            flashObject.transform.SetParent(effectsRoot, false);
-            flashObject.SetActive(false);
-            var flash = flashObject.GetComponent<MuzzleFlashView>();
+            var flash = muzzleFlashPrefab != null
+                ? Object.Instantiate(muzzleFlashPrefab, effectsRoot)
+                : new GameObject("Muzzle Flash", typeof(Light), typeof(MuzzleFlashView)).GetComponent<MuzzleFlashView>();
+            flash.transform.SetParent(effectsRoot, false);
+            flash.gameObject.SetActive(false);
             flash.Prepare(muzzleFlashes, definition.MuzzleFlash);
-            lights.Add(flashObject.GetComponent<Light>());
+            lights.Add(flash.GetComponent<Light>());
             return flash;
         }
 

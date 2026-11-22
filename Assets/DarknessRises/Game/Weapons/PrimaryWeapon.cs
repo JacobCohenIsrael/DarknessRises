@@ -100,7 +100,13 @@ namespace DarknessRises.Game.Weapons
         }
 
         /// <summary>Advances the Weapon by <paramref name="deltaSeconds"/>, firing as many shots as the fire rate allows.</summary>
-        public void Tick(float deltaSeconds)
+        public void Tick(float deltaSeconds) => Tick(deltaSeconds, mayFire: true);
+
+        /// <summary>
+        /// Advances the Weapon by <paramref name="deltaSeconds"/>. With <paramref name="mayFire"/> false (the switch beat
+        /// is lowering the gun before it) it reloads but holds its fire, and banks no shots for later.
+        /// </summary>
+        public void Tick(float deltaSeconds, bool mayFire)
         {
             if (deltaSeconds < 0f)
             {
@@ -130,7 +136,7 @@ namespace DarknessRises.Game.Weapons
                 }
             }
 
-            while (IsTriggerHeld && !IsReloading && RoundsInMagazine > 0 && secondsUntilReady <= 0f)
+            while (mayFire && IsTriggerHeld && !IsReloading && RoundsInMagazine > 0 && secondsUntilReady <= 0f)
             {
                 Fire();
                 secondsUntilReady += stats.SecondsBetweenShots;

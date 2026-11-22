@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DarknessRises.Game.Hud
 {
-    /// <summary>How the Weapon button reads and looks: the equipped Primary weapon's name over its ammo reserve.</summary>
+    /// <summary>How the Weapon button reads and looks: the equipped Primary weapon's icon and name over its ammo reserve.</summary>
     [Serializable]
     public sealed class WeaponButtonSettings
     {
@@ -14,6 +14,9 @@ namespace DarknessRises.Game.Hud
         private string unlimitedText = "NO LIMIT";
 
         [SerializeField] private Color textColor = new(0.9f, 0.9f, 0.9f, 0.95f);
+
+        [SerializeField, Tooltip("Tint of the equipped Weapon's icon, a white silhouette.")]
+        private Color iconColor = new(0.9f, 0.9f, 0.9f, 0.95f);
 
         [SerializeField, Tooltip("The reserve line once the reserve is empty: what's in the magazine is all that's left.")]
         private Color emptyReserveColor = new(1f, 0.35f, 0.25f, 1f);
@@ -30,6 +33,7 @@ namespace DarknessRises.Game.Hud
         public string ReserveFormat => reserveFormat;
         public string UnlimitedText => unlimitedText;
         public Color TextColor => textColor;
+        public Color IconColor => iconColor;
         public Color EmptyReserveColor => emptyReserveColor;
         public Color FaceColor => faceColor;
         public Color RunDryFlashColor => runDryFlashColor;

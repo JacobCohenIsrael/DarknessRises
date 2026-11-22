@@ -55,3 +55,12 @@ MonoBehaviour:
     sizesColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
     sizesOffset: 32
     progressPollSeconds: 0.1
+  sceneSoundFadeOutSeconds: 0.6
+  unloadLoudnessWarning: 0.01
+  webAudioLimiter:
+    enabled: 1
+    thresholdDecibels: -3
+    ratio: 20
+    attackSeconds: 0.003
+    releaseSeconds: 0.25
+  haptics: {fileID: 11400000, guid: a6227f7328b9d684aa8460ab4c77dfa5, type: 2}

@@ -168,9 +168,11 @@
           if (progress < 1) {
             loadingContainer.style.display = "block";
             progressBarFull.style.width = 100 * progress + "%";
-          } else {
-            // The engine has started and Unity's splash fades the same logo in on the same black.
-            loadingContainer.style.display = "none";
+          } else if (!loadingContainer.classList.contains("gamefather-done")) {
+            // The engine has started and Unity's splash fades the same logo in, in the same place, on the same black:
+            // fade the page's logo out over the moment before the splash's first frame, then hide it.
+            loadingContainer.classList.add("gamefather-done");
+            setTimeout(() => { loadingContainer.style.display = "none"; }, 400);
           }
         }).then((unityInstance) => {
 #if SHOW_DIAGNOSTICS

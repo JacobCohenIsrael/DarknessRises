@@ -92,7 +92,8 @@ namespace DarknessRises.Game.Editor.Skills
             return lure;
         }
 
-        // A Skill's button icon is drawn by the HUD builder, unless another was chosen in the Inspector.
+        // A Skill's button icon is drawn by the HUD builder, unless another was chosen in the Inspector. Either way its
+        // texture loads with the Level's shared content, so a rebuild after a merge never leaves it out of Addressables.
         private static void DrawIconIfEmpty(ScriptableObject definition, System.Func<Sprite> draw)
         {
             var serialized = new SerializedObject(definition);
@@ -101,6 +102,11 @@ namespace DarknessRises.Game.Editor.Skills
             {
                 icon.objectReferenceValue = draw();
                 serialized.ApplyModifiedPropertiesWithoutUndo();
+            }
+
+            if (icon.objectReferenceValue is Sprite sprite && sprite.texture != null)
+            {
+                AddressableContent.Add(sprite.texture, AddressableContent.SharedGroup);
             }
         }
 

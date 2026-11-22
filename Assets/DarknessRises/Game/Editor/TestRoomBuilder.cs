@@ -201,6 +201,7 @@ namespace DarknessRises.Game.Editor
             var pistol = PistolBuilder.LoadOrCreatePistol();
             var machineGun = PrimaryWeaponsBuilder.LoadOrCreateMachineGun(pistol);
             var flamethrower = PrimaryWeaponsBuilder.LoadOrCreateFlamethrower(pistol);
+            WeaponLooksBuilder.Author(pistol, machineGun, flamethrower);
             serialized.FindProperty("pistol").objectReferenceValue = pistol;
             serialized.FindProperty("machineGun").objectReferenceValue = machineGun;
             serialized.FindProperty("flamethrower").objectReferenceValue = flamethrower;
@@ -219,6 +220,7 @@ namespace DarknessRises.Game.Editor
             serialized.FindProperty("shop").objectReferenceValue = ShopBuilder.LoadOrCreateShop(pistol, machineGun, flamethrower);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             AudioVolumesBuilder.AuthorSettings(configuration);
+            WeaponLooksBuilder.AuthorSwitch(configuration);
             WavesBuilder.AuthorPlaceholderWaves(route);
 
             // Re-save the definitions so fields added since they were created are written to disk with their defaults.

@@ -17,6 +17,13 @@ MonoBehaviour:
   reloadSeconds: 1.2
   shotSpeed: 30
   damage: 1
+  model:
+    m_AssetGUID: 6adabe7c0653c0540a554f8da9451e8e
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  icon: {fileID: 21300000, guid: c6c00abcd301f9e49a35057d5b83e3bb, type: 3}
   hasUnlimitedAmmo: 1
   ammoReserve: 0
   range: 20
@@ -42,10 +49,18 @@ MonoBehaviour:
     range: 4
     everyNthShot: 1
   muzzleFlash:
-    color: {r: 1, g: 0.78, b: 0.45, a: 1}
+    prefab:
+      m_AssetGUID: 6649862a12cd1974c982eae3d2727ba5
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    color: {r: 1, g: 0.97, b: 0.9, a: 1}
     intensity: 12
     range: 6
-    seconds: 0.07
+    seconds: 0.06
+    flicker: 0
+    sparkCount: 0
   hitSpark:
     prefab:
       m_AssetGUID: 4dc8e0d67c65d5247bbf69778eb2f48b

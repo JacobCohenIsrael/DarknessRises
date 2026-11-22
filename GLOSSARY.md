@@ -81,7 +81,7 @@ _Avoid_: ambience loop, background music
 The light made by the player's Weapon: always its Muzzle flash, and for some Weapons its Shots too.
 
 **Muzzle flash**:
-The short burst of light at the Weapon each time it fires. It lights only the area close to the character.
+The short burst of light at the Weapon each time it fires. It lights only the area close to the character. Each Weapon has its own look: the Pistol's is a short white flash, the Machine gun's a yellower, flickering one with a few sparks, and the Flamethrower's an orange glow at its nozzle. The look never changes how far Gunfire lights.
 
 **Gunshot**:
 The sound of one Shot of a Primary weapon, picked from the Weapon's clips with a slightly random pitch. Rapid Gunshots overlap on a few voices; when all are busy, a new one cuts the oldest short. Not to be confused with Gunfire, which is light.
@@ -194,8 +194,12 @@ On touch only, the on-screen button that throws the Grenade and shows its charge
 _Avoid_: grenade icon, bomb button
 
 **Weapon button**:
-The on-screen button that switches Primary weapons, in the ammo corner of the HUD. It shows the equipped Primary's name and its ammo reserve, and a tap or a click equips the next unlocked Primary that has ammo. On keyboard and mouse, keys 1 to 3 also pick a Primary and the mouse wheel steps through them. It's hidden while the Pistol is the only Primary unlocked.
+The on-screen button that switches Primary weapons, in the ammo corner of the HUD. It shows the equipped Primary's icon (a silhouette of its gun), its name and its ammo reserve, and a tap or a click equips the next unlocked Primary that has ammo. On keyboard and mouse, keys 1 to 3 also pick a Primary and the mouse wheel steps through them. It's hidden while the Pistol is the only Primary unlocked.
 _Avoid_: weapon wheel, weapon picker, switch button
+
+**Switch beat**:
+What a switch of Primary weapons looks and sounds like: the gun in the character's hands dips out of line, the newly equipped one comes up in its place, and a click plays as it does. It's quick, about a quarter of a second. Nothing fires while the old gun goes down; the new one can fire as soon as it shows, while it's still coming up.
+_Avoid_: weapon swap animation, holster
 
 **Skill button**:
 One Skill on the HUD, in a row at the bottom left: the Skill's icon on a dark disc with its name under it. While the Skill is active a ring of its colour runs down around the disc; while it recharges the icon dims under a dark sweep with the seconds left, and the button gives a small pulse when it's ready again. On keyboard and mouse a small badge in its corner shows the Skill's key; on touch there's none. Each Skill's icon, colour, name and key are authored on its definition, so a new Skill gets its button from data alone.

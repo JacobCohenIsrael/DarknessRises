@@ -123,9 +123,15 @@ namespace DarknessRises.Game.Weapons
         }
 
         /// <summary>Advances the equipped Primary by <paramref name="deltaSeconds"/>. Holstered ones stay frozen.</summary>
-        public void Tick(float deltaSeconds)
+        public void Tick(float deltaSeconds) => Tick(deltaSeconds, mayFire: true);
+
+        /// <summary>
+        /// Advances the equipped Primary by <paramref name="deltaSeconds"/>, holding its fire when <paramref name="mayFire"/>
+        /// is false (the switch beat). Holstered ones stay frozen.
+        /// </summary>
+        public void Tick(float deltaSeconds, bool mayFire)
         {
-            Equipped.Tick(deltaSeconds);
+            Equipped.Tick(deltaSeconds, mayFire);
         }
 
         private bool Step(int direction)

@@ -1,4 +1,6 @@
+using DarknessRises.Game.Audio;
 using DarknessRises.Game.Controls;
+using DarknessRises.Game.Editor.Audio;
 using DarknessRises.Game.Editor.Content;
 using DarknessRises.Game.Weapons;
 using UnityEditor;
@@ -26,16 +28,13 @@ namespace DarknessRises.Game.Editor.Weapons
 
         private const string UnlitShaderName = "Universal Render Pipeline/Unlit";
         private const string ParticlesUnlitShaderName = "Universal Render Pipeline/Particles/Unlit";
-        private const string LitShaderName = "Universal Render Pipeline/Lit";
 
         private const string AimActionPath = "Gameplay/Aim";
         private const string FireActionPath = "Gameplay/Fire";
         private const string ReloadActionPath = "Gameplay/Reload";
 
-        // Placeholder weapon layout on the character, in metres.
+        // Weapon layout on the character, in metres. The equipped Primary's model moves the muzzle to its own barrel.
         private const float MountHeight = 1.3f;
-        private static readonly Vector3 PlaceholderPistolSize = new(0.12f, 0.14f, 0.45f);
-        private const float PlaceholderPistolForward = 0.5f;
         private const float MuzzleForward = 0.75f;
         private const float ShotTrailMinVertexDistance = 0.05f;
 
@@ -83,7 +82,8 @@ namespace DarknessRises.Game.Editor.Weapons
 
         /// <summary>
         /// Adds the player's controls and the Primary weapon to the character: a mount that turns toward the aim point,
-        /// a placeholder Pistol and the muzzle Shots leave from.
+        /// the muzzle Shots leave from, and the switch click's source. The Primaries' models go on the mount at runtime,
+        /// under the switch and recoil pivots <see cref="Player.CharacterBuilder"/> adds.
         /// </summary>
         public static PrimaryWeaponView BuildPrimaryWeapon(Transform character, Camera viewCamera)
         {
@@ -99,24 +99,22 @@ namespace DarknessRises.Game.Editor.Weapons
             mount.SetParent(character, false);
             mount.localPosition = Vector3.up * MountHeight;
 
-            var placeholder = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            placeholder.name = "Placeholder Pistol";
-            Object.DestroyImmediate(placeholder.GetComponent<Collider>());
-            placeholder.transform.SetParent(mount, false);
-            placeholder.transform.localPosition = Vector3.forward * PlaceholderPistolForward;
-            placeholder.transform.localScale = PlaceholderPistolSize;
-            placeholder.GetComponent<MeshRenderer>().sharedMaterial =
-                LoadOrCreateMaterial("Weapon", LitShaderName, new Color(0.12f, 0.12f, 0.13f));
-
             var muzzle = new GameObject("Muzzle").transform;
             muzzle.SetParent(mount, false);
             muzzle.localPosition = Vector3.forward * MuzzleForward;
+
+            var switchSound = new GameObject("Switch Sound", typeof(AudioSource)).GetComponent<AudioSource>();
+            switchSound.transform.SetParent(character, false);
+            switchSound.playOnAwake = false;
+            switchSound.spatialBlend = 0f;
+            AudioRouting.Route(switchSound, AudioCategory.Sound);
 
             var view = character.gameObject.AddComponent<PrimaryWeaponView>();
             var serializedView = new SerializedObject(view);
             serializedView.FindProperty("controls").objectReferenceValue = controls;
             serializedView.FindProperty("mount").objectReferenceValue = mount;
             serializedView.FindProperty("muzzle").objectReferenceValue = muzzle;
+            serializedView.FindProperty("switchSound").objectReferenceValue = switchSound;
             serializedView.ApplyModifiedPropertiesWithoutUndo();
             return view;
         }

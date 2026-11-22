@@ -49,6 +49,21 @@ MonoBehaviour:
     volume: 0.8
     pitch: 1
     interruptFadeSeconds: 0.12
+  weaponSwitch:
+    lowerSeconds: 0.1
+    raiseSeconds: 0.15
+    lowerDegrees: 50
+    lowerMetres: 0.12
+    clip:
+      m_AssetGUID: e05478d53ab27f9409619259809c5e6c
+      m_SubObjectName: 
+      m_SubObjectType: 
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 0
+    clipStartSeconds: 0.79
+    clipSeconds: 0.14
+    volume: 0.8
+    pitch: 1.1
   gunshotVoices:
     voiceCount: 6
     endFadeSeconds: 0.04
@@ -128,6 +143,7 @@ MonoBehaviour:
     reserveFormat: RESERVE {0}
     unlimitedText: NO LIMIT
     textColor: {r: 0.9, g: 0.9, b: 0.9, a: 0.95}
+    iconColor: {r: 0.9, g: 0.9, b: 0.9, a: 0.95}
     emptyReserveColor: {r: 1, g: 0.35, b: 0.25, a: 1}
     faceColor: {r: 0.1, g: 0.1, b: 0.11, a: 0.6}
     runDryFlashColor: {r: 1, g: 0.35, b: 0.25, a: 0.9}

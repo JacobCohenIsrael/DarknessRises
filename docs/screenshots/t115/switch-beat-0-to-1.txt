@@ -1,0 +1,27 @@
+Switch 0 -> 1, trigger held, dt 0.0167 s
+frame  t(s)   phase     lowered  pivotTipDeg  mayFire  shown                shots  click (the view's own timer: cut of the clip left to play)
+    0  0.000  held        0.000          0.0  True     PistolModel              0  -
+    1  0.017  held        0.000          0.0  True     PistolModel              0  -
+    2  0.033  lowering    0.167          3.7  False    PistolModel              0  -
+    3  0.050  lowering    0.333         13.0  False    PistolModel              0  -
+    4  0.067  lowering    0.500         25.0  False    PistolModel              0  -
+    5  0.083  lowering    0.667         37.0  False    PistolModel              0  -
+    6  0.100  lowering    0.833         46.3  False    PistolModel              0  -
+    7  0.117  raising     1.000         50.0  True     MachineGunModel          1  Handling_Gun_01_Reload_Sq_SFX from 0.79s, 0.111s left
+    8  0.133  raising     0.889         48.3  True     MachineGunModel          1  Handling_Gun_01_Reload_Sq_SFX from 0.79s, 0.094s left
+    9  0.150  raising     0.778         43.7  True     MachineGunModel          1  Handling_Gun_01_Reload_Sq_SFX from 0.79s, 0.077s left
+   10  0.167  raising     0.667         37.0  True     MachineGunModel          1  Handling_Gun_01_Reload_Sq_SFX from 0.79s, 0.061s left
+   11  0.183  raising     0.556         29.1  True     MachineGunModel          2  Handling_Gun_01_Reload_Sq_SFX from 0.79s, 0.044s left
+   12  0.200  raising     0.444         20.9  True     MachineGunModel          2  Handling_Gun_01_Reload_Sq_SFX from 0.79s, 0.027s left
+   13  0.217  raising     0.333         13.0  True     MachineGunModel          2  Handling_Gun_01_Reload_Sq_SFX from 0.79s, 0.011s left
+   14  0.233  raising     0.222          6.3  True     MachineGunModel          2  -
+   15  0.250  raising     0.111          1.7  True     MachineGunModel          3  -
+   16  0.267  raising     0.000          0.0  True     MachineGunModel          3  -
+   17  0.283  done        0.000          0.0  True     MachineGunModel          3  -
+   18  0.300  done        0.000          0.0  True     MachineGunModel          3  -
+   19  0.317  done        0.000          0.0  True     MachineGunModel          4  -
+   20  0.333  done        0.000          0.0  True     MachineGunModel          4  -
+   21  0.350  done        0.000          0.0  True     MachineGunModel          4  -
+   22  0.367  done        0.000          0.0  True     MachineGunModel          4  -
+   23  0.383  done        0.000          0.0  True     MachineGunModel          5  -
+   24  0.400  done        0.000          0.0  True     MachineGunModel          5  -
